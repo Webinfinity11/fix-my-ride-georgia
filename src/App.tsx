@@ -12,6 +12,10 @@ import Register from "./pages/Register";
 import MechanicProfile from "./pages/MechanicProfile";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import Search from "./pages/Search";
+import Services from "./pages/Services";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 // Route guard for authenticated routes
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -43,8 +47,16 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/mechanic/:id" element={<MechanicProfile />} />
-            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard/*" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
             {/* Redirect /profile to the dashboard profile page */}
             <Route path="/profile" element={<Navigate to="/dashboard/profile" replace />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
