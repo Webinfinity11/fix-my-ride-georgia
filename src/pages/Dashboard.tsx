@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/layout/Header";
@@ -14,18 +14,26 @@ import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
 import MechanicPortfolio from "@/components/dashboard/mechanic/MechanicPortfolio";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const { user, initialized, loading } = useAuth();
   const navigate = useNavigate();
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   useEffect(() => {
-    if (initialized && !loading && !user) {
-      navigate("/login");
+    if (initialized && !loading) {
+      if (!user) {
+        toast.error("სამართავ პანელზე წვდომისთვის გთხოვთ გაიაროთ ავტორიზაცია");
+        navigate("/login");
+      } else {
+        setIsDataLoading(false);
+      }
     }
   }, [user, initialized, loading, navigate]);
 
-  if (loading || !initialized) {
+  // Show loading state while checking authentication
+  if (loading || !initialized || isDataLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -37,15 +45,14 @@ const Dashboard = () => {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  // If user is not authenticated, we redirect in the useEffect
+  if (!user) return null;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow flex bg-muted py-8">
-        <div className="container mx-auto px-4 flex gap-6">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row gap-6">
           <DashboardSidebar />
           <div className="flex-grow bg-background rounded-lg shadow-sm p-6">
             <Routes>
@@ -109,6 +116,7 @@ const Dashboard = () => {
                   )
                 }
               />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </div>
         </div>
