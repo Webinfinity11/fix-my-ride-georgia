@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -23,7 +22,7 @@ type MechanicType = {
     specialization: string | null;
     experience_years: number | null;
     rating: number | null;
-    review_count: number | null; // Ensuring this is explicitly set as number or null
+    review_count: number | null; 
     is_mobile: boolean;
   };
   services: {
@@ -213,7 +212,7 @@ const SearchPage = () => {
                     specialization={mechanic.mechanic_profile.specialization || "ავტოხელოსანი"}
                     location={`${mechanic.profile.city}${mechanic.profile.district ? `, ${mechanic.profile.district}` : ''}`}
                     rating={mechanic.mechanic_profile.rating || 0}
-                    reviewCount={mechanic.mechanic_profile.review_count ? Number(mechanic.mechanic_profile.review_count) : 0}
+                    reviewCount={mechanic.mechanic_profile.review_count ?? 0}
                     isMobile={mechanic.mechanic_profile.is_mobile}
                     experience={mechanic.mechanic_profile.experience_years || 0}
                     description={mechanic.mechanic_profile.description || ""}
