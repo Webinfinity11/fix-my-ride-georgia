@@ -1,21 +1,24 @@
 
 import { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { User, Wrench } from "lucide-react";
+import { useAuth } from '@/context/AuthContext';
+import { UserRole } from '@/types/auth';
 
 const RegisterForm = () => {
   const [searchParams] = useSearchParams();
   const defaultType = searchParams.get('type') || 'customer';
-  const [formType, setFormType] = useState<'customer' | 'mechanic'>(
+  const [formType, setFormType] = useState<UserRole>(
     defaultType === 'mechanic' ? 'mechanic' : 'customer'
   );
   
-  const [loading, setLoading] = useState(false);
+  const { signUp, loading } = useAuth();
+  const navigate = useNavigate();
   
   // Basic form state
   const [formData, setFormData] = useState({
@@ -37,23 +40,35 @@ const RegisterForm = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
       toast.error("პაროლები არ ემთხვევა!");
-      setLoading(false);
       return;
     }
+
+    // Register the user
+    const { error } = await signUp(
+      formData.email,
+      formData.password,
+      {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        city: formData.city,
+        district: formData.district,
+        role: formType
+      }
+    );
     
-    // Simulate API call
-    setTimeout(() => {
-      // Just for demonstration - would be actual API call in real app
+    if (error) {
+      toast.error(`რეგისტრაცია ვერ მოხერხდა: ${error.message}`);
+    } else {
       toast.success(`${formType === 'mechanic' ? 'ხელოსანი' : 'მომხმარებელი'} წარმატებით დარეგისტრირდა!`);
-      setLoading(false);
-    }, 1500);
+      navigate('/');
+    }
   };
   
   return (
@@ -63,7 +78,7 @@ const RegisterForm = () => {
         <p className="text-muted-foreground mt-2">შექმენით ახალი ანგარიში</p>
       </div>
       
-      <Tabs defaultValue={formType} onValueChange={(v) => setFormType(v as 'customer' | 'mechanic')} className="mb-6">
+      <Tabs defaultValue={formType} onValueChange={(v) => setFormType(v as UserRole)} className="mb-6">
         <TabsList className="grid grid-cols-2 w-full">
           <TabsTrigger value="customer" className="flex items-center gap-2">
             <User size={16} /> მომხმარებელი

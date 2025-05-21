@@ -9,7 +9,431 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          car_id: number | null
+          created_at: string
+          id: number
+          mechanic_id: string
+          notes: string | null
+          price: number | null
+          scheduled_date: string
+          scheduled_time: string
+          service_id: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          car_id?: number | null
+          created_at?: string
+          id?: number
+          mechanic_id: string
+          notes?: string | null
+          price?: number | null
+          scheduled_date: string
+          scheduled_time: string
+          service_id: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          car_id?: number | null
+          created_at?: string
+          id?: number
+          mechanic_id?: string
+          notes?: string | null
+          price?: number | null
+          scheduled_date?: string
+          scheduled_time?: string
+          service_id?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cars: {
+        Row: {
+          created_at: string
+          engine: string | null
+          id: number
+          make: string
+          model: string
+          transmission: string | null
+          updated_at: string
+          user_id: string
+          vin: string | null
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          engine?: string | null
+          id?: number
+          make: string
+          model: string
+          transmission?: string | null
+          updated_at?: string
+          user_id: string
+          vin?: string | null
+          year: number
+        }
+        Update: {
+          created_at?: string
+          engine?: string | null
+          id?: number
+          make?: string
+          model?: string
+          transmission?: string | null
+          updated_at?: string
+          user_id?: string
+          vin?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificates: {
+        Row: {
+          created_at: string
+          id: number
+          image_url: string | null
+          issue_date: string | null
+          issuing_organization: string | null
+          mechanic_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          image_url?: string | null
+          issue_date?: string | null
+          issuing_organization?: string | null
+          mechanic_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          image_url?: string | null
+          issue_date?: string | null
+          issuing_organization?: string | null
+          mechanic_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mechanic_profiles: {
+        Row: {
+          accepts_card_payment: boolean | null
+          description: string | null
+          experience_years: number | null
+          hourly_rate: number | null
+          id: string
+          is_mobile: boolean | null
+          rating: number | null
+          review_count: number | null
+          specialization: string | null
+          verified_at: string | null
+          working_hours: Json | null
+        }
+        Insert: {
+          accepts_card_payment?: boolean | null
+          description?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id: string
+          is_mobile?: boolean | null
+          rating?: number | null
+          review_count?: number | null
+          specialization?: string | null
+          verified_at?: string | null
+          working_hours?: Json | null
+        }
+        Update: {
+          accepts_card_payment?: boolean | null
+          description?: string | null
+          experience_years?: number | null
+          hourly_rate?: number | null
+          id?: string
+          is_mobile?: boolean | null
+          rating?: number | null
+          review_count?: number | null
+          specialization?: string | null
+          verified_at?: string | null
+          working_hours?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mechanic_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mechanic_services: {
+        Row: {
+          category_id: number | null
+          created_at: string
+          description: string | null
+          estimated_hours: number | null
+          id: number
+          is_active: boolean | null
+          mechanic_id: string
+          name: string
+          price_from: number | null
+          price_to: number | null
+          updated_at: string
+        }
+        Insert: {
+          category_id?: number | null
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: number
+          is_active?: boolean | null
+          mechanic_id: string
+          name: string
+          price_from?: number | null
+          price_to?: number | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: number | null
+          created_at?: string
+          description?: string | null
+          estimated_hours?: number | null
+          id?: number
+          is_active?: boolean | null
+          mechanic_id?: string
+          name?: string
+          price_from?: number | null
+          price_to?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mechanic_services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mechanic_services_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolio_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: number
+          images: Json
+          mechanic_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          images: Json
+          mechanic_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          images?: Json
+          mechanic_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_items_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          city: string | null
+          created_at: string
+          district: string | null
+          email: string
+          first_name: string
+          id: string
+          is_verified: boolean
+          last_name: string
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          street: string | null
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          district?: string | null
+          email: string
+          first_name: string
+          id: string
+          is_verified?: boolean
+          last_name: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          street?: string | null
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          district?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          is_verified?: boolean
+          last_name?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          street?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          booking_id: number | null
+          comment: string | null
+          created_at: string
+          id: number
+          images: Json | null
+          mechanic_id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_id?: number | null
+          comment?: string | null
+          created_at?: string
+          id?: number
+          images?: Json | null
+          mechanic_id: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: number | null
+          comment?: string | null
+          created_at?: string
+          id?: number
+          images?: Json | null
+          mechanic_id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_categories: {
+        Row: {
+          description: string | null
+          icon: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          description?: string | null
+          icon?: string | null
+          id?: number
+          name: string
+        }
+        Update: {
+          description?: string | null
+          icon?: string | null
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +442,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "customer" | "mechanic" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +557,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["customer", "mechanic", "admin"],
+    },
   },
 } as const

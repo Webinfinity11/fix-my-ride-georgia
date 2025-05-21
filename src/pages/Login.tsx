@@ -1,16 +1,19 @@
 
+import { useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { toast } from "sonner";
 import { Wrench, Facebook, Mail } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
-  const [loading, setLoading] = useState(false);
+  const { signIn, loading } = useAuth();
+  const navigate = useNavigate();
+  
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -25,19 +28,22 @@ const Login = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      if (form.email && form.password) {
-        toast.success("წარმატებით შეხვედით სისტემაში!");
-      } else {
-        toast.error("შეავსეთ ყველა აუცილებელი ველი!");
-      }
-      setLoading(false);
-    }, 1500);
+    if (!form.email || !form.password) {
+      toast.error("შეავსეთ ყველა აუცილებელი ველი!");
+      return;
+    }
+    
+    const { error } = await signIn(form.email, form.password);
+    
+    if (error) {
+      toast.error(`შესვლა ვერ მოხერხდა: ${error.message}`);
+    } else {
+      toast.success("წარმატებით შეხვედით სისტემაში!");
+      navigate('/');
+    }
   };
   
   return (
