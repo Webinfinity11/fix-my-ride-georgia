@@ -1,11 +1,19 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Menu, X, User, Search, Wrench } from 'lucide-react';
+import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
   
   return (
     <header className="bg-white shadow-sm">
@@ -35,16 +43,36 @@ const Header = () => {
           
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login">
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
-                შესვლა
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button className="bg-secondary hover:bg-secondary-light">
-                რეგისტრაცია
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                <Link to="/dashboard/profile">
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <User size={18} />
+                    პროფილი
+                  </Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-primary"
+                >
+                  გასვლა
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+                    შესვლა
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button className="bg-secondary hover:bg-secondary-light">
+                    რეგისტრაცია
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
           
           {/* Mobile Menu Button */}
@@ -90,16 +118,39 @@ const Header = () => {
               </Link>
             </nav>
             <div className="flex flex-col space-y-3">
-              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
-                  შესვლა
-                </Button>
-              </Link>
-              <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                <Button className="w-full bg-secondary hover:bg-secondary-light">
-                  რეგისტრაცია
-                </Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link to="/dashboard/profile" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                      <User size={18} />
+                      პროფილი
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-gray-600 hover:text-primary"
+                  >
+                    გასვლა
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
+                      შესვლა
+                    </Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="w-full bg-secondary hover:bg-secondary-light">
+                      რეგისტრაცია
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
