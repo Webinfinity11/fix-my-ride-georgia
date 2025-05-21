@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -71,7 +72,12 @@ type ReviewType = {
   images: string[] | null;
 };
 
-const MechanicProfile = () => {
+// Add the booking prop to the component props
+interface MechanicProfileProps {
+  booking?: boolean;
+}
+
+const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -81,6 +87,13 @@ const MechanicProfile = () => {
   const [certificates, setCertificates] = useState<CertificateType[]>([]);
   const [reviews, setReviews] = useState<ReviewType[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // If the component is in booking mode, update the active tab to services
+  useEffect(() => {
+    if (booking) {
+      setActiveTab("services");
+    }
+  }, [booking]);
   
   useEffect(() => {
     if (!id) {
@@ -481,7 +494,7 @@ const MechanicProfile = () => {
             {/* Main content area with tabs */}
             <div className="order-1 lg:order-2 lg:col-span-2">
               <div className="bg-white rounded-lg shadow overflow-hidden">
-                <Tabs defaultValue="services" onValueChange={setActiveTab}>
+                <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
                   <div className="px-6 pt-6 border-b">
                     <TabsList className="grid grid-cols-3">
                       <TabsTrigger value="services">სერვისები</TabsTrigger>
