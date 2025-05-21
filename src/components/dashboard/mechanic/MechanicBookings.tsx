@@ -68,7 +68,8 @@ const MechanicBookings = () => {
 
       if (error) throw error;
 
-      setBookings(data || []);
+      // Ensure type compatibility - we need to cast the data to match our BookingType
+      setBookings(data as unknown as BookingType[]);
     } catch (error: any) {
       toast.error(`ჯავშნების ჩატვირთვა ვერ მოხერხდა: ${error.message}`);
     } finally {
