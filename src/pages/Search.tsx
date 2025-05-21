@@ -4,7 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search as SearchIcon, Filter } from "lucide-react";
+import { Search as SearchIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -72,15 +72,18 @@ const SearchPage = () => {
         .from("profiles")
         .select(`
           id,
-          profile:profiles!inner(first_name, last_name, city, district),
-          mechanic_profile:mechanic_profiles!inner(description, specialization, experience_years, rating, review_count, is_mobile),
-          services:mechanic_services(id, name, category_id)
+          first_name,
+          last_name,
+          city,
+          district,
+          mechanic_profiles!inner(description, specialization, experience_years, rating, review_count, is_mobile),
+          mechanic_services(id, name, category_id)
         `)
         .eq("role", "mechanic");
 
       // Filter by search query if provided
       if (query) {
-        mechanicsQuery = mechanicsQuery.or(`profile.first_name.ilike.%${query}%,profile.last_name.ilike.%${query}%,mechanic_profile.specialization.ilike.%${query}%`);
+        mechanicsQuery = mechanicsQuery.or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,mechanic_profiles.specialization.ilike.%${query}%`);
       }
 
       // Execute the query
@@ -89,7 +92,18 @@ const SearchPage = () => {
       if (error) throw error;
 
       // If category filter is active, filter mechanics with at least one service in that category
-      let filteredMechanics = data || [];
+      let filteredMechanics = data ? data.map((item: any) => ({
+        id: item.id,
+        profile: {
+          first_name: item.first_name,
+          last_name: item.last_name,
+          city: item.city,
+          district: item.district
+        },
+        mechanic_profile: item.mechanic_profiles,
+        services: item.mechanic_services
+      })) : [];
+      
       if (categoryId) {
         filteredMechanics = filteredMechanics.filter(mechanic => 
           mechanic.services.some(service => service.category_id === categoryId)
@@ -183,7 +197,7 @@ const SearchPage = () => {
                     specialization={mechanic.mechanic_profile.specialization || "ავტოხელოსანი"}
                     location={`${mechanic.profile.city}${mechanic.profile.district ? `, ${mechanic.profile.district}` : ''}`}
                     rating={mechanic.mechanic_profile.rating || 0}
-                    reviewCount={mechanic.mechanic_profile.review_count}
+                    reviewCount={mechanic.mechanic_profile.review_count || 0}
                     isMobile={mechanic.mechanic_profile.is_mobile}
                     experience={mechanic.mechanic_profile.experience_years || 0}
                     description={mechanic.mechanic_profile.description || ""}

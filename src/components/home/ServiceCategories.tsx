@@ -9,9 +9,9 @@ import {
   Battery, 
   Cpu, 
   Fan, 
-  Oil, 
+  Wind,
   Cog, 
-  Windmill, 
+  AirVent, 
   Fuel, 
   Truck
 } from "lucide-react";
@@ -34,9 +34,9 @@ const iconMapping: Record<string, React.ReactNode> = {
   "battery": <Battery className="h-10 w-10" />,
   "cpu": <Cpu className="h-10 w-10" />,
   "fan": <Fan className="h-10 w-10" />,
-  "oil": <Oil className="h-10 w-10" />,
+  "wind": <Wind className="h-10 w-10" />,
   "cog": <Cog className="h-10 w-10" />,
-  "windmill": <Windmill className="h-10 w-10" />,
+  "air-vent": <AirVent className="h-10 w-10" />,
   "fuel": <Fuel className="h-10 w-10" />,
   "truck": <Truck className="h-10 w-10" />,
 };
@@ -45,7 +45,7 @@ const iconMapping: Record<string, React.ReactNode> = {
 const defaultCategories: ServiceCategory[] = [
   { id: 1, name: "ძრავი", description: "ძრავის შეკეთება და დიაგნოსტიკა", icon: "wrench" },
   { id: 2, name: "ტრანსმისია", description: "ტრანსმისიის შეკეთება და დიაგნოსტიკა", icon: "cog" },
-  { id: 3, name: "საჭე და საკიდარი", description: "საჭისა და საკიდარის სისტემების შემოწმება და შეკეთება", icon: "windmill" },
+  { id: 3, name: "საჭე და საკიდარი", description: "საჭისა და საკიდარის სისტემების შემოწმება და შეკეთება", icon: "air-vent" },
   { id: 4, name: "სამუხრუჭე სისტემა", description: "სამუხრუჭე სისტემის შეკეთება და მომსახურება", icon: "gauge" },
   { id: 5, name: "ელექტროობა", description: "ავტომობილის ელექტროსისტემის შეკეთება", icon: "cpu" },
   { id: 6, name: "კონდიცირება", description: "კონდიცირების სისტემის შეკეთება და შევსება", icon: "fan" },
