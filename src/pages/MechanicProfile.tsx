@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Tool, FileCheck, Car } from "lucide-react";
+import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Wrench, FileCheck, Car } from "lucide-react";
 import { toast } from "sonner";
 
 // Mock data for this example
@@ -71,8 +71,8 @@ const MechanicProfile = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
+      {/* Hero section with mechanic info */}
       <main className="flex-grow bg-muted">
-        {/* Hero section with mechanic info */}
         <div className="bg-primary text-white py-12">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -108,7 +108,7 @@ const MechanicProfile = () => {
                   </div>
                   
                   <div className="flex items-center">
-                    <Tool className="h-5 w-5 mr-1 text-blue-200" />
+                    <Wrench className="h-5 w-5 mr-1 text-blue-200" />
                     <span>{mechanic.experience} წლიანი გამოცდილება</span>
                   </div>
                 </div>
