@@ -16,7 +16,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 type PortfolioItem = {
   id: number;
   title: string;
-  description: string;
+  description: string | null;
   images: string[];
   created_at: string;
   mechanic_id: string;
@@ -44,14 +44,14 @@ const MechanicPortfolio = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("portfolio")
+        .from("portfolio_items")
         .select("*")
         .eq("mechanic_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       
-      // Convert any JSON images field to string array
+      // Process the data to ensure images is always an array
       const formattedData = data?.map(item => ({
         ...item,
         images: Array.isArray(item.images) 
@@ -75,7 +75,7 @@ const MechanicPortfolio = () => {
       // For now, just create a dummy portfolio item
       // In a real implementation, you'd upload images first
       const { data, error } = await supabase
-        .from("portfolio")
+        .from("portfolio_items")
         .insert({
           title,
           description,
@@ -99,7 +99,7 @@ const MechanicPortfolio = () => {
   const handleEditItem = (item: PortfolioItem) => {
     setEditingItem(item);
     setTitle(item.title);
-    setDescription(item.description);
+    setDescription(item.description || "");
     setOpenDialog(true);
   };
 
@@ -108,7 +108,7 @@ const MechanicPortfolio = () => {
 
     try {
       const { error } = await supabase
-        .from("portfolio")
+        .from("portfolio_items")
         .update({
           title,
           description
@@ -135,7 +135,7 @@ const MechanicPortfolio = () => {
   const handleDeleteItem = async (id: number) => {
     try {
       const { error } = await supabase
-        .from("portfolio")
+        .from("portfolio_items")
         .delete()
         .eq("id", id);
 

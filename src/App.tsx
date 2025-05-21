@@ -37,10 +37,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const queryClient = new QueryClient();
 
 const App = () => (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <TooltipProvider>
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -50,6 +50,11 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/mechanic/:id" element={<MechanicProfile />} />
+            <Route path="/book/:id" element={
+              <ProtectedRoute>
+                <MechanicProfile booking={true} />
+              </ProtectedRoute>
+            } />
             <Route path="/dashboard/*" element={
               <ProtectedRoute>
                 <Dashboard />
@@ -60,12 +65,12 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Toaster />
           <Sonner />
+          <Toaster />
         </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
+  </QueryClientProvider>
 );
 
 export default App;
