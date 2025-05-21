@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -67,7 +68,8 @@ const SearchPage = () => {
 
   const fetchMechanics = async (query: string = "", categoryId: number | null = null) => {
     try {
-      let mechanicsQuery = supabase
+      // First get mechanics with their profile info
+      const { data: mechanicsData, error: mechanicsError } = await supabase
         .from("profiles")
         .select(`
           id,
@@ -75,34 +77,49 @@ const SearchPage = () => {
           last_name,
           city,
           district,
-          mechanic_profiles!inner(description, specialization, experience_years, rating, review_count, is_mobile),
-          mechanic_services(id, name, category_id)
+          mechanic_profiles!inner(description, specialization, experience_years, rating, review_count, is_mobile)
         `)
         .eq("role", "mechanic");
 
-      // Filter by search query if provided
-      if (query) {
-        mechanicsQuery = mechanicsQuery.or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,mechanic_profiles.specialization.ilike.%${query}%`);
-      }
+      if (mechanicsError) throw mechanicsError;
 
-      // Execute the query
-      const { data, error } = await mechanicsQuery;
-
-      if (error) throw error;
-
-      // If category filter is active, filter mechanics with at least one service in that category
-      let filteredMechanics = data ? data.map((item: any) => ({
-        id: item.id,
-        profile: {
-          first_name: item.first_name,
-          last_name: item.last_name,
-          city: item.city,
-          district: item.district
-        },
-        mechanic_profile: item.mechanic_profiles,
-        services: item.mechanic_services
-      })) : [];
+      // For each mechanic, get their services
+      const mechanicsWithServices = await Promise.all((mechanicsData || []).map(async (mechanic) => {
+        const { data: services, error: servicesError } = await supabase
+          .from("mechanic_services")
+          .select("id, name, category_id")
+          .eq("mechanic_id", mechanic.id)
+          .eq("is_active", true);
+          
+        if (servicesError) throw servicesError;
+          
+        return {
+          id: mechanic.id,
+          profile: {
+            first_name: mechanic.first_name,
+            last_name: mechanic.last_name,
+            city: mechanic.city,
+            district: mechanic.district
+          },
+          mechanic_profile: mechanic.mechanic_profiles,
+          services: services || []
+        };
+      }));
       
+      // Filter by search query if provided
+      let filteredMechanics = mechanicsWithServices;
+      
+      if (query) {
+        const lowerQuery = query.toLowerCase();
+        filteredMechanics = filteredMechanics.filter(mechanic => 
+          mechanic.profile.first_name.toLowerCase().includes(lowerQuery) ||
+          mechanic.profile.last_name.toLowerCase().includes(lowerQuery) ||
+          (mechanic.mechanic_profile.specialization && 
+           mechanic.mechanic_profile.specialization.toLowerCase().includes(lowerQuery))
+        );
+      }
+      
+      // Filter by category if provided
       if (categoryId) {
         filteredMechanics = filteredMechanics.filter(mechanic => 
           mechanic.services.some(service => service.category_id === categoryId)
@@ -129,7 +146,6 @@ const SearchPage = () => {
       .finally(() => setLoading(false));
   };
 
-  // Keep all the logic but fix the specific error when rendering MechanicCard
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

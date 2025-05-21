@@ -12,7 +12,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
-import { Json } from "@/integrations/supabase/types";
 
 type MechanicType = {
   id: string;
@@ -175,7 +174,7 @@ const MechanicProfile = () => {
             created_at,
             images,
             user_id,
-            profiles!user_id(first_name, last_name)
+            profiles(first_name, last_name)
           `)
           .eq("mechanic_id", id)
           .order("created_at", { ascending: false });
@@ -192,7 +191,10 @@ const MechanicProfile = () => {
             first_name: review.profiles?.first_name || "Unknown",
             last_name: review.profiles?.last_name || "User"
           },
-          images: Array.isArray(review.images) ? review.images : null
+          // Handle JSON type for images by properly converting to string[]
+          images: Array.isArray(review.images) 
+            ? review.images.map(img => String(img))
+            : null
         }));
         
         setReviews(formattedReviews);
@@ -319,16 +321,16 @@ const MechanicProfile = () => {
               <Avatar className="h-24 w-24 rounded-full border-4 border-white">
                 <AvatarImage src="" />
                 <AvatarFallback className="bg-secondary text-secondary-foreground text-xl">
-                  {initials}
+                  {mechanic?.profile.first_name.charAt(0)}{mechanic?.profile.last_name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <h1 className="text-2xl md:text-3xl font-bold">
-                    {mechanic.profile.first_name} {mechanic.profile.last_name}
+                    {mechanic?.profile.first_name} {mechanic?.profile.last_name}
                   </h1>
-                  {mechanic.profile.is_verified && (
+                  {mechanic?.profile.is_verified && (
                     <Badge className="bg-green-500 text-white flex items-center">
                       <Check className="h-3 w-3 mr-1" /> დადასტურებული
                     </Badge>
@@ -336,29 +338,29 @@ const MechanicProfile = () => {
                 </div>
                 
                 <p className="text-blue-100 mb-2">
-                  {mechanic.mechanic_profile.specialization || "ავტოხელოსანი"}
+                  {mechanic?.mechanic_profile.specialization || "ავტოხელოსანი"}
                 </p>
                 
                 <div className="flex flex-wrap items-center gap-4 mb-4">
                   <div className="flex items-center">
                     <Star className="h-5 w-5 fill-yellow-400 text-yellow-400 mr-1" />
                     <span className="font-semibold">
-                      {mechanic.mechanic_profile.rating?.toFixed(1) || "N/A"}
+                      {mechanic?.mechanic_profile.rating?.toFixed(1) || "N/A"}
                     </span>
                     <span className="text-blue-100 ml-1">
-                      ({mechanic.mechanic_profile.review_count} შეფასება)
+                      ({mechanic?.mechanic_profile.review_count} შეფასება)
                     </span>
                   </div>
                   
                   <div className="flex items-center">
                     <MapPin className="h-5 w-5 mr-1 text-blue-200" />
                     <span>
-                      {mechanic.profile.city}
-                      {mechanic.profile.district ? `, ${mechanic.profile.district}` : ""}
+                      {mechanic?.profile.city}
+                      {mechanic?.profile.district ? `, ${mechanic?.profile.district}` : ""}
                     </span>
                   </div>
                   
-                  {mechanic.mechanic_profile.experience_years && (
+                  {mechanic?.mechanic_profile.experience_years && (
                     <div className="flex items-center">
                       <Wrench className="h-5 w-5 mr-1 text-blue-200" />
                       <span>{mechanic.mechanic_profile.experience_years} წლიანი გამოცდილება</span>
@@ -372,7 +374,7 @@ const MechanicProfile = () => {
                       <FileCheck className="h-3 w-3 mr-1" /> {cert.title}
                     </Badge>
                   ))}
-                  {mechanic.mechanic_profile.is_mobile && (
+                  {mechanic?.mechanic_profile.is_mobile && (
                     <Badge variant="secondary" className="bg-blue-600 text-white">
                       <Car className="h-3 w-3 mr-1" /> მობილური სერვისი
                     </Badge>
@@ -383,7 +385,14 @@ const MechanicProfile = () => {
               <Button 
                 size="lg" 
                 className="bg-secondary hover:bg-secondary/90 text-white shrink-0"
-                onClick={() => handleBooking()}
+                onClick={() => {
+                  if (!user) {
+                    toast.error("ჯავშნის გასაკეთებლად გთხოვთ გაიაროთ ავტორიზაცია");
+                    navigate("/login");
+                    return;
+                  }
+                  toast.success(`დაჯავშნის პროცესი დაიწყო!`);
+                }}
               >
                 <Calendar className="h-5 w-5 mr-2" /> დაჯავშნა
               </Button>
@@ -400,7 +409,7 @@ const MechanicProfile = () => {
                 <h3 className="text-lg font-semibold mb-4">საკონტაქტო ინფორმაცია</h3>
                 
                 <div className="space-y-4">
-                  {mechanic.profile.street && (
+                  {mechanic?.profile.street && (
                     <div className="flex items-start">
                       <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mr-3 mt-0.5" />
                       <div>
@@ -413,7 +422,7 @@ const MechanicProfile = () => {
                     </div>
                   )}
                   
-                  {mechanic.profile.phone && (
+                  {mechanic?.profile.phone && (
                     <div className="flex items-start">
                       <Phone className="h-5 w-5 text-muted-foreground shrink-0 mr-3 mt-0.5" />
                       <div>
@@ -432,14 +441,14 @@ const MechanicProfile = () => {
                     <div>
                       <p className="font-medium">ელ-ფოსტა</p>
                       <p className="text-muted-foreground">
-                        <a href={`mailto:${mechanic.profile.email}`} className="hover:text-primary">
-                          {mechanic.profile.email}
+                        <a href={`mailto:${mechanic?.profile.email}`} className="hover:text-primary">
+                          {mechanic?.profile.email}
                         </a>
                       </p>
                     </div>
                   </div>
                   
-                  {mechanic.mechanic_profile.working_hours && (
+                  {mechanic?.mechanic_profile.working_hours && (
                     <div className="flex items-start">
                       <Clock className="h-5 w-5 text-muted-foreground shrink-0 mr-3 mt-0.5" />
                       <div>
@@ -455,7 +464,7 @@ const MechanicProfile = () => {
                 </div>
               </div>
               
-              {mechanic.mechanic_profile.specialization && (
+              {mechanic?.mechanic_profile.specialization && (
                 <div className="bg-white rounded-lg shadow p-6">
                   <h3 className="text-lg font-semibold mb-4">სპეციალიზაცია</h3>
                   <div className="flex flex-wrap gap-2">
@@ -523,7 +532,14 @@ const MechanicProfile = () => {
                                 <Button 
                                   size="sm" 
                                   className="mt-2 bg-secondary hover:bg-secondary/90"
-                                  onClick={() => handleBooking(service.id)}
+                                  onClick={() => {
+                                    if (!user) {
+                                      toast.error("ჯავშნის გასაკეთებლად გთხოვთ გაიაროთ ავტორიზაცია");
+                                      navigate("/login");
+                                      return;
+                                    }
+                                    toast.success(`დაჯავშნის პროცესი დაიწყო სერვისისთვის #${service.id}!`);
+                                  }}
                                 >
                                   დაჯავშნა
                                 </Button>
@@ -544,7 +560,7 @@ const MechanicProfile = () => {
                   <TabsContent value="about" className="p-6">
                     <h3 className="text-lg font-semibold mb-4">ჩემს შესახებ</h3>
                     <p className="text-muted-foreground mb-6">
-                      {mechanic.mechanic_profile.description || "ინფორმაცია არ არის მითითებული"}
+                      {mechanic?.mechanic_profile.description || "ინფორმაცია არ არის მითითებული"}
                     </p>
                     
                     {certificates.length > 0 && (
@@ -567,18 +583,18 @@ const MechanicProfile = () => {
                     <div className="flex items-center mb-8">
                       <div className="bg-primary/10 rounded-xl p-4 text-center mr-6">
                         <p className="text-3xl font-bold text-primary">
-                          {mechanic.mechanic_profile.rating?.toFixed(1) || "N/A"}
+                          {mechanic?.mechanic_profile.rating?.toFixed(1) || "N/A"}
                         </p>
                         <div className="flex justify-center my-1">
                           {[...Array(5)].map((_, i) => (
                             <Star 
                               key={i} 
-                              className={`h-4 w-4 ${i < Math.floor(mechanic.mechanic_profile.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                              className={`h-4 w-4 ${i < Math.floor(mechanic?.mechanic_profile.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
                             />
                           ))}
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {mechanic.mechanic_profile.review_count} შეფასებიდან
+                          {mechanic?.mechanic_profile.review_count} შეფასებიდან
                         </p>
                       </div>
                       
