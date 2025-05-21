@@ -17,10 +17,18 @@ type BookingType = {
   notes: string | null;
   price: number | null;
   mechanic: {
-    first_name: string;
-    last_name: string;
-    city: string | null;
-    district: string | null;
+    first_name: {
+      first_name: string;
+    };
+    last_name: {
+      last_name: string;
+    };
+    city: {
+      city: string | null;
+    };
+    district: {
+      district: string | null;
+    };
   };
   service: {
     name: string;
@@ -80,7 +88,7 @@ const CustomerBookings = () => {
       case "in_progress":
         return <Badge variant="secondary">მიმდინარე</Badge>;
       case "completed":
-        return <Badge variant="success">დასრულებული</Badge>;
+        return <Badge variant="secondary" className="bg-green-500 text-white">დასრულებული</Badge>;
       case "cancelled":
         return <Badge variant="destructive">გაუქმებული</Badge>;
       default:
@@ -150,7 +158,7 @@ const CustomerBookings = () => {
                       {getStatusBadge(booking.status)}
                     </div>
                     <p className="text-muted-foreground mt-1">
-                      {booking.mechanic.first_name} {booking.mechanic.last_name}
+                      {booking.mechanic.first_name.first_name} {booking.mechanic.last_name.last_name}
                     </p>
                   </div>
                   <div>
@@ -202,9 +210,9 @@ const CustomerBookings = () => {
                     <div>
                       <p className="text-muted-foreground">მისამართი</p>
                       <p>
-                        {booking.mechanic.city}
-                        {booking.mechanic.district
-                          ? `, ${booking.mechanic.district}`
+                        {booking.mechanic.city.city}
+                        {booking.mechanic.district.district
+                          ? `, ${booking.mechanic.district.district}`
                           : ""}
                       </p>
                     </div>

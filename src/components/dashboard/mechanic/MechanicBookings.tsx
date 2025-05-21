@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, Clock, User, MapPin, Car } from "lucide-react";
 import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
 
 type BookingType = {
   id: number;
@@ -17,9 +18,15 @@ type BookingType = {
   notes: string | null;
   price: number | null;
   customer: {
-    first_name: string;
-    last_name: string;
-    phone: string | null;
+    first_name: {
+      first_name: string;
+    };
+    last_name: {
+      last_name: string;
+    };
+    phone: {
+      phone: string | null;
+    };
   };
   service: {
     name: string;
@@ -78,7 +85,7 @@ const MechanicBookings = () => {
       case "in_progress":
         return <Badge variant="secondary">მიმდინარე</Badge>;
       case "completed":
-        return <Badge variant="success">დასრულებული</Badge>;
+        return <Badge variant="secondary" className="bg-green-500 text-white">დასრულებული</Badge>;
       case "cancelled":
         return <Badge variant="destructive">გაუქმებული</Badge>;
       default:
@@ -237,13 +244,13 @@ const MechanicBookings = () => {
                     <div>
                       <p className="text-muted-foreground">კლიენტი</p>
                       <p>
-                        {booking.customer.first_name} {booking.customer.last_name}
-                        {booking.customer.phone && (
+                        {booking.customer.first_name.first_name} {booking.customer.last_name.last_name}
+                        {booking.customer.phone.phone && (
                           <a 
-                            href={`tel:${booking.customer.phone}`} 
+                            href={`tel:${booking.customer.phone.phone}`} 
                             className="ml-2 text-primary hover:underline"
                           >
-                            {booking.customer.phone}
+                            {booking.customer.phone.phone}
                           </a>
                         )}
                       </p>
@@ -304,8 +311,5 @@ const MechanicBookings = () => {
     </div>
   );
 };
-
-// Add the missing import for the Input component
-import { Input } from "@/components/ui/input";
 
 export default MechanicBookings;
