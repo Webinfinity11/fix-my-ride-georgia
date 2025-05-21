@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -13,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
+import { Json } from "@/integrations/supabase/types";
 
 type MechanicType = {
   id: string;
@@ -97,17 +97,15 @@ const MechanicProfile = () => {
           .from("profiles")
           .select(`
             id,
-            profile:profiles!inner(
-              first_name, 
-              last_name, 
-              email, 
-              phone, 
-              city, 
-              district, 
-              street,
-              is_verified
-            ),
-            mechanic_profile:mechanic_profiles!inner(
+            first_name, 
+            last_name, 
+            email, 
+            phone, 
+            city, 
+            district, 
+            street,
+            is_verified,
+            mechanic_profiles!inner(
               description, 
               specialization, 
               experience_years, 
@@ -124,7 +122,24 @@ const MechanicProfile = () => {
           .single();
         
         if (mechanicError) throw mechanicError;
-        setMechanic(mechanicData);
+
+        // Format the data to match MechanicType
+        const formattedMechanic: MechanicType = {
+          id: mechanicData.id,
+          profile: {
+            first_name: mechanicData.first_name,
+            last_name: mechanicData.last_name,
+            email: mechanicData.email,
+            phone: mechanicData.phone,
+            city: mechanicData.city,
+            district: mechanicData.district,
+            street: mechanicData.street,
+            is_verified: mechanicData.is_verified
+          },
+          mechanic_profile: mechanicData.mechanic_profiles
+        };
+        
+        setMechanic(formattedMechanic);
         
         // Fetch services
         const { data: servicesData, error: servicesError } = await supabase
@@ -150,21 +165,37 @@ const MechanicProfile = () => {
         if (certificatesError) throw certificatesError;
         setCertificates(certificatesData || []);
         
-        // Fetch reviews
+        // Fetch reviews with user data
         const { data: reviewsData, error: reviewsError } = await supabase
           .from("reviews")
           .select(`
-            *,
-            user:user_id(
-              first_name:profiles!inner(first_name),
-              last_name:profiles!inner(last_name)
-            )
+            id,
+            rating,
+            comment,
+            created_at,
+            images,
+            user_id,
+            profiles!user_id(first_name, last_name)
           `)
           .eq("mechanic_id", id)
           .order("created_at", { ascending: false });
         
         if (reviewsError) throw reviewsError;
-        setReviews(reviewsData || []);
+        
+        // Transform reviews data to match ReviewType
+        const formattedReviews: ReviewType[] = (reviewsData || []).map(review => ({
+          id: review.id,
+          rating: review.rating,
+          comment: review.comment,
+          created_at: review.created_at,
+          user: {
+            first_name: review.profiles?.first_name || "Unknown",
+            last_name: review.profiles?.last_name || "User"
+          },
+          images: Array.isArray(review.images) ? review.images : null
+        }));
+        
+        setReviews(formattedReviews);
       } catch (error) {
         console.error("Error fetching mechanic data:", error);
         toast.error("ხელოსნის მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");

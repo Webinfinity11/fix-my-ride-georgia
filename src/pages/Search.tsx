@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -130,6 +129,7 @@ const SearchPage = () => {
       .finally(() => setLoading(false));
   };
 
+  // Keep all the logic but fix the specific error when rendering MechanicCard
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

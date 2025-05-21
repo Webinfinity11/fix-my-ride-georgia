@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Json } from "@/integrations/supabase/types";
 
 type PortfolioItem = {
   id: number;
@@ -49,7 +50,13 @@ const MechanicPortfolio = () => {
 
       if (error) throw error;
 
-      setPortfolioItems(data || []);
+      // Convert Json images to string[] or null
+      const formattedData: PortfolioItem[] = (data || []).map(item => ({
+        ...item,
+        images: Array.isArray(item.images) ? item.images : null
+      }));
+
+      setPortfolioItems(formattedData);
     } catch (error: any) {
       console.error("Error fetching portfolio items:", error);
       toast.error(`პორტფოლიოს ჩატვირთვა ვერ მოხერხდა: ${error.message}`);
