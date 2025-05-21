@@ -23,7 +23,7 @@ type MechanicType = {
     specialization: string | null;
     experience_years: number | null;
     rating: number | null;
-    review_count: number;
+    review_count: number | null; // Ensuring this is explicitly set as number or null
     is_mobile: boolean;
   };
   services: {
@@ -213,7 +213,7 @@ const SearchPage = () => {
                     specialization={mechanic.mechanic_profile.specialization || "ავტოხელოსანი"}
                     location={`${mechanic.profile.city}${mechanic.profile.district ? `, ${mechanic.profile.district}` : ''}`}
                     rating={mechanic.mechanic_profile.rating || 0}
-                    reviewCount={mechanic.mechanic_profile.review_count}
+                    reviewCount={mechanic.mechanic_profile.review_count || 0} // Ensuring the value is always a number by adding the || 0 fallback
                     isMobile={mechanic.mechanic_profile.is_mobile}
                     experience={mechanic.mechanic_profile.experience_years || 0}
                     description={mechanic.mechanic_profile.description || ""}
