@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -66,7 +67,7 @@ const iconMapping: Record<string, React.ReactNode> = {
   "rotate-cw": <RotateCw className="h-10 w-10" />,
   "flame": <Flame className="h-10 w-10" />,
   "filter": <Filter className="h-10 w-10" />,
-  "gas-pump": <Fuel className="h-10 w-10" />, // Changed from GasPump to Fuel
+  "gas-pump": <Fuel className="h-10 w-10" />, // Using Fuel icon for gas-pump
   "droplets": <Droplets className="h-10 w-10" />,
   "sparkles": <Sparkles className="h-10 w-10" />,
   "sun": <Sun className="h-10 w-10" />,
