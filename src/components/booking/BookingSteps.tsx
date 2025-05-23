@@ -27,66 +27,61 @@ const BookingSteps = ({ currentStep }: BookingStepsProps) => {
       {/* Desktop version */}
       <div className="hidden sm:block">
         <ol className="flex items-center w-full">
-          {steps.map((step, index) => (
-            <li key={step.id} className={cn(
-              "relative flex-1",
-              index !== steps.length - 1 ? "pr-6" : "",
-            )}>
-              {index < stepIndex ? (
-                // Completed step
-                <div className="group">
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-primary" />
-                  <div className="relative flex items-center">
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center shadow-sm">
-                      <Check className="h-5 w-5 text-white" />
-                    </div>
-                    <span className="ml-3 text-sm font-medium text-primary">
-                      {step.name}
-                    </span>
+          {steps.map((step, index) => {
+            const isComplete = index < stepIndex;
+            const isCurrent = index === stepIndex;
+            const isUpcoming = index > stepIndex;
+            
+            return (
+              <li 
+                key={step.id} 
+                className={cn(
+                  "flex items-center relative",
+                  index !== steps.length - 1 ? "flex-1" : ""
+                )}
+              >
+                {/* Progress bar */}
+                {index !== 0 && (
+                  <div className={cn(
+                    "absolute left-0 top-1/2 -translate-y-1/2 h-1 w-full -translate-x-1/2",
+                    isComplete ? "bg-primary" : "bg-muted"
+                  )} />
+                )}
+                
+                {/* Step circle */}
+                <div className="relative flex items-center z-10">
+                  <div className={cn(
+                    "h-10 w-10 rounded-full flex items-center justify-center",
+                    isComplete ? "bg-primary text-white" : 
+                    isCurrent ? "bg-white border-2 border-primary text-primary" : 
+                    "bg-white border-2 border-muted text-muted-foreground"
+                  )}>
+                    {isComplete ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      <span className="text-sm font-semibold">{index + 1}</span>
+                    )}
                   </div>
+                  
+                  <span className={cn(
+                    "ml-3 text-sm font-medium",
+                    isComplete ? "text-primary" : 
+                    isCurrent ? "text-primary" : 
+                    "text-muted-foreground"
+                  )}>
+                    {step.name}
+                  </span>
                 </div>
-              ) : index === stepIndex ? (
-                // Current step
-                <div className="group flex items-center" aria-current="step">
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 w-full">
-                    <div className="h-1 w-1/2 bg-primary" />
-                  </div>
-                  <div className="relative flex items-center">
-                    <div className="h-10 w-10 rounded-full border-2 border-primary bg-white flex items-center justify-center shadow-sm">
-                      <span className="text-sm font-semibold text-primary">
-                        {index + 1}
-                      </span>
-                    </div>
-                    <span className="ml-3 text-sm font-medium text-primary">
-                      {step.name}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                // Upcoming step
-                <div className="group">
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-muted w-full" />
-                  <div className="relative flex items-center">
-                    <div className="h-10 w-10 rounded-full border-2 border-muted bg-white flex items-center justify-center shadow-sm">
-                      <span className="text-sm font-semibold text-muted-foreground">
-                        {index + 1}
-                      </span>
-                    </div>
-                    <span className="ml-3 text-sm font-medium text-muted-foreground">
-                      {step.name}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ol>
       </div>
       
-      {/* Mobile version */}
+      {/* Mobile version - simplified pill design */}
       <div className="sm:hidden">
         <nav className="overflow-x-auto">
-          <ol className="flex space-x-2 pb-4">
+          <ol className="flex space-x-2">
             {steps.map((step, index) => {
               const isComplete = index < stepIndex;
               const isCurrent = index === stepIndex;
