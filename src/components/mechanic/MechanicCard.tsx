@@ -15,6 +15,10 @@ type MechanicProps = {
   reviewCount: number;
   verified: boolean;
   services: string[];
+  // Add the missing properties from Search.tsx
+  isMobile?: boolean;
+  experience?: number;
+  description?: string;
 };
 
 const MechanicCard = ({
@@ -27,6 +31,10 @@ const MechanicCard = ({
   reviewCount,
   verified,
   services,
+  // Add the new props to destructuring (optional)
+  isMobile,
+  experience,
+  description,
 }: MechanicProps) => {
   // Generate initials from name for avatar fallback
   const initials = name

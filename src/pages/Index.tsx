@@ -1,4 +1,3 @@
-
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
@@ -12,7 +11,7 @@ import { Link } from "react-router-dom";
 // Sample featured mechanics data
 const featuredMechanics = [
   {
-    id: 1,
+    id: "1", // Changed from number to string
     name: "გიორგი გიორგაძე",
     avatar: "",
     specialization: "ძრავის სპეციალისტი",
@@ -23,7 +22,7 @@ const featuredMechanics = [
     services: ["ძრავის შეკეთება", "დიაგნოსტიკა", "ელექტროობა"]
   },
   {
-    id: 2,
+    id: "2", // Changed from number to string
     name: "ნიკა მაისურაძე",
     avatar: "",
     specialization: "საჭის სისტემა, სამუხრუჭე სისტემა",
@@ -34,7 +33,7 @@ const featuredMechanics = [
     services: ["საჭის სისტემა", "სამუხრუჭე სისტემა", "საკიდი"]
   },
   {
-    id: 3,
+    id: "3", // Changed from number to string
     name: "თემურ კახიძე",
     avatar: "",
     specialization: "ელექტრო სისტემების სპეციალისტი",
