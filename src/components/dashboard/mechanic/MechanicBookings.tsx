@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Clock, User, MapPin, Car } from "lucide-react";
+import { Calendar, Clock, User, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 
@@ -31,11 +31,6 @@ type BookingType = {
   service: {
     name: string;
   };
-  car: {
-    make: string;
-    model: string;
-    year: number;
-  } | null;
 };
 
 const MechanicBookings = () => {
@@ -60,8 +55,7 @@ const MechanicBookings = () => {
             last_name:profiles(last_name),
             phone:profiles(phone)
           ),
-          service:service_id(name),
-          car:car_id(make, model, year)
+          service:service_id(name)
         `)
         .eq("mechanic_id", user.id)
         .order("scheduled_date", { ascending: false });
@@ -275,18 +269,6 @@ const MechanicBookings = () => {
                       <p>{booking.scheduled_time.substring(0, 5)}</p>
                     </div>
                   </div>
-                  
-                  {booking.car && (
-                    <div className="flex items-start gap-2">
-                      <Car size={16} className="text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="text-muted-foreground">ავტომობილი</p>
-                        <p>
-                          {booking.car.make} {booking.car.model} ({booking.car.year})
-                        </p>
-                      </div>
-                    </div>
-                  )}
                 </div>
                 
                 {booking.notes && (

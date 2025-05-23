@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -5,7 +6,6 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -14,9 +14,7 @@ import {
   ChevronRight,
   Clock, 
   MapPin, 
-  Car, 
-  Wrench,
-  Calendar as CalendarComponent
+  Wrench
 } from "lucide-react";
 import { format, addDays, isToday, isBefore, startOfToday } from "date-fns";
 import { toast } from "sonner";
@@ -24,14 +22,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import BookingSteps from "@/components/booking/BookingSteps";
 import BookingSuccess from "@/components/booking/BookingSuccess";
 
 // Define step type
-type BookingStep = "service" | "datetime" | "car" | "confirmation" | "success";
+type BookingStep = "service" | "datetime" | "confirmation" | "success";
 
 // Define mechanic type
 type MechanicType = {
@@ -61,25 +58,12 @@ type ServiceType = {
   } | null;
 };
 
-// Define car type
-type CarType = {
-  id: number;
-  make: string;
-  model: string;
-  year: number;
-  vin: string | null;
-  engine?: string | null;
-  transmission?: string | null;
-};
-
 // Define booking data type
 type BookingData = {
   service_id: number | null;
   service_name: string;
   scheduled_date: Date | null;
   scheduled_time: string | null;
-  car_id: number | null;
-  car_name: string;
   notes: string;
 };
 
@@ -91,15 +75,12 @@ const BookPage = () => {
   const [currentStep, setCurrentStep] = useState<BookingStep>("service");
   const [mechanic, setMechanic] = useState<MechanicType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
-  const [cars, setCars] = useState<CarType[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingData, setBookingData] = useState<BookingData>({
     service_id: null,
     service_name: "",
     scheduled_date: null,
     scheduled_time: null,
-    car_id: null,
-    car_name: "",
     notes: "",
   });
   const [availableTimes] = useState<string[]>([
@@ -115,7 +96,7 @@ const BookPage = () => {
     }
   }, [user, navigate]);
   
-  // Fetch mechanic, services and cars data
+  // Fetch mechanic and services data
   useEffect(() => {
     if (!id || !user) return;
     
@@ -166,15 +147,6 @@ const BookPage = () => {
         
         if (servicesError) throw servicesError;
         setServices(servicesData || []);
-        
-        // Fetch user's cars
-        const { data: carsData, error: carsError } = await supabase
-          .from("cars")
-          .select("*")
-          .eq("user_id", user.id);
-        
-        if (carsError) throw carsError;
-        setCars(carsData || []);
       } catch (error: any) {
         console.error("Error fetching data:", error);
         toast.error("მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");
@@ -213,16 +185,6 @@ const BookPage = () => {
       ...bookingData,
       scheduled_time: time,
     });
-    setCurrentStep("car");
-  };
-  
-  // Handle selecting car
-  const handleSelectCar = (car: CarType) => {
-    setBookingData({
-      ...bookingData,
-      car_id: car.id,
-      car_name: `${car.make} ${car.model} (${car.year})`,
-    });
     setCurrentStep("confirmation");
   };
   
@@ -253,7 +215,7 @@ const BookPage = () => {
           user_id: user.id,
           mechanic_id: mechanic.id,
           service_id: bookingData.service_id,
-          car_id: bookingData.car_id,
+          car_id: null,
           scheduled_date: formattedDate,
           scheduled_time: bookingData.scheduled_time,
           notes: bookingData.notes || null,
@@ -283,11 +245,8 @@ const BookPage = () => {
       case "datetime":
         setCurrentStep("service");
         break;
-      case "car":
-        setCurrentStep("datetime");
-        break;
       case "confirmation":
-        setCurrentStep("car");
+        setCurrentStep("datetime");
         break;
       default:
         navigate(-1);
@@ -504,58 +463,6 @@ const BookPage = () => {
                 </div>
               )}
               
-              {currentStep === "car" && (
-                <div className="p-6">
-                  <h3 className="text-lg font-medium mb-4">აირჩიეთ ავტომობილი</h3>
-                  
-                  {cars.length > 0 ? (
-                    <div className="space-y-4">
-                      {cars.map((car) => (
-                        <div 
-                          key={car.id}
-                          className="border rounded-lg p-4 hover:border-primary transition-colors cursor-pointer"
-                          onClick={() => handleSelectCar(car)}
-                        >
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center">
-                              <Car className="h-8 w-8 text-muted-foreground mr-3" />
-                              <div>
-                                <h4 className="font-medium">{car.make} {car.model}</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {car.year} წ.{car.vin && ` | VIN: ${car.vin}`}
-                                  {car.engine && ` | ძრავი: ${car.engine}`}
-                                  {car.transmission && ` | ${car.transmission}`}
-                                </p>
-                              </div>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                        </div>
-                      ))}
-                      
-                      <Button 
-                        variant="outline" 
-                        className="w-full flex items-center justify-center gap-2 mt-2"
-                        onClick={() => navigate("/dashboard/cars/new", { state: { returnTo: `/book/${id}` } })}
-                      >
-                        <Car className="h-4 w-4" />
-                        <span>დაამატეთ ახალი ავტომობილი</span>
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <Car className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                      <p className="mb-4">თქვენ ჯერ არ გაქვთ დამატებული ავტომობილები</p>
-                      <Button 
-                        onClick={() => navigate("/dashboard/cars/new", { state: { returnTo: `/book/${id}` } })}
-                      >
-                        დაამატეთ ავტომობილი
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-              
               {currentStep === "confirmation" && (
                 <div className="p-6">
                   <h3 className="text-lg font-medium mb-4">დაადასტურეთ ჯავშანი</h3>
@@ -576,10 +483,6 @@ const BookPage = () => {
                       <div>
                         <p className="text-muted-foreground mb-1">დრო</p>
                         <p className="font-medium">{bookingData.scheduled_time}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground mb-1">ავტომობილი</p>
-                        <p className="font-medium">{bookingData.car_name}</p>
                       </div>
                     </div>
                     

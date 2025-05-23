@@ -2,7 +2,7 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type BookingStep = "service" | "datetime" | "car" | "confirmation" | "success";
+type BookingStep = "service" | "datetime" | "confirmation" | "success";
 
 interface BookingStepsProps {
   currentStep: BookingStep;
@@ -11,7 +11,6 @@ interface BookingStepsProps {
 const steps = [
   { id: "service", name: "სერვისი" },
   { id: "datetime", name: "თარიღი & დრო" },
-  { id: "car", name: "ავტომობილი" },
   { id: "confirmation", name: "დადასტურება" },
 ];
 

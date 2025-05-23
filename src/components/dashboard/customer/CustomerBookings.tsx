@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Clock, MapPin, Wrench, Car } from "lucide-react";
+import { Calendar, Clock, MapPin, Wrench } from "lucide-react";
 import { format } from "date-fns";
 
 type BookingType = {
@@ -33,11 +33,6 @@ type BookingType = {
   service: {
     name: string;
   };
-  car: {
-    make: string;
-    model: string;
-    year: number;
-  } | null;
 };
 
 const CustomerBookings = () => {
@@ -63,8 +58,7 @@ const CustomerBookings = () => {
             city:profiles!mechanic_profiles_id_fkey(city),
             district:profiles!mechanic_profiles_id_fkey(district)
           ),
-          service:service_id(name),
-          car:car_id(make, model, year)
+          service:service_id(name)
         `)
         .eq("user_id", user.id)
         .order("scheduled_date", { ascending: false });
@@ -192,18 +186,6 @@ const CustomerBookings = () => {
                       <p>{booking.scheduled_time.substring(0, 5)}</p>
                     </div>
                   </div>
-                  
-                  {booking.car && (
-                    <div className="flex items-start gap-2">
-                      <Car size={16} className="text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="text-muted-foreground">ავტომობილი</p>
-                        <p>
-                          {booking.car.make} {booking.car.model} ({booking.car.year})
-                        </p>
-                      </div>
-                    </div>
-                  )}
                   
                   <div className="flex items-start gap-2">
                     <MapPin size={16} className="text-muted-foreground mt-0.5" />
