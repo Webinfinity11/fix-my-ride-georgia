@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar, Clock, User, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
+import { 
+  Table, 
+  TableBody, 
+  TableCaption, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
 
 type BookingType = {
   id: number;
@@ -39,13 +47,18 @@ const MechanicBookings = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchBookings();
+    if (user) {
+      console.log("MechanicBookings - current user:", user);
+      fetchBookings();
+    }
   }, [user]);
 
   const fetchBookings = async () => {
     if (!user) return;
 
     try {
+      console.log("Fetching bookings for mechanic ID:", user.id);
+      
       const { data, error } = await supabase
         .from("bookings")
         .select(`
@@ -60,11 +73,22 @@ const MechanicBookings = () => {
         .eq("mechanic_id", user.id)
         .order("scheduled_date", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error in Supabase query:", error);
+        throw error;
+      }
 
+      console.log("Fetched bookings:", data);
+      
+      // Check if data is empty
+      if (!data || data.length === 0) {
+        console.log("No bookings found for this mechanic");
+      }
+      
       // Ensure type compatibility - we need to cast the data to match our BookingType
       setBookings(data as unknown as BookingType[]);
     } catch (error: any) {
+      console.error("Error fetching bookings:", error);
       toast.error(`ჯავშნების ჩატვირთვა ვერ მოხერხდა: ${error.message}`);
     } finally {
       setLoading(false);

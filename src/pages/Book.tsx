@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -208,21 +207,35 @@ const BookPage = () => {
       // Format date for database
       const formattedDate = format(bookingData.scheduled_date, "yyyy-MM-dd");
       
+      console.log("Creating booking with the following data:", {
+        user_id: user.id,
+        mechanic_id: mechanic.id,
+        service_id: bookingData.service_id,
+        scheduled_date: formattedDate,
+        scheduled_time: bookingData.scheduled_time,
+        notes: bookingData.notes || null
+      });
+      
       // Create booking in database
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("bookings")
         .insert({
           user_id: user.id,
           mechanic_id: mechanic.id,
           service_id: bookingData.service_id,
-          car_id: null,
           scheduled_date: formattedDate,
           scheduled_time: bookingData.scheduled_time,
           notes: bookingData.notes || null,
           status: "pending"
-        });
+        })
+        .select();
         
-      if (error) throw error;
+      if (error) {
+        console.error("Error inserting booking:", error);
+        throw error;
+      }
+      
+      console.log("Booking created successfully:", data);
       
       // Show success message and navigate to success step
       toast.success("ჯავშანი წარმატებით გაკეთდა");
