@@ -13,7 +13,25 @@ import {
   Cog, 
   AirVent, 
   Fuel, 
-  Truck
+  Truck,
+  Circle,
+  Zap,
+  Package,
+  Scissors,
+  Key,
+  Layers,
+  Palette,
+  Eye,
+  Sliders,
+  RotateCw,
+  Flame,
+  Filter,
+  GasPump,
+  Droplets,
+  Sparkles,
+  Sun,
+  Disc,
+  LucideIcon
 } from "lucide-react";
 
 type ServiceCategory = {
@@ -39,6 +57,23 @@ const iconMapping: Record<string, React.ReactNode> = {
   "air-vent": <AirVent className="h-10 w-10" />,
   "fuel": <Fuel className="h-10 w-10" />,
   "truck": <Truck className="h-10 w-10" />,
+  "circle": <Circle className="h-10 w-10" />,
+  "zap": <Zap className="h-10 w-10" />,
+  "package": <Package className="h-10 w-10" />,
+  "scissors": <Scissors className="h-10 w-10" />,
+  "key": <Key className="h-10 w-10" />,
+  "layers": <Layers className="h-10 w-10" />,
+  "palette": <Palette className="h-10 w-10" />,
+  "eye": <Eye className="h-10 w-10" />,
+  "sliders": <Sliders className="h-10 w-10" />,
+  "rotate-cw": <RotateCw className="h-10 w-10" />,
+  "flame": <Flame className="h-10 w-10" />,
+  "filter": <Filter className="h-10 w-10" />,
+  "gas-pump": <GasPump className="h-10 w-10" />,
+  "droplets": <Droplets className="h-10 w-10" />,
+  "sparkles": <Sparkles className="h-10 w-10" />,
+  "sun": <Sun className="h-10 w-10" />,
+  "disc": <Disc className="h-10 w-10" />,
 };
 
 // Default categories if none are provided
@@ -65,14 +100,19 @@ const ServiceCategories = ({ categories = defaultCategories }: ServiceCategories
   const handleCategoryClick = (categoryId: number) => {
     navigate(`/search?category=${categoryId}`);
   };
+
+  // Show just the top 6 categories in the main grid
+  const featuredCategories = displayCategories.slice(0, 6);
+  // Remaining categories for a secondary grid with smaller cards
+  const remainingCategories = displayCategories.slice(6);
   
   return (
     <div className="py-16 bg-background">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">ჩვენი სერვისები</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">პოპულარული სერვისები</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {displayCategories.map((category) => (
+          {featuredCategories.map((category) => (
             <Card key={category.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
@@ -95,6 +135,34 @@ const ServiceCategories = ({ categories = defaultCategories }: ServiceCategories
             </Card>
           ))}
         </div>
+
+        {remainingCategories.length > 0 && (
+          <>
+            <h3 className="text-xl md:text-2xl font-bold text-center mb-8">ყველა სერვისი</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
+              {remainingCategories.map((category) => (
+                <Card key={category.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="p-3 rounded-full bg-primary/10 text-primary mb-3">
+                        {getIcon(category.icon)}
+                      </div>
+                      <h4 className="text-sm font-medium mb-2">{category.name}</h4>
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        className="mt-1 text-xs"
+                        onClick={() => handleCategoryClick(category.id)}
+                      >
+                        ნახვა
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
         
         <div className="text-center">
           <Button size="lg" onClick={() => navigate('/services')}>

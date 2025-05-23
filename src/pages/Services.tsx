@@ -47,8 +47,11 @@ const Services = () => {
         <div className="bg-muted py-12">
           <div className="container mx-auto px-4">
             <h1 className="text-3xl font-bold mb-6 text-center">ჩვენი სერვისები</h1>
-            <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-12">
+            <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-6">
               აღმოაჩინეთ ჩვენი მრავალფეროვანი სერვისები ავტომობილებისთვის. ჩვენ გთავაზობთ მაღალი ხარისხის მომსახურებას სხვადასხვა საჭიროებისთვის.
+            </p>
+            <p className="text-center max-w-2xl mx-auto mb-12">
+              ქვემოთ იხილეთ ჩვენი სერვისების სრული ჩამონათვალი. დააჭირეთ სასურველ სერვისს, რომ ნახოთ შესაბამისი ხელოსნების სია.
             </p>
           </div>
         </div>
