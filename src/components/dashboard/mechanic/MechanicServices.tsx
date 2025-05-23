@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Wrench, Edit, Trash2, Plus, Tag, Search } from "lucide-react";
+import { Wrench, Edit, Trash2, Plus, Tag, Search, Clock, CreditCard, Banknote, Car } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -26,12 +27,29 @@ type ServiceType = {
   category_id: number | null;
   is_active: boolean;
   category_name?: string;
+  accepts_card_payment?: boolean;
+  accepts_cash_payment?: boolean;
+  working_days?: string[];
+  working_hours_start?: string;
+  working_hours_end?: string;
+  car_brands?: string[];
+  on_site_service?: boolean;
 };
 
 type ServiceCategoryType = {
   id: number;
   name: string;
   description: string | null;
+};
+
+const weekDaysMap: Record<string, string> = {
+  "monday": "ორშაბათი",
+  "tuesday": "სამშაბათი",
+  "wednesday": "ოთხშაბათი",
+  "thursday": "ხუთშაბათი",
+  "friday": "პარასკევი",
+  "saturday": "შაბათი",
+  "sunday": "კვირა"
 };
 
 const MechanicServices = () => {
@@ -163,6 +181,19 @@ const MechanicServices = () => {
   const activeServicesCount = services.filter(s => s.is_active).length;
   const inactiveServicesCount = services.filter(s => !s.is_active).length;
 
+  const formatWorkingDays = (days?: string[]) => {
+    if (!days || days.length === 0) return "არ არის მითითებული";
+    
+    if (days.length === 7) return "ყოველდღე";
+    
+    return days.map(day => weekDaysMap[day] || day).join(", ");
+  };
+
+  const formatWorkingHours = (start?: string, end?: string) => {
+    if (!start || !end) return "არ არის მითითებული";
+    return `${start} - ${end}`;
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -174,8 +205,11 @@ const MechanicServices = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">ჩემი სერვისები</h1>
-        <Button onClick={() => { setEditingService(null); setShowForm(true); }}>
+        <h1 className="text-2xl font-bold text-primary">ჩემი სერვისები</h1>
+        <Button 
+          onClick={() => { setEditingService(null); setShowForm(true); }} 
+          className="bg-primary hover:bg-primary-light transition-colors"
+        >
           <Plus size={16} className="mr-2" />
           დამატება
         </Button>
@@ -191,13 +225,16 @@ const MechanicServices = () => {
       ) : (
         <>
           {services.length === 0 ? (
-            <div className="bg-muted p-8 rounded-lg text-center">
-              <Wrench size={48} className="mx-auto text-muted-foreground mb-4" />
+            <div className="bg-muted/50 p-8 rounded-lg text-center border border-primary/10 shadow-sm">
+              <Wrench size={48} className="mx-auto text-primary/60 mb-4" />
               <h3 className="text-lg font-medium mb-2">სერვისები არ არის</h3>
               <p className="text-muted-foreground mb-4">
                 თქვენ ჯერ არ გაქვთ დამატებული სერვისები
               </p>
-              <Button onClick={() => setShowForm(true)}>
+              <Button 
+                onClick={() => setShowForm(true)}
+                className="bg-primary hover:bg-primary-light transition-colors"
+              >
                 დაამატეთ პირველი სერვისი
               </Button>
             </div>
@@ -210,7 +247,7 @@ const MechanicServices = () => {
                     placeholder="სერვისის ძიება..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 border-primary/20 focus-visible:ring-primary"
                   />
                 </div>
                 
@@ -218,7 +255,7 @@ const MechanicServices = () => {
                   value={filterCategory.toString()} 
                   onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value))}
                 >
-                  <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectTrigger className="w-full sm:w-[180px] border-primary/20 focus-visible:ring-primary">
                     <SelectValue placeholder="ყველა კატეგორია" />
                   </SelectTrigger>
                   <SelectContent>
@@ -236,7 +273,7 @@ const MechanicServices = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative"
+                  className="relative border-primary/20 hover:bg-primary/5"
                   onClick={() => setFilterCategory("all")}
                 >
                   ყველა
@@ -247,17 +284,17 @@ const MechanicServices = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative"
+                  className="relative border-primary/20 hover:bg-primary/5"
                 >
                   აქტიური
-                  <Badge variant="secondary" className="ml-1">
+                  <Badge variant="secondary" className="ml-1 bg-green-100 text-green-800">
                     {activeServicesCount}
                   </Badge>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative"
+                  className="relative border-primary/20 hover:bg-primary/5"
                 >
                   არააქტიური
                   <Badge variant="secondary" className="ml-1">
@@ -267,13 +304,13 @@ const MechanicServices = () => {
               </div>
 
               {filteredServices.length === 0 ? (
-                <div className="text-center p-8 bg-muted rounded-lg">
+                <div className="text-center p-8 bg-muted/50 rounded-lg border border-primary/10">
                   <p className="text-muted-foreground">სერვისები ვერ მოიძებნა</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {filteredServices.map((service) => (
-                    <Card key={service.id} className={`border-l-4 ${service.is_active ? 'border-l-green-500' : 'border-l-gray-300'}`}>
+                    <Card key={service.id} className={`border-l-4 ${service.is_active ? 'border-l-green-500' : 'border-l-gray-300'} hover:shadow-md transition-shadow duration-200`}>
                       <CardContent className="p-6">
                         <div className="flex justify-between mb-4">
                           <div>
@@ -288,7 +325,7 @@ const MechanicServices = () => {
                             </div>
                             {service.category_name && (
                               <div className="flex items-center text-muted-foreground text-sm mt-1">
-                                <Tag size={14} className="mr-1" />
+                                <Tag size={14} className="mr-1 text-primary/70" />
                                 {service.category_name}
                               </div>
                             )}
@@ -297,6 +334,7 @@ const MechanicServices = () => {
                             <Button
                               variant={service.is_active ? "outline" : "default"}
                               size="sm"
+                              className={service.is_active ? "border-primary/20 hover:bg-primary/5" : "bg-primary hover:bg-primary-light"}
                               onClick={() => handleToggleActive(service.id, service.is_active)}
                             >
                               {service.is_active ? "გამორთვა" : "ჩართვა"}
@@ -304,6 +342,7 @@ const MechanicServices = () => {
                             <Button
                               variant="outline"
                               size="icon"
+                              className="border-primary/20 hover:bg-primary/5 text-primary"
                               onClick={() => handleEdit(service)}
                             >
                               <Edit size={16} />
@@ -324,10 +363,10 @@ const MechanicServices = () => {
                           </p>
                         )}
                         
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">ფასი:</span>
-                            <span>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                          <div className="flex flex-col space-y-1">
+                            <span className="text-xs text-muted-foreground">ფასი:</span>
+                            <span className="font-medium">
                               {service.price_from
                                 ? service.price_to
                                   ? `${service.price_from} - ${service.price_to} GEL`
@@ -337,12 +376,72 @@ const MechanicServices = () => {
                           </div>
                           
                           {service.estimated_hours !== null && (
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">სავარაუდო დრო:</span>
-                              <span>{service.estimated_hours} საათი</span>
+                            <div className="flex flex-col space-y-1">
+                              <span className="text-xs text-muted-foreground">სავარაუდო დრო:</span>
+                              <span className="font-medium">{service.estimated_hours} საათი</span>
                             </div>
                           )}
+                          
+                          <div className="flex flex-col space-y-1">
+                            <span className="text-xs text-muted-foreground">გადახდის მეთოდები:</span>
+                            <div className="flex items-center gap-2">
+                              {service.accepts_cash_payment !== false && (
+                                <div className="flex items-center gap-1 text-sm">
+                                  <Banknote size={14} className="text-green-600" />
+                                  <span>ნაღდი</span>
+                                </div>
+                              )}
+                              {service.accepts_card_payment && (
+                                <div className="flex items-center gap-1 text-sm">
+                                  <CreditCard size={14} className="text-blue-600" />
+                                  <span>ბარათი</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dashed border-gray-200">
+                          <div className="flex flex-col space-y-1">
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                              <Clock size={14} />
+                              <span>სამუშაო დღეები:</span>
+                            </div>
+                            <span>{formatWorkingDays(service.working_days)}</span>
+                          </div>
+                          
+                          <div className="flex flex-col space-y-1">
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                              <Clock size={14} />
+                              <span>სამუშაო საათები:</span>
+                            </div>
+                            <span>{formatWorkingHours(service.working_hours_start, service.working_hours_end)}</span>
+                          </div>
+                        </div>
+                        
+                        {service.car_brands && service.car_brands.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+                              <Car size={14} />
+                              <span>მანქანის მარკები:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {service.car_brands.map(brand => (
+                                <Badge key={brand} variant="outline" className="bg-muted/50">
+                                  {brand}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {service.on_site_service && (
+                          <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                              შესაძლებელია ადგილზე მისვლა
+                            </Badge>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}

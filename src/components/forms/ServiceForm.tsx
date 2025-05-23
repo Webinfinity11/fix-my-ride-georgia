@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Clock, CreditCard, Banknote } from "lucide-react";
 
 type ServiceType = {
   id: number;
@@ -19,6 +22,12 @@ type ServiceType = {
   estimated_hours: number | null;
   category_id: number | null;
   is_active: boolean;
+  accepts_card_payment?: boolean;
+  accepts_cash_payment?: boolean;
+  working_days?: string[];
+  working_hours_start?: string;
+  working_hours_end?: string;
+  car_brands?: string[];
 };
 
 type CategoryType = {
@@ -29,10 +38,28 @@ type CategoryType = {
 
 interface ServiceFormProps {
   service: ServiceType | null;
-  categories: CategoryType[];  // Added this prop
+  categories: CategoryType[];
   onSubmit: () => void;
   onCancel: () => void;
 }
+
+const weekDays = [
+  { id: "monday", label: "ორშაბათი" },
+  { id: "tuesday", label: "სამშაბათი" },
+  { id: "wednesday", label: "ოთხშაბათი" },
+  { id: "thursday", label: "ხუთშაბათი" },
+  { id: "friday", label: "პარასკევი" },
+  { id: "saturday", label: "შაბათი" },
+  { id: "sunday", label: "კვირა" },
+];
+
+// Common car brands in Georgia
+const popularCarBrands = [
+  "Mercedes-Benz", "BMW", "Toyota", "Opel", "Volkswagen", 
+  "Ford", "Hyundai", "Kia", "Nissan", "Honda", 
+  "Lexus", "Audi", "Mitsubishi", "Mazda", "Subaru",
+  "Chevrolet", "Renault", "Peugeot", "Skoda", "Porsche"
+];
 
 const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormProps) => {
   const { user } = useAuth();
@@ -45,6 +72,13 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     estimatedHours: "",
     categoryId: "",
     isActive: true,
+    acceptsCardPayment: false,
+    acceptsCashPayment: true,
+    workingDays: [] as string[],
+    workingHoursStart: "09:00",
+    workingHoursEnd: "18:00",
+    carBrands: [] as string[],
+    onSiteService: false,
   });
 
   useEffect(() => {
@@ -57,6 +91,13 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         estimatedHours: service.estimated_hours?.toString() || "",
         categoryId: service.category_id?.toString() || "",
         isActive: service.is_active,
+        acceptsCardPayment: service.accepts_card_payment || false,
+        acceptsCashPayment: service.accepts_cash_payment !== false,
+        workingDays: service.working_days || ["monday", "tuesday", "wednesday", "thursday", "friday"],
+        workingHoursStart: service.working_hours_start || "09:00",
+        workingHoursEnd: service.working_hours_end || "18:00",
+        carBrands: service.car_brands || [],
+        onSiteService: false,
       });
     }
   }, [service]);
@@ -72,8 +113,26 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     setForm((prev) => ({ ...prev, categoryId: value }));
   };
 
-  const handleSwitchChange = (checked: boolean) => {
-    setForm((prev) => ({ ...prev, isActive: checked }));
+  const handleSwitchChange = (checked: boolean, field: string) => {
+    setForm((prev) => ({ ...prev, [field]: checked }));
+  };
+
+  const handleWorkingDayToggle = (day: string) => {
+    setForm((prev) => ({
+      ...prev,
+      workingDays: prev.workingDays.includes(day)
+        ? prev.workingDays.filter((d) => d !== day)
+        : [...prev.workingDays, day]
+    }));
+  };
+
+  const handleCarBrandToggle = (brand: string) => {
+    setForm((prev) => ({
+      ...prev,
+      carBrands: prev.carBrands.includes(brand)
+        ? prev.carBrands.filter((b) => b !== brand)
+        : [...prev.carBrands, brand]
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,6 +156,13 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         estimated_hours: form.estimatedHours ? parseInt(form.estimatedHours) : null,
         category_id: form.categoryId ? parseInt(form.categoryId) : null,
         is_active: form.isActive,
+        accepts_card_payment: form.acceptsCardPayment,
+        accepts_cash_payment: form.acceptsCashPayment,
+        working_days: form.workingDays,
+        working_hours_start: form.workingHoursStart,
+        working_hours_end: form.workingHoursEnd,
+        car_brands: form.carBrands,
+        on_site_service: form.onSiteService,
       };
       
       if (service) {
@@ -130,45 +196,47 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
   };
   
   return (
-    <Card>
+    <Card className="border border-primary/10 shadow-md">
       <CardContent className="p-6">
-        <h2 className="text-xl font-semibold mb-4">
+        <h2 className="text-xl font-semibold mb-6 text-primary">
           {service ? "სერვისის რედაქტირება" : "ახალი სერვისის დამატება"}
         </h2>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">სერვისის დასახელება</Label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <Label htmlFor="name" className="text-base">სერვისის დასახელება</Label>
             <Input
               id="name"
               name="name"
               value={form.name}
               onChange={handleChange}
               placeholder="მაგ: ძრავის ზეთის შეცვლა"
+              className="border-primary/20 focus-visible:ring-primary"
               required
             />
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="description">აღწერა</Label>
+          <div className="space-y-4">
+            <Label htmlFor="description" className="text-base">აღწერა</Label>
             <Textarea
               id="description"
               name="description"
               value={form.description}
               onChange={handleChange}
               placeholder="სერვისის დეტალური აღწერა"
+              className="border-primary/20 focus-visible:ring-primary resize-y min-h-[100px]"
               rows={3}
             />
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="categoryId">კატეგორია</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <Label htmlFor="categoryId" className="text-base">კატეგორია</Label>
               <Select
                 value={form.categoryId}
                 onValueChange={handleCategoryChange}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full border-primary/20 focus-visible:ring-primary">
                   <SelectValue placeholder="აირჩიეთ კატეგორია" />
                 </SelectTrigger>
                 <SelectContent>
@@ -181,8 +249,8 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
               </Select>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="estimatedHours">სავარაუდო დრო (საათებში)</Label>
+            <div className="space-y-4">
+              <Label htmlFor="estimatedHours" className="text-base">სავარაუდო დრო (საათებში)</Label>
               <Input
                 id="estimatedHours"
                 name="estimatedHours"
@@ -192,11 +260,12 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                 value={form.estimatedHours}
                 onChange={handleChange}
                 placeholder="მაგ: 2"
+                className="border-primary/20 focus-visible:ring-primary"
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="priceFrom">ფასი - დან (GEL)</Label>
+            <div className="space-y-4">
+              <Label htmlFor="priceFrom" className="text-base">ფასი - დან (GEL)</Label>
               <Input
                 id="priceFrom"
                 name="priceFrom"
@@ -205,11 +274,12 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                 value={form.priceFrom}
                 onChange={handleChange}
                 placeholder="მაგ: 50"
+                className="border-primary/20 focus-visible:ring-primary"
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="priceTo">ფასი - მდე (GEL)</Label>
+            <div className="space-y-4">
+              <Label htmlFor="priceTo" className="text-base">ფასი - მდე (GEL)</Label>
               <Input
                 id="priceTo"
                 name="priceTo"
@@ -218,26 +288,152 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                 value={form.priceTo}
                 onChange={handleChange}
                 placeholder="მაგ: 100"
+                className="border-primary/20 focus-visible:ring-primary"
               />
             </div>
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <h3 className="text-base font-medium flex items-center gap-2">
+              <Clock size={18} className="text-primary" /> 
+              სამუშაო საათები და დღეები
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <Label htmlFor="workingHoursStart" className="text-sm text-muted-foreground">დაწყების დრო</Label>
+                <Input
+                  id="workingHoursStart"
+                  name="workingHoursStart"
+                  type="time"
+                  value={form.workingHoursStart}
+                  onChange={handleChange}
+                  className="border-primary/20 focus-visible:ring-primary"
+                />
+              </div>
+              
+              <div className="space-y-4">
+                <Label htmlFor="workingHoursEnd" className="text-sm text-muted-foreground">დასრულების დრო</Label>
+                <Input
+                  id="workingHoursEnd"
+                  name="workingHoursEnd"
+                  type="time"
+                  value={form.workingHoursEnd}
+                  onChange={handleChange}
+                  className="border-primary/20 focus-visible:ring-primary"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-3 pt-2">
+              <Label className="text-sm text-muted-foreground">სამუშაო დღეები</Label>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                {weekDays.map((day) => (
+                  <div key={day.id} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={day.id} 
+                      checked={form.workingDays.includes(day.id)}
+                      onCheckedChange={() => handleWorkingDayToggle(day.id)}
+                      className="text-primary border-primary/30"
+                    />
+                    <label
+                      htmlFor={day.id}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {day.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <h3 className="text-base font-medium flex items-center gap-2">
+              <CreditCard size={18} className="text-primary" /> 
+              გადახდის მეთოდები
+            </h3>
+            <div className="flex flex-col space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="acceptsCashPayment" 
+                  checked={form.acceptsCashPayment}
+                  onCheckedChange={(checked) => handleSwitchChange(!!checked, "acceptsCashPayment")}
+                  className="text-primary border-primary/30"
+                />
+                <Label htmlFor="acceptsCashPayment" className="cursor-pointer flex items-center gap-2">
+                  <Banknote size={16} /> ნაღდი ანგარიშსწორება
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="acceptsCardPayment" 
+                  checked={form.acceptsCardPayment}
+                  onCheckedChange={(checked) => handleSwitchChange(!!checked, "acceptsCardPayment")}
+                  className="text-primary border-primary/30"
+                />
+                <Label htmlFor="acceptsCardPayment" className="cursor-pointer flex items-center gap-2">
+                  <CreditCard size={16} /> ბარათით გადახდა
+                </Label>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <h3 className="text-base font-medium">მანქანის მარკები, რომლებზეც მუშაობთ</h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+              {popularCarBrands.map((brand) => (
+                <div key={brand} className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={`brand-${brand}`} 
+                    checked={form.carBrands.includes(brand)}
+                    onCheckedChange={() => handleCarBrandToggle(brand)}
+                    className="text-primary border-primary/30"
+                  />
+                  <label
+                    htmlFor={`brand-${brand}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    {brand}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2 pt-4">
+            <Switch
+              id="onSiteService"
+              checked={form.onSiteService}
+              onCheckedChange={(checked) => handleSwitchChange(checked, "onSiteService")}
+              className="data-[state=checked]:bg-primary"
+            />
+            <Label htmlFor="onSiteService" className="cursor-pointer">
+              ადგილზე მისვლის სერვისი
+            </Label>
           </div>
           
           <div className="flex items-center space-x-2 pt-2">
             <Switch
               id="isActive"
               checked={form.isActive}
-              onCheckedChange={handleSwitchChange}
+              onCheckedChange={(checked) => handleSwitchChange(checked, "isActive")}
+              className="data-[state=checked]:bg-primary"
             />
             <Label htmlFor="isActive" className="cursor-pointer">
               აქტიური სერვისი
             </Label>
           </div>
           
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+          <div className="flex justify-end space-x-2 pt-6">
+            <Button type="button" variant="outline" onClick={onCancel} className="border-primary/30 hover:bg-primary/10">
               გაუქმება
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="bg-primary hover:bg-primary-light"
+            >
               {loading ? "მიმდინარეობს..." : "შენახვა"}
             </Button>
           </div>

@@ -79,6 +79,30 @@
     @apply bg-background text-foreground;
     font-family: 'Noto Sans Georgian', sans-serif;
   }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  h4 {
+    @apply text-lg md:text-xl;
+  }
+  
+  a {
+    @apply transition-colors duration-200;
+  }
 }
 
 @layer components {
@@ -109,4 +133,64 @@
   .animate-fade-in.appear {
     @apply opacity-100 translate-y-0;
   }
+  
+  /* Enhanced Button Styling */
+  [type="button"],
+  [type="reset"],
+  [type="submit"],
+  button {
+    @apply transition-all duration-300;
+  }
+  
+  /* Enhanced Form Controls */
+  input, select, textarea {
+    @apply transition-all duration-300;
+  }
+  
+  /* Card Enhancements */
+  .card {
+    @apply transition-all duration-300 hover:shadow-md;
+  }
+  
+  /* Page Transitions */
+  .page-transition-enter {
+    @apply opacity-0;
+  }
+  
+  .page-transition-enter-active {
+    @apply opacity-100 transition-opacity duration-300;
+  }
+  
+  .page-transition-exit {
+    @apply opacity-100;
+  }
+  
+  .page-transition-exit-active {
+    @apply opacity-0 transition-opacity duration-300;
+  }
+  
+  /* Enhanced Badge Styling */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
