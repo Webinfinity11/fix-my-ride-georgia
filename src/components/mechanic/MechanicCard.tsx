@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 
 // Type definition for mechanic
 type MechanicProps = {
-  id: number;
+  id: string;  // Changed from number to string
   name: string;
   avatar?: string;
   specialization: string;
