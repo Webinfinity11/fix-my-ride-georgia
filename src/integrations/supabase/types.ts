@@ -168,6 +168,45 @@ export type Database = {
           },
         ]
       }
+      contact_messages: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          status: string
+          subject: string
+          topic: string
+          user_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          status?: string
+          subject: string
+          topic: string
+          user_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          status?: string
+          subject?: string
+          topic?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       mechanic_profiles: {
         Row: {
           accepts_card_payment: boolean | null
