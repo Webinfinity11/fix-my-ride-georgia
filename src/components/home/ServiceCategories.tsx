@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -26,12 +25,10 @@ import {
   RotateCw,
   Flame,
   Filter,
-  GasPump,
   Droplets,
   Sparkles,
   Sun,
-  Disc,
-  LucideIcon
+  Disc
 } from "lucide-react";
 
 type ServiceCategory = {
@@ -69,7 +66,7 @@ const iconMapping: Record<string, React.ReactNode> = {
   "rotate-cw": <RotateCw className="h-10 w-10" />,
   "flame": <Flame className="h-10 w-10" />,
   "filter": <Filter className="h-10 w-10" />,
-  "gas-pump": <GasPump className="h-10 w-10" />,
+  "gas-pump": <Fuel className="h-10 w-10" />, // Changed from GasPump to Fuel
   "droplets": <Droplets className="h-10 w-10" />,
   "sparkles": <Sparkles className="h-10 w-10" />,
   "sun": <Sun className="h-10 w-10" />,

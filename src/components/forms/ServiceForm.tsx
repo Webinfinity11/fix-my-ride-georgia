@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -25,18 +24,19 @@ type ServiceType = {
 type CategoryType = {
   id: number;
   name: string;
+  description?: string | null;
 };
 
 interface ServiceFormProps {
   service: ServiceType | null;
+  categories: CategoryType[];  // Added this prop
   onSubmit: () => void;
   onCancel: () => void;
 }
 
-const ServiceForm = ({ service, onSubmit, onCancel }: ServiceFormProps) => {
+const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<CategoryType[]>([]);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -48,8 +48,6 @@ const ServiceForm = ({ service, onSubmit, onCancel }: ServiceFormProps) => {
   });
 
   useEffect(() => {
-    fetchCategories();
-    
     if (service) {
       setForm({
         name: service.name,
@@ -62,21 +60,6 @@ const ServiceForm = ({ service, onSubmit, onCancel }: ServiceFormProps) => {
       });
     }
   }, [service]);
-
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("service_categories")
-        .select("id, name")
-        .order("name");
-
-      if (error) throw error;
-
-      setCategories(data || []);
-    } catch (error: any) {
-      toast.error(`კატეგორიების ჩატვირთვა ვერ მოხერხდა: ${error.message}`);
-    }
-  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

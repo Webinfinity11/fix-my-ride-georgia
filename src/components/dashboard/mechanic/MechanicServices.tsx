@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -281,7 +280,7 @@ const MechanicServices = () => {
                             <div className="flex items-center gap-2">
                               <h3 className="text-lg font-medium">{service.name}</h3>
                               <Badge
-                                variant={service.is_active ? "success" : "secondary"}
+                                variant={service.is_active ? "secondary" : "outline"}
                                 className={service.is_active ? "bg-green-100 text-green-800" : ""}
                               >
                                 {service.is_active ? "აქტიური" : "არააქტიური"}
