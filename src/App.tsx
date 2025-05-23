@@ -1,76 +1,74 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
-import { useAuth } from "@/context/AuthContext";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import "./App.css";
+import { AuthProvider } from "./context/AuthContext";
 import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import MechanicProfile from "./pages/MechanicProfile";
-import NotFound from "./pages/NotFound";
-import Dashboard from "./pages/Dashboard";
-import Search from "./pages/Search";
-import Services from "./pages/Services";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Services from "./pages/Services";
+import Search from "./pages/Search";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
+import Dashboard from "./pages/Dashboard";
+import MechanicProfile from "./pages/MechanicProfile";
+import Book from "./pages/Book";
 
-// Route guard for authenticated routes
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, initialized, loading } = useAuth();
-  
-  if (loading || !initialized) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-    </div>;
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Index />
+  },
+  {
+    path: "/about",
+    element: <About />
+  },
+  {
+    path: "/contact",
+    element: <Contact />
+  },
+  {
+    path: "/services",
+    element: <Services />
+  },
+  {
+    path: "/search",
+    element: <Search />
+  },
+  {
+    path: "/mechanic/:id",
+    element: <MechanicProfile />
+  },
+  {
+    path: "/book/:id",
+    element: <Book />
+  },
+  {
+    path: "/login",
+    element: <Login />
+  },
+  {
+    path: "/register",
+    element: <Register />
+  },
+  {
+    path: "/dashboard/*",
+    element: <Dashboard />
+  },
+  {
+    path: "*",
+    element: <NotFound />
   }
-  
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <>{children}</>;
-};
+]);
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+function App() {
+  return (
     <AuthProvider>
-      <TooltipProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/mechanic/:id" element={<MechanicProfile />} />
-            <Route path="/book/:id" element={
-              <ProtectedRoute>
-                <MechanicProfile booking={true} />
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/*" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            {/* Redirect /profile to the dashboard profile page */}
-            <Route path="/profile" element={<Navigate to="/dashboard/profile" replace />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Sonner />
-          <Toaster />
-        </BrowserRouter>
-      </TooltipProvider>
+      <RouterProvider router={router} />
     </AuthProvider>
-  </QueryClientProvider>
-);
+  );
+}
 
 export default App;

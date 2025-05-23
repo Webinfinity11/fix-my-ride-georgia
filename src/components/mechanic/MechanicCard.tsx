@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 
 // Type definition for mechanic
 type MechanicProps = {
-  id: string;  // Changed from number to string
+  id: string;
   name: string;
   avatar?: string;
   specialization: string;
@@ -15,7 +15,7 @@ type MechanicProps = {
   reviewCount: number;
   verified: boolean;
   services: string[];
-  // Add the missing properties from Search.tsx
+  // Additional optional properties
   isMobile?: boolean;
   experience?: number;
   description?: string;
@@ -31,7 +31,7 @@ const MechanicCard = ({
   reviewCount,
   verified,
   services,
-  // Add the new props to destructuring (optional)
+  // Additional props
   isMobile,
   experience,
   description,
@@ -110,7 +110,7 @@ const MechanicCard = ({
         </Link>
         <Link
           to={`/book/${id}`}
-          className="btn-secondary px-4 py-1 text-sm"
+          className="bg-secondary hover:bg-secondary/90 text-white px-4 py-1.5 rounded text-sm font-medium"
         >
           დაჯავშნა
         </Link>
