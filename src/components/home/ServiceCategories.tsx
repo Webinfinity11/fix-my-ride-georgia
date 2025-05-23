@@ -105,25 +105,37 @@ const ServiceCategories = ({ categories = defaultCategories }: ServiceCategories
   const remainingCategories = displayCategories.slice(6);
   
   return (
-    <div className="py-16 bg-background">
+    <div className="py-16 md:py-24 bg-gradient-to-b from-background to-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">პოპულარული სერვისები</h2>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
+            პოპულარული სერვისები
+          </h2>
+          <div className="w-24 h-1 mx-auto bg-secondary rounded-full mb-4"></div>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            აირჩიეთ თქვენთვის საჭირო სერვისი და იპოვეთ საუკეთესო ხელოსანი მის შესასრულებლად
+          </p>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {featuredCategories.map((category) => (
-            <Card key={category.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {featuredCategories.map((category, index) => (
+            <Card 
+              key={category.id} 
+              className="group hover:shadow-hover transition-all duration-300 border-none shadow-card hover:-translate-y-2 overflow-hidden"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <CardContent className="p-8">
                 <div className="flex flex-col items-center text-center">
-                  <div className="p-4 rounded-full bg-primary/10 text-primary mb-4">
+                  <div className="p-5 rounded-full bg-gradient-to-br from-primary/10 to-primary/20 text-primary mb-6 group-hover:scale-110 transition-transform duration-300">
                     {getIcon(category.icon)}
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{category.name}</h3>
+                  <h3 className="text-xl font-bold mb-3">{category.name}</h3>
                   {category.description && (
-                    <p className="text-muted-foreground mb-4">{category.description}</p>
+                    <p className="text-muted-foreground mb-5 line-clamp-2">{category.description}</p>
                   )}
                   <Button 
                     variant="outline"
-                    className="mt-2"
+                    className="mt-2 group-hover:bg-primary group-hover:text-white transition-colors duration-300"
                     onClick={() => handleCategoryClick(category.id)}
                   >
                     შეთავაზებების ნახვა
@@ -136,20 +148,23 @@ const ServiceCategories = ({ categories = defaultCategories }: ServiceCategories
 
         {remainingCategories.length > 0 && (
           <>
-            <h3 className="text-xl md:text-2xl font-bold text-center mb-8">ყველა სერვისი</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
+            <div className="text-center mb-10">
+              <h3 className="text-2xl md:text-3xl font-bold mb-3">ყველა სერვისი</h3>
+              <div className="w-16 h-1 mx-auto bg-secondary/70 rounded-full"></div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 mb-16">
               {remainingCategories.map((category) => (
-                <Card key={category.id} className="hover:shadow-md transition-shadow">
+                <Card key={category.id} className="group hover:shadow-hover transition-all duration-300 border border-border/50">
                   <CardContent className="p-4">
                     <div className="flex flex-col items-center text-center">
-                      <div className="p-3 rounded-full bg-primary/10 text-primary mb-3">
+                      <div className="p-3 rounded-full bg-primary/5 text-primary mb-3 group-hover:bg-primary/10 transition-colors duration-300">
                         {getIcon(category.icon)}
                       </div>
-                      <h4 className="text-sm font-medium mb-2">{category.name}</h4>
+                      <h4 className="text-sm font-medium mb-3">{category.name}</h4>
                       <Button 
                         variant="ghost"
                         size="sm"
-                        className="mt-1 text-xs"
+                        className="mt-1 text-xs group-hover:text-primary transition-colors"
                         onClick={() => handleCategoryClick(category.id)}
                       >
                         ნახვა
@@ -163,7 +178,11 @@ const ServiceCategories = ({ categories = defaultCategories }: ServiceCategories
         )}
         
         <div className="text-center">
-          <Button size="lg" onClick={() => navigate('/services')}>
+          <Button 
+            size="lg" 
+            onClick={() => navigate('/services')}
+            className="bg-gradient-to-r from-secondary to-secondary-light hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
+          >
             ყველა სერვისის ნახვა
           </Button>
         </div>
