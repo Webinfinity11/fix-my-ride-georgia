@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -25,12 +24,11 @@ import { format, addDays, isToday, isBefore, startOfToday } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import BookingSteps from "@/components/booking/BookingSteps";
 import BookingSuccess from "@/components/booking/BookingSuccess";
+import DateTimeSelector from "@/components/booking/DateTimeSelector";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Define step type
@@ -95,10 +93,6 @@ const BookPage = () => {
     scheduled_time: null,
     notes: "",
   });
-  const [availableTimes, setAvailableTimes] = useState<string[]>([
-    "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", 
-    "15:00", "16:00", "17:00", "18:00"
-  ]);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [serviceDetailsOpen, setServiceDetailsOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<ServiceType | null>(null);
@@ -499,62 +493,13 @@ const BookPage = () => {
                       <p className="font-medium">{bookingData.service_name}</p>
                     </div>
                   
-                    {/* Date selector */}
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">თარიღი:</p>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !bookingData.scheduled_date && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {bookingData.scheduled_date ? (
-                              format(bookingData.scheduled_date, "PPP")
-                            ) : (
-                              <span>აირჩიეთ თარიღი</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={bookingData.scheduled_date || undefined}
-                            onSelect={handleSelectDate}
-                            disabled={isDateUnavailable}
-                            initialFocus
-                            fromDate={new Date()}
-                            toDate={addDays(new Date(), 30)}
-                            className="pointer-events-auto"
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    
-                    {/* Time slots */}
-                    {bookingData.scheduled_date && (
-                      <div className="animate-fade-in">
-                        <p className="text-sm text-muted-foreground mb-2">დრო:</p>
-                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                          {availableTimes.map((time) => (
-                            <Button
-                              key={time}
-                              variant={bookingData.scheduled_time === time ? "default" : "outline"}
-                              className={cn(
-                                "py-2",
-                                bookingData.scheduled_time === time ? "bg-primary" : "hover:bg-primary/5"
-                              )}
-                              onClick={() => handleSelectTime(time)}
-                            >
-                              {time}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Date and Time selector - Using our new component */}
+                    <DateTimeSelector 
+                      selectedDate={bookingData.scheduled_date}
+                      selectedTime={bookingData.scheduled_time}
+                      onDateChange={handleSelectDate}
+                      onTimeChange={handleSelectTime}
+                    />
                   </div>
                 </div>
               )}
