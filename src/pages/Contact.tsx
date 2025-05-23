@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -111,15 +112,14 @@ const Contact = () => {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setFormSubmitting(true);
     try {
-      // Send contact form data to Supabase using the raw SQL approach
-      // This avoids the TypeScript error with the table name
+      // Send contact form data to Supabase using the RPC function
       const { error } = await supabase.rpc('submit_contact_message', {
         p_name: data.name,
         p_email: data.email,
         p_subject: data.subject,
         p_message: data.message,
         p_topic: data.topic,
-        p_user_id: user?.id
+        p_user_id: user?.id || null
       });
 
       if (error) throw error;

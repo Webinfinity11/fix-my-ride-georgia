@@ -478,7 +478,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      submit_contact_message: {
+        Args: {
+          p_name: string
+          p_email: string
+          p_subject: string
+          p_message: string
+          p_topic: string
+          p_user_id?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       user_role: "customer" | "mechanic" | "admin"
