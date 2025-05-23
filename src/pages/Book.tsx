@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -69,6 +68,8 @@ type CarType = {
   model: string;
   year: number;
   vin: string | null;
+  engine?: string | null;
+  transmission?: string | null;
 };
 
 // Define booking data type
