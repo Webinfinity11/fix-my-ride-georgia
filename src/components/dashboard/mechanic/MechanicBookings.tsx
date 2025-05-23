@@ -2,13 +2,14 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Clock, User, MapPin } from "lucide-react";
+import { Calendar, Clock, User, MapPin, Bookmark, CheckCircle, XCircle, Play, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Table, 
   TableBody, 
@@ -44,6 +45,7 @@ const MechanicBookings = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<BookingType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("all");
 
   useEffect(() => {
     if (user) {
@@ -96,18 +98,31 @@ const MechanicBookings = () => {
     }
   };
 
+  const getFilteredBookings = () => {
+    if (activeTab === "all") return bookings;
+    return bookings.filter(booking => {
+      switch (activeTab) {
+        case "pending": return booking.status === "pending";
+        case "active": return ["confirmed", "in_progress"].includes(booking.status);
+        case "completed": return booking.status === "completed";
+        case "cancelled": return booking.status === "cancelled";
+        default: return true;
+      }
+    });
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge variant="outline">მოლოდინში</Badge>;
+        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">მოლოდინში</Badge>;
       case "confirmed":
-        return <Badge variant="default">დადასტურებული</Badge>;
+        return <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200">დადასტურებული</Badge>;
       case "in_progress":
-        return <Badge variant="secondary">მიმდინარე</Badge>;
+        return <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-purple-200">მიმდინარე</Badge>;
       case "completed":
-        return <Badge variant="secondary" className="bg-green-500 text-white">დასრულებული</Badge>;
+        return <Badge className="bg-green-100 text-green-800 border-green-200">დასრულებული</Badge>;
       case "cancelled":
-        return <Badge variant="destructive">გაუქმებული</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">გაუქმებული</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -168,15 +183,19 @@ const MechanicBookings = () => {
           <div className="flex space-x-2">
             <Button
               size="sm"
+              className="bg-primary hover:bg-primary-dark"
               onClick={() => updateBookingStatus(booking.id, "confirmed")}
             >
+              <CheckCircle size={16} className="mr-1" />
               დადასტურება
             </Button>
             <Button
               variant="outline"
               size="sm"
+              className="border-destructive text-destructive hover:bg-destructive/10"
               onClick={() => updateBookingStatus(booking.id, "cancelled")}
             >
+              <XCircle size={16} className="mr-1" />
               უარყოფა
             </Button>
           </div>
@@ -185,8 +204,10 @@ const MechanicBookings = () => {
         return (
           <Button
             size="sm"
+            className="bg-purple-600 hover:bg-purple-700"
             onClick={() => updateBookingStatus(booking.id, "in_progress")}
           >
+            <Play size={16} className="mr-1" />
             დაწყება
           </Button>
         );
@@ -194,24 +215,29 @@ const MechanicBookings = () => {
         return (
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
-              <Input
-                type="number"
-                placeholder="ფასი"
-                defaultValue={booking.price?.toString() || ""}
-                onBlur={(e) => {
-                  const price = parseFloat(e.target.value);
-                  if (!isNaN(price) && price >= 0) {
-                    updateBookingPrice(booking.id, price);
-                  }
-                }}
-                className="w-24"
-              />
+              <div className="relative">
+                <DollarSign size={16} className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                <Input
+                  type="number"
+                  placeholder="ფასი"
+                  defaultValue={booking.price?.toString() || ""}
+                  className="pl-8 w-28"
+                  onBlur={(e) => {
+                    const price = parseFloat(e.target.value);
+                    if (!isNaN(price) && price >= 0) {
+                      updateBookingPrice(booking.id, price);
+                    }
+                  }}
+                />
+              </div>
               <span>GEL</span>
             </div>
             <Button
               size="sm"
+              className="bg-green-600 hover:bg-green-700 w-full"
               onClick={() => updateBookingStatus(booking.id, "completed")}
             >
+              <CheckCircle size={16} className="mr-1" />
               დასრულება
             </Button>
           </div>
@@ -229,99 +255,137 @@ const MechanicBookings = () => {
     );
   }
 
+  const filteredBookings = getFilteredBookings();
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">ჯავშნები</h1>
 
-      {bookings.length === 0 ? (
-        <div className="bg-muted p-8 rounded-lg text-center">
-          <Calendar size={48} className="mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium mb-2">ჯავშნები არ გაქვთ</h3>
-          <p className="text-muted-foreground mb-4">
-            თქვენ ჯერ არ გაქვთ ჯავშნები
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {bookings.map((booking) => (
-            <Card key={booking.id}>
-              <CardContent className="p-6">
-                <div className="flex justify-between mb-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-medium">{booking.service.name}</h3>
-                      {getStatusBadge(booking.status)}
+      <Tabs 
+        defaultValue="all" 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="mb-6"
+      >
+        <TabsList className="grid grid-cols-5 mb-4">
+          <TabsTrigger value="all">ყველა</TabsTrigger>
+          <TabsTrigger value="pending">მოლოდინში</TabsTrigger>
+          <TabsTrigger value="active">აქტიური</TabsTrigger>
+          <TabsTrigger value="completed">დასრულებული</TabsTrigger>
+          <TabsTrigger value="cancelled">გაუქმებული</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={activeTab}>
+          {filteredBookings.length === 0 ? (
+            <div className="bg-muted p-8 rounded-lg text-center">
+              <Bookmark size={48} className="mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">ჯავშნები არ გაქვთ</h3>
+              <p className="text-muted-foreground mb-4">
+                {activeTab === "all" 
+                  ? "თქვენ ჯერ არ გაქვთ ჯავშნები" 
+                  : `${activeTab} სტატუსის ჯავშნები არ გაქვთ`}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredBookings.map((booking) => (
+                <Card key={booking.id} className="overflow-hidden border-l-4 hover:shadow-md transition-shadow" 
+                  style={{
+                    borderLeftColor: booking.status === 'pending' 
+                      ? '#f59e0b' 
+                      : booking.status === 'confirmed' 
+                        ? '#3b82f6' 
+                        : booking.status === 'in_progress' 
+                          ? '#8b5cf6' 
+                          : booking.status === 'completed' 
+                            ? '#10b981' 
+                            : '#ef4444'
+                  }}
+                >
+                  <CardHeader className="p-4 pb-0">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          {booking.service.name}
+                          {getStatusBadge(booking.status)}
+                        </CardTitle>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    {getStatusActions(booking)}
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                  <div className="flex items-start gap-2">
-                    <User size={16} className="text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="text-muted-foreground">კლიენტი</p>
-                      <p>
-                        {booking.customer_profile ? (
-                          <>
-                            {booking.customer_profile.first_name} {booking.customer_profile.last_name}
-                            {booking.customer_profile.phone && (
-                              <a 
-                                href={`tel:${booking.customer_profile.phone}`} 
-                                className="ml-2 text-primary hover:underline"
-                              >
-                                {booking.customer_profile.phone}
-                              </a>
+                  </CardHeader>
+                  
+                  <CardContent className="p-4 pt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="bg-muted/50 rounded-lg p-3">
+                        <div className="flex items-start gap-3">
+                          <User className="text-primary mt-1" size={20} />
+                          <div>
+                            <p className="text-sm font-medium">კლიენტი</p>
+                            {booking.customer_profile ? (
+                              <div className="text-sm">
+                                <p className="font-medium">
+                                  {booking.customer_profile.first_name} {booking.customer_profile.last_name}
+                                </p>
+                                {booking.customer_profile.phone && (
+                                  <a 
+                                    href={`tel:${booking.customer_profile.phone}`} 
+                                    className="text-primary hover:underline flex items-center mt-1"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                    {booking.customer_profile.phone}
+                                  </a>
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-muted-foreground text-sm">კლიენტის მონაცემები არ არის</p>
                             )}
-                          </>
-                        ) : (
-                          <span className="text-muted-foreground">კლიენტის მონაცემები არ არის</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-muted/50 rounded-lg p-3">
+                        <div className="flex items-start gap-3">
+                          <Calendar className="text-primary mt-1" size={20} />
+                          <div>
+                            <p className="text-sm font-medium">დრო და თარიღი</p>
+                            <p className="text-sm">
+                              {format(new Date(booking.scheduled_date), "dd MMMM, yyyy")}
+                              <span className="mx-2">•</span>
+                              {booking.scheduled_time.substring(0, 5)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {booking.notes && (
+                      <div className="mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                        <p className="text-sm font-medium mb-1">დამატებითი ინფორმაცია:</p>
+                        <p className="text-sm">{booking.notes}</p>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-between items-end mt-2">
+                      <div>
+                        {booking.price && (
+                          <div className="inline-flex items-center bg-green-50 text-green-700 px-3 py-1 rounded-full">
+                            <DollarSign size={16} className="mr-1" />
+                            <span className="font-medium">{booking.price} GEL</span>
+                          </div>
                         )}
-                      </p>
+                      </div>
+                      <div>
+                        {getStatusActions(booking)}
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-2">
-                    <Calendar size={16} className="text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="text-muted-foreground">თარიღი</p>
-                      <p>
-                        {format(new Date(booking.scheduled_date), "dd/MM/yyyy")}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-2">
-                    <Clock size={16} className="text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="text-muted-foreground">დრო</p>
-                      <p>{booking.scheduled_time.substring(0, 5)}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                {booking.notes && (
-                  <div className="mt-2">
-                    <p className="text-muted-foreground text-sm mb-1">დამატებითი ინფორმაცია:</p>
-                    <p className="text-sm bg-muted p-2 rounded">{booking.notes}</p>
-                  </div>
-                )}
-                
-                {booking.price && (
-                  <div className="mt-4 flex justify-end">
-                    <div className="bg-muted px-3 py-1 rounded-full">
-                      <span className="text-muted-foreground mr-1">ფასი:</span>
-                      <span className="font-medium">{booking.price} GEL</span>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
