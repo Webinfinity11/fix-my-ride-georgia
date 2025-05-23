@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -13,7 +14,12 @@ import {
   ChevronRight,
   Clock, 
   MapPin, 
-  Wrench
+  Wrench,
+  Star,
+  Phone,
+  Info,
+  CreditCard,
+  Banknote
 } from "lucide-react";
 import { format, addDays, isToday, isBefore, startOfToday } from "date-fns";
 import { toast } from "sonner";
@@ -25,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import BookingSteps from "@/components/booking/BookingSteps";
 import BookingSuccess from "@/components/booking/BookingSuccess";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Define step type
 type BookingStep = "service" | "datetime" | "confirmation" | "success";
@@ -37,10 +44,12 @@ type MechanicType = {
     last_name: string;
     city: string;
     district: string;
+    phone?: string | null;
   };
   mechanic_profile: {
     specialization: string | null;
     is_mobile: boolean;
+    rating?: number | null;
   };
 };
 
@@ -55,6 +64,10 @@ type ServiceType = {
   service_categories?: {
     name: string;
   } | null;
+  accepts_card_payment?: boolean;
+  accepts_cash_payment?: boolean;
+  on_site_service?: boolean;
+  car_brands?: string[];
 };
 
 // Define booking data type
@@ -82,10 +95,13 @@ const BookPage = () => {
     scheduled_time: null,
     notes: "",
   });
-  const [availableTimes] = useState<string[]>([
+  const [availableTimes, setAvailableTimes] = useState<string[]>([
     "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", 
     "15:00", "16:00", "17:00", "18:00"
   ]);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [serviceDetailsOpen, setServiceDetailsOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<ServiceType | null>(null);
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -112,7 +128,8 @@ const BookPage = () => {
             last_name,
             city,
             district,
-            mechanic_profiles!inner(specialization, is_mobile)
+            phone,
+            mechanic_profiles!inner(specialization, is_mobile, rating)
           `)
           .eq("id", id)
           .eq("role", "mechanic")
@@ -128,6 +145,7 @@ const BookPage = () => {
             last_name: mechanicData.last_name,
             city: mechanicData.city,
             district: mechanicData.district,
+            phone: mechanicData.phone
           },
           mechanic_profile: mechanicData.mechanic_profiles,
         };
@@ -167,6 +185,11 @@ const BookPage = () => {
     });
     setCurrentStep("datetime");
   };
+
+  const handleServiceDetails = (service: ServiceType) => {
+    setSelectedService(service);
+    setServiceDetailsOpen(true);
+  };
   
   // Handle selecting date
   const handleSelectDate = (date: Date | undefined) => {
@@ -203,21 +226,14 @@ const BookPage = () => {
       return;
     }
     
+    setConfirmLoading(true);
+    
     try {
       // Format date for database
       const formattedDate = format(bookingData.scheduled_date, "yyyy-MM-dd");
       
-      console.log("Creating booking with the following data:", {
-        user_id: user.id,
-        mechanic_id: mechanic.id,
-        service_id: bookingData.service_id,
-        scheduled_date: formattedDate,
-        scheduled_time: bookingData.scheduled_time,
-        notes: bookingData.notes || null
-      });
-      
       // Create booking in database
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("bookings")
         .insert({
           user_id: user.id,
@@ -227,15 +243,11 @@ const BookPage = () => {
           scheduled_time: bookingData.scheduled_time,
           notes: bookingData.notes || null,
           status: "pending"
-        })
-        .select();
+        });
         
       if (error) {
-        console.error("Error inserting booking:", error);
         throw error;
       }
-      
-      console.log("Booking created successfully:", data);
       
       // Show success message and navigate to success step
       toast.success("ჯავშანი წარმატებით გაკეთდა");
@@ -244,6 +256,8 @@ const BookPage = () => {
     } catch (error: any) {
       console.error("Error creating booking:", error);
       toast.error("ჯავშნის შექმნისას შეცდომა დაფიქსირდა");
+    } finally {
+      setConfirmLoading(false);
     }
   };
   
@@ -335,21 +349,36 @@ const BookPage = () => {
               {/* Header with mechanic info */}
               <div className="p-6 border-b">
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-14 w-14 border-2 border-primary/20">
                     <AvatarImage src="" />
-                    <AvatarFallback>{initials}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary font-medium">{initials}</AvatarFallback>
                   </Avatar>
                   
                   <div>
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-xl font-semibold">
                       {mechanic.profile.first_name} {mechanic.profile.last_name}
                     </h2>
-                    <div className="flex items-center text-muted-foreground text-sm">
-                      <MapPin className="h-3.5 w-3.5 mr-1" />
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm mt-1">
+                      <MapPin className="h-3.5 w-3.5" />
                       <span>
                         {mechanic.profile.city}
                         {mechanic.profile.district ? `, ${mechanic.profile.district}` : ""}
                       </span>
+                      {mechanic.mechanic_profile.rating && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <div className="flex items-center">
+                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400 mr-1" />
+                            <span>{mechanic.mechanic_profile.rating}</span>
+                          </div>
+                        </>
+                      )}
+                      {mechanic.mechanic_profile.specialization && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <span>{mechanic.mechanic_profile.specialization}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -361,42 +390,86 @@ const BookPage = () => {
                   <h3 className="text-lg font-medium mb-4">აირჩიეთ სერვისი</h3>
                   
                   {services.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {services.map((service) => (
                         <div 
                           key={service.id}
-                          className="border rounded-lg p-4 hover:border-primary transition-colors cursor-pointer"
-                          onClick={() => handleSelectService(service)}
+                          className="border rounded-lg overflow-hidden hover:border-primary hover:shadow-sm transition-all duration-200"
                         >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-medium">{service.name}</h4>
-                              {service.service_categories && (
-                                <p className="text-sm text-muted-foreground">
-                                  {service.service_categories.name}
+                          <div className="p-4">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="font-medium">{service.name}</h4>
+                                {service.service_categories && (
+                                  <p className="text-sm text-muted-foreground">
+                                    {service.service_categories.name}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="text-right">
+                                <p className="font-semibold">
+                                  {service.price_from && service.price_to
+                                    ? `${service.price_from} - ${service.price_to} ₾`
+                                    : service.price_from
+                                      ? `${service.price_from} ₾`
+                                      : "ფასი შეთანხმებით"}
                                 </p>
-                              )}
-                              {service.description && (
-                                <p className="text-sm mt-1">
-                                  {service.description}
-                                </p>
-                              )}
+                              </div>
+                            </div>
+                            
+                            {service.description && (
+                              <p className="text-sm mt-2 text-muted-foreground line-clamp-2">
+                                {service.description}
+                              </p>
+                            )}
+                            
+                            <div className="flex flex-wrap gap-2 mt-3">
                               {service.estimated_hours && (
-                                <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                                  <Clock className="h-3.5 w-3.5 mr-1" />
-                                  <span>დაახლოებით {service.estimated_hours} საათი</span>
-                                </div>
+                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-100">
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  {service.estimated_hours} საათი
+                                </Badge>
+                              )}
+                              
+                              {service.on_site_service && (
+                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-100">
+                                  <MapPin className="h-3 w-3 mr-1" />
+                                  ადგილზე მომსახურება
+                                </Badge>
+                              )}
+                              
+                              {service.accepts_cash_payment && (
+                                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-100">
+                                  <Banknote className="h-3 w-3 mr-1" />
+                                  ქეშით გადახდა
+                                </Badge>
+                              )}
+                              
+                              {service.accepts_card_payment && (
+                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-100">
+                                  <CreditCard className="h-3 w-3 mr-1" />
+                                  ბარათით გადახდა
+                                </Badge>
                               )}
                             </div>
-                            <div className="text-right">
-                              <p className="font-semibold">
-                                {service.price_from && service.price_to
-                                  ? `${service.price_from} - ${service.price_to} ₾`
-                                  : service.price_from
-                                    ? `${service.price_from} ₾`
-                                    : "ფასი შეთანხმებით"}
-                              </p>
-                              <ChevronRight className="h-4 w-4 ml-auto mt-2 text-muted-foreground" />
+                            
+                            <div className="flex justify-between mt-4">
+                              <Button 
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleServiceDetails(service)}
+                              >
+                                <Info className="h-4 w-4 mr-1" />
+                                დეტალები
+                              </Button>
+                              
+                              <Button 
+                                onClick={() => handleSelectService(service)}
+                                className="gap-1"
+                              >
+                                არჩევა
+                                <ChevronRight className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
                         </div>
@@ -420,6 +493,12 @@ const BookPage = () => {
                   <h3 className="text-lg font-medium mb-4">აირჩიეთ თარიღი და დრო</h3>
                   
                   <div className="space-y-6">
+                    {/* Selected service reminder */}
+                    <div className="bg-muted p-3 rounded-lg">
+                      <p className="text-sm text-muted-foreground">არჩეული სერვისი</p>
+                      <p className="font-medium">{bookingData.service_name}</p>
+                    </div>
+                  
                     {/* Date selector */}
                     <div>
                       <p className="text-sm text-muted-foreground mb-2">თარიღი:</p>
@@ -440,7 +519,7 @@ const BookPage = () => {
                             )}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
                           <Calendar
                             mode="single"
                             selected={bookingData.scheduled_date || undefined}
@@ -449,6 +528,7 @@ const BookPage = () => {
                             initialFocus
                             fromDate={new Date()}
                             toDate={addDays(new Date(), 30)}
+                            className="pointer-events-auto"
                           />
                         </PopoverContent>
                       </Popover>
@@ -456,14 +536,17 @@ const BookPage = () => {
                     
                     {/* Time slots */}
                     {bookingData.scheduled_date && (
-                      <div>
+                      <div className="animate-fade-in">
                         <p className="text-sm text-muted-foreground mb-2">დრო:</p>
                         <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                           {availableTimes.map((time) => (
                             <Button
                               key={time}
                               variant={bookingData.scheduled_time === time ? "default" : "outline"}
-                              className="py-2"
+                              className={cn(
+                                "py-2",
+                                bookingData.scheduled_time === time ? "bg-primary" : "hover:bg-primary/5"
+                              )}
                               onClick={() => handleSelectTime(time)}
                             >
                               {time}
@@ -481,26 +564,55 @@ const BookPage = () => {
                   <h3 className="text-lg font-medium mb-4">დაადასტურეთ ჯავშანი</h3>
                   
                   <div className="space-y-5">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground mb-1">სერვისი</p>
-                        <p className="font-medium">{bookingData.service_name}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground mb-1">თარიღი</p>
-                        <p className="font-medium">
-                          {bookingData.scheduled_date && 
-                           format(bookingData.scheduled_date, "dd/MM/yyyy")}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground mb-1">დრო</p>
-                        <p className="font-medium">{bookingData.scheduled_time}</p>
-                      </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Card className="border-muted">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <Wrench className="h-5 w-5 text-primary mr-2" />
+                            <p className="text-sm text-muted-foreground">სერვისი</p>
+                          </div>
+                          <p className="font-medium">{bookingData.service_name}</p>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="border-muted">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <CalendarIcon className="h-5 w-5 text-primary mr-2" />
+                            <p className="text-sm text-muted-foreground">თარიღი</p>
+                          </div>
+                          <p className="font-medium">
+                            {bookingData.scheduled_date && 
+                             format(bookingData.scheduled_date, "dd MMMM, yyyy")}
+                          </p>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="border-muted">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <Clock className="h-5 w-5 text-primary mr-2" />
+                            <p className="text-sm text-muted-foreground">დრო</p>
+                          </div>
+                          <p className="font-medium">{bookingData.scheduled_time}</p>
+                        </CardContent>
+                      </Card>
+                      
+                      {mechanic.profile.phone && (
+                        <Card className="border-muted">
+                          <CardContent className="p-4">
+                            <div className="flex items-center mb-3">
+                              <Phone className="h-5 w-5 text-primary mr-2" />
+                              <p className="text-sm text-muted-foreground">კონტაქტი</p>
+                            </div>
+                            <p className="font-medium">{mechanic.profile.phone}</p>
+                          </CardContent>
+                        </Card>
+                      )}
                     </div>
                     
                     <div>
-                      <p className="text-muted-foreground mb-1">დამატებითი ინფორმაცია (არააუცილებელი)</p>
+                      <p className="text-muted-foreground mb-1 text-sm">დამატებითი ინფორმაცია (არააუცილებელი)</p>
                       <Textarea 
                         placeholder="ჩაწერეთ დამატებითი ინფორმაცია ან სპეციალური მოთხოვნები..."
                         value={bookingData.notes} 
@@ -508,12 +620,15 @@ const BookPage = () => {
                       />
                     </div>
                     
-                    <div className="bg-muted p-4 rounded-lg">
-                      <p className="text-sm">
-                        ჯავშნის გაგზავნის შემდეგ, ხელოსანი მიიღებს შეტყობინებას და დაადასტურებს 
-                        ან უარყოფს ჯავშანს. ჯავშნის სტატუსის შეცვლის შემთხვევაში მიიღებთ 
-                        შეტყობინებას.
-                      </p>
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                      <div className="flex">
+                        <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5 mr-3" />
+                        <p className="text-sm text-blue-700">
+                          ჯავშნის გაგზავნის შემდეგ, ხელოსანი მიიღებს შეტყობინებას და დაადასტურებს 
+                          ან უარყოფს ჯავშანს. ჯავშნის სტატუსის შეცვლის შემთხვევაში მიიღებთ 
+                          შეტყობინებას თქვენს ელ-ფოსტაზე.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -531,8 +646,22 @@ const BookPage = () => {
                   </Button>
                   
                   {currentStep === "confirmation" && (
-                    <Button onClick={handleConfirmBooking}>
-                      დაადასტურე ჯავშანი
+                    <Button 
+                      onClick={handleConfirmBooking} 
+                      disabled={confirmLoading}
+                      className="flex items-center gap-2"
+                    >
+                      {confirmLoading ? (
+                        <>
+                          <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                          დაჯავშნა...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-4 w-4" />
+                          დაადასტურე ჯავშანი
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
@@ -543,6 +672,109 @@ const BookPage = () => {
       </main>
       
       <Footer />
+
+      {/* Service details dialog */}
+      <Dialog open={serviceDetailsOpen} onOpenChange={setServiceDetailsOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{selectedService?.name}</DialogTitle>
+            <DialogDescription>
+              {selectedService?.service_categories?.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-2">
+            {selectedService?.description && (
+              <div>
+                <h4 className="text-sm font-medium mb-1">აღწერა</h4>
+                <p className="text-sm">{selectedService.description}</p>
+              </div>
+            )}
+            
+            <div>
+              <h4 className="text-sm font-medium mb-1">ფასი</h4>
+              <p className="font-semibold">
+                {selectedService?.price_from && selectedService?.price_to
+                  ? `${selectedService.price_from} - ${selectedService.price_to} ₾`
+                  : selectedService?.price_from
+                    ? `${selectedService.price_from} ₾`
+                    : "ფასი შეთანხმებით"}
+              </p>
+            </div>
+            
+            {selectedService?.estimated_hours && (
+              <div>
+                <h4 className="text-sm font-medium mb-1">სავარაუდო დრო</h4>
+                <div className="flex items-center">
+                  <Clock className="h-4 w-4 text-muted-foreground mr-1" />
+                  <span>{selectedService.estimated_hours} საათი</span>
+                </div>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">გადახდის მეთოდები</h4>
+              <div className="flex flex-wrap gap-2">
+                {selectedService?.accepts_cash_payment && (
+                  <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-100">
+                    <Banknote className="h-3 w-3 mr-1" />
+                    ქეშით გადახდა
+                  </Badge>
+                )}
+                
+                {selectedService?.accepts_card_payment && (
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-100">
+                    <CreditCard className="h-3 w-3 mr-1" />
+                    ბარათით გადახდა
+                  </Badge>
+                )}
+                
+                {!selectedService?.accepts_cash_payment && !selectedService?.accepts_card_payment && (
+                  <span className="text-sm text-muted-foreground">ინფორმაცია არ არის მითითებული</span>
+                )}
+              </div>
+            </div>
+            
+            {selectedService?.on_site_service && (
+              <div>
+                <h4 className="text-sm font-medium mb-1">ადგილზე მომსახურება</h4>
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-100">
+                  <MapPin className="h-3 w-3 mr-1" />
+                  შესაძლებელია
+                </Badge>
+              </div>
+            )}
+            
+            {selectedService?.car_brands && selectedService.car_brands.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-1">მანქანის მარკები</h4>
+                <div className="flex flex-wrap gap-1">
+                  {selectedService.car_brands.map((brand) => (
+                    <Badge key={brand} variant="outline" className="bg-muted">
+                      {brand}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-end">
+            <Button 
+              onClick={() => {
+                if (selectedService) {
+                  handleSelectService(selectedService);
+                  setServiceDetailsOpen(false);
+                }
+              }}
+              className="gap-1"
+            >
+              არჩევა
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
