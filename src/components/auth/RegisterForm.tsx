@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -131,6 +130,8 @@ const RegisterForm = () => {
           city: formData.city,
           district: formData.district,
           street: formData.street,
+          building: formData.building,
+          apartment: formData.apartment,
           role: formType
         }
       );

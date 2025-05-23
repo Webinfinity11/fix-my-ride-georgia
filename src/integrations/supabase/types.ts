@@ -259,6 +259,9 @@ export type Database = {
       }
       mechanic_services: {
         Row: {
+          accepts_card_payment: boolean | null
+          accepts_cash_payment: boolean | null
+          car_brands: string[] | null
           category_id: number | null
           created_at: string
           description: string | null
@@ -267,11 +270,18 @@ export type Database = {
           is_active: boolean | null
           mechanic_id: string
           name: string
+          on_site_service: boolean | null
           price_from: number | null
           price_to: number | null
           updated_at: string
+          working_days: string[] | null
+          working_hours_end: string | null
+          working_hours_start: string | null
         }
         Insert: {
+          accepts_card_payment?: boolean | null
+          accepts_cash_payment?: boolean | null
+          car_brands?: string[] | null
           category_id?: number | null
           created_at?: string
           description?: string | null
@@ -280,11 +290,18 @@ export type Database = {
           is_active?: boolean | null
           mechanic_id: string
           name: string
+          on_site_service?: boolean | null
           price_from?: number | null
           price_to?: number | null
           updated_at?: string
+          working_days?: string[] | null
+          working_hours_end?: string | null
+          working_hours_start?: string | null
         }
         Update: {
+          accepts_card_payment?: boolean | null
+          accepts_cash_payment?: boolean | null
+          car_brands?: string[] | null
           category_id?: number | null
           created_at?: string
           description?: string | null
@@ -293,9 +310,13 @@ export type Database = {
           is_active?: boolean | null
           mechanic_id?: string
           name?: string
+          on_site_service?: boolean | null
           price_from?: number | null
           price_to?: number | null
           updated_at?: string
+          working_days?: string[] | null
+          working_hours_end?: string | null
+          working_hours_start?: string | null
         }
         Relationships: [
           {
@@ -351,6 +372,9 @@ export type Database = {
       }
       profiles: {
         Row: {
+          apartment: string | null
+          avatar_url: string | null
+          building: string | null
           city: string | null
           created_at: string
           district: string | null
@@ -365,6 +389,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          apartment?: string | null
+          avatar_url?: string | null
+          building?: string | null
           city?: string | null
           created_at?: string
           district?: string | null
@@ -379,6 +406,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          apartment?: string | null
+          avatar_url?: string | null
+          building?: string | null
           city?: string | null
           created_at?: string
           district?: string | null
