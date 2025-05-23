@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -25,17 +26,15 @@ type BookingType = {
   scheduled_time: string;
   notes: string | null;
   price: number | null;
-  customer: {
-    first_name: {
-      first_name: string;
-    };
-    last_name: {
-      last_name: string;
-    };
-    phone: {
-      phone: string | null;
-    };
+  user: {
+    id: string;
+    email: string;
   };
+  customer_profile: {
+    first_name: string;
+    last_name: string;
+    phone: string | null;
+  } | null;
   service: {
     name: string;
   };
@@ -63,10 +62,12 @@ const MechanicBookings = () => {
         .from("bookings")
         .select(`
           *,
-          customer:user_id(
-            first_name:profiles(first_name),
-            last_name:profiles(last_name),
-            phone:profiles(phone)
+          user:user_id(*),
+          customer_profile:user_id(
+            id,
+            first_name,
+            last_name,
+            phone
           ),
           service:service_id(name)
         `)
@@ -263,14 +264,20 @@ const MechanicBookings = () => {
                     <div>
                       <p className="text-muted-foreground">კლიენტი</p>
                       <p>
-                        {booking.customer.first_name.first_name} {booking.customer.last_name.last_name}
-                        {booking.customer.phone.phone && (
-                          <a 
-                            href={`tel:${booking.customer.phone.phone}`} 
-                            className="ml-2 text-primary hover:underline"
-                          >
-                            {booking.customer.phone.phone}
-                          </a>
+                        {booking.customer_profile ? (
+                          <>
+                            {booking.customer_profile.first_name} {booking.customer_profile.last_name}
+                            {booking.customer_profile.phone && (
+                              <a 
+                                href={`tel:${booking.customer_profile.phone}`} 
+                                className="ml-2 text-primary hover:underline"
+                              >
+                                {booking.customer_profile.phone}
+                              </a>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-muted-foreground">კლიენტის მონაცემები არ არის</span>
                         )}
                       </p>
                     </div>
