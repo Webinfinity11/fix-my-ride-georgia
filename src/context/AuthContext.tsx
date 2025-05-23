@@ -53,6 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   city: profile.city,
                   district: profile.district,
                   street: profile.street,
+                  building: profile.building,
+                  apartment: profile.apartment,
                 },
                 initialized: true,
                 loading: false,
@@ -100,6 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   city: profile.city,
                   district: profile.district,
                   street: profile.street,
+                  building: profile.building,
+                  apartment: profile.apartment,
                 },
                 initialized: true,
                 loading: false,
@@ -165,6 +169,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           phone: userData.phone,
           city: userData.city,
           district: userData.district,
+          street: userData.street,
+          building: userData.building,
+          apartment: userData.apartment,
           role: userData.role || 'customer',
         })
         .select()

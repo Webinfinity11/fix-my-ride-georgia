@@ -22,6 +22,8 @@ export interface User {
   city?: string | null;
   district?: string | null;
   street?: string | null;
+  building?: string | null;
+  apartment?: string | null;
 }
 
 // Define auth context state
