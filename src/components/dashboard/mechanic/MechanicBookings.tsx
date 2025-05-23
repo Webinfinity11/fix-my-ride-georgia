@@ -6,7 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Clock, User, MapPin, Bookmark, CheckCircle, XCircle, Play, DollarSign } from "lucide-react";
+import { 
+  Calendar, 
+  Clock, 
+  User, 
+  MapPin, 
+  Bookmark, 
+  CheckCircle, 
+  XCircle, 
+  Play, 
+  DollarSign,
+  Filter,
+  Search
+} from "lucide-react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,6 +58,7 @@ const MechanicBookings = () => {
   const [bookings, setBookings] = useState<BookingType[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -99,8 +112,21 @@ const MechanicBookings = () => {
   };
 
   const getFilteredBookings = () => {
-    if (activeTab === "all") return bookings;
-    return bookings.filter(booking => {
+    let filtered = bookings;
+    
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(booking => 
+        booking.customer_profile?.first_name?.toLowerCase().includes(query) ||
+        booking.customer_profile?.last_name?.toLowerCase().includes(query) ||
+        booking.service.name.toLowerCase().includes(query) ||
+        (booking.notes && booking.notes.toLowerCase().includes(query))
+      );
+    }
+    
+    if (activeTab === "all") return filtered;
+    
+    return filtered.filter(booking => {
       switch (activeTab) {
         case "pending": return booking.status === "pending";
         case "active": return ["confirmed", "in_progress"].includes(booking.status);
@@ -183,20 +209,20 @@ const MechanicBookings = () => {
           <div className="flex space-x-2">
             <Button
               size="sm"
-              className="bg-primary hover:bg-primary-dark"
+              className="bg-primary hover:bg-primary-dark flex items-center gap-1"
               onClick={() => updateBookingStatus(booking.id, "confirmed")}
             >
-              <CheckCircle size={16} className="mr-1" />
-              დადასტურება
+              <CheckCircle size={16} />
+              <span className="hidden sm:inline">დადასტურება</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="border-destructive text-destructive hover:bg-destructive/10"
+              className="border-destructive text-destructive hover:bg-destructive/10 flex items-center gap-1"
               onClick={() => updateBookingStatus(booking.id, "cancelled")}
             >
-              <XCircle size={16} className="mr-1" />
-              უარყოფა
+              <XCircle size={16} />
+              <span className="hidden sm:inline">უარყოფა</span>
             </Button>
           </div>
         );
@@ -204,11 +230,11 @@ const MechanicBookings = () => {
         return (
           <Button
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-purple-600 hover:bg-purple-700 flex items-center gap-1"
             onClick={() => updateBookingStatus(booking.id, "in_progress")}
           >
-            <Play size={16} className="mr-1" />
-            დაწყება
+            <Play size={16} />
+            <span className="hidden sm:inline">დაწყება</span>
           </Button>
         );
       case "in_progress":
@@ -234,11 +260,11 @@ const MechanicBookings = () => {
             </div>
             <Button
               size="sm"
-              className="bg-green-600 hover:bg-green-700 w-full"
+              className="bg-green-600 hover:bg-green-700 w-full flex items-center gap-1"
               onClick={() => updateBookingStatus(booking.id, "completed")}
             >
-              <CheckCircle size={16} className="mr-1" />
-              დასრულება
+              <CheckCircle size={16} />
+              <span>დასრულება</span>
             </Button>
           </div>
         );
@@ -256,10 +282,30 @@ const MechanicBookings = () => {
   }
 
   const filteredBookings = getFilteredBookings();
+  const bookingCounts = {
+    all: bookings.length,
+    pending: bookings.filter(b => b.status === "pending").length,
+    active: bookings.filter(b => ["confirmed", "in_progress"].includes(b.status)).length,
+    completed: bookings.filter(b => b.status === "completed").length,
+    cancelled: bookings.filter(b => b.status === "cancelled").length
+  };
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">ჯავშნები</h1>
+      
+      {/* Search and filter */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <Input
+            placeholder="მოძებნე ჯავშანი სახელით, სერვისით..."
+            className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
 
       <Tabs 
         defaultValue="all" 
@@ -268,11 +314,44 @@ const MechanicBookings = () => {
         className="mb-6"
       >
         <TabsList className="grid grid-cols-5 mb-4">
-          <TabsTrigger value="all">ყველა</TabsTrigger>
-          <TabsTrigger value="pending">მოლოდინში</TabsTrigger>
-          <TabsTrigger value="active">აქტიური</TabsTrigger>
-          <TabsTrigger value="completed">დასრულებული</TabsTrigger>
-          <TabsTrigger value="cancelled">გაუქმებული</TabsTrigger>
+          <TabsTrigger value="all" className="relative">
+            ყველა
+            <span className="ml-1.5 inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-slate-100 text-xs font-medium">
+              {bookingCounts.all}
+            </span>
+          </TabsTrigger>
+          <TabsTrigger value="pending" className="relative">
+            მოლოდინში
+            {bookingCounts.pending > 0 && (
+              <span className="ml-1.5 inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-amber-100 text-amber-800 text-xs font-medium">
+                {bookingCounts.pending}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="active" className="relative">
+            აქტიური
+            {bookingCounts.active > 0 && (
+              <span className="ml-1.5 inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
+                {bookingCounts.active}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="completed" className="relative">
+            დასრულებული
+            {bookingCounts.completed > 0 && (
+              <span className="ml-1.5 inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                {bookingCounts.completed}
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="cancelled" className="relative">
+            გაუქმებული
+            {bookingCounts.cancelled > 0 && (
+              <span className="ml-1.5 inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-red-100 text-red-800 text-xs font-medium">
+                {bookingCounts.cancelled}
+              </span>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab}>
@@ -281,9 +360,11 @@ const MechanicBookings = () => {
               <Bookmark size={48} className="mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">ჯავშნები არ გაქვთ</h3>
               <p className="text-muted-foreground mb-4">
-                {activeTab === "all" 
-                  ? "თქვენ ჯერ არ გაქვთ ჯავშნები" 
-                  : `${activeTab} სტატუსის ჯავშნები არ გაქვთ`}
+                {searchQuery 
+                  ? "ძიების შედეგები არ მოიძებნა" 
+                  : activeTab === "all" 
+                    ? "თქვენ ჯერ არ გაქვთ ჯავშნები" 
+                    : `${activeTab} სტატუსის ჯავშნები არ გაქვთ`}
               </p>
             </div>
           ) : (
