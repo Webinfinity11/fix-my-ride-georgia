@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -31,8 +32,6 @@ const RegisterForm = () => {
     city: '',
     district: '',
     street: '',
-    building: '',
-    apartment: '',
     avatar: null as File | null,
     isMobile: false,
   });
@@ -130,8 +129,6 @@ const RegisterForm = () => {
           city: formData.city,
           district: formData.district,
           street: formData.street,
-          building: formData.building,
-          apartment: formData.apartment,
           role: formType
         }
       );
@@ -320,31 +317,6 @@ const RegisterForm = () => {
                 onChange={handleChange}
                 className="border-primary/20 focus-visible:ring-primary"
               />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="building" className="text-sm text-muted-foreground">შენობა</Label>
-                <Input 
-                  id="building" 
-                  name="building" 
-                  placeholder="შენობა" 
-                  value={formData.building}
-                  onChange={handleChange}
-                  className="border-primary/20 focus-visible:ring-primary"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="apartment" className="text-sm text-muted-foreground">ბინა</Label>
-                <Input 
-                  id="apartment" 
-                  name="apartment" 
-                  placeholder="ბინა" 
-                  value={formData.apartment}
-                  onChange={handleChange}
-                  className="border-primary/20 focus-visible:ring-primary"
-                />
-              </div>
             </div>
           </div>
           

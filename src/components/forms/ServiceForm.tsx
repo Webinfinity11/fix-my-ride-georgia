@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -10,9 +11,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Clock, CreditCard, Banknote, MapPin } from "lucide-react";
+import { Clock, CreditCard, Banknote } from "lucide-react";
 import LocationSelector from "./LocationSelector";
-import MapLocationPicker from "./MapLocationPicker";
 
 type ServiceType = {
   id: number;
@@ -32,8 +32,6 @@ type ServiceType = {
   city?: string;
   district?: string;
   photos?: string[];
-  latitude?: number | null;
-  longitude?: number | null;
   on_site_service?: boolean;
 };
 
@@ -90,8 +88,6 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     city: "",
     district: "",
     photos: [] as string[],
-    latitude: null as number | null,
-    longitude: null as number | null,
   });
 
   useEffect(() => {
@@ -114,8 +110,6 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         city: service.city || "",
         district: service.district || "",
         photos: service.photos || [],
-        latitude: service.latitude || null,
-        longitude: service.longitude || null,
       });
     }
   }, [service]);
@@ -174,14 +168,6 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     }));
   };
 
-  const handleLocationChange = (lat: number, lng: number) => {
-    setForm(prev => ({ 
-      ...prev, 
-      latitude: lat, 
-      longitude: lng 
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -213,8 +199,6 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         city: form.city || null,
         district: form.district || null,
         photos: form.photos,
-        latitude: form.latitude,
-        longitude: form.longitude,
       };
       
       if (service) {
@@ -361,22 +345,6 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             onCityChange={(city) => setForm(prev => ({ ...prev, city, district: city !== "თბილისი" ? "" : prev.district }))}
             onDistrictChange={(district) => setForm(prev => ({ ...prev, district }))}
           />
-
-          <div className="space-y-4 pt-2">
-            <h3 className="text-base font-medium flex items-center gap-2">
-              <MapPin size={18} className="text-primary" /> 
-              სერვისის ლოკაცია რუკაზე
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              დააჭირეთ რუკაზე ან გადაიტანეთ მაკერი თქვენი სერვისის ზუსტი ლოკაციისთვის
-            </p>
-            <MapLocationPicker
-              latitude={form.latitude}
-              longitude={form.longitude}
-              onLocationChange={handleLocationChange}
-              interactive={true}
-            />
-          </div>
 
           <div className="space-y-4 pt-2">
             <h3 className="text-base font-medium flex items-center gap-2">
