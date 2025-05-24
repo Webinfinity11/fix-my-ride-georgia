@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -83,7 +82,10 @@ const ServicesDetail = () => {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase
+      console.log("Fetching services...");
+      
+      // First get all active services
+      const { data: servicesData, error: servicesError } = await supabase
         .from("mechanic_services")
         .select(`
           id,
@@ -104,26 +106,60 @@ const ServicesDetail = () => {
           photos,
           rating,
           review_count,
-          service_categories(id, name),
-          profiles!mechanic_services_mechanic_id_fkey(
-            id,
-            first_name,
-            last_name,
-            city,
-            district,
-            mechanic_profiles(
-              rating,
-              review_count
-            )
-          )
+          category_id,
+          mechanic_id
         `)
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (servicesError) throw servicesError;
 
-      const transformedData = data?.map(service => {
-        const profile = Array.isArray(service.profiles) ? service.profiles[0] : service.profiles;
+      console.log("Services data:", servicesData);
+
+      if (!servicesData || servicesData.length === 0) {
+        setServices([]);
+        return;
+      }
+
+      // Get unique category IDs
+      const categoryIds = [...new Set(servicesData.map(s => s.category_id).filter(Boolean))];
+      
+      // Fetch categories
+      let categoriesData = [];
+      if (categoryIds.length > 0) {
+        const { data: catData, error: catError } = await supabase
+          .from("service_categories")
+          .select("id, name")
+          .in("id", categoryIds);
+        
+        if (catError) throw catError;
+        categoriesData = catData || [];
+      }
+
+      // Get unique mechanic IDs
+      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))];
+      
+      // Fetch mechanic profiles
+      const { data: mechanicsData, error: mechanicsError } = await supabase
+        .from("profiles")
+        .select(`
+          id,
+          first_name,
+          last_name,
+          city,
+          district,
+          mechanic_profiles(rating, review_count)
+        `)
+        .in("id", mechanicIds);
+
+      if (mechanicsError) throw mechanicsError;
+
+      console.log("Mechanics data:", mechanicsData);
+
+      // Transform the data
+      const transformedData = servicesData.map(service => {
+        const mechanic = mechanicsData?.find(m => m.id === service.mechanic_id);
+        const category = categoriesData.find(c => c.id === service.category_id);
         
         return {
           id: service.id,
@@ -144,19 +180,20 @@ const ServicesDetail = () => {
           photos: service.photos,
           rating: service.rating,
           review_count: service.review_count,
-          category: service.service_categories,
+          category: category || null,
           mechanic: {
-            id: profile?.id || "",
-            first_name: profile?.first_name || "",
-            last_name: profile?.last_name || "",
-            city: profile?.city || "",
-            district: profile?.district || "",
-            rating: profile?.mechanic_profiles?.rating || null,
-            review_count: profile?.mechanic_profiles?.review_count || null
+            id: mechanic?.id || "",
+            first_name: mechanic?.first_name || "",
+            last_name: mechanic?.last_name || "",
+            city: mechanic?.city || "",
+            district: mechanic?.district || "",
+            rating: mechanic?.mechanic_profiles?.rating || null,
+            review_count: mechanic?.mechanic_profiles?.review_count || null
           }
         };
-      }) || [];
+      });
 
+      console.log("Transformed services:", transformedData);
       setServices(transformedData);
     } catch (error: any) {
       console.error("Error fetching services:", error);

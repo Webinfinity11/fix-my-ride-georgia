@@ -85,7 +85,10 @@ const ServiceDetail = () => {
 
   const fetchService = async () => {
     try {
-      const { data, error } = await supabase
+      console.log("Fetching service with ID:", id);
+      
+      // First get the service
+      const { data: serviceData, error: serviceError } = await supabase
         .from("mechanic_services")
         .select(`
           id,
@@ -106,67 +109,98 @@ const ServiceDetail = () => {
           photos,
           rating,
           review_count,
-          service_categories(id, name),
-          profiles!mechanic_services_mechanic_id_fkey(
-            id,
-            first_name,
-            last_name,
-            city,
-            district,
-            mechanic_profiles(
-              description,
-              specialization,
-              experience_years,
-              rating,
-              review_count,
-              is_mobile
-            )
-          )
+          category_id,
+          mechanic_id
         `)
-        .eq("id", parseInt(id))
+        .eq("id", parseInt(id!))
         .eq("is_active", true)
         .single();
 
-      if (error) throw error;
+      if (serviceError) throw serviceError;
 
-      if (data && data.profiles) {
-        const profile = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles;
-        
-        setService({
-          id: data.id,
-          name: data.name,
-          description: data.description,
-          price_from: data.price_from,
-          price_to: data.price_to,
-          estimated_hours: data.estimated_hours,
-          city: data.city,
-          district: data.district,
-          car_brands: data.car_brands,
-          on_site_service: data.on_site_service,
-          accepts_card_payment: data.accepts_card_payment,
-          accepts_cash_payment: data.accepts_cash_payment,
-          working_days: data.working_days,
-          working_hours_start: data.working_hours_start,
-          working_hours_end: data.working_hours_end,
-          photos: data.photos,
-          rating: data.rating,
-          review_count: data.review_count,
-          category: data.service_categories,
-          mechanic: {
-            id: profile?.id || "",
-            first_name: profile?.first_name || "",
-            last_name: profile?.last_name || "",
-            city: profile?.city || "",
-            district: profile?.district || "",
-            description: profile?.mechanic_profiles?.description || null,
-            specialization: profile?.mechanic_profiles?.specialization || null,
-            experience_years: profile?.mechanic_profiles?.experience_years || null,
-            rating: profile?.mechanic_profiles?.rating || null,
-            review_count: profile?.mechanic_profiles?.review_count || null,
-            is_mobile: profile?.mechanic_profiles?.is_mobile || false
-          }
-        });
+      console.log("Service data:", serviceData);
+
+      if (!serviceData) {
+        setService(null);
+        return;
       }
+
+      // Get category
+      let categoryData = null;
+      if (serviceData.category_id) {
+        const { data: catData, error: catError } = await supabase
+          .from("service_categories")
+          .select("id, name")
+          .eq("id", serviceData.category_id)
+          .single();
+        
+        if (!catError && catData) {
+          categoryData = catData;
+        }
+      }
+
+      // Get mechanic profile
+      const { data: mechanicData, error: mechanicError } = await supabase
+        .from("profiles")
+        .select(`
+          id,
+          first_name,
+          last_name,
+          city,
+          district,
+          mechanic_profiles(
+            description,
+            specialization,
+            experience_years,
+            rating,
+            review_count,
+            is_mobile
+          )
+        `)
+        .eq("id", serviceData.mechanic_id)
+        .single();
+
+      if (mechanicError) throw mechanicError;
+
+      console.log("Mechanic data:", mechanicData);
+
+      const transformedService = {
+        id: serviceData.id,
+        name: serviceData.name,
+        description: serviceData.description,
+        price_from: serviceData.price_from,
+        price_to: serviceData.price_to,
+        estimated_hours: serviceData.estimated_hours,
+        city: serviceData.city,
+        district: serviceData.district,
+        car_brands: serviceData.car_brands,
+        on_site_service: serviceData.on_site_service,
+        accepts_card_payment: serviceData.accepts_card_payment,
+        accepts_cash_payment: serviceData.accepts_cash_payment,
+        working_days: serviceData.working_days,
+        working_hours_start: serviceData.working_hours_start,
+        working_hours_end: serviceData.working_hours_end,
+        photos: serviceData.photos,
+        rating: serviceData.rating,
+        review_count: serviceData.review_count,
+        category: categoryData,
+        mechanic: {
+          id: mechanicData?.id || "",
+          first_name: mechanicData?.first_name || "",
+          last_name: mechanicData?.last_name || "",
+          city: mechanicData?.city || "",
+          district: mechanicData?.district || "",
+          description: mechanicData?.mechanic_profiles?.description || null,
+          specialization: mechanicData?.mechanic_profiles?.specialization || null,
+          experience_years: mechanicData?.mechanic_profiles?.experience_years || null,
+          rating: mechanicData?.mechanic_profiles?.rating || null,
+          review_count: mechanicData?.mechanic_profiles?.review_count || null,
+          is_mobile: mechanicData?.mechanic_profiles?.is_mobile || false
+        }
+      };
+
+      console.log("Transformed service:", transformedService);
+      setService(transformedService);
     } catch (error: any) {
       console.error("Error fetching service:", error);
       toast.error("სერვისის ჩატვირთვისას შეცდომა დაფიქსირდა");
