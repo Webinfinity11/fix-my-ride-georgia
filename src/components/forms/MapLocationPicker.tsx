@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -9,59 +9,61 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow
+  iconUrl: icon,
+  shadowUrl: iconShadow
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
-
-interface MapLocationPickerProps {
-  latitude: number | null;
-  longitude: number | null;
-  onLocationChange: (lat: number, lng: number) => void;
-  interactive?: boolean;
-}
 
 interface MapControllerProps {
   center: [number, number];
   zoom: number;
 }
 
-interface MapClickHandlerProps {
-  onLocationChange: (lat: number, lng: number) => void;
-  interactive: boolean;
-}
-
-const MapController: React.FC<MapControllerProps> = ({ center, zoom }) => {
+const MapController = ({ center, zoom }: MapControllerProps) => {
   const map = useMap();
+  
   useEffect(() => {
     map.setView(center, zoom);
   }, [center, zoom, map]);
+  
   return null;
 };
 
-const MapClickHandler: React.FC<MapClickHandlerProps> = ({ onLocationChange, interactive }) => {
-  useMapEvents({
-    click: (e) => {
-      if (interactive) {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      }
-    },
-  });
-  return null;
-};
+interface MapLocationPickerProps {
+  latitude?: number;
+  longitude?: number;
+  onLocationChange: (lat: number, lng: number) => void;
+  interactive?: boolean;
+}
 
-const MapLocationPicker = ({ latitude, longitude, onLocationChange, interactive = false }: MapLocationPickerProps) => {
+const MapLocationPicker = ({ 
+  latitude, 
+  longitude, 
+  onLocationChange, 
+  interactive = false 
+}: MapLocationPickerProps) => {
   const defaultLat = 41.7151;
   const defaultLng = 44.8271;
   const defaultZoom = 12;
 
-  const [center, setCenter] = useState<[number, number]>([latitude || defaultLat, longitude || defaultLng]);
+  const [center, setCenter] = useState<[number, number]>([
+    latitude || defaultLat, 
+    longitude || defaultLng
+  ]);
   const [zoom, setZoom] = useState(defaultZoom);
 
   useEffect(() => {
     setCenter([latitude || defaultLat, longitude || defaultLng]);
   }, [latitude, longitude]);
+
+  const handleMapClick = (e: L.LeafletMouseEvent) => {
+    if (interactive) {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      onLocationChange(lat, lng);
+    }
+  };
 
   useEffect(() => {
     if (latitude && longitude) {
@@ -76,15 +78,15 @@ const MapLocationPicker = ({ latitude, longitude, onLocationChange, interactive 
           center={center}
           zoom={zoom}
           style={{ height: "100%", width: "100%" }}
+          eventHandlers={{
+            click: handleMapClick
+          }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          
           <MapController center={center} zoom={zoom} />
-          <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
-          
           {latitude && longitude && (
             <Marker 
               position={[latitude, longitude]}
@@ -116,7 +118,10 @@ const MapLocationPicker = ({ latitude, longitude, onLocationChange, interactive 
       {interactive && (
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label htmlFor="latitude" className="block text-sm font-medium text-muted-foreground">
+            <label 
+              htmlFor="latitude" 
+              className="block text-sm font-medium text-muted-foreground"
+            >
               Latitude
             </label>
             <input
@@ -133,7 +138,10 @@ const MapLocationPicker = ({ latitude, longitude, onLocationChange, interactive 
             />
           </div>
           <div>
-            <label htmlFor="longitude" className="block text-sm font-medium text-muted-foreground">
+            <label 
+              htmlFor="longitude" 
+              className="block text-sm font-medium text-muted-foreground"
+            >
               Longitude
             </label>
             <input
