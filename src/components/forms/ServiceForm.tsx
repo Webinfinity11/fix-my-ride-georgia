@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,11 @@ type ServiceType = {
   working_hours_start?: string;
   working_hours_end?: string;
   car_brands?: string[];
+  city?: string;
+  district?: string;
+  photos?: string[];
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 type CategoryType = {
