@@ -67,11 +67,39 @@ const MapLocationPicker = ({
     latitude || defaultLat, 
     longitude || defaultLng
   ]);
-  const [zoom, setZoom] = useState(defaultZoom);
+  const [zoom] = useState(defaultZoom);
 
   useEffect(() => {
     setCenter([latitude || defaultLat, longitude || defaultLng]);
-  }, [latitude, longitude]);
+  }, [latitude, longitude, defaultLat, defaultLng]);
+
+  const MapContent = () => (
+    <>
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      />
+      <MapController center={center} zoom={zoom} />
+      <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
+      {latitude && longitude && (
+        <Marker 
+          position={[latitude, longitude]}
+          draggable={interactive}
+          eventHandlers={interactive ? {
+            dragend: (e) => {
+              const marker = e.target;
+              const position = marker.getLatLng();
+              onLocationChange(position.lat, position.lng);
+            }
+          } : {}}
+        >
+          <Popup>
+            {interactive ? "გადაიტანეთ მაკერი სასურველ ადგილზე" : "სერვისის ლოკაცია"}
+          </Popup>
+        </Marker>
+      )}
+    </>
+  );
 
   return (
     <div className="space-y-4">
@@ -80,32 +108,9 @@ const MapLocationPicker = ({
           center={center}
           zoom={zoom}
           style={{ height: "100%", width: "100%" }}
+          key={`${center[0]}-${center[1]}`}
         >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <MapController center={center} zoom={zoom} />
-          <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
-          {latitude && longitude && (
-            <Marker 
-              position={[latitude, longitude]}
-              draggable={interactive}
-              eventHandlers={{
-                dragend: (e) => {
-                  if (interactive) {
-                    const marker = e.target;
-                    const position = marker.getLatLng();
-                    onLocationChange(position.lat, position.lng);
-                  }
-                }
-              }}
-            >
-              <Popup>
-                {interactive ? "გადაიტანეთ მაკერი სასურველ ადგილზე" : "სერვისის ლოკაცია"}
-              </Popup>
-            </Marker>
-          )}
+          <MapContent />
         </MapContainer>
       </div>
       
