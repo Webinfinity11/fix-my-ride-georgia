@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -7,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star, MapPin, Clock, CreditCard, Banknote, Car, User, Phone, Shield } from "lucide-react";
+import { Star, MapPin, Clock, CreditCard, Banknote, Car, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -30,8 +29,6 @@ type ServiceDetailType = {
   photos: string[] | null;
   rating: number | null;
   review_count: number | null;
-  latitude: number | null;
-  longitude: number | null;
   category: {
     id: number;
     name: string;
@@ -48,9 +45,6 @@ type ServiceDetailType = {
     rating: number | null;
     review_count: number | null;
     is_mobile: boolean;
-    phone: string | null;
-    avatar_url: string | null;
-    verified_at: string | null;
   };
 };
 
@@ -112,8 +106,6 @@ const ServiceDetail = () => {
           photos,
           rating,
           review_count,
-          latitude,
-          longitude,
           service_categories(id, name),
           profiles!mechanic_services_mechanic_id_fkey(
             id,
@@ -121,16 +113,13 @@ const ServiceDetail = () => {
             last_name,
             city,
             district,
-            phone,
-            avatar_url,
             mechanic_profiles(
               description,
               specialization,
               experience_years,
               rating,
               review_count,
-              is_mobile,
-              verified_at
+              is_mobile
             )
           )
         `)
@@ -162,8 +151,6 @@ const ServiceDetail = () => {
           photos: data.photos,
           rating: data.rating,
           review_count: data.review_count,
-          latitude: data.latitude,
-          longitude: data.longitude,
           category: data.service_categories,
           mechanic: {
             id: profile?.id || "",
@@ -171,15 +158,12 @@ const ServiceDetail = () => {
             last_name: profile?.last_name || "",
             city: profile?.city || "",
             district: profile?.district || "",
-            phone: profile?.phone || null,
-            avatar_url: profile?.avatar_url || null,
             description: profile?.mechanic_profiles?.description || null,
             specialization: profile?.mechanic_profiles?.specialization || null,
             experience_years: profile?.mechanic_profiles?.experience_years || null,
             rating: profile?.mechanic_profiles?.rating || null,
             review_count: profile?.mechanic_profiles?.review_count || null,
-            is_mobile: profile?.mechanic_profiles?.is_mobile || false,
-            verified_at: profile?.mechanic_profiles?.verified_at || null
+            is_mobile: profile?.mechanic_profiles?.is_mobile || false
           }
         });
       }
@@ -207,6 +191,7 @@ const ServiceDetail = () => {
 
       if (error) throw error;
 
+      // Fetch user profiles separately
       if (data && data.length > 0) {
         const userIds = data.map(review => review.user_id);
         const { data: profiles, error: profilesError } = await supabase
@@ -241,8 +226,8 @@ const ServiceDetail = () => {
 
   const formatPrice = (priceFrom: number | null, priceTo: number | null) => {
     if (!priceFrom && !priceTo) return "ფასი შეთანხმებით";
-    if (priceFrom && priceTo) return `${priceFrom} - ${priceTo} ₾`;
-    if (priceFrom) return `${priceFrom} ₾-დან`;
+    if (priceFrom && priceTo) return `${priceFrom} - ${priceTo} GEL`;
+    if (priceFrom) return `${priceFrom} GEL დან`;
     return "ფასი შეთანხმებით";
   };
 
@@ -269,7 +254,7 @@ const ServiceDetail = () => {
         <Header />
         <main className="flex-grow bg-muted py-12">
           <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               <Skeleton className="h-8 w-1/2 mb-6" />
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
@@ -322,161 +307,114 @@ const ServiceDetail = () => {
       <main className="flex-grow bg-muted py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            {/* Header with title and rating */}
-            <div className="flex flex-col sm:flex-row justify-between items-start mb-8">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{service.name}</h1>
-                {service.category && (
-                  <Badge variant="secondary" className="mb-3">{service.category.name}</Badge>
-                )}
-              </div>
-              {service.rating && (
-                <div className="flex items-center gap-2 bg-white p-3 rounded-lg shadow-sm">
-                  <div className="flex items-center gap-1">
-                    {renderStars(Math.round(service.rating))}
-                  </div>
-                  <span className="font-semibold">{service.rating}</span>
-                  <span className="text-sm text-muted-foreground">({service.review_count} შეფასება)</span>
-                </div>
-              )}
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                {/* Service Photos */}
-                {service.photos && service.photos.length > 0 && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold mb-4">ფოტოები</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {service.photos.map((photo, index) => (
-                          <div key={index} className="aspect-square rounded-lg overflow-hidden bg-muted">
-                            <img 
-                              src={photo} 
-                              alt={`სერვისის ფოტო ${index + 1}`}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Service Description */}
-                <Card>
+              <div className="lg:col-span-2">
+                <Card className="mb-6">
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4">სერვისის აღწერა</h3>
-                    {service.description ? (
-                      <p className="text-muted-foreground leading-relaxed">{service.description}</p>
-                    ) : (
-                      <p className="text-muted-foreground italic">აღწერა არ არის მითითებული</p>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h1 className="text-2xl font-bold mb-2">{service.name}</h1>
+                        {service.category && (
+                          <Badge variant="secondary" className="mb-3">{service.category.name}</Badge>
+                        )}
+                      </div>
+                      {service.rating && (
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            {renderStars(Math.round(service.rating))}
+                          </div>
+                          <span className="font-semibold">{service.rating}</span>
+                          <span className="text-sm text-muted-foreground">({service.review_count} შეფასება)</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {service.description && (
+                      <p className="text-muted-foreground mb-6">{service.description}</p>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <h3 className="font-semibold mb-3">ძირითადი ინფორმაცია</h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span>ფასი:</span>
+                            <span className="font-medium">{formatPrice(service.price_from, service.price_to)}</span>
+                          </div>
+                          {service.estimated_hours && (
+                            <div className="flex justify-between">
+                              <span>სავარაუდო დრო:</span>
+                              <span>{service.estimated_hours} საათი</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span>ლოკაცია:</span>
+                            <span>{service.city}{service.district ? `, ${service.district}` : ''}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="font-semibold mb-3">გადახდის მეთოდები</h3>
+                        <div className="space-y-2">
+                          {service.accepts_cash_payment && (
+                            <div className="flex items-center gap-2">
+                              <Banknote className="h-4 w-4 text-green-600" />
+                              <span>ნაღდი ანგარიშსწორება</span>
+                            </div>
+                          )}
+                          {service.accepts_card_payment && (
+                            <div className="flex items-center gap-2">
+                              <CreditCard className="h-4 w-4 text-blue-600" />
+                              <span>ბარათით გადახდა</span>
+                            </div>
+                          )}
+                          {service.on_site_service && (
+                            <Badge variant="outline">ადგილზე მისვლის სერვისი</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {service.working_days && (
+                      <div className="mb-6">
+                        <h3 className="font-semibold mb-3">სამუშაო გრაფიკი</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <span className="text-sm text-muted-foreground">სამუშაო დღეები:</span>
+                            <p>{formatWorkingDays(service.working_days)}</p>
+                          </div>
+                          {service.working_hours_start && service.working_hours_end && (
+                            <div>
+                              <span className="text-sm text-muted-foreground">სამუშაო საათები:</span>
+                              <p>{service.working_hours_start} - {service.working_hours_end}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {service.car_brands && service.car_brands.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold mb-3">მანქანის მარკები</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {service.car_brands.map(brand => (
+                            <Badge key={brand} variant="outline">{brand}</Badge>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </CardContent>
                 </Card>
 
-                {/* Service Details */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4">სერვისის დეტალები</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                          <span className="font-medium">ფასი:</span>
-                          <span className="text-lg font-bold text-primary">{formatPrice(service.price_from, service.price_to)}</span>
-                        </div>
-                        {service.estimated_hours && (
-                          <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                            <span className="font-medium">სავარაუდო დრო:</span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {service.estimated_hours} საათი
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                          <span className="font-medium">ლოკაცია:</span>
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {service.city}{service.district ? `, ${service.district}` : ''}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="p-3 bg-muted rounded-lg">
-                          <span className="font-medium block mb-2">გადახდის მეთოდები:</span>
-                          <div className="space-y-1">
-                            {service.accepts_cash_payment && (
-                              <div className="flex items-center gap-2">
-                                <Banknote className="h-4 w-4 text-green-600" />
-                                <span className="text-sm">ნაღდი ანგარიშსწორება</span>
-                              </div>
-                            )}
-                            {service.accepts_card_payment && (
-                              <div className="flex items-center gap-2">
-                                <CreditCard className="h-4 w-4 text-blue-600" />
-                                <span className="text-sm">ბარათით გადახდა</span>
-                              </div>
-                            )}
-                            {service.on_site_service && (
-                              <Badge variant="outline" className="mt-2">ადგილზე მისვლის სერვისი</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Working Schedule */}
-                {service.working_days && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold mb-4">სამუშაო გრაფიკი</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-3 bg-muted rounded-lg">
-                          <span className="font-medium block mb-1">სამუშაო დღეები:</span>
-                          <p>{formatWorkingDays(service.working_days)}</p>
-                        </div>
-                        {service.working_hours_start && service.working_hours_end && (
-                          <div className="p-3 bg-muted rounded-lg">
-                            <span className="font-medium block mb-1">სამუშაო საათები:</span>
-                            <p>{service.working_hours_start} - {service.working_hours_end}</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Car Brands */}
-                {service.car_brands && service.car_brands.length > 0 && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <Car className="h-5 w-5" />
-                        მანქანის მარკები
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {service.car_brands.map(brand => (
-                          <Badge key={brand} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                            {brand}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
                 {/* Reviews Section */}
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold mb-4">შეფასებები და კომენტარები</h3>
+                    <h3 className="text-xl font-semibold mb-4">შეფასებები</h3>
                     {reviewsLoading ? (
                       <div className="space-y-4">
                         {[...Array(3)].map((_, i) => (
-                          <div key={i} className="p-4 border rounded-lg">
+                          <div key={i}>
                             <Skeleton className="h-4 w-1/4 mb-2" />
                             <Skeleton className="h-4 w-full" />
                           </div>
@@ -485,7 +423,7 @@ const ServiceDetail = () => {
                     ) : reviews.length > 0 ? (
                       <div className="space-y-4">
                         {reviews.map(review => (
-                          <div key={review.id} className="p-4 border rounded-lg bg-white">
+                          <div key={review.id} className="border-b pb-4 last:border-b-0">
                             <div className="flex items-center gap-2 mb-2">
                               <div className="flex items-center gap-1">
                                 {renderStars(review.rating)}
@@ -500,72 +438,44 @@ const ServiceDetail = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <p>ჯერ არ არის შეფასებები ამ სერვისზე</p>
-                      </div>
+                      <p className="text-muted-foreground">ჯერ არ არის შეფასებები</p>
                     )}
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Sidebar */}
-              <div className="space-y-6">
+              <div>
                 {/* Mechanic Info Card */}
-                <Card>
+                <Card className="mb-6">
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5" />
-                      ხელოსანი
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                          {service.mechanic.avatar_url ? (
-                            <img 
-                              src={service.mechanic.avatar_url} 
-                              alt="ხელოსნის ფოტო"
-                              className="w-12 h-12 rounded-full object-cover"
-                            />
-                          ) : (
-                            <User className="h-6 w-6 text-primary" />
-                          )}
-                        </div>
-                        <div>
-                          <Link 
-                            to={`/mechanic/${service.mechanic.id}`}
-                            className="font-medium hover:text-primary transition-colors"
-                          >
-                            {service.mechanic.first_name} {service.mechanic.last_name}
-                          </Link>
-                          {service.mechanic.verified_at && (
-                            <div className="flex items-center gap-1 mt-1">
-                              <Shield className="h-3 w-3 text-green-600" />
-                              <span className="text-xs text-green-600">დადასტურებული</span>
-                            </div>
-                          )}
-                        </div>
+                    <h3 className="text-lg font-semibold mb-4">ხელოსანი</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <Link 
+                          to={`/mechanic/${service.mechanic.id}`}
+                          className="font-medium hover:text-primary transition-colors"
+                        >
+                          {service.mechanic.first_name} {service.mechanic.last_name}
+                        </Link>
                       </div>
 
                       {service.mechanic.rating && (
-                        <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
+                        <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
                             {renderStars(Math.round(service.mechanic.rating))}
                           </div>
-                          <span className="text-sm font-medium">{service.mechanic.rating}</span>
+                          <span className="text-sm">{service.mechanic.rating}</span>
                           <span className="text-xs text-muted-foreground">({service.mechanic.review_count} შეფასება)</span>
                         </div>
                       )}
 
                       {service.mechanic.specialization && (
-                        <div className="p-2 bg-blue-50 rounded-lg">
-                          <span className="text-sm font-medium text-blue-800">{service.mechanic.specialization}</span>
-                        </div>
+                        <p className="text-sm text-muted-foreground">{service.mechanic.specialization}</p>
                       )}
 
                       {service.mechanic.experience_years && (
-                        <div className="text-sm text-muted-foreground">
-                          გამოცდილება: <span className="font-medium">{service.mechanic.experience_years} წელი</span>
-                        </div>
+                        <p className="text-sm">გამოცდილება: {service.mechanic.experience_years} წელი</p>
                       )}
 
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -573,17 +483,8 @@ const ServiceDetail = () => {
                         <span>{service.mechanic.city}{service.mechanic.district ? `, ${service.mechanic.district}` : ''}</span>
                       </div>
 
-                      {service.mechanic.phone && (
-                        <div className="flex items-center gap-1 text-sm">
-                          <Phone className="h-3 w-3" />
-                          <span>{service.mechanic.phone}</span>
-                        </div>
-                      )}
-
                       {service.mechanic.is_mobile && (
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                          მობილური სერვისი
-                        </Badge>
+                        <Badge variant="outline" className="text-xs">მობილური სერვისი</Badge>
                       )}
                     </div>
 
@@ -599,8 +500,8 @@ const ServiceDetail = () => {
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4">დაჯავშნა</h3>
-                    <div className="space-y-4 mb-6">
-                      <div className="text-center p-4 bg-primary/5 rounded-lg">
+                    <div className="space-y-3 mb-4">
+                      <div className="text-center">
                         <span className="text-2xl font-bold text-primary">
                           {formatPrice(service.price_from, service.price_to)}
                         </span>
@@ -613,28 +514,10 @@ const ServiceDetail = () => {
                       )}
                     </div>
                     <Link to={`/book?service=${service.id}`}>
-                      <Button className="w-full bg-primary hover:bg-primary/90">
-                        დაჯავშნა
-                      </Button>
+                      <Button className="w-full">დაჯავშნა</Button>
                     </Link>
                   </CardContent>
                 </Card>
-
-                {/* Contact Card */}
-                {service.mechanic.phone && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-semibold mb-4">კონტაქტი</h3>
-                      <a 
-                        href={`tel:${service.mechanic.phone}`}
-                        className="flex items-center justify-center gap-2 w-full p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                      >
-                        <Phone className="h-4 w-4" />
-                        დარეკვა
-                      </a>
-                    </CardContent>
-                  </Card>
-                )}
               </div>
             </div>
           </div>

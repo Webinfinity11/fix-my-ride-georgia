@@ -1,6 +1,6 @@
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -26,11 +26,20 @@ interface MapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map clicks
-const MapClickHandler = ({ onLocationChange, interactive }: { 
+// Component to handle map initialization and events
+const MapController = ({ 
+  position, 
+  onLocationChange, 
+  interactive 
+}: { 
+  position: [number, number]; 
   onLocationChange: (lat: number, lng: number) => void; 
   interactive: boolean; 
 }) => {
+  const map = useMap();
+  const markerRef = useRef<L.Marker>(null);
+
+  // Handle map clicks
   useMapEvents({
     click(e) {
       if (interactive) {
@@ -38,7 +47,42 @@ const MapClickHandler = ({ onLocationChange, interactive }: {
       }
     },
   });
-  return null;
+
+  // Update map view when position changes
+  useEffect(() => {
+    if (map) {
+      map.setView(position, map.getZoom());
+    }
+  }, [map, position]);
+
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          const newPos = marker.getLatLng();
+          onLocationChange(newPos.lat, newPos.lng);
+        }
+      },
+    }),
+    [onLocationChange]
+  );
+
+  return (
+    <Marker
+      draggable={interactive}
+      eventHandlers={interactive ? eventHandlers : {}}
+      position={position}
+      ref={markerRef}
+    >
+      <Popup>
+        {interactive 
+          ? "გადაიტანეთ მაკერი სასურველ ადგილზე ან დააჭირეთ რუკას" 
+          : "სერვისის ლოკაცია"
+        }
+      </Popup>
+    </Marker>
+  );
 };
 
 const MapLocationPicker = ({ 
@@ -55,28 +99,6 @@ const MapLocationPicker = ({
   // Use provided coordinates or default to Tbilisi
   const displayLat = latitude || defaultLat;
   const displayLng = longitude || defaultLng;
-
-  // State for current location
-  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
-
-  // Get user's current location
-  useEffect(() => {
-    if (interactive && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentLocation({ lat: latitude, lng: longitude });
-          // Only update location if no coordinates are provided
-          if (!latitude && !longitude) {
-            onLocationChange(latitude, longitude);
-          }
-        },
-        (error) => {
-          console.warn("Could not get current location:", error);
-        }
-      );
-    }
-  }, [interactive, onLocationChange]);
 
   // Memoize center position to prevent unnecessary re-renders
   const center = useMemo<[number, number]>(() => [
@@ -106,48 +128,17 @@ const MapLocationPicker = ({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          
-          {interactive && (
-            <MapClickHandler 
-              onLocationChange={handleLocationChange} 
-              interactive={interactive} 
-            />
-          )}
-          
-          <Marker position={center}>
-            <Popup>
-              {interactive 
-                ? "გადაიტანეთ მაკერი სასურველ ადგილზე ან დააჭირეთ რუკას" 
-                : "სერვისის ლოკაცია"
-              }
-            </Popup>
-          </Marker>
-
-          {/* Show current location marker if available and different from selected location */}
-          {currentLocation && interactive && (
-            Math.abs(currentLocation.lat - displayLat) > 0.001 || 
-            Math.abs(currentLocation.lng - displayLng) > 0.001
-          ) && (
-            <Marker 
-              position={[currentLocation.lat, currentLocation.lng]}
-              icon={L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-                shadowUrl: iconShadow,
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-              })}
-            >
-              <Popup>თქვენი მდებარეობა</Popup>
-            </Marker>
-          )}
+          <MapController
+            position={center}
+            onLocationChange={handleLocationChange}
+            interactive={interactive}
+          />
         </MapContainer>
       </div>
       
       {interactive && (
         <p className="text-xs text-muted-foreground">
-          რუკაზე დაჭერით შეგიძლიათ აირჩიოთ ზუსტი ლოკაცია
+          რუკაზე დაჭერით ან მაკერის გადატანით შეგიძლიათ აირჩიოთ ზუსტი ლოკაცია
         </p>
       )}
       
@@ -198,24 +189,15 @@ const MapLocationPicker = ({
         </div>
       )}
       
-      {interactive && currentLocation && (
-        <div className="flex gap-2">
+      {interactive && (displayLat !== defaultLat || displayLng !== defaultLng) && (
+        <div className="text-center">
           <button
             type="button"
-            onClick={() => handleLocationChange(currentLocation.lat, currentLocation.lng)}
-            className="text-sm text-blue-600 hover:text-blue-800 underline"
+            onClick={() => handleLocationChange(defaultLat, defaultLng)}
+            className="text-sm text-primary hover:text-primary/80 underline"
           >
-            ჩემი მდებარეობის გამოყენება
+            თბილისზე დაბრუნება
           </button>
-          {(displayLat !== defaultLat || displayLng !== defaultLng) && (
-            <button
-              type="button"
-              onClick={() => handleLocationChange(defaultLat, defaultLng)}
-              className="text-sm text-primary hover:text-primary/80 underline"
-            >
-              თბილისზე დაბრუნება
-            </button>
-          )}
         </div>
       )}
     </div>
