@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -24,7 +24,9 @@ const MapController = ({ center, zoom }: MapControllerProps) => {
   const map = useMap();
   
   useEffect(() => {
-    map.setView(center, zoom);
+    if (map) {
+      map.setView(center, zoom);
+    }
   }, [center, zoom, map]);
   
   return null;
@@ -67,7 +69,6 @@ const MapLocationPicker = ({
     latitude || defaultLat, 
     longitude || defaultLng
   ]);
-  const [zoom] = useState(defaultZoom);
 
   useEffect(() => {
     setCenter([latitude || defaultLat, longitude || defaultLng]);
@@ -78,15 +79,15 @@ const MapLocationPicker = ({
       <div className="h-64 rounded-lg overflow-hidden border border-primary/20">
         <MapContainer
           center={center}
-          zoom={zoom}
+          zoom={defaultZoom}
           style={{ height: "100%", width: "100%" }}
-          key={`${center[0]}-${center[1]}`}
+          key={`map-${center[0]}-${center[1]}-${Date.now()}`}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          <MapController center={center} zoom={zoom} />
+          <MapController center={center} zoom={defaultZoom} />
           <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
           {latitude && longitude && (
             <Marker 
