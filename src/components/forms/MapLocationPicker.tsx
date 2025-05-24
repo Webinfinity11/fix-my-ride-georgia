@@ -38,13 +38,14 @@ interface MapClickHandlerProps {
 }
 
 const MapClickHandler = ({ onLocationChange, interactive }: MapClickHandlerProps) => {
-  useMapEvents({
+  const map = useMapEvents({
     click: (e) => {
       if (interactive) {
         onLocationChange(e.latlng.lat, e.latlng.lng);
       }
     },
   });
+  
   return null;
 };
 
@@ -94,7 +95,9 @@ const MapLocationPicker = ({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           <MapController center={center} zoom={defaultZoom} />
-          <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
+          {interactive && (
+            <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
+          )}
           {latitude && longitude && (
             <Marker 
               position={[latitude, longitude]}
