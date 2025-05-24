@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -22,23 +22,6 @@ interface MapLocationPickerProps {
   interactive?: boolean;
 }
 
-interface MapClickHandlerProps {
-  onLocationChange: (lat: number, lng: number) => void;
-  interactive: boolean;
-}
-
-const MapClickHandler = ({ onLocationChange, interactive }: MapClickHandlerProps) => {
-  useMapEvents({
-    click: (e) => {
-      if (interactive) {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      }
-    },
-  });
-  
-  return null;
-};
-
 const MapLocationPicker = ({ 
   latitude, 
   longitude, 
@@ -50,6 +33,7 @@ const MapLocationPicker = ({
   const defaultZoom = 12;
 
   const [mapKey, setMapKey] = useState(0);
+  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 
   // Memoize center position to prevent unnecessary re-renders
   const center = useMemo<[number, number]>(() => [
@@ -64,6 +48,30 @@ const MapLocationPicker = ({
     onLocationChange(position.lat, position.lng);
   }, [onLocationChange]);
 
+  // Handle map creation and click events
+  const handleMapCreated = useCallback((map: L.Map) => {
+    setMapInstance(map);
+    
+    if (interactive) {
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        onLocationChange(e.latlng.lat, e.latlng.lng);
+      });
+    }
+  }, [interactive, onLocationChange]);
+
+  // Clean up event listeners when component unmounts or interactive changes
+  useEffect(() => {
+    if (mapInstance) {
+      mapInstance.off('click');
+      
+      if (interactive) {
+        mapInstance.on('click', (e: L.LeafletMouseEvent) => {
+          onLocationChange(e.latlng.lat, e.latlng.lng);
+        });
+      }
+    }
+  }, [mapInstance, interactive, onLocationChange]);
+
   // Force map re-render when coordinates change significantly
   useEffect(() => {
     setMapKey(prev => prev + 1);
@@ -77,12 +85,12 @@ const MapLocationPicker = ({
           center={center}
           zoom={defaultZoom}
           style={{ height: "100%", width: "100%" }}
+          whenReady={(map) => handleMapCreated(map.target)}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
           {latitude && longitude && (
             <Marker 
               position={[latitude, longitude]}
