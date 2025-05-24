@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -124,13 +123,13 @@ const ServiceDetail = () => {
             )
           )
         `)
-        .eq("id", id)
+        .eq("id", parseInt(id))
         .eq("is_active", true)
         .single();
 
       if (error) throw error;
 
-      if (data) {
+      if (data && data.profiles) {
         setService({
           id: data.id,
           name: data.name,
@@ -152,17 +151,17 @@ const ServiceDetail = () => {
           review_count: data.review_count,
           category: data.service_categories,
           mechanic: {
-            id: data.profiles?.id,
-            first_name: data.profiles?.first_name,
-            last_name: data.profiles?.last_name,
-            city: data.profiles?.city,
-            district: data.profiles?.district,
-            description: data.profiles?.mechanic_profiles?.description,
-            specialization: data.profiles?.mechanic_profiles?.specialization,
-            experience_years: data.profiles?.mechanic_profiles?.experience_years,
-            rating: data.profiles?.mechanic_profiles?.rating,
-            review_count: data.profiles?.mechanic_profiles?.review_count,
-            is_mobile: data.profiles?.mechanic_profiles?.is_mobile || false
+            id: data.profiles.id,
+            first_name: data.profiles.first_name,
+            last_name: data.profiles.last_name,
+            city: data.profiles.city,
+            district: data.profiles.district,
+            description: data.profiles.mechanic_profiles?.description,
+            specialization: data.profiles.mechanic_profiles?.specialization,
+            experience_years: data.profiles.mechanic_profiles?.experience_years,
+            rating: data.profiles.mechanic_profiles?.rating,
+            review_count: data.profiles.mechanic_profiles?.review_count,
+            is_mobile: data.profiles.mechanic_profiles?.is_mobile || false
           }
         });
       }
@@ -188,7 +187,7 @@ const ServiceDetail = () => {
             last_name
           )
         `)
-        .eq("service_id", id)
+        .eq("service_id", parseInt(id!))
         .order("created_at", { ascending: false });
 
       if (error) throw error;

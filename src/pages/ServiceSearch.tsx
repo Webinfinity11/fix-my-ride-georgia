@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -227,9 +226,9 @@ const ServiceSearch = () => {
         review_count: service.review_count,
         category: service.service_categories,
         mechanic: {
-          id: service.profiles?.id,
-          first_name: service.profiles?.first_name,
-          last_name: service.profiles?.last_name,
+          id: service.profiles?.id || "",
+          first_name: service.profiles?.first_name || "",
+          last_name: service.profiles?.last_name || "",
           rating: service.profiles?.mechanic_profiles?.rating,
           is_mobile: service.profiles?.mechanic_profiles?.is_mobile || false
         }
