@@ -8,6 +8,8 @@ import HowItWorks from "@/components/home/HowItWorks";
 import { Button } from "@/components/ui/button";
 import MechanicCard from "@/components/mechanic/MechanicCard";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // Sample featured mechanics data
 const featuredMechanics = [
@@ -46,69 +48,100 @@ const featuredMechanics = [
   }
 ];
 
+type ServiceCategory = {
+  id: number;
+  name: string;
+  description: string | null;
+  icon: string | null;
+};
+
 const Index = () => {
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("service_categories")
+          .select("*")
+          .order("id", { ascending: true })
+          .limit(6); // Show only first 6 categories on homepage
+
+        if (error) throw error;
+        setCategories(data || []);
+      } catch (error: any) {
+        console.error("Error fetching service categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow">
-        {/* Hero Section */}
         <Hero />
-        
-        {/* Search Filter Section */}
         <SearchFilter />
         
-        {/* Service Categories */}
-        <ServiceCategories />
-        
-        {/* How It Works */}
-        <HowItWorks />
-        
-        {/* Featured Mechanics */}
-        <section className="section-padding bg-white">
+        <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-              <div>
-                <h2 className="text-3xl font-bold mb-2">გამორჩეული ხელოსნები</h2>
-                <p className="text-muted-foreground max-w-2xl">
-                  გაეცანით ჩვენს საუკეთესო ხელოსნებს მაღალი რეიტინგითა და დადებითი შეფასებებით.
-                </p>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">ჩვენი სერვისები</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                აღმოაჩინეთ ჩვენი მრავალფეროვანი სერვისები ავტომობილებისთვის. ჩვენ გთავაზობთ მაღალი ხარისხის მომსახურებას სხვადასხვა საჭიროებისთვის.
+              </p>
+            </div>
+            
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-muted rounded-lg p-6 animate-pulse">
+                    <div className="h-12 w-12 bg-primary/20 rounded-full mb-4"></div>
+                    <div className="h-6 bg-primary/20 rounded mb-2"></div>
+                    <div className="h-4 bg-primary/20 rounded"></div>
+                  </div>
+                ))}
               </div>
-              <Link to="/search" className="mt-4 md:mt-0">
-                <Button variant="outline">
-                  ყველა ხელოსანი
+            ) : (
+              <ServiceCategories categories={categories} />
+            )}
+            
+            <div className="text-center mt-8">
+              <Link to="/services">
+                <Button variant="outline" size="lg">
+                  ყველა სერვისის ნახვა
                 </Button>
               </Link>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredMechanics.map((mechanic) => (
-                <MechanicCard 
-                  key={mechanic.id}
-                  {...mechanic}
-                />
-              ))}
-            </div>
           </div>
         </section>
-        
-        {/* CTA Section */}
-        <section className="py-14 bg-primary">
+
+        <HowItWorks />
+
+        <section className="py-16 bg-muted">
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                ხართ ავტო ხელოსანი?
-              </h2>
-              <p className="text-lg text-blue-100 mb-8">
-                დარეგისტრირდით პლატფორმაზე, გააფართოვეთ თქვენი ბიზნესი და მიიღეთ მეტი მომხმარებელი.
-                დაიწყეთ უფასოდ და გაზარდეთ თქვენი შემოსავალი.
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">რეკომენდირებული ხელოსნები</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                გაეცანით ჩვენს საუკეთესო ხელოსნებს, რომლებიც გამოირჩევიან მაღალი პროფესიონალიზმითა და საიმედოობით.
               </p>
-              <Link to="/register?type=mechanic">
-                <Button 
-                  size="lg"
-                  className="bg-secondary hover:bg-secondary-light text-white font-semibold px-6 py-6"
-                >
-                  დარეგისტრირდი, როგორც ხელოსანი
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {featuredMechanics.map((mechanic) => (
+                <MechanicCard key={mechanic.id} mechanic={mechanic} />
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <Link to="/service-search">
+                <Button size="lg">
+                  ყველა ხელოსნის ნახვა
                 </Button>
               </Link>
             </div>

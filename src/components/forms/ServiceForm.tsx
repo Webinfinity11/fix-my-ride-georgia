@@ -10,9 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Clock, CreditCard, Banknote } from "lucide-react";
+import { Clock, CreditCard, Banknote, MapPin } from "lucide-react";
 import LocationSelector from "./LocationSelector";
-import PhotoUpload from "./PhotoUpload";
 import MapLocationPicker from "./MapLocationPicker";
 
 type ServiceType = {
@@ -35,6 +34,7 @@ type ServiceType = {
   photos?: string[];
   latitude?: number | null;
   longitude?: number | null;
+  on_site_service?: boolean;
 };
 
 type CategoryType = {
@@ -82,7 +82,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     isActive: true,
     acceptsCardPayment: false,
     acceptsCashPayment: true,
-    workingDays: [] as string[],
+    workingDays: ["monday", "tuesday", "wednesday", "thursday", "friday"] as string[],
     workingHoursStart: "09:00",
     workingHoursEnd: "18:00",
     carBrands: [] as string[],
@@ -110,7 +110,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         workingHoursStart: service.working_hours_start || "09:00",
         workingHoursEnd: service.working_hours_end || "18:00",
         carBrands: service.car_brands || [],
-        onSiteService: false,
+        onSiteService: service.on_site_service || false,
         city: service.city || "",
         district: service.district || "",
         photos: service.photos || [],
@@ -171,6 +171,14 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
       carBrands: prev.carBrands.includes(otherBrand)
         ? prev.carBrands.filter((b) => b !== otherBrand)
         : [...prev.carBrands, otherBrand]
+    }));
+  };
+
+  const handleLocationChange = (lat: number, lng: number) => {
+    setForm(prev => ({ 
+      ...prev, 
+      latitude: lat, 
+      longitude: lng 
     }));
   };
 
@@ -248,7 +256,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
-            <Label htmlFor="name" className="text-base">სერვისის დასახელება</Label>
+            <Label htmlFor="name" className="text-base">სერვისის დასახელება *</Label>
             <Input
               id="name"
               name="name"
@@ -315,7 +323,9 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                 className="border-primary/20 focus-visible:ring-primary"
               />
             </div>
-            
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <Label htmlFor="priceFrom" className="text-base">ფასი - დან (GEL)</Label>
               <Input
@@ -351,6 +361,22 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             onCityChange={(city) => setForm(prev => ({ ...prev, city, district: city !== "თბილისი" ? "" : prev.district }))}
             onDistrictChange={(district) => setForm(prev => ({ ...prev, district }))}
           />
+
+          <div className="space-y-4 pt-2">
+            <h3 className="text-base font-medium flex items-center gap-2">
+              <MapPin size={18} className="text-primary" /> 
+              სერვისის ლოკაცია რუკაზე
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              დააჭირეთ რუკაზე ან გადაიტანეთ მაკერი თქვენი სერვისის ზუსტი ლოკაციისთვის
+            </p>
+            <MapLocationPicker
+              latitude={form.latitude}
+              longitude={form.longitude}
+              onLocationChange={handleLocationChange}
+              interactive={true}
+            />
+          </div>
 
           <div className="space-y-4 pt-2">
             <h3 className="text-base font-medium flex items-center gap-2">
@@ -486,19 +512,6 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                 </label>
               </div>
             </div>
-          </div>
-
-          <div className="space-y-4">
-            <Label className="text-base">სერვისის ლოკაცია რუკაზე</Label>
-            <p className="text-sm text-muted-foreground">
-              დააჭირეთ რუკაზე ან გადაიტანეთ მაკერი თქვენი სერვისის ზუსტი ლოკაციისთვის
-            </p>
-            <MapLocationPicker
-              latitude={form.latitude}
-              longitude={form.longitude}
-              onLocationChange={(lat, lng) => setForm(prev => ({ ...prev, latitude: lat, longitude: lng }))}
-              interactive={true}
-            />
           </div>
           
           <div className="flex items-center space-x-2 pt-4">
