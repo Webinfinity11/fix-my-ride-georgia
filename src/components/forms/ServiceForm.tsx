@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -72,6 +71,7 @@ const popularCarBrands = [
 const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -119,6 +119,10 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
       });
     }
   }, [service]);
+
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(categorySearch.toLowerCase())
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -272,21 +276,29 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <Label htmlFor="categoryId" className="text-base">კატეგორია</Label>
-              <Select
-                value={form.categoryId}
-                onValueChange={handleCategoryChange}
-              >
-                <SelectTrigger className="w-full border-primary/20 focus-visible:ring-primary">
-                  <SelectValue placeholder="აირჩიეთ კატეგორია" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Input
+                  placeholder="კატეგორიის ძიება..."
+                  value={categorySearch}
+                  onChange={(e) => setCategorySearch(e.target.value)}
+                  className="border-primary/20 focus-visible:ring-primary"
+                />
+                <Select
+                  value={form.categoryId}
+                  onValueChange={handleCategoryChange}
+                >
+                  <SelectTrigger className="w-full border-primary/20 focus-visible:ring-primary">
+                    <SelectValue placeholder="აირჩიეთ კატეგორია" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredCategories.map((category) => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <div className="space-y-4">
@@ -476,19 +488,18 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             </div>
           </div>
 
-          {user && (
-            <PhotoUpload
-              photos={form.photos}
-              onPhotosChange={(photos) => setForm(prev => ({ ...prev, photos }))}
-              mechanicId={user.id}
+          <div className="space-y-4">
+            <Label className="text-base">სერვისის ლოკაცია რუკაზე</Label>
+            <p className="text-sm text-muted-foreground">
+              დააჭირეთ რუკაზე ან გადაიტანეთ მაკერი თქვენი სერვისის ზუსტი ლოკაციისთვის
+            </p>
+            <MapLocationPicker
+              latitude={form.latitude}
+              longitude={form.longitude}
+              onLocationChange={(lat, lng) => setForm(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+              interactive={true}
             />
-          )}
-
-          <MapLocationPicker
-            latitude={form.latitude}
-            longitude={form.longitude}
-            onLocationChange={(lat, lng) => setForm(prev => ({ ...prev, latitude: lat, longitude: lng }))}
-          />
+          </div>
           
           <div className="flex items-center space-x-2 pt-4">
             <Switch

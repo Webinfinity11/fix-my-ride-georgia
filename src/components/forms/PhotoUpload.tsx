@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,108 +10,193 @@ interface PhotoUploadProps {
   photos: string[];
   onPhotosChange: (photos: string[]) => void;
   mechanicId: string;
+  maxPhotos?: number;
+  bucketName?: string;
 }
 
-const PhotoUpload = ({ photos, onPhotosChange, mechanicId }: PhotoUploadProps) => {
+const PhotoUpload = ({ 
+  photos, 
+  onPhotosChange, 
+  mechanicId, 
+  maxPhotos = 5,
+  bucketName = "service-photos"
+}: PhotoUploadProps) => {
   const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    setUploading(true);
-    const newPhotos: string[] = [];
-
+  const uploadPhoto = async (file: File) => {
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${i}.${fileExt}`;
-        const filePath = `${mechanicId}/${fileName}`;
+      setUploading(true);
+      
+      // Create a unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${mechanicId}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      console.log('Uploading to bucket:', bucketName, 'file:', fileName);
+      
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-        const { error: uploadError } = await supabase.storage
-          .from('service-photos')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data } = supabase.storage
-          .from('service-photos')
-          .getPublicUrl(filePath);
-
-        newPhotos.push(data.publicUrl);
+      if (error) {
+        console.error('Upload error:', error);
+        throw error;
       }
 
-      onPhotosChange([...photos, ...newPhotos]);
-      toast.success("ფოტოები წარმატებით აიტვირთა");
+      // Get the public URL
+      const { data: urlData } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(fileName);
+
+      const newPhotoUrl = urlData.publicUrl;
+      console.log('Photo uploaded successfully:', newPhotoUrl);
+      
+      onPhotosChange([...photos, newPhotoUrl]);
+      toast.success("ფოტო წარმატებით აიტვირთა");
+      
     } catch (error: any) {
-      toast.error(`ფოტოების ატვირთვა ვერ მოხერხდა: ${error.message}`);
+      console.error('Error uploading photo:', error);
+      toast.error(`ფოტოს ატვირთვისას შეცდომა: ${error.message}`);
     } finally {
       setUploading(false);
     }
   };
 
-  const removePhoto = (index: number) => {
-    const newPhotos = photos.filter((_, i) => i !== index);
-    onPhotosChange(newPhotos);
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    if (photos.length + files.length > maxPhotos) {
+      toast.error(`მაქსიმუმ ${maxPhotos} ფოტოს შეგიძლიათ ატვირთოთ`);
+      return;
+    }
+
+    // Upload files one by one
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('მხოლოდ სურათების ატვირთვაა შესაძლებელი');
+        continue;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('ფაილის ზომა არ უნდა აღემატებოდეს 5MB-ს');
+        continue;
+      }
+
+      await uploadPhoto(file);
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removePhoto = async (photoUrl: string) => {
+    try {
+      // Extract filename from URL to delete from storage
+      const urlParts = photoUrl.split('/');
+      const fileName = urlParts.slice(-2).join('/'); // Get the last two parts (mechanicId/filename)
+      
+      console.log('Deleting from bucket:', bucketName, 'file:', fileName);
+      
+      const { error } = await supabase.storage
+        .from(bucketName)
+        .remove([fileName]);
+
+      if (error) {
+        console.error('Delete error:', error);
+        // Don't throw error, just log it - remove from UI anyway
+      }
+
+      onPhotosChange(photos.filter(photo => photo !== photoUrl));
+      toast.success("ფოტო წაიშალა");
+    } catch (error: any) {
+      console.error('Error removing photo:', error);
+      // Remove from UI even if storage deletion fails
+      onPhotosChange(photos.filter(photo => photo !== photoUrl));
+      toast.error(`ფოტოს წაშლისას შეცდომა: ${error.message}`);
+    }
   };
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <Label className="text-base">სერვისის ფოტოები</Label>
-        <div className="border-2 border-dashed border-primary/20 rounded-lg p-6">
-          <div className="text-center">
-            <Image className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <Label htmlFor="photo-upload" className="cursor-pointer">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={uploading}
-                className="border-primary/30 hover:bg-primary/5"
-                asChild
-              >
-                <span>
-                  <Upload className="mr-2 h-4 w-4" />
-                  {uploading ? "იტვირთება..." : "ფოტოების ატვირთვა"}
-                </span>
-              </Button>
-            </Label>
-            <Input
-              id="photo-upload"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            <p className="text-sm text-muted-foreground mt-2">
-              მაქსიმუმ 5MB თითოეული ფოტო. მხარდაჭერილი ფორმატები: JPG, PNG, WebP
-            </p>
-          </div>
-        </div>
+      <div className="flex items-center justify-between">
+        <Label className="text-base">ფოტოები</Label>
+        <span className="text-sm text-muted-foreground">
+          {photos.length}/{maxPhotos}
+        </span>
       </div>
-
+      
+      {/* Photo Grid */}
       {photos.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {photos.map((photo, index) => (
             <div key={index} className="relative group">
               <img
                 src={photo}
-                alt={`სერვისის ფოტო ${index + 1}`}
-                className="w-full h-24 object-cover rounded-lg border border-primary/20"
+                alt={`ფოტო ${index + 1}`}
+                className="w-full h-32 object-cover rounded-lg border border-primary/20"
+                onError={(e) => {
+                  console.error('Image failed to load:', photo);
+                  e.currentTarget.style.display = 'none';
+                }}
               />
               <Button
                 type="button"
                 variant="destructive"
-                size="icon"
-                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => removePhoto(index)}
+                size="sm"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => removePhoto(photo)}
               >
-                <X className="h-3 w-3" />
+                <X size={16} />
               </Button>
             </div>
           ))}
+        </div>
+      )}
+      
+      {/* Upload Button */}
+      {photos.length < maxPhotos && (
+        <div className="border-2 border-dashed border-primary/20 rounded-lg p-6 text-center">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={uploading}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="border-primary/30 hover:bg-primary/5"
+          >
+            {uploading ? (
+              <>
+                <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full mr-2" />
+                ატვირთვა...
+              </>
+            ) : (
+              <>
+                <Upload size={16} className="mr-2" />
+                ფოტოების ატვირთვა
+              </>
+            )}
+          </Button>
+          <p className="text-sm text-muted-foreground mt-2">
+            მაქსიმუმ {maxPhotos} ფოტო, თითოეული 5MB-მდე
+          </p>
         </div>
       )}
     </div>

@@ -305,6 +305,8 @@ export type Database = {
           photos: string[] | null
           price_from: number | null
           price_to: number | null
+          rating: number | null
+          review_count: number | null
           updated_at: string
           working_days: string[] | null
           working_hours_end: string | null
@@ -330,6 +332,8 @@ export type Database = {
           photos?: string[] | null
           price_from?: number | null
           price_to?: number | null
+          rating?: number | null
+          review_count?: number | null
           updated_at?: string
           working_days?: string[] | null
           working_hours_end?: string | null
@@ -355,6 +359,8 @@ export type Database = {
           photos?: string[] | null
           price_from?: number | null
           price_to?: number | null
+          rating?: number | null
+          review_count?: number | null
           updated_at?: string
           working_days?: string[] | null
           working_hours_end?: string | null
@@ -544,6 +550,57 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      service_reviews: {
+        Row: {
+          booking_id: number | null
+          comment: string | null
+          created_at: string
+          id: number
+          images: Json | null
+          rating: number
+          service_id: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_id?: number | null
+          comment?: string | null
+          created_at?: string
+          id?: number
+          images?: Json | null
+          rating: number
+          service_id: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_id?: number | null
+          comment?: string | null
+          created_at?: string
+          id?: number
+          images?: Json | null
+          rating?: number
+          service_id?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_reviews_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

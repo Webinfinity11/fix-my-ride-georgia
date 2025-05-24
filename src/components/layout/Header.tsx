@@ -1,274 +1,116 @@
-
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Menu, X, User, Search, Wrench, ChevronDown } from 'lucide-react';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Check if we're on the homepage
-  const isHomePage = location.pathname === '/';
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-  
+  const [open, setOpen] = useState(false);
+
   const handleLogout = async () => {
-    await signOut();
-    navigate('/');
+    await logout();
+    navigate("/login");
   };
 
+  const navigationItems = [
+    { name: "მთავარი", href: "/" },
+    { name: "სერვისები", href: "/services" },
+    { name: "სერვისების ძიება", href: "/service-search" },
+    { name: "ხელოსნების ძიება", href: "/search" },
+    { name: "ჩვენ შესახებ", href: "/about" },
+    { name: "კონტაქტი", href: "/contact" },
+  ];
+
   return (
-    <header 
-      className={cn(
-        "sticky top-0 w-full z-40 transition-all duration-300",
-        isScrolled 
-          ? "bg-white/95 backdrop-blur-md shadow-sm" 
-          : isHomePage 
-            ? "bg-transparent" 
-            : "bg-white"
-      )}
-    >
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link to="/" className="flex items-center group">
-            <div className="bg-primary/10 p-2 rounded-lg mr-2 group-hover:bg-primary/20 transition-colors">
-              <Wrench className="h-6 w-6 text-primary" />
-            </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
-              ავტოხელოსანი
-            </span>
-          </Link>
-          
-          {/* Desktop Navigation */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link to="/search">
-                  <NavigationMenuLink 
-                    className={cn(
-                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                      "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                      location.pathname === "/search" ? "bg-accent/50 text-accent-foreground" : "text-foreground/80"
-                    )}
-                  >
-                    <Search className="mr-1 h-4 w-4" />
-                    ხელოსნების ძიება
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className={
-                    location.pathname === "/services" ? "bg-accent/50 text-accent-foreground" : "text-foreground/80"
-                  }
-                >
-                  სერვისები
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {[
-                      { name: "ძრავი", icon: "wrench", id: 1 },
-                      { name: "ტრანსმისია", icon: "cog", id: 2 },
-                      { name: "საჭე და საკიდარი", icon: "air-vent", id: 3 },
-                      { name: "სამუხრუჭე სისტემა", icon: "gauge", id: 4 }
-                    ].map((category) => (
-                      <li key={category.id}>
-                        <Link
-                          to={`/search?category=${category.id}`}
-                          className="flex select-none items-center rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">{category.name}</div>
-                        </Link>
-                      </li>
-                    ))}
-                    <li className="md:col-span-2">
-                      <Link
-                        to="/services"
-                        className="flex w-full select-none items-center justify-center rounded-md bg-accent p-3 text-center text-sm hover:bg-accent/80"
-                      >
-                        ყველა სერვისი
-                      </Link>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <Link to="/about">
-                  <NavigationMenuLink 
-                    className={cn(
-                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                      "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                      location.pathname === "/about" ? "bg-accent/50 text-accent-foreground" : "text-foreground/80"
-                    )}
-                  >
-                    ჩვენს შესახებ
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <Link to="/contact">
-                  <NavigationMenuLink 
-                    className={cn(
-                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                      "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                      location.pathname === "/contact" ? "bg-accent/50 text-accent-foreground" : "text-foreground/80"
-                    )}
-                  >
-                    კონტაქტი
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          
-          {/* Auth Buttons */}
+    <header className="bg-background sticky top-0 z-50 border-b">
+      <div className="container py-4 px-4 flex items-center justify-between">
+        <Link to="/" className="font-bold text-xl">
+          AutoHub
+        </Link>
+
+        <nav className="hidden md:flex items-center space-x-6">
+          {navigationItems.map((item) => (
+            <Link key={item.name} to={item.href} className="hover:text-primary transition-colors">
+              {item.name}
+            </Link>
+          ))}
+        </nav>
+
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={`https://avatar.vercel.sh/${user?.email}.png`} alt={user?.email} />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuItem onClick={() => navigate("/dashboard")}>პროფილი</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>გამოსვლა</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
           <div className="hidden md:flex items-center space-x-4">
-            {user ? (
-              <>
-                <Link to="/dashboard/profile">
-                  <Button variant="outline" className="flex items-center gap-2 border-2">
-                    <User size={18} />
-                    პროფილი
-                  </Button>
-                </Link>
-                <Button 
-                  variant="ghost" 
-                  onClick={handleLogout}
-                  className="text-foreground/80 hover:text-primary hover:bg-primary/10"
-                >
-                  გასვლა
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link to="/login">
-                  <Button variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white">
-                    შესვლა
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button className="bg-secondary hover:bg-secondary/90 shadow-sm">
-                    რეგისტრაცია
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-          
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-foreground/80 hover:text-primary p-2 rounded-md hover:bg-primary/5 transition-colors"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-        
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t animate-fade-in">
-            <nav className="flex flex-col space-y-4 mb-6">
-              <Link 
-                to="/search" 
-                className="text-foreground/80 hover:text-primary transition-colors flex items-center px-2 py-2 rounded-md hover:bg-primary/5"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Search className="h-4 w-4 mr-2" />
-                ხელოსნების ძიება
-              </Link>
-              <Link 
-                to="/services" 
-                className="text-foreground/80 hover:text-primary transition-colors flex items-center px-2 py-2 rounded-md hover:bg-primary/5"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Wrench className="h-4 w-4 mr-2" />
-                სერვისები
-              </Link>
-              <Link 
-                to="/about" 
-                className="text-foreground/80 hover:text-primary transition-colors px-2 py-2 rounded-md hover:bg-primary/5"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                ჩვენს შესახებ
-              </Link>
-              <Link 
-                to="/contact" 
-                className="text-foreground/80 hover:text-primary transition-colors px-2 py-2 rounded-md hover:bg-primary/5"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                კონტაქტი
-              </Link>
-            </nav>
-            <div className="flex flex-col space-y-3 mb-2">
-              {user ? (
-                <>
-                  <Link to="/dashboard/profile" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="outline" className="w-full flex items-center justify-center gap-2 border-2">
-                      <User size={18} />
-                      პროფილი
-                    </Button>
-                  </Link>
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full text-foreground/80 hover:text-primary"
-                  >
-                    გასვლა
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-white">
-                      შესვლა
-                    </Button>
-                  </Link>
-                  <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="w-full bg-secondary hover:bg-secondary-light">
-                      რეგისტრაცია
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+            <Link to="/login">
+              <Button variant="outline">შესვლა</Button>
+            </Link>
+            <Link to="/register">
+              <Button>რეგისტრაცია</Button>
+            </Link>
           </div>
         )}
+
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="sm">
+              <Menu className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="sm:w-2/3 md:w-full">
+            <SheetHeader className="text-left">
+              <SheetTitle>მენიუ</SheetTitle>
+              <SheetDescription>
+                გთხოვთ, აირჩიოთ სასურველი ოპერაცია ქვემოთ
+              </SheetDescription>
+            </SheetHeader>
+            <div className="grid gap-4 py-4">
+              {navigationItems.map((item) => (
+                <Link key={item.name} to={item.href} className="block py-2 hover:text-primary transition-colors">
+                  {item.name}
+                </Link>
+              ))}
+              {!user ? (
+                <>
+                  <Link to="/login">
+                    <Button variant="outline">შესვლა</Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button>რეგისტრაცია</Button>
+                  </Link>
+                </>
+              ) : (
+                <Button onClick={handleLogout} variant="destructive">
+                  გამოსვლა
+                </Button>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );
