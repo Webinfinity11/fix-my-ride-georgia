@@ -16,7 +16,7 @@ const steps = [
 
 const BookingSteps = ({ currentStep }: BookingStepsProps) => {
   const getCurrentStepIndex = () => {
-    if (currentStep === "success") return steps.length; // Success is after the last step
+    if (currentStep === "success") return steps.length;
     return steps.findIndex(step => step.id === currentStep);
   };
 
@@ -26,35 +26,32 @@ const BookingSteps = ({ currentStep }: BookingStepsProps) => {
     <div className="mb-8">
       {/* Desktop version */}
       <div className="hidden sm:block">
-        <ol className="flex items-center w-full">
-          {steps.map((step, index) => {
-            const isComplete = index < stepIndex;
-            const isCurrent = index === stepIndex;
-            const isUpcoming = index > stepIndex;
-            
-            return (
-              <li 
-                key={step.id} 
-                className={cn(
-                  "flex items-center relative",
-                  index !== steps.length - 1 ? "flex-1" : ""
-                )}
-              >
-                {/* Progress bar */}
-                {index !== 0 && (
+        <div className="relative">
+          {/* Progress background line */}
+          <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 rounded"></div>
+          
+          {/* Progress active line */}
+          <div 
+            className="absolute top-5 left-0 h-0.5 bg-primary rounded transition-all duration-500 ease-out"
+            style={{ width: `${(stepIndex / (steps.length - 1)) * 100}%` }}
+          ></div>
+          
+          <ol className="flex items-center justify-between relative z-10">
+            {steps.map((step, index) => {
+              const isComplete = index < stepIndex;
+              const isCurrent = index === stepIndex;
+              const isUpcoming = index > stepIndex;
+              
+              return (
+                <li key={step.id} className="flex flex-col items-center">
+                  {/* Step circle */}
                   <div className={cn(
-                    "absolute left-0 top-1/2 -translate-y-1/2 h-1 w-full -translate-x-1/2",
-                    isComplete ? "bg-primary" : "bg-muted"
-                  )} />
-                )}
-                
-                {/* Step circle */}
-                <div className="relative flex items-center z-10">
-                  <div className={cn(
-                    "h-10 w-10 rounded-full flex items-center justify-center",
-                    isComplete ? "bg-primary text-white" : 
-                    isCurrent ? "bg-white border-2 border-primary text-primary" : 
-                    "bg-white border-2 border-muted text-muted-foreground"
+                    "h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 shadow-sm",
+                    isComplete 
+                      ? "bg-primary border-primary text-white shadow-primary/20" 
+                      : isCurrent 
+                        ? "bg-white border-primary text-primary shadow-primary/10 ring-4 ring-primary/20" 
+                        : "bg-white border-gray-300 text-gray-400"
                   )}>
                     {isComplete ? (
                       <Check className="h-5 w-5" />
@@ -63,23 +60,37 @@ const BookingSteps = ({ currentStep }: BookingStepsProps) => {
                     )}
                   </div>
                   
+                  {/* Step label */}
                   <span className={cn(
-                    "ml-3 text-sm font-medium",
-                    isComplete ? "text-primary" : 
-                    isCurrent ? "text-primary" : 
-                    "text-muted-foreground"
+                    "mt-2 text-sm font-medium transition-colors duration-300",
+                    isComplete 
+                      ? "text-primary" 
+                      : isCurrent 
+                        ? "text-primary font-semibold" 
+                        : "text-gray-500"
                   )}>
                     {step.name}
                   </span>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
       
-      {/* Mobile version - simplified pill design */}
+      {/* Mobile version */}
       <div className="sm:hidden">
+        <div className="relative mb-4">
+          {/* Progress bar background */}
+          <div className="h-2 bg-gray-200 rounded-full"></div>
+          
+          {/* Progress bar fill */}
+          <div 
+            className="absolute top-0 left-0 h-2 bg-primary rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${((stepIndex + 1) / steps.length) * 100}%` }}
+          ></div>
+        </div>
+        
         <nav className="overflow-x-auto">
           <ol className="flex space-x-2">
             {steps.map((step, index) => {
@@ -87,12 +98,14 @@ const BookingSteps = ({ currentStep }: BookingStepsProps) => {
               const isCurrent = index === stepIndex;
               
               return (
-                <li key={step.id} className="flex-1">
+                <li key={step.id} className="flex-1 min-w-0">
                   <div className={cn(
-                    "text-xs font-medium px-3 py-2 rounded-full text-center",
-                    isComplete ? "bg-primary text-primary-foreground" : 
-                    isCurrent ? "bg-primary/20 text-primary border border-primary/30" : 
-                    "bg-muted text-muted-foreground"
+                    "text-xs font-medium px-3 py-2 rounded-full text-center transition-all duration-300",
+                    isComplete 
+                      ? "bg-primary text-white shadow-sm" 
+                      : isCurrent 
+                        ? "bg-primary/20 text-primary border border-primary/30 font-semibold" 
+                        : "bg-gray-100 text-gray-500"
                   )}>
                     {step.name}
                   </div>
@@ -101,6 +114,13 @@ const BookingSteps = ({ currentStep }: BookingStepsProps) => {
             })}
           </ol>
         </nav>
+        
+        {/* Current step indicator */}
+        <div className="mt-3 text-center">
+          <span className="text-sm font-medium text-primary">
+            ეტაპი {stepIndex + 1} of {steps.length}
+          </span>
+        </div>
       </div>
     </div>
   );

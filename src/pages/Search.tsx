@@ -67,6 +67,11 @@ const SearchPage = () => {
       setSelectedCategory(parseInt(categoryFromUrl));
     }
     
+    const cityFromUrl = searchParams.get("city");
+    if (cityFromUrl) {
+      setSelectedCity(cityFromUrl);
+    }
+    
     setSearchQuery(searchParams.get("q") || "");
   }, [searchParams]);
 
@@ -96,8 +101,23 @@ const SearchPage = () => {
     fetchInitialData();
   }, []);
 
+  // Re-fetch when URL params change
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    const cityFromUrl = searchParams.get("city");
+    const queryFromUrl = searchParams.get("q");
+    
+    fetchMechanics(
+      queryFromUrl || "", 
+      categoryFromUrl ? parseInt(categoryFromUrl) : null,
+      cityFromUrl || null
+    );
+  }, [searchParams, activeTab]);
+
   const fetchMechanics = async (query: string = "", categoryId: number | null = null, city: string | null = null) => {
     try {
+      console.log("Fetching mechanics with filters:", { query, categoryId, city, activeTab });
+      
       // First get mechanics with their profile info
       const { data: mechanicsData, error: mechanicsError } = await supabase
         .from("profiles")
@@ -158,13 +178,16 @@ const SearchPage = () => {
       
       // Filter by category if provided
       if (categoryId) {
+        console.log("Filtering by category:", categoryId);
         filteredMechanics = filteredMechanics.filter(mechanic => 
           mechanic.services.some(service => service.category_id === categoryId)
         );
+        console.log("Mechanics after category filter:", filteredMechanics.length);
       }
 
       // Filter by city if provided
       if (city) {
+        console.log("Filtering by city:", city);
         filteredMechanics = filteredMechanics.filter(mechanic => 
           mechanic.profile.city === city
         );
@@ -185,6 +208,7 @@ const SearchPage = () => {
           });
       }
 
+      console.log("Final filtered mechanics:", filteredMechanics.length);
       setMechanics(filteredMechanics);
       // Reset the visible mechanic count when filters change
       setVisibleMechanicsCount(6);
@@ -202,26 +226,35 @@ const SearchPage = () => {
     if (selectedCategory) params.set("category", selectedCategory.toString());
     if (selectedCity) params.set("city", selectedCity);
     setSearchParams(params);
-    
-    fetchMechanics(searchQuery, selectedCategory, selectedCity)
-      .finally(() => setLoading(false));
   };
 
   const handleCategoryChange = (categoryId: number) => {
-    setSelectedCategory(categoryId === selectedCategory ? null : categoryId);
+    const newCategoryId = categoryId === selectedCategory ? null : categoryId;
+    setSelectedCategory(newCategoryId);
     setLoading(true);
-    fetchMechanics(
-      searchQuery, 
-      categoryId === selectedCategory ? null : categoryId,
-      selectedCity
-    ).finally(() => setLoading(false));
+    
+    // Update URL params
+    const params = new URLSearchParams(searchParams);
+    if (newCategoryId) {
+      params.set("category", newCategoryId.toString());
+    } else {
+      params.delete("category");
+    }
+    setSearchParams(params);
   };
 
   const handleCityChange = (city: string) => {
     setSelectedCity(city);
     setLoading(true);
-    fetchMechanics(searchQuery, selectedCategory, city)
-      .finally(() => setLoading(false));
+    
+    // Update URL params
+    const params = new URLSearchParams(searchParams);
+    if (city) {
+      params.set("city", city);
+    } else {
+      params.delete("city");
+    }
+    setSearchParams(params);
   };
 
   const handleResetFilters = () => {

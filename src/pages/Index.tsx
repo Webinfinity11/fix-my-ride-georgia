@@ -1,17 +1,18 @@
+
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
+import SearchFilter from "@/components/home/SearchFilter";
 import ServiceCategories from "@/components/home/ServiceCategories";
 import HowItWorks from "@/components/home/HowItWorks";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import MechanicCard from "@/components/mechanic/MechanicCard";
 import { Link } from "react-router-dom";
 
 // Sample featured mechanics data
 const featuredMechanics = [
   {
-    id: "1", // Changed from number to string
+    id: "1",
     name: "გიორგი გიორგაძე",
     avatar: "",
     specialization: "ძრავის სპეციალისტი",
@@ -22,7 +23,7 @@ const featuredMechanics = [
     services: ["ძრავის შეკეთება", "დიაგნოსტიკა", "ელექტროობა"]
   },
   {
-    id: "2", // Changed from number to string
+    id: "2",
     name: "ნიკა მაისურაძე",
     avatar: "",
     specialization: "საჭის სისტემა, სამუხრუჭე სისტემა",
@@ -33,7 +34,7 @@ const featuredMechanics = [
     services: ["საჭის სისტემა", "სამუხრუჭე სისტემა", "საკიდი"]
   },
   {
-    id: "3", // Changed from number to string
+    id: "3",
     name: "თემურ კახიძე",
     avatar: "",
     specialization: "ელექტრო სისტემების სპეციალისტი",
@@ -53,6 +54,9 @@ const Index = () => {
       <main className="flex-grow">
         {/* Hero Section */}
         <Hero />
+        
+        {/* Search Filter Section */}
+        <SearchFilter />
         
         {/* Service Categories */}
         <ServiceCategories />
@@ -109,7 +113,7 @@ const Index = () => {
               </Link>
             </div>
           </div>
-        </section>
+        </div>
       </main>
       
       <Footer />
