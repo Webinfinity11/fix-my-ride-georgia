@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -26,7 +26,7 @@ interface MapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map initialization and events
+// Component to handle map events and marker
 const MapController = ({ 
   position, 
   onLocationChange, 
@@ -37,7 +37,6 @@ const MapController = ({
   interactive: boolean; 
 }) => {
   const map = useMap();
-  const markerRef = useRef<L.Marker>(null);
 
   // Handle map clicks
   useMapEvents({
@@ -55,10 +54,11 @@ const MapController = ({
     }
   }, [map, position]);
 
+  // Handle marker drag
   const eventHandlers = useMemo(
     () => ({
-      dragend() {
-        const marker = markerRef.current;
+      dragend(e: any) {
+        const marker = e.target;
         if (marker != null) {
           const newPos = marker.getLatLng();
           onLocationChange(newPos.lat, newPos.lng);
@@ -73,7 +73,6 @@ const MapController = ({
       draggable={interactive}
       eventHandlers={interactive ? eventHandlers : {}}
       position={position}
-      ref={markerRef}
     >
       <Popup>
         {interactive 
