@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -26,23 +26,8 @@ interface MapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map clicks
-const MapClickHandler = ({ onLocationChange, interactive }: { 
-  onLocationChange: (lat: number, lng: number) => void; 
-  interactive: boolean; 
-}) => {
-  useMapEvents({
-    click(e) {
-      if (interactive) {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      }
-    },
-  });
-  return null;
-};
-
-// Component to handle marker drag
-const DraggableMarker = ({ 
+// Component to handle map initialization and events
+const MapController = ({ 
   position, 
   onLocationChange, 
   interactive 
@@ -51,7 +36,24 @@ const DraggableMarker = ({
   onLocationChange: (lat: number, lng: number) => void; 
   interactive: boolean; 
 }) => {
+  const map = useMap();
   const markerRef = useRef<L.Marker>(null);
+
+  // Handle map clicks
+  useMapEvents({
+    click(e) {
+      if (interactive) {
+        onLocationChange(e.latlng.lat, e.latlng.lng);
+      }
+    },
+  });
+
+  // Update map view when position changes
+  useEffect(() => {
+    if (map) {
+      map.setView(position, map.getZoom());
+    }
+  }, [map, position]);
 
   const eventHandlers = useMemo(
     () => ({
@@ -126,15 +128,7 @@ const MapLocationPicker = ({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          
-          {interactive && (
-            <MapClickHandler 
-              onLocationChange={handleLocationChange} 
-              interactive={interactive} 
-            />
-          )}
-          
-          <DraggableMarker
+          <MapController
             position={center}
             onLocationChange={handleLocationChange}
             interactive={interactive}
