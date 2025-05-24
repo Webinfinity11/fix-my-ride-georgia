@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -26,11 +27,27 @@ interface MapControllerProps {
   zoom: number;
 }
 
+interface MapClickHandlerProps {
+  onLocationChange: (lat: number, lng: number) => void;
+  interactive: boolean;
+}
+
 const MapController: React.FC<MapControllerProps> = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
     map.setView(center, zoom);
   }, [center, zoom, map]);
+  return null;
+};
+
+const MapClickHandler: React.FC<MapClickHandlerProps> = ({ onLocationChange, interactive }) => {
+  useMapEvents({
+    click: (e) => {
+      if (interactive) {
+        onLocationChange(e.latlng.lat, e.latlng.lng);
+      }
+    },
+  });
   return null;
 };
 
@@ -46,14 +63,6 @@ const MapLocationPicker = ({ latitude, longitude, onLocationChange, interactive 
     setCenter([latitude || defaultLat, longitude || defaultLng]);
   }, [latitude, longitude]);
 
-  const handleMapClick = (e: any) => {
-    if (interactive) {
-      const lat = e.latlng.lat;
-      const lng = e.latlng.lng;
-      onLocationChange(lat, lng);
-    }
-  };
-
   useEffect(() => {
     if (latitude && longitude) {
       setCenter([latitude, longitude]);
@@ -67,7 +76,6 @@ const MapLocationPicker = ({ latitude, longitude, onLocationChange, interactive 
           center={center}
           zoom={zoom}
           style={{ height: "100%", width: "100%" }}
-          onClick={handleMapClick}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -75,6 +83,7 @@ const MapLocationPicker = ({ latitude, longitude, onLocationChange, interactive 
           />
           
           <MapController center={center} zoom={zoom} />
+          <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
           
           {latitude && longitude && (
             <Marker 
