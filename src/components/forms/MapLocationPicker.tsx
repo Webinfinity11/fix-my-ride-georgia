@@ -73,12 +73,6 @@ const MapLocationPicker = ({
     setCenter([latitude || defaultLat, longitude || defaultLng]);
   }, [latitude, longitude]);
 
-  useEffect(() => {
-    if (latitude && longitude) {
-      setCenter([latitude, longitude]);
-    }
-  }, [latitude, longitude]);
-
   return (
     <div className="space-y-4">
       <div className="h-64 rounded-lg overflow-hidden border border-primary/20">
