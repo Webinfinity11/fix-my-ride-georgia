@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -74,34 +74,12 @@ const MapLocationPicker = ({
     setCenter([latitude || defaultLat, longitude || defaultLng]);
   }, [latitude, longitude, defaultLat, defaultLng]);
 
-  // Memoize the map content to prevent re-creation on each render
-  const mapContent = useMemo(() => (
-    <>
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      <MapController center={center} zoom={defaultZoom} />
-      <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
-      {latitude && longitude && (
-        <Marker 
-          position={[latitude, longitude]}
-          draggable={interactive}
-          eventHandlers={interactive ? {
-            dragend: (e) => {
-              const marker = e.target;
-              const position = marker.getLatLng();
-              onLocationChange(position.lat, position.lng);
-            }
-          } : {}}
-        >
-          <Popup>
-            {interactive ? "გადაიტანეთ მაკერი სასურველ ადგილზე" : "სერვისის ლოკაცია"}
-          </Popup>
-        </Marker>
-      )}
-    </>
-  ), [center, latitude, longitude, onLocationChange, interactive, defaultZoom]);
+  // Stabilize the marker drag handler with useCallback
+  const handleMarkerDrag = useCallback((e: any) => {
+    const marker = e.target;
+    const position = marker.getLatLng();
+    onLocationChange(position.lat, position.lng);
+  }, [onLocationChange]);
 
   return (
     <div className="space-y-4">
@@ -111,7 +89,25 @@ const MapLocationPicker = ({
           zoom={defaultZoom}
           style={{ height: "100%", width: "100%" }}
         >
-          {mapContent}
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <MapController center={center} zoom={defaultZoom} />
+          <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
+          {latitude && longitude && (
+            <Marker 
+              position={[latitude, longitude]}
+              draggable={interactive}
+              eventHandlers={interactive ? {
+                dragend: handleMarkerDrag
+              } : {}}
+            >
+              <Popup>
+                {interactive ? "გადაიტანეთ მაკერი სასურველ ადგილზე" : "სერვისის ლოკაცია"}
+              </Popup>
+            </Marker>
+          )}
         </MapContainer>
       </div>
       
