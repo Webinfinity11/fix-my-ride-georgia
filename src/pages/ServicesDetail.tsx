@@ -17,6 +17,7 @@ import {
 import { Star, MapPin, Clock, CreditCard, Banknote, Car, Search, User, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import ServiceFilters from "@/components/services/ServiceFilters";
 
 type ServiceType = {
   id: number;
@@ -74,11 +75,65 @@ const ServicesDetail = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [onSiteOnly, setOnSiteOnly] = useState(false);
+  const [minRating, setMinRating] = useState<number | null>(null);
+  const [cities, setCities] = useState<string[]>([]);
+  const [districts, setDistricts] = useState<string[]>([]);
 
   useEffect(() => {
     fetchServices();
     fetchCategories();
+    fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    if (selectedCity === "თბილისი") {
+      fetchDistricts();
+    } else {
+      setDistricts([]);
+      setSelectedDistrict(null);
+    }
+  }, [selectedCity]);
+
+  const fetchInitialData = async () => {
+    try {
+      const { data: servicesData, error: servicesError } = await supabase
+        .from("mechanic_services")
+        .select("city")
+        .not("city", "is", null);
+
+      if (servicesError) throw servicesError;
+      
+      const uniqueCities = Array.from(
+        new Set(servicesData?.map(s => s.city).filter(Boolean) as string[])
+      ).sort();
+      setCities(uniqueCities);
+    } catch (error: any) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
+  const fetchDistricts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("mechanic_services")
+        .select("district")
+        .eq("city", "თბილისი")
+        .not("district", "is", null);
+
+      if (error) throw error;
+      
+      const uniqueDistricts = Array.from(
+        new Set(data?.map(s => s.district).filter(Boolean) as string[])
+      ).sort();
+      setDistricts(uniqueDistricts);
+    } catch (error: any) {
+      console.error("Error fetching districts:", error);
+    }
+  };
 
   const fetchServices = async () => {
     try {
@@ -241,6 +296,174 @@ const ServicesDetail = () => {
     ));
   };
 
+  const handleSearch = () => {
+    // Apply all filters
+    fetchFilteredServices();
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedCity(null);
+    setSelectedDistrict(null);
+    setSelectedBrands([]);
+    setOnSiteOnly(false);
+    setMinRating(null);
+    fetchServices();
+  };
+
+  const fetchFilteredServices = async () => {
+    setLoading(true);
+    try {
+      console.log("Fetching filtered services...");
+      
+      let query = supabase
+        .from("mechanic_services")
+        .select(`
+          id,
+          name,
+          description,
+          price_from,
+          price_to,
+          estimated_hours,
+          city,
+          district,
+          car_brands,
+          on_site_service,
+          accepts_card_payment,
+          accepts_cash_payment,
+          working_days,
+          working_hours_start,
+          working_hours_end,
+          photos,
+          rating,
+          review_count,
+          category_id,
+          mechanic_id
+        `)
+        .eq("is_active", true);
+
+      // Apply filters
+      if (searchTerm) {
+        query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+
+      if (selectedCategory !== "all") {
+        query = query.eq("category_id", selectedCategory);
+      }
+
+      if (selectedCity) {
+        query = query.eq("city", selectedCity);
+      }
+
+      if (selectedDistrict) {
+        query = query.eq("district", selectedDistrict);
+      }
+
+      if (onSiteOnly) {
+        query = query.eq("on_site_service", true);
+      }
+
+      if (minRating) {
+        query = query.gte("rating", minRating);
+      }
+
+      const { data: servicesData, error: servicesError } = await query.order("created_at", { ascending: false });
+
+      if (servicesError) throw servicesError;
+
+      if (!servicesData || servicesData.length === 0) {
+        setServices([]);
+        return;
+      }
+
+      // Get unique category IDs
+      const categoryIds = [...new Set(servicesData.map(s => s.category_id).filter(Boolean))];
+      
+      // Fetch categories
+      let categoriesData = [];
+      if (categoryIds.length > 0) {
+        const { data: catData, error: catError } = await supabase
+          .from("service_categories")
+          .select("id, name")
+          .in("id", categoryIds);
+        
+        if (catError) throw catError;
+        categoriesData = catData || [];
+      }
+
+      // Get unique mechanic IDs
+      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))];
+      
+      // Fetch mechanic profiles
+      const { data: mechanicsData, error: mechanicsError } = await supabase
+        .from("profiles")
+        .select(`
+          id,
+          first_name,
+          last_name,
+          city,
+          district,
+          mechanic_profiles(rating, review_count)
+        `)
+        .in("id", mechanicIds);
+
+      if (mechanicsError) throw mechanicsError;
+
+      // Transform the data
+      let transformedData = servicesData.map(service => {
+        const mechanic = mechanicsData?.find(m => m.id === service.mechanic_id);
+        const category = categoriesData.find(c => c.id === service.category_id);
+        
+        return {
+          id: service.id,
+          name: service.name,
+          description: service.description,
+          price_from: service.price_from,
+          price_to: service.price_to,
+          estimated_hours: service.estimated_hours,
+          city: service.city,
+          district: service.district,
+          car_brands: service.car_brands,
+          on_site_service: service.on_site_service,
+          accepts_card_payment: service.accepts_card_payment,
+          accepts_cash_payment: service.accepts_cash_payment,
+          working_days: service.working_days,
+          working_hours_start: service.working_hours_start,
+          working_hours_end: service.working_hours_end,
+          photos: service.photos,
+          rating: service.rating,
+          review_count: service.review_count,
+          category: category || null,
+          mechanic: {
+            id: mechanic?.id || "",
+            first_name: mechanic?.first_name || "",
+            last_name: mechanic?.last_name || "",
+            city: mechanic?.city || "",
+            district: mechanic?.district || "",
+            rating: mechanic?.mechanic_profiles?.rating || null,
+            review_count: mechanic?.mechanic_profiles?.review_count || null
+          }
+        };
+      });
+
+      // Filter by car brands
+      if (selectedBrands.length > 0) {
+        transformedData = transformedData.filter(service => 
+          service.car_brands && 
+          selectedBrands.some(brand => service.car_brands?.includes(brand))
+        );
+      }
+
+      setServices(transformedData);
+    } catch (error: any) {
+      console.error("Error fetching filtered services:", error);
+      toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Filter services
   const filteredServices = services.filter(service => {
     const matchesSearch = 
@@ -297,34 +520,27 @@ const ServicesDetail = () => {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="სერვისის ძიება..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 border-primary/20 focus-visible:ring-primary"
-                />
-              </div>
-              
-              <Select 
-                value={selectedCategory.toString()} 
-                onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}
-              >
-                <SelectTrigger className="w-full sm:w-[200px] border-primary/20 focus-visible:ring-primary">
-                  <SelectValue placeholder="ყველა კატეგორია" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">ყველა კატეგორია</SelectItem>
-                  {categories.map(category => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <ServiceFilters
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              categories={categories}
+              selectedCity={selectedCity}
+              setSelectedCity={setSelectedCity}
+              cities={cities}
+              selectedDistrict={selectedDistrict}
+              setSelectedDistrict={setSelectedDistrict}
+              districts={districts}
+              selectedBrands={selectedBrands}
+              setSelectedBrands={setSelectedBrands}
+              onSiteOnly={onSiteOnly}
+              setOnSiteOnly={setOnSiteOnly}
+              minRating={minRating}
+              setMinRating={setMinRating}
+              onSearch={handleSearch}
+              onResetFilters={handleResetFilters}
+            />
 
             {/* Services Grid */}
             {filteredServices.length === 0 ? (
