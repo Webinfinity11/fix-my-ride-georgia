@@ -134,7 +134,18 @@ const Index = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {featuredMechanics.map((mechanic) => (
-                <MechanicCard key={mechanic.id} mechanic={mechanic} />
+                <MechanicCard 
+                  key={mechanic.id} 
+                  id={mechanic.id}
+                  name={mechanic.name}
+                  avatar={mechanic.avatar}
+                  specialization={mechanic.specialization}
+                  location={mechanic.location}
+                  rating={mechanic.rating}
+                  reviewCount={mechanic.reviewCount}
+                  verified={mechanic.verified}
+                  services={mechanic.services}
+                />
               ))}
             </div>
             
