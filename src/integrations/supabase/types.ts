@@ -207,6 +207,33 @@ export type Database = {
         }
         Relationships: []
       }
+      mechanic_profile_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          mechanic_id: string
+          user_agent: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          mechanic_id: string
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          mechanic_id?: string
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: []
+      }
       mechanic_profiles: {
         Row: {
           accepts_card_payment: boolean | null
@@ -263,14 +290,19 @@ export type Database = {
           accepts_cash_payment: boolean | null
           car_brands: string[] | null
           category_id: number | null
+          city: string | null
           created_at: string
           description: string | null
+          district: string | null
           estimated_hours: number | null
           id: number
           is_active: boolean | null
+          latitude: number | null
+          longitude: number | null
           mechanic_id: string
           name: string
           on_site_service: boolean | null
+          photos: string[] | null
           price_from: number | null
           price_to: number | null
           updated_at: string
@@ -283,14 +315,19 @@ export type Database = {
           accepts_cash_payment?: boolean | null
           car_brands?: string[] | null
           category_id?: number | null
+          city?: string | null
           created_at?: string
           description?: string | null
+          district?: string | null
           estimated_hours?: number | null
           id?: number
           is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
           mechanic_id: string
           name: string
           on_site_service?: boolean | null
+          photos?: string[] | null
           price_from?: number | null
           price_to?: number | null
           updated_at?: string
@@ -303,14 +340,19 @@ export type Database = {
           accepts_cash_payment?: boolean | null
           car_brands?: string[] | null
           category_id?: number | null
+          city?: string | null
           created_at?: string
           description?: string | null
+          district?: string | null
           estimated_hours?: number | null
           id?: number
           is_active?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
           mechanic_id?: string
           name?: string
           on_site_service?: boolean | null
+          photos?: string[] | null
           price_from?: number | null
           price_to?: number | null
           updated_at?: string

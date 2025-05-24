@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Clock, CreditCard, Banknote } from "lucide-react";
+import LocationSelector from "./LocationSelector";
+import PhotoUpload from "./PhotoUpload";
+import MapLocationPicker from "./MapLocationPicker";
 
 type ServiceType = {
   id: number;
@@ -79,6 +81,11 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     workingHoursEnd: "18:00",
     carBrands: [] as string[],
     onSiteService: false,
+    city: "",
+    district: "",
+    photos: [] as string[],
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
 
   useEffect(() => {
@@ -98,6 +105,11 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         workingHoursEnd: service.working_hours_end || "18:00",
         carBrands: service.car_brands || [],
         onSiteService: false,
+        city: service.city || "",
+        district: service.district || "",
+        photos: service.photos || [],
+        latitude: service.latitude || null,
+        longitude: service.longitude || null,
       });
     }
   }, [service]);
@@ -135,6 +147,23 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     }));
   };
 
+  const handleSelectAllBrands = () => {
+    setForm((prev) => ({
+      ...prev,
+      carBrands: prev.carBrands.length === popularCarBrands.length ? [] : [...popularCarBrands]
+    }));
+  };
+
+  const handleOtherBrandToggle = () => {
+    const otherBrand = "სხვა";
+    setForm((prev) => ({
+      ...prev,
+      carBrands: prev.carBrands.includes(otherBrand)
+        ? prev.carBrands.filter((b) => b !== otherBrand)
+        : [...prev.carBrands, otherBrand]
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -163,6 +192,11 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         working_hours_end: form.workingHoursEnd,
         car_brands: form.carBrands,
         on_site_service: form.onSiteService,
+        city: form.city || null,
+        district: form.district || null,
+        photos: form.photos,
+        latitude: form.latitude,
+        longitude: form.longitude,
       };
       
       if (service) {
@@ -293,6 +327,13 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             </div>
           </div>
 
+          <LocationSelector
+            selectedCity={form.city}
+            selectedDistrict={form.district}
+            onCityChange={(city) => setForm(prev => ({ ...prev, city, district: city !== "თბილისი" ? "" : prev.district }))}
+            onDistrictChange={(district) => setForm(prev => ({ ...prev, district }))}
+          />
+
           <div className="space-y-4 pt-2">
             <h3 className="text-base font-medium flex items-center gap-2">
               <Clock size={18} className="text-primary" /> 
@@ -381,6 +422,19 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
 
           <div className="space-y-4 pt-2">
             <h3 className="text-base font-medium">მანქანის მარკები, რომლებზეც მუშაობთ</h3>
+            
+            <div className="flex gap-2 mb-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleSelectAllBrands}
+                className="border-primary/30 hover:bg-primary/5"
+              >
+                {form.carBrands.length === popularCarBrands.length ? "გაუქმება" : "ყველას არჩევა"}
+              </Button>
+            </div>
+            
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
               {popularCarBrands.map((brand) => (
                 <div key={brand} className="flex items-center space-x-2">
@@ -398,8 +452,37 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                   </label>
                 </div>
               ))}
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="brand-other" 
+                  checked={form.carBrands.includes("სხვა")}
+                  onCheckedChange={handleOtherBrandToggle}
+                  className="text-primary border-primary/30"
+                />
+                <label
+                  htmlFor="brand-other"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  სხვა
+                </label>
+              </div>
             </div>
           </div>
+
+          {user && (
+            <PhotoUpload
+              photos={form.photos}
+              onPhotosChange={(photos) => setForm(prev => ({ ...prev, photos }))}
+              mechanicId={user.id}
+            />
+          )}
+
+          <MapLocationPicker
+            latitude={form.latitude}
+            longitude={form.longitude}
+            onLocationChange={(lat, lng) => setForm(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+          />
           
           <div className="flex items-center space-x-2 pt-4">
             <Switch
