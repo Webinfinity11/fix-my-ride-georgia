@@ -1,5 +1,6 @@
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -33,7 +34,7 @@ const MapLocationPicker = ({
   const defaultZoom = 12;
 
   const [mapKey, setMapKey] = useState(0);
-  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
 
   // Memoize center position to prevent unnecessary re-renders
   const center = useMemo<[number, number]>(() => [
@@ -48,29 +49,36 @@ const MapLocationPicker = ({
     onLocationChange(position.lat, position.lng);
   }, [onLocationChange]);
 
-  // Handle map creation and click events
-  const handleMapCreated = useCallback((map: L.Map) => {
-    setMapInstance(map);
-    
-    if (interactive) {
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      });
-    }
+  // Handle map creation
+  const handleMapCreated = useCallback(() => {
+    // This will be called when the map is ready
+    setTimeout(() => {
+      const mapContainer = document.querySelector('.leaflet-container') as any;
+      if (mapContainer && mapContainer._leaflet_map) {
+        const map = mapContainer._leaflet_map;
+        mapRef.current = map;
+        
+        if (interactive) {
+          map.on('click', (e: L.LeafletMouseEvent) => {
+            onLocationChange(e.latlng.lat, e.latlng.lng);
+          });
+        }
+      }
+    }, 100);
   }, [interactive, onLocationChange]);
 
-  // Clean up event listeners when component unmounts or interactive changes
+  // Clean up event listeners when interactive changes
   useEffect(() => {
-    if (mapInstance) {
-      mapInstance.off('click');
+    if (mapRef.current) {
+      mapRef.current.off('click');
       
       if (interactive) {
-        mapInstance.on('click', (e: L.LeafletMouseEvent) => {
+        mapRef.current.on('click', (e: L.LeafletMouseEvent) => {
           onLocationChange(e.latlng.lat, e.latlng.lng);
         });
       }
     }
-  }, [mapInstance, interactive, onLocationChange]);
+  }, [interactive, onLocationChange]);
 
   // Force map re-render when coordinates change significantly
   useEffect(() => {
@@ -85,7 +93,7 @@ const MapLocationPicker = ({
           center={center}
           zoom={defaultZoom}
           style={{ height: "100%", width: "100%" }}
-          whenReady={(map) => handleMapCreated(map.target)}
+          whenReady={handleMapCreated}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -162,3 +170,4 @@ const MapLocationPicker = ({
 };
 
 export default MapLocationPicker;
+
