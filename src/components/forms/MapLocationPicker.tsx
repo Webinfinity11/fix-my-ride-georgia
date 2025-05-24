@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -21,6 +21,23 @@ interface MapLocationPickerProps {
   onLocationChange: (lat: number, lng: number) => void;
   interactive?: boolean;
 }
+
+interface MapClickHandlerProps {
+  onLocationChange: (lat: number, lng: number) => void;
+  interactive: boolean;
+}
+
+const MapClickHandler = ({ onLocationChange, interactive }: MapClickHandlerProps) => {
+  useMapEvents({
+    click: (e) => {
+      if (interactive) {
+        onLocationChange(e.latlng.lat, e.latlng.lng);
+      }
+    },
+  });
+  
+  return null;
+};
 
 const MapLocationPicker = ({ 
   latitude, 
@@ -47,13 +64,6 @@ const MapLocationPicker = ({
     onLocationChange(position.lat, position.lng);
   }, [onLocationChange]);
 
-  // Handle map click
-  const handleMapClick = useCallback((e: L.LeafletMouseEvent) => {
-    if (interactive) {
-      onLocationChange(e.latlng.lat, e.latlng.lng);
-    }
-  }, [interactive, onLocationChange]);
-
   // Force map re-render when coordinates change significantly
   useEffect(() => {
     setMapKey(prev => prev + 1);
@@ -67,14 +77,12 @@ const MapLocationPicker = ({
           center={center}
           zoom={defaultZoom}
           style={{ height: "100%", width: "100%" }}
-          eventHandlers={{
-            click: handleMapClick
-          }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
+          <MapClickHandler onLocationChange={onLocationChange} interactive={interactive} />
           {latitude && longitude && (
             <Marker 
               position={[latitude, longitude]}
