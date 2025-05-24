@@ -209,30 +209,34 @@ const ServiceSearch = () => {
 
       if (error) throw error;
 
-      let filteredServices = data?.map(service => ({
-        id: service.id,
-        name: service.name,
-        description: service.description,
-        price_from: service.price_from,
-        price_to: service.price_to,
-        estimated_hours: service.estimated_hours,
-        city: service.city,
-        district: service.district,
-        car_brands: service.car_brands,
-        on_site_service: service.on_site_service,
-        accepts_card_payment: service.accepts_card_payment,
-        accepts_cash_payment: service.accepts_cash_payment,
-        rating: service.rating,
-        review_count: service.review_count,
-        category: service.service_categories,
-        mechanic: {
-          id: service.profiles?.id || "",
-          first_name: service.profiles?.first_name || "",
-          last_name: service.profiles?.last_name || "",
-          rating: service.profiles?.mechanic_profiles?.rating,
-          is_mobile: service.profiles?.mechanic_profiles?.is_mobile || false
-        }
-      })) || [];
+      let filteredServices = data?.map(service => {
+        const profile = Array.isArray(service.profiles) ? service.profiles[0] : service.profiles;
+        
+        return {
+          id: service.id,
+          name: service.name,
+          description: service.description,
+          price_from: service.price_from,
+          price_to: service.price_to,
+          estimated_hours: service.estimated_hours,
+          city: service.city,
+          district: service.district,
+          car_brands: service.car_brands,
+          on_site_service: service.on_site_service,
+          accepts_card_payment: service.accepts_card_payment,
+          accepts_cash_payment: service.accepts_cash_payment,
+          rating: service.rating,
+          review_count: service.review_count,
+          category: service.service_categories,
+          mechanic: {
+            id: profile?.id || "",
+            first_name: profile?.first_name || "",
+            last_name: profile?.last_name || "",
+            rating: profile?.mechanic_profiles?.rating || null,
+            is_mobile: profile?.mechanic_profiles?.is_mobile || false
+          }
+        };
+      }) || [];
 
       // Filter by car brands
       if (selectedBrands.length > 0) {
@@ -379,7 +383,7 @@ const ServiceSearch = () => {
                     <Checkbox 
                       id="onSiteService"
                       checked={onSiteOnly}
-                      onCheckedChange={setOnSiteOnly}
+                      onCheckedChange={(checked) => setOnSiteOnly(checked === true)}
                     />
                     <label htmlFor="onSiteService" className="text-sm">ადგილზე მისვლის სერვისი</label>
                   </div>

@@ -130,6 +130,8 @@ const ServiceDetail = () => {
       if (error) throw error;
 
       if (data && data.profiles) {
+        const profile = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles;
+        
         setService({
           id: data.id,
           name: data.name,
@@ -151,17 +153,17 @@ const ServiceDetail = () => {
           review_count: data.review_count,
           category: data.service_categories,
           mechanic: {
-            id: data.profiles.id,
-            first_name: data.profiles.first_name,
-            last_name: data.profiles.last_name,
-            city: data.profiles.city,
-            district: data.profiles.district,
-            description: data.profiles.mechanic_profiles?.description,
-            specialization: data.profiles.mechanic_profiles?.specialization,
-            experience_years: data.profiles.mechanic_profiles?.experience_years,
-            rating: data.profiles.mechanic_profiles?.rating,
-            review_count: data.profiles.mechanic_profiles?.review_count,
-            is_mobile: data.profiles.mechanic_profiles?.is_mobile || false
+            id: profile?.id || "",
+            first_name: profile?.first_name || "",
+            last_name: profile?.last_name || "",
+            city: profile?.city || "",
+            district: profile?.district || "",
+            description: profile?.mechanic_profiles?.description || null,
+            specialization: profile?.mechanic_profiles?.specialization || null,
+            experience_years: profile?.mechanic_profiles?.experience_years || null,
+            rating: profile?.mechanic_profiles?.rating || null,
+            review_count: profile?.mechanic_profiles?.review_count || null,
+            is_mobile: profile?.mechanic_profiles?.is_mobile || false
           }
         });
       }
@@ -182,28 +184,39 @@ const ServiceDetail = () => {
           rating,
           comment,
           created_at,
-          profiles!service_reviews_user_id_fkey(
-            first_name,
-            last_name
-          )
+          user_id
         `)
         .eq("service_id", parseInt(id!))
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      const transformedReviews = data?.map(review => ({
-        id: review.id,
-        rating: review.rating,
-        comment: review.comment,
-        created_at: review.created_at,
-        user: {
-          first_name: review.profiles?.first_name || "",
-          last_name: review.profiles?.last_name || ""
-        }
-      })) || [];
+      // Fetch user profiles separately
+      if (data && data.length > 0) {
+        const userIds = data.map(review => review.user_id);
+        const { data: profiles, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, first_name, last_name")
+          .in("id", userIds);
 
-      setReviews(transformedReviews);
+        if (profilesError) throw profilesError;
+
+        const transformedReviews = data?.map(review => {
+          const userProfile = profiles?.find(p => p.id === review.user_id);
+          return {
+            id: review.id,
+            rating: review.rating,
+            comment: review.comment,
+            created_at: review.created_at,
+            user: {
+              first_name: userProfile?.first_name || "",
+              last_name: userProfile?.last_name || ""
+            }
+          };
+        }) || [];
+
+        setReviews(transformedReviews);
+      }
     } catch (error: any) {
       console.error("Error fetching reviews:", error);
     } finally {
