@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -390,12 +391,12 @@ const ServiceSearch = () => {
 
                   <div className="flex items-center space-x-2">
                     <label className="text-sm">მინიმალური რეიტინგი:</label>
-                    <Select value={minRating?.toString() || ""} onValueChange={(value) => setMinRating(value ? parseInt(value) : null)}>
+                    <Select value={minRating?.toString() || "all"} onValueChange={(value) => setMinRating(value === "all" ? null : parseInt(value))}>
                       <SelectTrigger className="w-24">
                         <SelectValue placeholder="ყველა" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">ყველა</SelectItem>
+                        <SelectItem value="all">ყველა</SelectItem>
                         <SelectItem value="4">4+ ★</SelectItem>
                         <SelectItem value="3">3+ ★</SelectItem>
                         <SelectItem value="2">2+ ★</SelectItem>
