@@ -3,10 +3,12 @@ import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { useServices } from "@/hooks/useServices";
+import { Filter, Grid, List, SortAsc, SortDesc, RefreshCw } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -22,9 +24,14 @@ const tbilisiDistricts = [
   "ლილო", "ორთაჭალა", "დიდუბე", "ფონიჭალა"
 ];
 
+type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | "popular";
+
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [visibleServicesCount, setVisibleServicesCount] = useState(12);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [showFilters, setShowFilters] = useState(false);
   
   const {
     services,
@@ -37,38 +44,38 @@ const ServicesDetail = () => {
     fetchServices,
   } = useServices();
 
-  // Filter states
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [onSiteOnly, setOnSiteOnly] = useState(false);
-  const [minRating, setMinRating] = useState<number | null>(null);
+  // Filter states - initialized from URL params
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
+  const [selectedCategory, setSelectedCategory] = useState<number | "all">(
+    searchParams.get("category") ? parseInt(searchParams.get("category")!) : "all"
+  );
+  const [selectedCity, setSelectedCity] = useState<string | null>(
+    searchParams.get("city") || null
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(
+    searchParams.get("district") || null
+  );
+  const [selectedBrands, setSelectedBrands] = useState<string[]>(
+    searchParams.get("brands") ? searchParams.get("brands")!.split(",") : []
+  );
+  const [onSiteOnly, setOnSiteOnly] = useState(
+    searchParams.get("onSite") === "true"
+  );
+  const [minRating, setMinRating] = useState<number | null>(
+    searchParams.get("minRating") ? parseInt(searchParams.get("minRating")!) : null
+  );
 
-  // Initialize filters from URL parameters
+  // Initialize data and perform initial search
   useEffect(() => {
-    const q = searchParams.get("q");
-    const category = searchParams.get("category");
-    const city = searchParams.get("city");
-    const district = searchParams.get("district");
-    const brands = searchParams.get("brands");
-    const onSite = searchParams.get("onSite");
-    const rating = searchParams.get("minRating");
-
-    if (q) setSearchTerm(q);
-    if (category) setSelectedCategory(parseInt(category));
-    if (city) setSelectedCity(city);
-    if (district) setSelectedDistrict(district);
-    if (brands) setSelectedBrands(brands.split(","));
-    if (onSite === "true") setOnSiteOnly(true);
-    if (rating) setMinRating(parseInt(rating));
-  }, [searchParams]);
-
-  useEffect(() => {
-    fetchInitialData();
+    const initializeData = async () => {
+      await fetchInitialData();
+      // Trigger initial search with URL params
+      performSearch();
+    };
+    initializeData();
   }, []);
 
+  // Handle districts when city changes
   useEffect(() => {
     if (selectedCity === "თბილისი") {
       fetchDistricts(selectedCity);
@@ -77,9 +84,26 @@ const ServicesDetail = () => {
     }
   }, [selectedCity]);
 
+  // Perform search when filters change
   useEffect(() => {
-    const filters = {
+    if (categories.length > 0) { // Wait for initial data to load
+      performSearch();
+    }
+  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories]);
+
+  const performSearch = async () => {
+    console.log("🔍 Performing search with filters:", {
       searchTerm,
+      selectedCategory,
+      selectedCity,
+      selectedDistrict,
+      selectedBrands,
+      onSiteOnly,
+      minRating,
+    });
+
+    const filters = {
+      searchTerm: searchTerm.trim(),
       selectedCategory,
       selectedCity,
       selectedDistrict,
@@ -88,14 +112,14 @@ const ServicesDetail = () => {
       minRating,
     };
     
-    console.log("Filters changed, fetching services:", filters);
-    fetchServices(filters);
-  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating]);
+    await fetchServices(filters);
+    updateURL();
+  };
 
-  const handleSearch = () => {
+  const updateURL = () => {
     const params = new URLSearchParams();
     
-    if (searchTerm) params.set("q", searchTerm);
+    if (searchTerm.trim()) params.set("q", searchTerm.trim());
     if (selectedCategory !== "all") params.set("category", selectedCategory.toString());
     if (selectedCity) params.set("city", selectedCity);
     if (selectedDistrict) params.set("district", selectedDistrict);
@@ -106,7 +130,9 @@ const ServicesDetail = () => {
     setSearchParams(params);
   };
 
-  const handleResetFilters = () => {
+  const handleResetFilters = async () => {
+    console.log("🧹 Resetting all filters");
+    
     setSearchTerm("");
     setSelectedCategory("all");
     setSelectedCity(null);
@@ -115,83 +141,217 @@ const ServicesDetail = () => {
     setOnSiteOnly(false);
     setMinRating(null);
     setSearchParams({});
+    
+    // Reset will trigger useEffect to perform search
+  };
+
+  const handleSearch = async () => {
+    console.log("🚀 Manual search triggered");
+    await performSearch();
+  };
+
+  const sortServices = (services: any[]) => {
+    return [...services].sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        case "oldest":
+          return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+        case "price_low":
+          const aPrice = a.price_from || a.price_to || 0;
+          const bPrice = b.price_from || b.price_to || 0;
+          return aPrice - bPrice;
+        case "price_high":
+          const aPriceHigh = a.price_to || a.price_from || 0;
+          const bPriceHigh = b.price_to || b.price_from || 0;
+          return bPriceHigh - aPriceHigh;
+        case "rating":
+          return (b.rating || 0) - (a.rating || 0);
+        case "popular":
+          return (b.review_count || 0) - (a.review_count || 0);
+        default:
+          return 0;
+      }
+    });
   };
 
   const loadMoreServices = () => {
     setVisibleServicesCount(prev => prev + 12);
   };
 
-  // გამოიყენე georgian cities და tbilisi districts თუ API-დან არ მოდის
+  const hasActiveFilters = searchTerm || 
+    selectedCategory !== "all" || 
+    selectedCity || 
+    selectedDistrict || 
+    selectedBrands.length > 0 || 
+    onSiteOnly || 
+    minRating;
+
+  const sortedServices = sortServices(services);
   const availableCities = cities.length > 0 ? cities : georgianCities;
   const availableDistricts = selectedCity === "თბილისი" 
     ? (districts.length > 0 ? districts : tbilisiDistricts)
     : [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Header />
       
-      <main className="flex-grow py-8">
+      <main className="py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
+            {/* Header Section */}
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-gray-900 mb-2">ყველა სერვისი</h1>
               <p className="text-lg text-gray-600">მოძებნეთ სასურველი ხელოსანი და სერვისი</p>
             </div>
             
+            {/* Filters Section */}
             <div className="mb-8">
-              <ModernServiceFilters
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                categories={categories}
-                selectedCity={selectedCity}
-                setSelectedCity={setSelectedCity}
-                cities={availableCities}
-                selectedDistrict={selectedDistrict}
-                setSelectedDistrict={setSelectedDistrict}
-                districts={availableDistricts}
-                selectedBrands={selectedBrands}
-                setSelectedBrands={setSelectedBrands}
-                onSiteOnly={onSiteOnly}
-                setOnSiteOnly={setOnSiteOnly}
-                minRating={minRating}
-                setMinRating={setMinRating}
-                onSearch={handleSearch}
-                onResetFilters={handleResetFilters}
-              />
+              <div className="flex items-center justify-between mb-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
+                >
+                  <Filter className="h-4 w-4" />
+                  ფილტრები
+                  {hasActiveFilters && (
+                    <Badge variant="secondary" className="ml-2">
+                      აქტიური
+                    </Badge>
+                  )}
+                </Button>
+
+                <div className="flex items-center gap-4">
+                  {/* Reset Filters */}
+                  {hasActiveFilters && (
+                    <Button
+                      variant="ghost"
+                      onClick={handleResetFilters}
+                      className="text-gray-500 hover:text-red-500"
+                      size="sm"
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      გასუფთავება
+                    </Button>
+                  )}
+
+                  {/* Sort Options */}
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as SortOption)}
+                    className="px-3 py-2 border border-gray-200 rounded-lg bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="newest">ახალი</option>
+                    <option value="oldest">ძველი</option>
+                    <option value="price_low">ფასი ↑</option>
+                    <option value="price_high">ფასი ↓</option>
+                    <option value="rating">რეიტინგი</option>
+                    <option value="popular">პოპულარული</option>
+                  </select>
+
+                  {/* View Mode Toggle */}
+                  <div className="flex border border-gray-200 rounded-lg bg-white/80 backdrop-blur-sm">
+                    <Button
+                      variant={viewMode === "grid" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("grid")}
+                      className="rounded-r-none"
+                    >
+                      <Grid className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === "list" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("list")}
+                      className="rounded-l-none"
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Filters Panel */}
+              {showFilters && (
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200">
+                  <ModernServiceFilters
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    categories={categories}
+                    selectedCity={selectedCity}
+                    setSelectedCity={setSelectedCity}
+                    cities={availableCities}
+                    selectedDistrict={selectedDistrict}
+                    setSelectedDistrict={setSelectedDistrict}
+                    districts={availableDistricts}
+                    selectedBrands={selectedBrands}
+                    setSelectedBrands={setSelectedBrands}
+                    onSiteOnly={onSiteOnly}
+                    setOnSiteOnly={setOnSiteOnly}
+                    minRating={minRating}
+                    setMinRating={setMinRating}
+                    onSearch={handleSearch}
+                    onResetFilters={handleResetFilters}
+                  />
+                </div>
+              )}
             </div>
             
+            {/* Results Section */}
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className={`grid gap-6 ${
+                viewMode === "grid" 
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+                  : "grid-cols-1"
+              }`}>
                 {[...Array(8)].map((_, i) => (
                   <ServiceCardSkeleton key={i} />
                 ))}
               </div>
-            ) : services.length > 0 ? (
+            ) : sortedServices.length > 0 ? (
               <div>
-                <div className="flex justify-between items-center mb-6">
-                  <p className="text-gray-600">
-                    ნაპოვნია <span className="font-semibold text-primary">{services.length}</span> სერვისი
-                  </p>
+                {/* Results Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <p className="text-gray-600">
+                      ნაპოვნია <span className="font-semibold text-primary">{sortedServices.length}</span> სერვისი
+                    </p>
+                    {hasActiveFilters && (
+                      <Badge variant="outline" className="bg-primary/10 text-primary">
+                        ფილტრებით
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {services.slice(0, visibleServicesCount).map(service => (
-                    <ServiceCard key={service.id} service={service} />
+                {/* Services Grid */}
+                <div className={`grid gap-6 ${
+                  viewMode === "grid" 
+                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+                    : "grid-cols-1"
+                }`}>
+                  {sortedServices.slice(0, visibleServicesCount).map(service => (
+                    <ServiceCard 
+                      key={service.id} 
+                      service={service}
+                    />
                   ))}
                 </div>
 
-                {services.length > visibleServicesCount && (
+                {/* Load More Button */}
+                {sortedServices.length > visibleServicesCount && (
                   <div className="mt-12 text-center">
                     <Button
                       onClick={loadMoreServices}
                       variant="outline"
                       size="lg"
-                      className="px-8 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+                      className="px-8 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors bg-white/80 backdrop-blur-sm"
                     >
-                      მეტის ჩვენება ({services.length - visibleServicesCount} დარჩენილი)
+                      მეტის ჩვენება ({sortedServices.length - visibleServicesCount} დარჩენილი)
                     </Button>
                   </div>
                 )}
@@ -203,10 +363,17 @@ const ServicesDetail = () => {
                     <span className="text-4xl">🔍</span>
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">სერვისები ვერ მოიძებნა</h3>
-                  <p className="text-gray-600 mb-6">შეცვალეთ საძიებო კრიტერიუმები ან გაასუფთავეთ ფილტრები</p>
-                  <Button onClick={handleResetFilters} variant="outline">
-                    ფილტრების გასუფთავება
-                  </Button>
+                  <p className="text-gray-600 mb-6">
+                    {hasActiveFilters 
+                      ? "შეცვალეთ საძიებო კრიტერიუმები ან გაასუფთავეთ ფილტრები" 
+                      : "ჯერ არ არის დამატებული სერვისები"
+                    }
+                  </p>
+                  {hasActiveFilters && (
+                    <Button onClick={handleResetFilters} variant="outline">
+                      ფილტრების გასუფთავება
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
