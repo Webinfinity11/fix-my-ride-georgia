@@ -17,6 +17,7 @@ export type ServiceType = {
   accepts_cash_payment: boolean;
   rating: number | null;
   review_count: number | null;
+  photos: string[] | null;
   category: {
     id: number;
     name: string;
@@ -134,6 +135,7 @@ export const useServices = () => {
           accepts_cash_payment,
           rating,
           review_count,
+          photos,
           service_categories!inner(id, name),
           profiles!inner(
             id,
@@ -251,6 +253,7 @@ export const useServices = () => {
           accepts_cash_payment: service.accepts_cash_payment || true,
           rating: service.rating,
           review_count: service.review_count,
+          photos: service.photos,
           category: category ? {
             id: category.id,
             name: category.name
