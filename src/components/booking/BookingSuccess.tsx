@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -40,9 +41,18 @@ interface BookingSuccessProps {
 const BookingSuccess = ({ mechanic, bookingData }: BookingSuccessProps) => {
   const navigate = useNavigate();
   
-  // Safely access nested properties with fallbacks
-  const profile: ProfileType = mechanic?.profile || {};
-  const mechanicProfile: MechanicProfileType = mechanic?.mechanic_profile || {};
+  // Safely access nested properties with proper fallbacks
+  const profile: ProfileType = mechanic?.profile || {
+    first_name: undefined,
+    last_name: undefined,
+    city: undefined,
+    district: undefined,
+    phone: null,
+  };
+  const mechanicProfile: MechanicProfileType = mechanic?.mechanic_profile || {
+    specialization: null,
+    is_mobile: false,
+  };
   
   const firstName = profile.first_name || "";
   const lastName = profile.last_name || "";
