@@ -101,7 +101,10 @@ export const useServices = () => {
     minRating: number | null;
   }) => {
     setLoading(true);
+    
     try {
+      console.log("Fetching services with filters:", filters);
+      
       let query = supabase
         .from("mechanic_services")
         .select(`
@@ -119,7 +122,7 @@ export const useServices = () => {
           accepts_cash_payment,
           rating,
           review_count,
-          service_categories(id, name),
+          service_categories!mechanic_services_category_id_fkey(id, name),
           profiles!mechanic_services_mechanic_id_fkey(
             id,
             first_name,
@@ -130,11 +133,11 @@ export const useServices = () => {
         .eq("is_active", true);
 
       // Apply filters
-      if (filters.searchTerm) {
+      if (filters.searchTerm && filters.searchTerm.trim()) {
         query = query.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
-      if (filters.selectedCategory !== "all") {
+      if (filters.selectedCategory && filters.selectedCategory !== "all") {
         query = query.eq("category_id", filters.selectedCategory);
       }
 
@@ -156,10 +159,21 @@ export const useServices = () => {
 
       const { data, error } = await query.order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase query error:", error);
+        throw error;
+      }
 
-      let filteredServices = data?.map(service => {
-        const profile = Array.isArray(service.profiles) ? service.profiles[0] : service.profiles;
+      console.log("Raw service data:", data);
+
+      if (!data) {
+        setServices([]);
+        return;
+      }
+
+      let filteredServices = data.map(service => {
+        const profile = service.profiles;
+        const category = service.service_categories;
         
         return {
           id: service.id,
@@ -176,7 +190,10 @@ export const useServices = () => {
           accepts_cash_payment: service.accepts_cash_payment,
           rating: service.rating,
           review_count: service.review_count,
-          category: service.service_categories,
+          category: category ? {
+            id: category.id,
+            name: category.name
+          } : null,
           mechanic: {
             id: profile?.id || "",
             first_name: profile?.first_name || "",
@@ -184,7 +201,7 @@ export const useServices = () => {
             rating: profile?.mechanic_profiles?.rating || null,
           }
         };
-      }) || [];
+      });
 
       // Filter by car brands
       if (filters.selectedBrands.length > 0) {
@@ -194,10 +211,12 @@ export const useServices = () => {
         );
       }
 
+      console.log("Processed services:", filteredServices);
       setServices(filteredServices);
     } catch (error: any) {
       console.error("Error fetching services:", error);
       toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
+      setServices([]);
     } finally {
       setLoading(false);
     }

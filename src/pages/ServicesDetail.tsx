@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -64,7 +65,7 @@ const ServicesDetail = () => {
   }, [selectedCity]);
 
   useEffect(() => {
-    fetchServices({
+    const filters = {
       searchTerm,
       selectedCategory,
       selectedCity,
@@ -72,7 +73,10 @@ const ServicesDetail = () => {
       selectedBrands,
       onSiteOnly,
       minRating,
-    });
+    };
+    
+    console.log("Filters changed, fetching services:", filters);
+    fetchServices(filters);
   }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating]);
 
   const handleSearch = () => {
