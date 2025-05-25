@@ -172,7 +172,8 @@ export const useServices = () => {
       }
 
       let filteredServices = data.map(service => {
-        const profile = service.profiles;
+        // Handle profile data - it could be an array or single object
+        const profile = Array.isArray(service.profiles) ? service.profiles[0] : service.profiles;
         const category = service.service_categories;
         
         return {
