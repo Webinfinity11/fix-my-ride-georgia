@@ -197,7 +197,7 @@ const Index = () => {
       <Header />
       
       <main className="flex-grow">
-        {/* Hero Section - Enhanced for Search Focus */}
+        {/* Enhanced Search Section - Moved to Top */}
         <section className="relative py-20 lg:py-32 overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-blue-50 to-purple-50"></div>
@@ -205,9 +205,9 @@ const Index = () => {
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-200/20 to-primary/10 rounded-full blur-3xl"></div>
           
           <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-6xl mx-auto text-center">
-              {/* Main Heading */}
-              <div className="mb-8">
+            <div className="max-w-6xl mx-auto">
+              {/* Hero Content */}
+              <div className="text-center mb-16">
                 <Badge className="mb-6 bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-2 text-sm font-medium">
                   <Sparkles className="h-4 w-4 mr-2" />
                   საქართველოს #1 ავტო-სერვისის პლატფორმა
@@ -226,48 +226,6 @@ const Index = () => {
                 
                 <p className="text-lg text-gray-500 mb-12 max-w-2xl mx-auto">
                   სწრაფი, საიმედო და ხარისხიანი ავტო-სერვისი თქვენი მანქანისთვის
-                </p>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                {stats.map((stat, index) => (
-                  <Card key={index} className="border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-6 text-center">
-                      <div className="flex items-center justify-center mb-3">
-                        <div className="p-3 bg-gradient-to-r from-primary to-blue-600 rounded-full">
-                          <stat.icon className="h-6 w-6 text-white" />
-                        </div>
-                      </div>
-                      <div className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
-                        {stat.number}
-                      </div>
-                      <div className="text-gray-600 font-medium">{stat.label}</div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Enhanced Search Section */}
-        <section className="py-20 bg-white relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-blue-50"></div>
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-6xl mx-auto">
-              {/* Section Header */}
-              <div className="text-center mb-12">
-                <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
-                  <Target className="h-4 w-4 mr-2" />
-                  ძიების ცენტრი
-                </Badge>
-                <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-                  მოძებნეთ სასურველი 
-                  <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"> სერვისი</span>
-                </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  გამოიყენეთ ჩვენი მოწინავე ძიების სისტემა სწრაფი და ზუსტი შედეგებისთვის
                 </p>
               </div>
 
@@ -293,7 +251,7 @@ const Index = () => {
               </div>
               
               {/* Advanced Search Form */}
-              <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden">
+              <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden mb-12">
                 <div className="bg-gradient-to-r from-primary to-blue-600 p-1">
                   <div className="bg-white rounded-t-xl p-8">
                     <div className="flex items-center justify-center gap-2 mb-6">
@@ -329,7 +287,7 @@ const Index = () => {
               </Card>
 
               {/* Quick Access Buttons */}
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services-detail?onSite=true")}>
                   <CardContent className="p-6 text-center">
                     <div className="p-4 bg-green-500 rounded-full w-fit mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -359,6 +317,31 @@ const Index = () => {
                     <p className="text-purple-700">სრული კატალოგი</p>
                   </CardContent>
                 </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {stats.map((stat, index) => (
+                  <Card key={index} className="border-0 shadow-lg bg-white hover:shadow-xl transition-all duration-300">
+                    <CardContent className="p-6 text-center">
+                      <div className="flex items-center justify-center mb-3">
+                        <div className="p-3 bg-gradient-to-r from-primary to-blue-600 rounded-full">
+                          <stat.icon className="h-6 w-6 text-white" />
+                        </div>
+                      </div>
+                      <div className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+                        {stat.number}
+                      </div>
+                      <div className="text-gray-600 font-medium">{stat.label}</div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
           </div>
