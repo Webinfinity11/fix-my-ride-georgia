@@ -113,9 +113,20 @@ export const useServices = (): UseServicesReturn => {
         .from('mechanic_services')
         .select(`
           *,
-          profiles:mechanic_id(id, first_name, last_name, city, district, phone),
-          mechanic_profiles:mechanic_id(rating, specialization),
-          service_categories:category_id(id, name, description)
+          mechanic_profiles!inner(
+            id,
+            rating,
+            specialization,
+            profiles!inner(
+              id,
+              first_name,
+              last_name,
+              city,
+              district,
+              phone
+            )
+          ),
+          service_categories(id, name, description)
         `)
         .eq('is_active', true);
 
@@ -168,14 +179,14 @@ export const useServices = (): UseServicesReturn => {
         ...service,
         custom_category: service.custom_category || null,
         mechanic: {
-          id: Array.isArray(service.profiles) ? service.profiles[0]?.id || '' : service.profiles?.id || '',
-          first_name: Array.isArray(service.profiles) ? service.profiles[0]?.first_name || '' : service.profiles?.first_name || '',
-          last_name: Array.isArray(service.profiles) ? service.profiles[0]?.last_name || '' : service.profiles?.last_name || '',
-          city: Array.isArray(service.profiles) ? service.profiles[0]?.city || '' : service.profiles?.city || '',
-          district: Array.isArray(service.profiles) ? service.profiles[0]?.district || '' : service.profiles?.district || '',
-          phone: Array.isArray(service.profiles) ? service.profiles[0]?.phone || null : service.profiles?.phone || null,
-          specialization: Array.isArray(service.mechanic_profiles) ? service.mechanic_profiles[0]?.specialization || null : service.mechanic_profiles?.specialization || null,
-          rating: Array.isArray(service.mechanic_profiles) ? service.mechanic_profiles[0]?.rating || 0 : service.mechanic_profiles?.rating || 0
+          id: service.mechanic_profiles?.profiles?.id || '',
+          first_name: service.mechanic_profiles?.profiles?.first_name || '',
+          last_name: service.mechanic_profiles?.profiles?.last_name || '',
+          city: service.mechanic_profiles?.profiles?.city || '',
+          district: service.mechanic_profiles?.profiles?.district || '',
+          phone: service.mechanic_profiles?.profiles?.phone || null,
+          specialization: service.mechanic_profiles?.specialization || null,
+          rating: service.mechanic_profiles?.rating || 0
         },
         category: service.service_categories
       }));
