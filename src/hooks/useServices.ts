@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface Service {
   id: number;
@@ -30,6 +30,7 @@ interface Service {
     district: string;
     phone: string | null;
     specialization: string | null;
+    rating: number;
   };
   category: {
     id: number;
@@ -171,7 +172,8 @@ export const useServices = (): UseServicesReturn => {
           city: service.profiles.city,
           district: service.profiles.district,
           phone: service.profiles.phone,
-          specialization: service.profiles.specialization
+          specialization: service.profiles.specialization,
+          rating: service.profiles.rating || 0
         } : {
           id: '',
           first_name: '',
@@ -179,7 +181,8 @@ export const useServices = (): UseServicesReturn => {
           city: '',
           district: '',
           phone: null,
-          specialization: null
+          specialization: null,
+          rating: 0
         },
         category: service.service_categories
       }));
