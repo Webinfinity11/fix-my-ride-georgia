@@ -1,8 +1,9 @@
+
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +15,7 @@ import {
 import { LogOut, User, Settings, Plus, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
-export const Header = () => {
+const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -62,7 +63,6 @@ export const Header = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.avatar_url} alt={user.firstName} />
                   <AvatarFallback>{user.firstName?.charAt(0)}{user.lastName?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </Button>
@@ -102,3 +102,6 @@ export const Header = () => {
     </header>
   );
 };
+
+export { Header };
+export default Header;
