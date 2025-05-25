@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -39,6 +38,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard/*" element={<Dashboard />} />
               <Route path="/book" element={<Book />} />
+              <Route path="/book/:mechanicId" element={<Book />} />
               <Route path="/mechanic/:id" element={<MechanicProfile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
