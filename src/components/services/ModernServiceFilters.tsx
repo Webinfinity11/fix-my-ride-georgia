@@ -107,12 +107,12 @@ const ModernServiceFilters = ({
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
-              <Select value={selectedCity || ""} onValueChange={setSelectedCity}>
+              <Select value={selectedCity || "all-cities"} onValueChange={(value) => setSelectedCity(value === "all-cities" ? null : value)}>
                 <SelectTrigger className="w-40 rounded-lg border-gray-200">
                   <SelectValue placeholder="ქალაქი" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">ყველა ქალაქი</SelectItem>
+                  <SelectItem value="all-cities">ყველა ქალაქი</SelectItem>
                   {cities.map(city => (
                     <SelectItem key={city} value={city}>{city}</SelectItem>
                   ))}
@@ -121,12 +121,12 @@ const ModernServiceFilters = ({
             </div>
 
             {selectedCity === "თბილისი" && (
-              <Select value={selectedDistrict || ""} onValueChange={setSelectedDistrict}>
+              <Select value={selectedDistrict || "all-districts"} onValueChange={(value) => setSelectedDistrict(value === "all-districts" ? null : value)}>
                 <SelectTrigger className="w-40 rounded-lg border-gray-200">
                   <SelectValue placeholder="უბანი" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">ყველა უბანი</SelectItem>
+                  <SelectItem value="all-districts">ყველა უბანი</SelectItem>
                   {districts.map(district => (
                     <SelectItem key={district} value={district}>{district}</SelectItem>
                   ))}
@@ -185,14 +185,14 @@ const ModernServiceFilters = ({
                       მინიმალური რეიტინგი
                     </label>
                     <Select 
-                      value={minRating?.toString() || "all"} 
-                      onValueChange={(value) => setMinRating(value === "all" ? null : parseInt(value))}
+                      value={minRating?.toString() || "all-ratings"} 
+                      onValueChange={(value) => setMinRating(value === "all-ratings" ? null : parseInt(value))}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="ყველა" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">ყველა</SelectItem>
+                        <SelectItem value="all-ratings">ყველა</SelectItem>
                         <SelectItem value="4">4+ ★</SelectItem>
                         <SelectItem value="3">3+ ★</SelectItem>
                         <SelectItem value="2">2+ ★</SelectItem>
