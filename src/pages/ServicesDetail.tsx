@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -8,7 +9,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { useServices } from "@/hooks/useServices";
-import { Filter, Grid, List, SortAsc, SortDesc, RefreshCw } from "lucide-react";
+import { Filter, Grid, List, RefreshCw } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -31,7 +32,7 @@ const ServicesDetail = () => {
   const [visibleServicesCount, setVisibleServicesCount] = useState(12);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   
   const {
     services,
@@ -65,43 +66,61 @@ const ServicesDetail = () => {
     searchParams.get("minRating") ? parseInt(searchParams.get("minRating")!) : null
   );
 
-  // Initialize data and perform initial search
+  console.log("🏁 ServicesDetail component mounted");
+  console.log("🔧 Initial filter states:", {
+    searchTerm,
+    selectedCategory,
+    selectedCity,
+    selectedDistrict,
+    selectedBrands,
+    onSiteOnly,
+    minRating
+  });
+
+  // Initialize data on component mount
   useEffect(() => {
+    console.log("🚀 Initializing component data...");
     const initializeData = async () => {
       await fetchInitialData();
-      // Trigger initial search with URL params
-      performSearch();
     };
     initializeData();
   }, []);
 
   // Handle districts when city changes
   useEffect(() => {
+    console.log("🏙️ City changed to:", selectedCity);
     if (selectedCity === "თბილისი") {
       fetchDistricts(selectedCity);
     } else {
+      console.log("🧹 Clearing districts (city is not თბილისი)");
       setSelectedDistrict(null);
     }
-  }, [selectedCity]);
+  }, [selectedCity, fetchDistricts]);
 
-  // Perform search when filters change
+  // Trigger search when any filter changes
   useEffect(() => {
-    if (categories.length > 0) { // Wait for initial data to load
-      performSearch();
-    }
-  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories]);
-
-  const performSearch = async () => {
-    console.log("🔍 Performing search with filters:", {
+    console.log("🔄 Filters changed, triggering search...");
+    console.log("📊 Current filter values:", {
       searchTerm,
       selectedCategory,
       selectedCity,
       selectedDistrict,
       selectedBrands,
       onSiteOnly,
-      minRating,
+      minRating
     });
+    
+    if (categories.length > 0) { // Wait for initial data to load
+      console.log("✅ Categories loaded, performing search");
+      performSearch();
+    } else {
+      console.log("⏳ Waiting for categories to load...");
+    }
+  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories]);
 
+  const performSearch = async () => {
+    console.log("🔍 Performing search with current filters");
+    
     const filters = {
       searchTerm: searchTerm.trim(),
       selectedCategory,
@@ -112,11 +131,13 @@ const ServicesDetail = () => {
       minRating,
     };
     
+    console.log("📋 Search filters:", filters);
     await fetchServices(filters);
     updateURL();
   };
 
   const updateURL = () => {
+    console.log("🔗 Updating URL with current filters");
     const params = new URLSearchParams();
     
     if (searchTerm.trim()) params.set("q", searchTerm.trim());
@@ -127,6 +148,7 @@ const ServicesDetail = () => {
     if (onSiteOnly) params.set("onSite", "true");
     if (minRating) params.set("minRating", minRating.toString());
     
+    console.log("🔗 New URL params:", params.toString());
     setSearchParams(params);
   };
 
@@ -142,15 +164,16 @@ const ServicesDetail = () => {
     setMinRating(null);
     setSearchParams({});
     
-    // Reset will trigger useEffect to perform search
+    console.log("✅ Filters reset, search will trigger via useEffect");
   };
 
   const handleSearch = async () => {
-    console.log("🚀 Manual search triggered");
+    console.log("🚀 Manual search button clicked");
     await performSearch();
   };
 
   const sortServices = (services: any[]) => {
+    console.log("📊 Sorting services by:", sortBy);
     return [...services].sort((a, b) => {
       switch (sortBy) {
         case "newest":
@@ -176,6 +199,7 @@ const ServicesDetail = () => {
   };
 
   const loadMoreServices = () => {
+    console.log("📄 Loading more services");
     setVisibleServicesCount(prev => prev + 12);
   };
 
@@ -192,6 +216,15 @@ const ServicesDetail = () => {
   const availableDistricts = selectedCity === "თბილისი" 
     ? (districts.length > 0 ? districts : tbilisiDistricts)
     : [];
+
+  console.log("📈 Render stats:", {
+    servicesCount: services.length,
+    sortedServicesCount: sortedServices.length,
+    loading,
+    hasActiveFilters,
+    categoriesCount: categories.length,
+    citiesCount: availableCities.length
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
