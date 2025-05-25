@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -70,6 +71,7 @@ type ServiceType = {
     specialization: string | null;
     experience_years: number | null;
     is_mobile: boolean;
+    phone: string | null;
   };
 };
 
@@ -166,6 +168,7 @@ const ServiceDetail = () => {
           last_name,
           city,
           district,
+          phone,
           mechanic_profiles(rating, review_count, specialization, experience_years, is_mobile)
         `)
         .eq("id", serviceData.mechanic_id)
@@ -203,6 +206,7 @@ const ServiceDetail = () => {
           last_name: mechanicData.last_name,
           city: mechanicData.city,
           district: mechanicData.district,
+          phone: mechanicData.phone,
           rating: mechanicProfile?.rating || null,
           review_count: mechanicProfile?.review_count || null,
           specialization: mechanicProfile?.specialization || null,
