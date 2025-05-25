@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -8,6 +7,20 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { useServices } from "@/hooks/useServices";
+
+// საქართველოს მთავარი ქალაქები
+const georgianCities = [
+  "თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი",
+  "ზუგდიდი", "ფოთი", "ხაშური", "სამტრედია", "ოზურგეთი"
+];
+
+// თბილისის უბნები
+const tbilisiDistricts = [
+  "ვაკე", "საბურთალო", "ვერე", "გლდანი", "ისანი", "ნაძალადევი",
+  "ძველი თბილისი", "აბანოთუბანი", "ავლაბარი", "ჩუღურეთი", "სამგორი",
+  "დიღომი", "ვაშლიჯვარი", "მთაწმინდა", "კრწანისი", "ავჭალა",
+  "ლილო", "ორთაჭალა", "დიდუბე", "ფონიჭალა"
+];
 
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -108,6 +121,12 @@ const ServicesDetail = () => {
     setVisibleServicesCount(prev => prev + 12);
   };
 
+  // გამოიყენე georgian cities და tbilisi districts თუ API-დან არ მოდის
+  const availableCities = cities.length > 0 ? cities : georgianCities;
+  const availableDistricts = selectedCity === "თბილისი" 
+    ? (districts.length > 0 ? districts : tbilisiDistricts)
+    : [];
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -120,27 +139,29 @@ const ServicesDetail = () => {
               <p className="text-lg text-gray-600">მოძებნეთ სასურველი ხელოსანი და სერვისი</p>
             </div>
             
-            <ModernServiceFilters
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              categories={categories}
-              selectedCity={selectedCity}
-              setSelectedCity={setSelectedCity}
-              cities={cities}
-              selectedDistrict={selectedDistrict}
-              setSelectedDistrict={setSelectedDistrict}
-              districts={districts}
-              selectedBrands={selectedBrands}
-              setSelectedBrands={setSelectedBrands}
-              onSiteOnly={onSiteOnly}
-              setOnSiteOnly={setOnSiteOnly}
-              minRating={minRating}
-              setMinRating={setMinRating}
-              onSearch={handleSearch}
-              onResetFilters={handleResetFilters}
-            />
+            <div className="mb-8">
+              <ModernServiceFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                categories={categories}
+                selectedCity={selectedCity}
+                setSelectedCity={setSelectedCity}
+                cities={availableCities}
+                selectedDistrict={selectedDistrict}
+                setSelectedDistrict={setSelectedDistrict}
+                districts={availableDistricts}
+                selectedBrands={selectedBrands}
+                setSelectedBrands={setSelectedBrands}
+                onSiteOnly={onSiteOnly}
+                setOnSiteOnly={setOnSiteOnly}
+                minRating={minRating}
+                setMinRating={setMinRating}
+                onSearch={handleSearch}
+                onResetFilters={handleResetFilters}
+              />
+            </div>
             
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
