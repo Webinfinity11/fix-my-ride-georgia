@@ -624,11 +624,11 @@ const ServiceDetail = () => {
                         </Button>
                       </Link>
                       
-                      {mechanicInfo.phone ? (
-                        <a href={`tel:${mechanicInfo.phone}`} className="w-full block">
+                      {service.mechanic.phone ? (
+                        <a href={`tel:${service.mechanic.phone}`} className="w-full block">
                           <Button variant="outline" className="w-full border-2 hover:bg-gray-50" size="lg">
                             <Phone className="h-5 w-5 mr-2" />
-                            {mechanicInfo.phone}
+                            {service.mechanic.phone}
                           </Button>
                         </a>
                       ) : (
