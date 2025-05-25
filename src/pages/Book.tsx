@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Calendar } from "@/components/ui/calendar";
@@ -72,9 +72,10 @@ const timeSlots = [
 
 const Book = () => {
   const [searchParams] = useSearchParams();
+  const { mechanicId: paramMechanicId } = useParams();
   const navigate = useNavigate();
   const serviceId = searchParams.get("service");
-  const mechanicId = searchParams.get("mechanic");
+  const mechanicId = searchParams.get("mechanic") || paramMechanicId;
   const { user } = useAuth();
   
   const [service, setService] = useState<ServiceType | null>(null);
