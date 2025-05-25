@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -50,16 +49,24 @@ export const useServices = () => {
         .select("id, name")
         .order("name", { ascending: true });
 
-      if (categoriesError) throw categoriesError;
+      if (categoriesError) {
+        console.error("Categories error:", categoriesError);
+        throw categoriesError;
+      }
+      
       setCategories(categoriesData || []);
 
-      // Fetch unique cities
+      // Fetch unique cities - with better error handling
       const { data: servicesData, error: servicesError } = await supabase
         .from("mechanic_services")
         .select("city")
-        .not("city", "is", null);
+        .not("city", "is", null)
+        .eq("is_active", true);
 
-      if (servicesError) throw servicesError;
+      if (servicesError) {
+        console.error("Cities error:", servicesError);
+        // Don't throw here, just log and continue
+      }
       
       const uniqueCities = Array.from(
         new Set(servicesData?.map(s => s.city).filter(Boolean) as string[])
@@ -78,9 +85,13 @@ export const useServices = () => {
         .from("mechanic_services")
         .select("district")
         .eq("city", city)
+        .eq("is_active", true)
         .not("district", "is", null);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Districts error:", error);
+        return;
+      }
       
       const uniqueDistricts = Array.from(
         new Set(data?.map(s => s.district).filter(Boolean) as string[])
@@ -103,10 +114,10 @@ export const useServices = () => {
     setLoading(true);
     
     try {
-      console.log("Fetching services with filters:", filters);
+      console.log("🔍 Fetching services with filters:", filters);
       
-      // First fetch services with categories
-      let servicesQuery = supabase
+      // Single query approach with proper joins
+      let query = supabase
         .from("mechanic_services")
         .select(`
           id,
@@ -123,90 +134,60 @@ export const useServices = () => {
           accepts_cash_payment,
           rating,
           review_count,
-          category_id,
-          mechanic_id
+          service_categories!inner(id, name),
+          profiles!inner(
+            id,
+            first_name,
+            last_name,
+            mechanic_profiles(rating)
+          )
         `)
         .eq("is_active", true);
 
-      // Apply filters
+      // Apply filters step by step
       if (filters.searchTerm && filters.searchTerm.trim()) {
-        servicesQuery = servicesQuery.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
+        query = query.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
       if (filters.selectedCategory && filters.selectedCategory !== "all") {
-        servicesQuery = servicesQuery.eq("category_id", filters.selectedCategory);
+        query = query.eq("category_id", filters.selectedCategory);
       }
 
       if (filters.selectedCity) {
-        servicesQuery = servicesQuery.eq("city", filters.selectedCity);
+        query = query.eq("city", filters.selectedCity);
       }
 
       if (filters.selectedDistrict) {
-        servicesQuery = servicesQuery.eq("district", filters.selectedDistrict);
+        query = query.eq("district", filters.selectedDistrict);
       }
 
       if (filters.onSiteOnly) {
-        servicesQuery = servicesQuery.eq("on_site_service", true);
+        query = query.eq("on_site_service", true);
       }
 
       if (filters.minRating) {
-        servicesQuery = servicesQuery.gte("rating", filters.minRating);
+        query = query.gte("rating", filters.minRating);
       }
 
-      const { data: servicesData, error: servicesError } = await servicesQuery
-        .order("created_at", { ascending: false });
+      const { data, error } = await query.order("created_at", { ascending: false });
 
-      if (servicesError) {
-        console.error("Supabase query error:", servicesError);
-        throw servicesError;
-      }
-
-      if (!servicesData) {
-        setServices([]);
-        return;
-      }
-
-      // Filter by car brands on frontend
-      let filteredServices = servicesData;
-      if (filters.selectedBrands.length > 0) {
-        filteredServices = servicesData.filter(service => 
-          service.car_brands && 
-          filters.selectedBrands.some(brand => service.car_brands?.includes(brand))
-        );
-      }
-
-      // Now fetch categories and profiles separately
-      const serviceIds = filteredServices.map(s => s.id);
-      const categoryIds = [...new Set(filteredServices.map(s => s.category_id).filter(Boolean))];
-      const mechanicIds = [...new Set(filteredServices.map(s => s.mechanic_id))];
-
-      // Fetch categories
-      const { data: categoriesData } = await supabase
-        .from("service_categories")
-        .select("id, name")
-        .in("id", categoryIds);
-
-      // Fetch mechanic profiles
-      const { data: mechanicsData } = await supabase
-        .from("profiles")
-        .select(`
-          id,
-          first_name,
-          last_name,
-          mechanic_profiles(rating)
-        `)
-        .in("id", mechanicIds);
-
-      // Transform and combine data
-      const transformedServices: ServiceType[] = filteredServices.map(service => {
-        const category = categoriesData?.find(cat => cat.id === service.category_id);
-        const mechanic = mechanicsData?.find(mech => mech.id === service.mechanic_id);
+      if (error) {
+        console.error("❌ Supabase query error:", error);
         
-        const mechanicProfile = Array.isArray(mechanic?.mechanic_profiles) 
-          ? mechanic.mechanic_profiles[0] 
-          : mechanic?.mechanic_profiles;
-
-        return {
+        // Fallback to simple query if complex join fails
+        console.log("🔄 Trying fallback query...");
+        const fallbackQuery = await supabase
+          .from("mechanic_services")
+          .select("*")
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+          
+        if (fallbackQuery.error) {
+          throw fallbackQuery.error;
+        }
+        
+        // Process fallback data without joins
+        const fallbackServices = fallbackQuery.data?.map(service => ({
           id: service.id,
           name: service.name,
           description: service.description,
@@ -221,23 +202,88 @@ export const useServices = () => {
           accepts_cash_payment: service.accepts_cash_payment,
           rating: service.rating,
           review_count: service.review_count,
+          category: null, // Will be null in fallback
+          mechanic: {
+            id: "",
+            first_name: "სერვისი",
+            last_name: "",
+            rating: null,
+          }
+        })) || [];
+        
+        setServices(fallbackServices);
+        return;
+      }
+
+      console.log("✅ Raw service data:", data);
+
+      if (!data) {
+        setServices([]);
+        return;
+      }
+
+      // Transform data with safe property access
+      let transformedServices: ServiceType[] = data.map(service => {
+        // Safely access nested properties
+        const profiles = service.profiles;
+        const profile = Array.isArray(profiles) ? profiles[0] : profiles;
+        
+        const categories = service.service_categories;
+        const category = Array.isArray(categories) ? categories[0] : categories;
+        
+        const mechanicProfiles = profile?.mechanic_profiles;
+        const mechanicProfile = Array.isArray(mechanicProfiles) 
+          ? mechanicProfiles[0] 
+          : mechanicProfiles;
+
+        return {
+          id: service.id,
+          name: service.name || "უცნობი სერვისი",
+          description: service.description,
+          price_from: service.price_from,
+          price_to: service.price_to,
+          estimated_hours: service.estimated_hours,
+          city: service.city,
+          district: service.district,
+          car_brands: service.car_brands,
+          on_site_service: service.on_site_service || false,
+          accepts_card_payment: service.accepts_card_payment || false,
+          accepts_cash_payment: service.accepts_cash_payment || true,
+          rating: service.rating,
+          review_count: service.review_count,
           category: category ? {
             id: category.id,
             name: category.name
           } : null,
           mechanic: {
-            id: mechanic?.id || "",
-            first_name: mechanic?.first_name || "",
-            last_name: mechanic?.last_name || "",
+            id: profile?.id || "",
+            first_name: profile?.first_name || "",
+            last_name: profile?.last_name || "",
             rating: mechanicProfile?.rating || null,
           }
         };
       });
 
-      console.log("Processed services:", transformedServices);
+      // Filter by car brands (client-side filtering)
+      if (filters.selectedBrands.length > 0) {
+        transformedServices = transformedServices.filter(service => 
+          service.car_brands && 
+          filters.selectedBrands.some(brand => 
+            service.car_brands?.includes(brand) || 
+            (brand === "სხვა" && service.car_brands?.some(b => 
+              !["BMW", "Mercedes-Benz", "Audi", "Toyota", "Honda", "Nissan", "Hyundai", 
+                "Kia", "Volkswagen", "Ford", "Chevrolet", "Mazda", "Subaru", "Lexus",
+                "Infiniti", "Acura", "Jeep", "Land Rover", "Porsche"].includes(b)
+            ))
+          )
+        );
+      }
+
+      console.log("✅ Final processed services:", transformedServices);
       setServices(transformedServices);
+      
     } catch (error: any) {
-      console.error("Error fetching services:", error);
+      console.error("❌ Error fetching services:", error);
       toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
       setServices([]);
     } finally {
