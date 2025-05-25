@@ -14,7 +14,6 @@ import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
 import MechanicPortfolio from "@/components/dashboard/mechanic/MechanicPortfolio";
-import AddService from "@/pages/AddService";
 import { toast } from "sonner";
 
 const Dashboard = () => {
@@ -92,16 +91,6 @@ const Dashboard = () => {
                 element={
                   user.role === "mechanic" ? (
                     <MechanicServices />
-                  ) : (
-                    <Navigate to="/dashboard" replace />
-                  )
-                }
-              />
-              <Route
-                path="/add-service"
-                element={
-                  user.role === "mechanic" ? (
-                    <AddService />
                   ) : (
                     <Navigate to="/dashboard" replace />
                   )

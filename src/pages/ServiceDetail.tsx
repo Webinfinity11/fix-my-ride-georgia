@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -71,7 +70,6 @@ type ServiceType = {
     specialization: string | null;
     experience_years: number | null;
     is_mobile: boolean;
-    phone: string | null;
   };
 };
 
@@ -168,7 +166,6 @@ const ServiceDetail = () => {
           last_name,
           city,
           district,
-          phone,
           mechanic_profiles(rating, review_count, specialization, experience_years, is_mobile)
         `)
         .eq("id", serviceData.mechanic_id)
@@ -206,7 +203,6 @@ const ServiceDetail = () => {
           last_name: mechanicData.last_name,
           city: mechanicData.city,
           district: mechanicData.district,
-          phone: mechanicData.phone,
           rating: mechanicProfile?.rating || null,
           review_count: mechanicProfile?.review_count || null,
           specialization: mechanicProfile?.specialization || null,
@@ -338,9 +334,9 @@ const ServiceDetail = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
-              <div className="xl:col-span-2 space-y-8">
+              <div className="lg:col-span-2 space-y-8">
                 {/* Hero Photo Section */}
                 <div className="relative group">
                   <Card className="border-0 shadow-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50">
@@ -425,20 +421,20 @@ const ServiceDetail = () => {
                     </div>
 
                     {/* Service Header */}
-                    <CardContent className="p-6 lg:p-8">
-                      <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-6 gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-                            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 break-words">{service.name}</h1>
+                    <CardContent className="p-8">
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <h1 className="text-3xl font-bold text-gray-900">{service.name}</h1>
                             {service.category && (
-                              <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-3 py-1 w-fit">
+                              <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-3 py-1">
                                 {service.category.name}
                               </Badge>
                             )}
                           </div>
                           
                           {service.rating && (
-                            <div className="flex items-center gap-3 flex-wrap">
+                            <div className="flex items-center gap-3">
                               <div className="flex items-center gap-1">
                                 {renderStars(Math.round(service.rating))}
                               </div>
@@ -448,12 +444,12 @@ const ServiceDetail = () => {
                           )}
                         </div>
 
-                        <div className="text-left lg:text-right flex-shrink-0">
-                          <div className="text-2xl lg:text-3xl font-bold text-primary mb-1">
+                        <div className="text-right">
+                          <div className="text-3xl font-bold text-primary mb-1">
                             {formatPrice(service.price_from, service.price_to)}
                           </div>
                           {service.estimated_hours && (
-                            <div className="flex items-center text-gray-500 text-sm lg:justify-end">
+                            <div className="flex items-center text-gray-500 text-sm">
                               <Clock className="h-4 w-4 mr-1" />
                               {service.estimated_hours} საათი
                             </div>
@@ -463,7 +459,7 @@ const ServiceDetail = () => {
 
                       {service.description && (
                         <div className="prose prose-gray max-w-none">
-                          <p className="text-gray-700 text-base lg:text-lg leading-relaxed">{service.description}</p>
+                          <p className="text-gray-700 text-lg leading-relaxed">{service.description}</p>
                         </div>
                       )}
                     </CardContent>
@@ -628,19 +624,10 @@ const ServiceDetail = () => {
                         </Button>
                       </Link>
                       
-                      {service.mechanic.phone ? (
-                        <a href={`tel:${service.mechanic.phone}`} className="w-full block">
-                          <Button variant="outline" className="w-full border-2 hover:bg-gray-50" size="lg">
-                            <Phone className="h-5 w-5 mr-2" />
-                            {service.mechanic.phone}
-                          </Button>
-                        </a>
-                      ) : (
-                        <Button variant="outline" className="w-full border-2 hover:bg-gray-50" size="lg" disabled>
-                          <Phone className="h-5 w-5 mr-2" />
-                          ტელეფონი არ არის მითითებული
-                        </Button>
-                      )}
+                      <Button variant="outline" className="w-full border-2 hover:bg-gray-50" size="lg">
+                        <Phone className="h-5 w-5 mr-2" />
+                        დაკავშირება
+                      </Button>
 
                       <Link to={`/mechanic/${service.mechanic.id}`} className="w-full block">
                         <Button variant="ghost" className="w-full hover:bg-primary/10 hover:text-primary" size="lg">
