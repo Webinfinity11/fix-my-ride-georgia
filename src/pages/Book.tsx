@@ -146,6 +146,7 @@ const Book = () => {
         return;
       }
 
+      // Fix: profiles is a single object, not an array
       const profile = serviceData.profiles;
       const mechanicProfile = Array.isArray(profile.mechanic_profiles) 
         ? profile.mechanic_profiles[0] 
@@ -415,7 +416,7 @@ const Book = () => {
                         <Checkbox
                           id="mobile"
                           checked={isMobile}
-                          onCheckedChange={setIsMobile}
+                          onCheckedChange={(checked) => setIsMobile(checked === true)}
                         />
                         <Label htmlFor="mobile">ადგილზე მისვლის სერვისი</Label>
                       </div>
