@@ -1,125 +1,143 @@
-
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search as SearchIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ServiceCard from "@/components/services/ServiceCard";
+import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
+import ModernServiceFilters from "@/components/services/ModernServiceFilters";
+import { useServices } from "@/hooks/useServices";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
-import MechanicCard from "@/components/mechanic/MechanicCard";
 import { 
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+  Search as SearchIcon, 
+  Filter, 
+  TrendingUp, 
+  Clock, 
+  MapPin,
+  Star,
+  User,
+  Wrench,
+  Zap,
+  Target
+} from "lucide-react";
+import { toast } from "sonner";
 
 type MechanicType = {
   id: string;
-  profile: {
-    first_name: string;
-    last_name: string;
-    city: string;
-    district: string;
-  };
-  mechanic_profile: {
-    description: string | null;
-    specialization: string | null;
-    experience_years: number | null;
-    rating: number | null;
-    review_count: number | null; 
-    is_mobile: boolean;
-  };
-  services: {
-    id: number;
-    name: string;
-    category_id: number;
-  }[];
+  first_name: string;
+  last_name: string;
+  city: string;
+  district: string;
+  specialization: string | null;
+  rating: number | null;
+  review_count: number | null;
+  experience_years: number | null;
+  is_mobile: boolean;
 };
 
-const SearchPage = () => {
+const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+  const [activeTab, setActiveTab] = useState<"services" | "mechanics">("services");
   const [mechanics, setMechanics] = useState<MechanicType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [serviceCategories, setServiceCategories] = useState<{id: number, name: string}[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [cities, setCities] = useState<string[]>([]);
-  const [visibleMechanicsCount, setVisibleMechanicsCount] = useState(6);
-  const [activeTab, setActiveTab] = useState("all");
+  const [mechanicsLoading, setMechanicsLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [popularSearches] = useState([
+    "ძრავის შეკეთება", "სამუხრუჭე სისტემა", "ელექტროობა", "კონდიცონერი",
+    "საჭის სისტემა", "დიაგნოსტიკა", "ზეთის ცვლა", "წინა ფარები"
+  ]);
 
-  // Load initial category from URL if present
+  const {
+    services,
+    categories,
+    cities,
+    districts,
+    loading: servicesLoading,
+    fetchInitialData,
+    fetchDistricts,
+    fetchServices,
+  } = useServices();
+
+  // Filter states
+  const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [onSiteOnly, setOnSiteOnly] = useState(false);
+  const [minRating, setMinRating] = useState<number | null>(null);
+
   useEffect(() => {
-    const categoryFromUrl = searchParams.get("category");
-    if (categoryFromUrl) {
-      setSelectedCategory(parseInt(categoryFromUrl));
+    fetchInitialData();
+    loadRecentSearches();
+  }, []);
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q && q !== searchQuery) {
+      setSearchQuery(q);
+      performSearch(q);
     }
-    
-    const cityFromUrl = searchParams.get("city");
-    if (cityFromUrl) {
-      setSelectedCity(cityFromUrl);
-    }
-    
-    setSearchQuery(searchParams.get("q") || "");
   }, [searchParams]);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      setLoading(true);
-      try {
-        // Fetch service categories for filtering
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from("service_categories")
-          .select("id, name")
-          .order("name", { ascending: true });
+    if (selectedCity === "თბილისი") {
+      fetchDistricts(selectedCity);
+    }
+  }, [selectedCity]);
 
-        if (categoriesError) throw categoriesError;
-        setServiceCategories(categoriesData || []);
+  const loadRecentSearches = () => {
+    const recent = localStorage.getItem("recent_searches");
+    if (recent) {
+      setRecentSearches(JSON.parse(recent));
+    }
+  };
 
-        // Fetch mechanics with profile data
-        await fetchMechanics();
-      } catch (error: any) {
-        console.error("Error fetching initial data:", error);
-        toast.error("მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInitialData();
-  }, []);
-
-  // Re-fetch when URL params change
-  useEffect(() => {
-    const categoryFromUrl = searchParams.get("category");
-    const cityFromUrl = searchParams.get("city");
-    const queryFromUrl = searchParams.get("q");
+  const saveRecentSearch = (query: string) => {
+    if (!query.trim()) return;
     
-    fetchMechanics(
-      queryFromUrl || "", 
-      categoryFromUrl ? parseInt(categoryFromUrl) : null,
-      cityFromUrl || null
-    );
-  }, [searchParams, activeTab]);
+    const recent = [...recentSearches.filter(s => s !== query), query].slice(-5);
+    setRecentSearches(recent);
+    localStorage.setItem("recent_searches", JSON.stringify(recent));
+  };
 
-  const fetchMechanics = async (query: string = "", categoryId: number | null = null, city: string | null = null) => {
+  const performSearch = useCallback(async (query?: string) => {
+    const searchTerm = query || searchQuery;
+    
+    if (searchTerm.trim()) {
+      saveRecentSearch(searchTerm.trim());
+    }
+
+    if (activeTab === "services") {
+      const filters = {
+        searchTerm,
+        selectedCategory,
+        selectedCity,
+        selectedDistrict,
+        selectedBrands,
+        onSiteOnly,
+        minRating,
+      };
+      await fetchServices(filters);
+    } else {
+      await searchMechanics(searchTerm);
+    }
+
+    // Update URL
+    const params = new URLSearchParams();
+    if (searchTerm) params.set("q", searchTerm);
+    if (activeTab !== "services") params.set("tab", activeTab);
+    setSearchParams(params);
+  }, [searchQuery, activeTab, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating]);
+
+  const searchMechanics = async (query: string) => {
+    setMechanicsLoading(true);
     try {
-      console.log("Fetching mechanics with filters:", { query, categoryId, city, activeTab });
-      
-      // First get mechanics with their profile info
-      const { data: mechanicsData, error: mechanicsError } = await supabase
+      let mechanicsQuery = supabase
         .from("profiles")
         .select(`
           id,
@@ -127,297 +145,357 @@ const SearchPage = () => {
           last_name,
           city,
           district,
-          mechanic_profiles!inner(description, specialization, experience_years, rating, review_count, is_mobile)
-        `)
-        .eq("role", "mechanic");
+          mechanic_profiles!inner(
+            specialization,
+            rating,
+            review_count,
+            experience_years,
+            is_mobile
+          )
+        `);
 
-      if (mechanicsError) throw mechanicsError;
+      if (query.trim()) {
+        mechanicsQuery = mechanicsQuery.or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,mechanic_profiles.specialization.ilike.%${query}%`);
+      }
 
-      // Extract unique cities for the filter
-      const uniqueCities = Array.from(
-        new Set(mechanicsData?.map(m => m.city).filter(Boolean) as string[])
-      ).sort();
-      setCities(uniqueCities);
+      const { data, error } = await mechanicsQuery.limit(20);
 
-      // For each mechanic, get their services
-      const mechanicsWithServices = await Promise.all((mechanicsData || []).map(async (mechanic) => {
-        const { data: services, error: servicesError } = await supabase
-          .from("mechanic_services")
-          .select("id, name, category_id")
-          .eq("mechanic_id", mechanic.id)
-          .eq("is_active", true);
-          
-        if (servicesError) throw servicesError;
-          
+      if (error) throw error;
+
+      const transformedMechanics: MechanicType[] = data?.map(mechanic => {
+        const profile = Array.isArray(mechanic.mechanic_profiles) 
+          ? mechanic.mechanic_profiles[0] 
+          : mechanic.mechanic_profiles;
+
         return {
           id: mechanic.id,
-          profile: {
-            first_name: mechanic.first_name,
-            last_name: mechanic.last_name,
-            city: mechanic.city,
-            district: mechanic.district
-          },
-          mechanic_profile: mechanic.mechanic_profiles,
-          services: services || []
+          first_name: mechanic.first_name,
+          last_name: mechanic.last_name,
+          city: mechanic.city,
+          district: mechanic.district,
+          specialization: profile?.specialization || null,
+          rating: profile?.rating || null,
+          review_count: profile?.review_count || null,
+          experience_years: profile?.experience_years || null,
+          is_mobile: profile?.is_mobile || false,
         };
-      }));
-      
-      // Filter by search query if provided
-      let filteredMechanics = mechanicsWithServices;
-      
-      if (query) {
-        const lowerQuery = query.toLowerCase();
-        filteredMechanics = filteredMechanics.filter(mechanic => 
-          mechanic.profile.first_name.toLowerCase().includes(lowerQuery) ||
-          mechanic.profile.last_name.toLowerCase().includes(lowerQuery) ||
-          (mechanic.mechanic_profile.specialization && 
-           mechanic.mechanic_profile.specialization.toLowerCase().includes(lowerQuery)) ||
-          mechanic.services.some(service => service.name.toLowerCase().includes(lowerQuery))
-        );
-      }
-      
-      // Filter by category if provided
-      if (categoryId) {
-        console.log("Filtering by category:", categoryId);
-        filteredMechanics = filteredMechanics.filter(mechanic => 
-          mechanic.services.some(service => service.category_id === categoryId)
-        );
-        console.log("Mechanics after category filter:", filteredMechanics.length);
-      }
+      }) || [];
 
-      // Filter by city if provided
-      if (city) {
-        console.log("Filtering by city:", city);
-        filteredMechanics = filteredMechanics.filter(mechanic => 
-          mechanic.profile.city === city
-        );
-      }
-
-      // Filter by tab selection
-      if (activeTab === "mobile") {
-        filteredMechanics = filteredMechanics.filter(mechanic => 
-          mechanic.mechanic_profile.is_mobile === true
-        );
-      } else if (activeTab === "top_rated") {
-        filteredMechanics = filteredMechanics
-          .filter(mechanic => mechanic.mechanic_profile.rating !== null && mechanic.mechanic_profile.rating >= 4)
-          .sort((a, b) => {
-            const ratingA = a.mechanic_profile.rating || 0;
-            const ratingB = b.mechanic_profile.rating || 0;
-            return ratingB - ratingA;
-          });
-      }
-
-      console.log("Final filtered mechanics:", filteredMechanics.length);
-      setMechanics(filteredMechanics);
-      // Reset the visible mechanic count when filters change
-      setVisibleMechanicsCount(6);
+      setMechanics(transformedMechanics);
     } catch (error: any) {
-      console.error("Error fetching mechanics:", error);
-      toast.error("ხელოსნების ჩატვირთვისას შეცდომა დაფიქსირდა");
+      console.error("Error searching mechanics:", error);
+      toast.error("ხელოსნების ძიებისას შეცდომა დაფიქსირდა");
+    } finally {
+      setMechanicsLoading(false);
     }
   };
 
-  const handleSearch = () => {
-    setLoading(true);
-    // Update URL params
-    const params = new URLSearchParams();
-    if (searchQuery) params.set("q", searchQuery);
-    if (selectedCategory) params.set("category", selectedCategory.toString());
-    if (selectedCity) params.set("city", selectedCity);
-    setSearchParams(params);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    performSearch();
   };
 
-  const handleCategoryChange = (categoryId: number) => {
-    const newCategoryId = categoryId === selectedCategory ? null : categoryId;
-    setSelectedCategory(newCategoryId);
-    setLoading(true);
-    
-    // Update URL params
-    const params = new URLSearchParams(searchParams);
-    if (newCategoryId) {
-      params.set("category", newCategoryId.toString());
-    } else {
-      params.delete("category");
-    }
-    setSearchParams(params);
-  };
-
-  const handleCityChange = (city: string) => {
-    setSelectedCity(city);
-    setLoading(true);
-    
-    // Update URL params
-    const params = new URLSearchParams(searchParams);
-    if (city) {
-      params.set("city", city);
-    } else {
-      params.delete("city");
-    }
-    setSearchParams(params);
+  const handleQuickSearch = (query: string) => {
+    setSearchQuery(query);
+    performSearch(query);
   };
 
   const handleResetFilters = () => {
-    setSearchQuery("");
-    setSelectedCategory(null);
+    setSelectedCategory("all");
     setSelectedCity(null);
-    setActiveTab("all");
-    setSearchParams({});
-    setLoading(true);
-    fetchMechanics()
-      .finally(() => setLoading(false));
+    setSelectedDistrict(null);
+    setSelectedBrands([]);
+    setOnSiteOnly(false);
+    setMinRating(null);
   };
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setLoading(true);
-    fetchMechanics(searchQuery, selectedCategory, selectedCity)
-      .finally(() => setLoading(false));
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem("recent_searches");
   };
 
-  const loadMoreMechanics = () => {
-    setVisibleMechanicsCount(prevCount => prevCount + 6);
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`h-4 w-4 ${
+          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+        }`}
+      />
+    ));
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Header />
       
-      <main className="flex-grow bg-muted py-12">
+      <main className="py-8">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6 text-center">ხელოსნების ძიება</h1>
-            
-            <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="col-span-3">
+          <div className="max-w-7xl mx-auto">
+            {/* Hero Search Section */}
+            <div className="text-center mb-12">
+              <div className="max-w-4xl mx-auto">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                  იპოვეთ საუკეთესო 
+                  <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"> ხელოსანი</span>
+                </h1>
+                <p className="text-xl text-gray-600 mb-8">
+                  ათასობით ხელოსანი და სერვისი ერთ ადგილას
+                </p>
+
+                {/* Main Search Bar */}
+                <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto mb-8">
                   <div className="relative">
-                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      placeholder="ჩაწერეთ სპეციალობა, სერვისი ან ხელოსნის სახელი..."
+                    <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="მოძებნეთ სერვისი ან ხელოსანი..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      className="w-full pl-12 pr-24 py-6 text-lg border-2 border-gray-200 focus:border-primary rounded-2xl shadow-lg bg-white/90 backdrop-blur-sm"
                     />
+                    <Button 
+                      type="submit"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 rounded-xl"
+                    >
+                      ძიება
+                    </Button>
                   </div>
-                </div>
-                
-                <div>
-                  <Select value={selectedCity || ""} onValueChange={handleCityChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="აირჩიეთ ქალაქი" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {cities.map(city => (
-                          <SelectItem key={city} value={city}>{city}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button onClick={handleSearch} className="flex-1">
-                    <SearchIcon className="h-4 w-4 mr-2" />
-                    ძიება
-                  </Button>
-                  <Button variant="outline" onClick={handleResetFilters}>
-                    გასუფთავება
-                  </Button>
-                </div>
-              </div>
+                </form>
 
-              {serviceCategories.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm text-muted-foreground mb-2">სერვისის კატეგორიები:</p>
-                  <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto">
-                    {serviceCategories.map(category => (
-                      <Button 
-                        key={category.id}
-                        variant={selectedCategory === category.id ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleCategoryChange(category.id)}
-                      >
-                        {category.name}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div className="mb-6">
-              <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="w-full">
-                  <TabsTrigger value="all" className="flex-1">ყველა</TabsTrigger>
-                  <TabsTrigger value="top_rated" className="flex-1">საუკეთესო შეფასებით</TabsTrigger>
-                  <TabsTrigger value="mobile" className="flex-1">მობილური სერვისი</TabsTrigger>
-                </TabsList>
-                <TabsContent value="all">
-                  {/* Content will be displayed below */}
-                </TabsContent>
-                <TabsContent value="top_rated">
-                  {/* Content will be displayed below */}
-                </TabsContent>
-                <TabsContent value="mobile">
-                  {/* Content will be displayed below */}
-                </TabsContent>
-              </Tabs>
-            </div>
-            
-            {loading ? (
-              <div className="space-y-6">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg p-6">
-                    <div className="flex gap-4">
-                      <Skeleton className="h-16 w-16 rounded-full" />
-                      <div className="flex-1">
-                        <Skeleton className="h-6 w-1/3 mb-2" />
-                        <Skeleton className="h-4 w-1/2 mb-1" />
-                        <Skeleton className="h-4 w-3/4" />
+                {/* Quick Search Suggestions */}
+                {!searchQuery && (
+                  <div className="max-w-4xl mx-auto">
+                    {/* Popular Searches */}
+                    <div className="mb-6">
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <TrendingUp className="h-5 w-5 text-primary" />
+                        <span className="font-medium text-gray-700">პოპულარული ძიებები</span>
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {popularSearches.map((search) => (
+                          <Button
+                            key={search}
+                            variant="outline"
+                            onClick={() => handleQuickSearch(search)}
+                            className="rounded-full hover:bg-primary hover:text-white transition-colors"
+                          >
+                            {search}
+                          </Button>
+                        ))}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : mechanics.length > 0 ? (
-              <div>
-                <div className="space-y-6">
-                  <p className="text-sm text-muted-foreground">ნაპოვნია {mechanics.length} ხელოსანი</p>
-                  {mechanics.slice(0, visibleMechanicsCount).map(mechanic => (
-                    <MechanicCard
-                      key={mechanic.id}
-                      id={mechanic.id}
-                      name={`${mechanic.profile.first_name} ${mechanic.profile.last_name}`}
-                      specialization={mechanic.mechanic_profile.specialization || "ავტოხელოსანი"}
-                      location={`${mechanic.profile.city}${mechanic.profile.district ? `, ${mechanic.profile.district}` : ''}`}
-                      rating={mechanic.mechanic_profile.rating || 0}
-                      reviewCount={mechanic.mechanic_profile.review_count ? Number(mechanic.mechanic_profile.review_count) : 0}
-                      verified={true}
-                      isMobile={mechanic.mechanic_profile.is_mobile}
-                      experience={mechanic.mechanic_profile.experience_years || 0}
-                      description={mechanic.mechanic_profile.description || ""}
-                      services={mechanic.services.map(s => s.name).slice(0, 3)}
-                    />
-                  ))}
-                </div>
 
-                {mechanics.length > visibleMechanicsCount && (
-                  <div className="mt-8 text-center">
-                    <Button variant="outline" onClick={loadMoreMechanics}>
-                      მეტის ჩვენება ({mechanics.length - visibleMechanicsCount})
-                    </Button>
+                    {/* Recent Searches */}
+                    {recentSearches.length > 0 && (
+                      <div>
+                        <div className="flex items-center justify-center gap-2 mb-4">
+                          <Clock className="h-5 w-5 text-gray-500" />
+                          <span className="font-medium text-gray-700">ბოლო ძიებები</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearRecentSearches}
+                            className="text-xs text-gray-500 hover:text-red-500"
+                          >
+                            გასუფთავება
+                          </Button>
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {recentSearches.slice().reverse().map((search, index) => (
+                            <Button
+                              key={index}
+                              variant="ghost"
+                              onClick={() => handleQuickSearch(search)}
+                              className="rounded-full bg-gray-100 hover:bg-primary hover:text-white transition-colors"
+                            >
+                              {search}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">მოძებნეთ საუკეთესო ავტოხელოსანი თქვენი მანქანისთვის</p>
-                {(searchQuery || selectedCategory || selectedCity) ? (
-                  <p className="mt-4">ძიების შედეგად ხელოსნები ვერ მოიძებნა. სცადეთ სხვა პარამეტრებით ძიება.</p>
-                ) : null}
+            </div>
+
+            {/* Results Section */}
+            {(searchQuery || searchParams.get("q")) && (
+              <div>
+                {/* Search Results Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      ძიების შედეგები: "{searchQuery || searchParams.get("q")}"
+                    </h2>
+                    <Badge variant="secondary" className="px-3 py-1">
+                      {activeTab === "services" ? services.length : mechanics.length} ნაპოვნი
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Tabs */}
+                <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "services" | "mechanics")} className="mb-8">
+                  <TabsList className="grid w-full max-w-md grid-cols-2 bg-white/80 backdrop-blur-sm">
+                    <TabsTrigger value="services" className="flex items-center gap-2">
+                      <Wrench className="h-4 w-4" />
+                      სერვისები
+                    </TabsTrigger>
+                    <TabsTrigger value="mechanics" className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      ხელოსნები
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="services" className="space-y-6">
+                    {/* Filters */}
+                    <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+                      <CardContent className="p-6">
+                        <ModernServiceFilters
+                          searchTerm={searchQuery}
+                          setSearchTerm={setSearchQuery}
+                          selectedCategory={selectedCategory}
+                          setSelectedCategory={setSelectedCategory}
+                          categories={categories}
+                          selectedCity={selectedCity}
+                          setSelectedCity={setSelectedCity}
+                          cities={cities}
+                          selectedDistrict={selectedDistrict}
+                          setSelectedDistrict={setSelectedDistrict}
+                          districts={districts}
+                          selectedBrands={selectedBrands}
+                          setSelectedBrands={setSelectedBrands}
+                          onSiteOnly={onSiteOnly}
+                          setOnSiteOnly={setOnSiteOnly}
+                          minRating={minRating}
+                          setMinRating={setMinRating}
+                          onSearch={performSearch}
+                          onResetFilters={handleResetFilters}
+                        />
+                      </CardContent>
+                    </Card>
+
+                    {/* Services Results */}
+                    {servicesLoading ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {[...Array(8)].map((_, i) => (
+                          <ServiceCardSkeleton key={i} />
+                        ))}
+                      </div>
+                    ) : services.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {services.map(service => (
+                          <ServiceCard key={service.id} service={service} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-16">
+                        <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Target className="h-12 w-12 text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">სერვისები ვერ მოიძებნა</h3>
+                        <p className="text-gray-600 mb-6">შეცვალეთ საძიებო კრიტერიუმები ან სცადეთ სხვა საძიებო სიტყვები</p>
+                        <Button onClick={handleResetFilters} variant="outline">
+                          ფილტრების გასუფთავება
+                        </Button>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="mechanics" className="space-y-6">
+                    {/* Mechanics Results */}
+                    {mechanicsLoading ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[...Array(6)].map((_, i) => (
+                          <Card key={i} className="animate-pulse">
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-4 mb-4">
+                                <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+                                <div className="space-y-2">
+                                  <div className="h-4 bg-gray-200 rounded w-32"></div>
+                                  <div className="h-3 bg-gray-200 rounded w-24"></div>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="h-3 bg-gray-200 rounded"></div>
+                                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : mechanics.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {mechanics.map(mechanic => (
+                          <Card key={mechanic.id} className="hover:shadow-xl transition-all duration-200 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-4 mb-4">
+                                <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                  {mechanic.first_name[0]}{mechanic.last_name[0]}
+                                </div>
+                                <div>
+                                  <h3 className="font-bold text-lg text-gray-900">
+                                    {mechanic.first_name} {mechanic.last_name}
+                                  </h3>
+                                  <p className="text-gray-600">{mechanic.specialization}</p>
+                                </div>
+                              </div>
+
+                              <div className="space-y-3 mb-6">
+                                <div className="flex items-center gap-2 text-gray-600">
+                                  <MapPin className="h-4 w-4 text-primary" />
+                                  <span>{mechanic.city}{mechanic.district ? `, ${mechanic.district}` : ''}</span>
+                                </div>
+
+                                {mechanic.rating && (
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex items-center">
+                                      {renderStars(Math.round(mechanic.rating))}
+                                    </div>
+                                    <span className="font-semibold">{mechanic.rating}</span>
+                                    <span className="text-gray-500 text-sm">({mechanic.review_count})</span>
+                                  </div>
+                                )}
+
+                                {mechanic.experience_years && (
+                                  <div className="flex items-center gap-2 text-gray-600">
+                                    <Zap className="h-4 w-4 text-primary" />
+                                    <span>{mechanic.experience_years} წლის გამოცდილება</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="flex gap-2">
+                                <Button 
+                                  onClick={() => navigate(`/mechanic/${mechanic.id}`)}
+                                  className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                                >
+                                  პროფილი
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  onClick={() => navigate(`/book?mechanic=${mechanic.id}`)}
+                                  className="flex-1 hover:bg-primary hover:text-white"
+                                >
+                                  დაჯავშნა
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-16">
+                        <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                          <User className="h-12 w-12 text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">ხელოსნები ვერ მოიძებნა</h3>
+                        <p className="text-gray-600 mb-6">სცადეთ სხვა საძიებო სიტყვები ან შეცვალეთ კრიტერიუმები</p>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </div>
             )}
           </div>
@@ -429,4 +507,4 @@ const SearchPage = () => {
   );
 };
 
-export default SearchPage;
+export default Search;
