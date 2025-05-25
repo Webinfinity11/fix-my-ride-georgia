@@ -2,14 +2,14 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
-import SearchFilter from "@/components/home/SearchFilter";
 import ServiceCategories from "@/components/home/ServiceCategories";
 import HowItWorks from "@/components/home/HowItWorks";
 import { Button } from "@/components/ui/button";
 import MechanicCard from "@/components/mechanic/MechanicCard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import ServiceFilters from "@/components/services/ServiceFilters";
 
 // Sample featured mechanics data
 const featuredMechanics = [
@@ -56,28 +56,115 @@ type ServiceCategory = {
 };
 
 const Index = () => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [districts, setDistricts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [onSiteOnly, setOnSiteOnly] = useState(false);
+  const [minRating, setMinRating] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const { data, error } = await supabase
+        // Fetch categories
+        const { data: categoriesData, error: categoriesError } = await supabase
           .from("service_categories")
           .select("*")
           .order("id", { ascending: true })
           .limit(6); // Show only first 6 categories on homepage
 
-        if (error) throw error;
-        setCategories(data || []);
+        if (categoriesError) throw categoriesError;
+        setCategories(categoriesData || []);
+
+        // Fetch cities
+        const { data: servicesData, error: servicesError } = await supabase
+          .from("mechanic_services")
+          .select("city")
+          .not("city", "is", null);
+
+        if (servicesError) throw servicesError;
+        
+        const uniqueCities = Array.from(
+          new Set(servicesData?.map(s => s.city).filter(Boolean) as string[])
+        ).sort();
+        setCities(uniqueCities);
+
+        // Fetch districts for Tbilisi
+        if (selectedCity === "თბილისი") {
+          const { data: districtsData, error: districtsError } = await supabase
+            .from("mechanic_services")
+            .select("district")
+            .eq("city", "თბილისი")
+            .not("district", "is", null);
+
+          if (districtsError) throw districtsError;
+          
+          const uniqueDistricts = Array.from(
+            new Set(districtsData?.map(s => s.district).filter(Boolean) as string[])
+          ).sort();
+          setDistricts(uniqueDistricts);
+        }
       } catch (error: any) {
-        console.error("Error fetching service categories:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCategories();
+    fetchData();
+  }, [selectedCity]);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    
+    if (searchTerm) params.set("q", searchTerm);
+    if (selectedCategory !== "all") params.set("category", selectedCategory.toString());
+    if (selectedCity) params.set("city", selectedCity);
+    if (selectedDistrict) params.set("district", selectedDistrict);
+    if (selectedBrands.length > 0) params.set("brands", selectedBrands.join(","));
+    if (onSiteOnly) params.set("onSite", "true");
+    if (minRating) params.set("minRating", minRating.toString());
+    
+    navigate(`/services-detail?${params.toString()}`);
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedCity(null);
+    setSelectedDistrict(null);
+    setSelectedBrands([]);
+    setOnSiteOnly(false);
+    setMinRating(null);
+  };
+
+  // Fetch all categories for the filter
+  const [allCategories, setAllCategories] = useState<ServiceCategory[]>([]);
+
+  useEffect(() => {
+    const fetchAllCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("service_categories")
+          .select("*")
+          .order("name", { ascending: true });
+
+        if (error) throw error;
+        setAllCategories(data || []);
+      } catch (error: any) {
+        console.error("Error fetching all categories:", error);
+      }
+    };
+
+    fetchAllCategories();
   }, []);
 
   return (
@@ -86,7 +173,41 @@ const Index = () => {
       
       <main className="flex-grow">
         <Hero />
-        <SearchFilter />
+        
+        <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold text-center mb-4">მოძებნეთ სასურველი სერვისი</h2>
+              <p className="text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
+                გამოიყენეთ ჩვენი მოწინავე ძიების სისტემა, რომ მოძებნოთ თქვენი საჭიროებისთვის შესაფერისი სერვისი
+              </p>
+              
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <ServiceFilters
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  categories={allCategories}
+                  selectedCity={selectedCity}
+                  setSelectedCity={setSelectedCity}
+                  cities={cities}
+                  selectedDistrict={selectedDistrict}
+                  setSelectedDistrict={setSelectedDistrict}
+                  districts={districts}
+                  selectedBrands={selectedBrands}
+                  setSelectedBrands={setSelectedBrands}
+                  onSiteOnly={onSiteOnly}
+                  setOnSiteOnly={setOnSiteOnly}
+                  minRating={minRating}
+                  setMinRating={setMinRating}
+                  onSearch={handleSearch}
+                  onResetFilters={handleResetFilters}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
         
         <section className="py-16 bg-background">
           <div className="container mx-auto px-4">
@@ -112,7 +233,7 @@ const Index = () => {
             )}
             
             <div className="text-center mt-8">
-              <Link to="/services">
+              <Link to="/services-detail">
                 <Button variant="outline" size="lg">
                   ყველა სერვისის ნახვა
                 </Button>
@@ -150,7 +271,7 @@ const Index = () => {
             </div>
             
             <div className="text-center">
-              <Link to="/service-search">
+              <Link to="/services-detail">
                 <Button size="lg">
                   ყველა ხელოსნის ნახვა
                 </Button>

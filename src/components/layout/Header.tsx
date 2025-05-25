@@ -29,10 +29,7 @@ const Header = () => {
   const navigationItems = [
     { name: "მთავარი", href: "/" },
     { name: "ყველა სერვისი", href: "/services-detail" },
-    { name: "სერვისების ძიება", href: "/service-search" },
     { name: "ხელოსნების ძიება", href: "/search" },
-    { name: "ჩვენ შესახებ", href: "/about" },
-    { name: "კონტაქტი", href: "/contact" },
   ];
 
   return (

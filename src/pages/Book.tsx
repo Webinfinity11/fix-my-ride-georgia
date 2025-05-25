@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -37,18 +38,14 @@ type BookingStep = "service" | "datetime" | "confirmation" | "success";
 // Define mechanic type
 type MechanicType = {
   id: string;
-  profile: {
-    first_name: string;
-    last_name: string;
-    city: string;
-    district: string;
-    phone?: string | null;
-  };
-  mechanic_profile: {
-    specialization: string | null;
-    is_mobile: boolean;
-    rating?: number | null;
-  };
+  first_name: string;
+  last_name: string;
+  city: string;
+  district: string;
+  phone?: string | null;
+  specialization: string | null;
+  is_mobile: boolean;
+  rating?: number | null;
 };
 
 // Define service type
@@ -113,7 +110,7 @@ const BookPage = () => {
       setLoading(true);
       
       try {
-        // Fetch mechanic
+        // Fetch mechanic with proper query structure
         const { data: mechanicData, error: mechanicError } = await supabase
           .from("profiles")
           .select(`
@@ -123,25 +120,32 @@ const BookPage = () => {
             city,
             district,
             phone,
-            mechanic_profiles!inner(specialization, is_mobile, rating)
+            mechanic_profiles!inner(
+              specialization,
+              is_mobile,
+              rating
+            )
           `)
           .eq("id", id)
           .eq("role", "mechanic")
           .single();
         
-        if (mechanicError) throw mechanicError;
+        if (mechanicError) {
+          console.error("Mechanic fetch error:", mechanicError);
+          throw mechanicError;
+        }
         
-        // Structure mechanic data
+        // Structure mechanic data properly
         const formattedMechanic: MechanicType = {
           id: mechanicData.id,
-          profile: {
-            first_name: mechanicData.first_name,
-            last_name: mechanicData.last_name,
-            city: mechanicData.city,
-            district: mechanicData.district,
-            phone: mechanicData.phone
-          },
-          mechanic_profile: mechanicData.mechanic_profiles,
+          first_name: mechanicData.first_name,
+          last_name: mechanicData.last_name,
+          city: mechanicData.city,
+          district: mechanicData.district,
+          phone: mechanicData.phone,
+          specialization: mechanicData.mechanic_profiles?.specialization || null,
+          is_mobile: mechanicData.mechanic_profiles?.is_mobile || false,
+          rating: mechanicData.mechanic_profiles?.rating || null,
         };
         
         setMechanic(formattedMechanic);
@@ -156,7 +160,11 @@ const BookPage = () => {
           .eq("mechanic_id", id)
           .eq("is_active", true);
         
-        if (servicesError) throw servicesError;
+        if (servicesError) {
+          console.error("Services fetch error:", servicesError);
+          throw servicesError;
+        }
+        
         setServices(servicesData || []);
       } catch (error: any) {
         console.error("Error fetching data:", error);
@@ -240,6 +248,7 @@ const BookPage = () => {
         });
         
       if (error) {
+        console.error("Booking creation error:", error);
         throw error;
       }
       
@@ -253,11 +262,6 @@ const BookPage = () => {
     } finally {
       setConfirmLoading(false);
     }
-  };
-  
-  // Check if date is available (disable past dates)
-  const isDateUnavailable = (date: Date) => {
-    return isBefore(date, startOfToday()) && !isToday(date);
   };
   
   // Navigate back based on current step
@@ -276,7 +280,7 @@ const BookPage = () => {
   
   // Generate initials for avatar
   const initials = mechanic
-    ? `${mechanic.profile.first_name.charAt(0)}${mechanic.profile.last_name.charAt(0)}`
+    ? `${mechanic.first_name.charAt(0)}${mechanic.last_name.charAt(0)}`
     : "";
     
   if (loading) {
@@ -350,27 +354,27 @@ const BookPage = () => {
                   
                   <div>
                     <h2 className="text-xl font-semibold">
-                      {mechanic.profile.first_name} {mechanic.profile.last_name}
+                      {mechanic.first_name} {mechanic.last_name}
                     </h2>
                     <div className="flex items-center gap-2 text-muted-foreground text-sm mt-1">
                       <MapPin className="h-3.5 w-3.5" />
                       <span>
-                        {mechanic.profile.city}
-                        {mechanic.profile.district ? `, ${mechanic.profile.district}` : ""}
+                        {mechanic.city}
+                        {mechanic.district ? `, ${mechanic.district}` : ""}
                       </span>
-                      {mechanic.mechanic_profile.rating && (
+                      {mechanic.rating && (
                         <>
                           <span className="mx-1">•</span>
                           <div className="flex items-center">
                             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400 mr-1" />
-                            <span>{mechanic.mechanic_profile.rating}</span>
+                            <span>{mechanic.rating}</span>
                           </div>
                         </>
                       )}
-                      {mechanic.mechanic_profile.specialization && (
+                      {mechanic.specialization && (
                         <>
                           <span className="mx-1">•</span>
-                          <span>{mechanic.mechanic_profile.specialization}</span>
+                          <span>{mechanic.specialization}</span>
                         </>
                       )}
                     </div>
@@ -543,14 +547,14 @@ const BookPage = () => {
                         </CardContent>
                       </Card>
                       
-                      {mechanic.profile.phone && (
+                      {mechanic.phone && (
                         <Card className="border-muted">
                           <CardContent className="p-4">
                             <div className="flex items-center mb-3">
                               <Phone className="h-5 w-5 text-primary mr-2" />
                               <p className="text-sm text-muted-foreground">კონტაქტი</p>
                             </div>
-                            <p className="font-medium">{mechanic.profile.phone}</p>
+                            <p className="font-medium">{mechanic.phone}</p>
                           </CardContent>
                         </Card>
                       )}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -17,8 +16,9 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, DollarSign, Clock, Calendar, Car, CreditCard, Banknote } from "lucide-react";
+import { ArrowLeft, DollarSign, Clock, Calendar, Car, CreditCard, Banknote, MapPin } from "lucide-react";
 import PhotoUpload from "@/components/forms/PhotoUpload";
+import LocationSelector from "@/components/forms/LocationSelector";
 
 type ServiceType = {
   id: number;
@@ -37,6 +37,8 @@ type ServiceType = {
   car_brands?: string[];
   on_site_service?: boolean;
   photos?: string[];
+  city?: string;
+  district?: string;
 };
 
 type ServiceCategoryType = {
@@ -65,7 +67,12 @@ const weekDays = [
 const commonCarBrands = [
   "BMW", "Mercedes-Benz", "Audi", "Toyota", "Honda", "Nissan", "Hyundai", 
   "Kia", "Volkswagen", "Ford", "Chevrolet", "Mazda", "Subaru", "Lexus",
-  "Infiniti", "Acura", "Jeep", "Land Rover", "Porsche", "Mitsubishi"
+  "Infiniti", "Acura", "Jeep", "Land Rover", "Porsche", "Mitsubishi",
+  "Opel", "Peugeot", "Renault", "Citroen", "Fiat", "Volvo", "Saab",
+  "Skoda", "Seat", "Alfa Romeo", "Lancia", "Ferrari", "Lamborghini",
+  "Maserati", "Bentley", "Rolls-Royce", "Aston Martin", "McLaren",
+  "Bugatti", "Lotus", "Jaguar", "Mini", "Smart", "Tesla", "Lucid",
+  "Rivian", "Genesis", "Cadillac", "Lincoln", "Buick", "GMC", "Ram"
 ];
 
 const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormProps) => {
@@ -85,8 +92,19 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     working_hours_end: service?.working_hours_end || "18:00",
     car_brands: service?.car_brands || [],
     on_site_service: service?.on_site_service || false,
-    photos: service?.photos || []
+    photos: service?.photos || [],
+    city: service?.city || "",
+    district: service?.district || ""
   });
+
+  const [selectAllBrands, setSelectAllBrands] = useState(false);
+  const [otherBrand, setOtherBrand] = useState("");
+  const [showOtherInput, setShowOtherInput] = useState(false);
+
+  useEffect(() => {
+    // Check if all brands are selected
+    setSelectAllBrands(formData.car_brands.length === commonCarBrands.length);
+  }, [formData.car_brands]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,7 +127,9 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         working_hours_end: formData.working_hours_end,
         car_brands: formData.car_brands,
         on_site_service: formData.on_site_service,
-        photos: formData.photos
+        photos: formData.photos,
+        city: formData.city || null,
+        district: formData.district || null
       };
 
       if (service) {
@@ -156,6 +176,34 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
       : [...formData.car_brands, brand];
     
     handleInputChange("car_brands", newCarBrands);
+  };
+
+  const handleSelectAllBrands = (checked: boolean) => {
+    setSelectAllBrands(checked);
+    if (checked) {
+      handleInputChange("car_brands", [...commonCarBrands]);
+    } else {
+      handleInputChange("car_brands", []);
+    }
+  };
+
+  const handleOtherBrand = () => {
+    if (otherBrand.trim() && !formData.car_brands.includes(otherBrand.trim())) {
+      handleInputChange("car_brands", [...formData.car_brands, otherBrand.trim()]);
+      setOtherBrand("");
+      setShowOtherInput(false);
+    }
+  };
+
+  const handleCityChange = (city: string) => {
+    handleInputChange("city", city);
+    if (city !== "თბილისი") {
+      handleInputChange("district", "");
+    }
+  };
+
+  const handleDistrictChange = (district: string) => {
+    handleInputChange("district", district);
   };
 
   return (
@@ -209,6 +257,19 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-base font-medium flex items-center gap-1">
+              <MapPin size={14} />
+              მდებარეობა *
+            </Label>
+            <LocationSelector
+              selectedCity={formData.city}
+              selectedDistrict={formData.district}
+              onCityChange={handleCityChange}
+              onDistrictChange={handleDistrictChange}
+            />
           </div>
 
           <div className="space-y-2">
@@ -362,6 +423,43 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
               <Car size={14} />
               მანქანის მარკები
             </Label>
+            
+            <div className="flex flex-wrap gap-4 mb-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="select_all_brands"
+                  checked={selectAllBrands}
+                  onCheckedChange={handleSelectAllBrands}
+                />
+                <Label htmlFor="select_all_brands" className="text-sm font-medium">ყველას არჩევა</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowOtherInput(!showOtherInput)}
+                >
+                  სხვა მარკა
+                </Button>
+              </div>
+            </div>
+
+            {showOtherInput && (
+              <div className="flex gap-2 mb-4">
+                <Input
+                  placeholder="ჩაწერეთ მანქანის მარკა"
+                  value={otherBrand}
+                  onChange={(e) => setOtherBrand(e.target.value)}
+                  className="border-primary/20 focus-visible:ring-primary"
+                />
+                <Button type="button" onClick={handleOtherBrand} size="sm">
+                  დამატება
+                </Button>
+              </div>
+            )}
+            
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {commonCarBrands.map(brand => (
                 <div key={brand} className="flex items-center space-x-2">
@@ -374,6 +472,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                 </div>
               ))}
             </div>
+            
             {formData.car_brands.length > 0 && (
               <div className="mt-2">
                 <p className="text-sm text-muted-foreground mb-2">არჩეული მარკები:</p>
@@ -381,6 +480,13 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                   {formData.car_brands.map(brand => (
                     <Badge key={brand} variant="outline" className="bg-muted/50">
                       {brand}
+                      <button
+                        type="button"
+                        onClick={() => handleCarBrandToggle(brand)}
+                        className="ml-1 text-muted-foreground hover:text-foreground"
+                      >
+                        ×
+                      </button>
                     </Badge>
                   ))}
                 </div>
