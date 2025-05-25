@@ -1,5 +1,6 @@
+
 import { useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Service {
   id: number;
@@ -124,8 +125,7 @@ export const useServices = (): UseServicesReturn => {
         query = query.or(`
           name.ilike.%${searchTerm}%,
           description.ilike.%${searchTerm}%,
-          custom_category.ilike.%${searchTerm}%,
-          service_categories.name.ilike.%${searchTerm}%
+          custom_category.ilike.%${searchTerm}%
         `);
       }
 
@@ -166,15 +166,16 @@ export const useServices = (): UseServicesReturn => {
       // Transform data to match Service interface
       const transformedServices: Service[] = (data || []).map(service => ({
         ...service,
+        custom_category: service.custom_category || null,
         mechanic: {
-          id: service.profiles?.id || '',
-          first_name: service.profiles?.first_name || '',
-          last_name: service.profiles?.last_name || '',
-          city: service.profiles?.city || '',
-          district: service.profiles?.district || '',
-          phone: service.profiles?.phone || null,
-          specialization: service.mechanic_profiles?.specialization || null,
-          rating: service.mechanic_profiles?.rating || 0
+          id: Array.isArray(service.profiles) ? service.profiles[0]?.id || '' : service.profiles?.id || '',
+          first_name: Array.isArray(service.profiles) ? service.profiles[0]?.first_name || '' : service.profiles?.first_name || '',
+          last_name: Array.isArray(service.profiles) ? service.profiles[0]?.last_name || '' : service.profiles?.last_name || '',
+          city: Array.isArray(service.profiles) ? service.profiles[0]?.city || '' : service.profiles?.city || '',
+          district: Array.isArray(service.profiles) ? service.profiles[0]?.district || '' : service.profiles?.district || '',
+          phone: Array.isArray(service.profiles) ? service.profiles[0]?.phone || null : service.profiles?.phone || null,
+          specialization: Array.isArray(service.mechanic_profiles) ? service.mechanic_profiles[0]?.specialization || null : service.mechanic_profiles?.specialization || null,
+          rating: Array.isArray(service.mechanic_profiles) ? service.mechanic_profiles[0]?.rating || 0 : service.mechanic_profiles?.rating || 0
         },
         category: service.service_categories
       }));
