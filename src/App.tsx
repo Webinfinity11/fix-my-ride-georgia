@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,6 +14,7 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import AddService from "./pages/AddService";
 import Book from "./pages/Book";
 import MechanicProfile from "./pages/MechanicProfile";
 import NotFound from "./pages/NotFound";
@@ -37,6 +39,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard/*" element={<Dashboard />} />
+              <Route path="/add-service" element={<AddService />} />
               <Route path="/book" element={<Book />} />
               <Route path="/book/:mechanicId" element={<Book />} />
               <Route path="/mechanic/:id" element={<MechanicProfile />} />

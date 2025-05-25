@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ServiceForm from "@/components/forms/ServiceForm";
+import ServiceStats from "@/components/dashboard/ServiceStats";
 
 type ServiceType = {
   id: number;
@@ -61,11 +61,39 @@ const MechanicServices = () => {
   const [editingService, setEditingService] = useState<ServiceType | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<number | "all">("all");
+  const [totalBookings, setTotalBookings] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
 
   useEffect(() => {
     fetchServices();
     fetchCategories();
+    fetchStats();
   }, [user]);
+
+  const fetchStats = async () => {
+    if (!user) return;
+
+    try {
+      // Fetch total bookings
+      const { count: bookingsCount } = await supabase
+        .from("bookings")
+        .select("*", { count: "exact", head: true })
+        .eq("mechanic_id", user.id);
+
+      setTotalBookings(bookingsCount || 0);
+
+      // Calculate average rating from mechanic profile
+      const { data: profileData } = await supabase
+        .from("mechanic_profiles")
+        .select("rating")
+        .eq("id", user.id)
+        .single();
+
+      setAvgRating(profileData?.rating || 0);
+    } catch (error: any) {
+      console.error("Error fetching stats:", error);
+    }
+  };
 
   const fetchServices = async () => {
     if (!user) return;
@@ -214,6 +242,14 @@ const MechanicServices = () => {
           დამატება
         </Button>
       </div>
+
+      {/* Service Statistics */}
+      <ServiceStats
+        totalServices={services.length}
+        activeServices={activeServicesCount}
+        totalBookings={totalBookings}
+        avgRating={avgRating}
+      />
 
       {showForm ? (
         <ServiceForm
