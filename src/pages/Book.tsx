@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -17,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 type MechanicType = {
   id: string;
@@ -36,11 +38,14 @@ type MechanicType = {
 const Book = () => {
   const [searchParams] = useSearchParams();
   const mechanicId = searchParams.get("mechanicId");
+  const serviceId = searchParams.get("serviceId");
+  const { user } = useAuth();
   const [mechanic, setMechanic] = useState<MechanicType | null>(null);
   const [date, setDate] = useState<Date | undefined>();
+  const [time, setTime] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [address, setAddress] = useState("");
-  const [description, setDescription] = useState("");
+  const [notes, setNotes] = useState("");
 
   useEffect(() => {
     const fetchMechanic = async () => {
@@ -52,25 +57,35 @@ const Book = () => {
               id,
               first_name,
               last_name,
-              profile:profiles(specialization, hourly_rate, is_mobile),
-              mechanic_profile:mechanic_profiles(rating)
+              mechanic_profiles(
+                rating,
+                specialization,
+                hourly_rate,
+                is_mobile
+              )
             `)
             .eq("id", mechanicId)
             .single();
 
           if (mechanicError) throw mechanicError;
 
-          // Adjust the structure to match MechanicType
-          const formattedMechanic = {
+          // Format the mechanic data to match MechanicType
+          const formattedMechanic: MechanicType = {
             id: mechanicData.id,
             first_name: mechanicData.first_name,
             last_name: mechanicData.last_name,
-            rating: mechanicData.mechanic_profile?.rating || null,
-            profile: mechanicData.profile,
-            mechanic_profile: mechanicData.mechanic_profile,
+            rating: mechanicData.mechanic_profiles?.rating || null,
+            profile: {
+              specialization: mechanicData.mechanic_profiles?.specialization || null,
+              hourly_rate: mechanicData.mechanic_profiles?.hourly_rate || null,
+              is_mobile: mechanicData.mechanic_profiles?.is_mobile || null,
+            },
+            mechanic_profile: {
+              rating: mechanicData.mechanic_profiles?.rating || null,
+            },
           };
 
-          setMechanic(formattedMechanic as MechanicType);
+          setMechanic(formattedMechanic);
         } catch (error: any) {
           console.error("Error fetching mechanic:", error);
           toast.error("ხელოსნის მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");
@@ -84,13 +99,23 @@ const Book = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    if (!user) {
+      toast.error("გთხოვთ შედით სისტემაში");
+      return;
+    }
+
     if (!date) {
       toast.error("გთხოვთ აირჩიოთ თარიღი");
       return;
     }
 
-    if (isMobile && !address) {
-      toast.error("გთხოვთ მიუთითოთ მისამართი");
+    if (!time) {
+      toast.error("გთხოვთ აირჩიოთ დრო");
+      return;
+    }
+
+    if (!serviceId) {
+      toast.error("სერვისი არ არის მითითებული");
       return;
     }
 
@@ -98,12 +123,12 @@ const Book = () => {
       const { error } = await supabase
         .from("bookings")
         .insert({
-          mechanic_id: mechanicId,
-          date: date.toISOString(),
-          is_mobile: isMobile,
-          address: address,
-          description: description,
-          user_id: supabase.auth.user()?.id,
+          mechanic_id: mechanicId!,
+          service_id: parseInt(serviceId),
+          scheduled_date: format(date, "yyyy-MM-dd"),
+          scheduled_time: time,
+          notes: notes || null,
+          user_id: user.id,
         });
 
       if (error) throw error;
@@ -172,6 +197,17 @@ const Book = () => {
                 </div>
 
                 <div>
+                  <Label htmlFor="time">დრო</Label>
+                  <Input
+                    type="time"
+                    id="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
                   <Label htmlFor="isMobile" className="flex items-center space-x-2">
                     <Checkbox
                       id="isMobile"
@@ -197,11 +233,11 @@ const Book = () => {
                 )}
 
                 <div>
-                  <Label htmlFor="description">აღწერა</Label>
+                  <Label htmlFor="notes">დამატებითი ინფორმაცია</Label>
                   <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    id="notes"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
                     placeholder="დამატებითი ინფორმაცია"
                   />
                 </div>
