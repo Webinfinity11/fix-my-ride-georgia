@@ -97,14 +97,20 @@ const ModernServiceFilters = ({
   };
 
   const handleCityChange = (city: string) => {
-    setSelectedCity(city === "all" ? null : city);
-    if (city !== "თბილისი") {
+    const newCity = city === "all" ? null : city;
+    setSelectedCity(newCity);
+    if (newCity !== "თბილისი") {
       setSelectedDistrict(null);
     }
   };
 
   const handleDistrictChange = (district: string) => {
     setSelectedDistrict(district === "all" ? null : district);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch();
   };
 
   const hasActiveFilters = 
@@ -130,8 +136,8 @@ const ModernServiceFilters = ({
     <Card className="border-primary/20 shadow-lg">
       <CardContent className="p-6">
         <div className="space-y-6">
-          {/* Basic Search */}
-          <div className="relative">
+          {/* Main Search Bar */}
+          <form onSubmit={handleSearchSubmit} className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="მოძებნეთ სერვისი, ხელოსანი..."
@@ -139,7 +145,7 @@ const ModernServiceFilters = ({
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 h-12 text-lg border-2 border-primary/20 focus-visible:ring-primary"
             />
-          </div>
+          </form>
 
           {/* Quick Filters Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -320,13 +326,26 @@ const ModernServiceFilters = ({
           )}
 
           {/* Search Button */}
-          <Button 
-            onClick={onSearch} 
-            className="w-full h-12 text-lg bg-primary hover:bg-primary-dark transition-colors"
-          >
-            <Search className="h-5 w-5 mr-2" />
-            ძიება
-          </Button>
+          <div className="flex gap-3">
+            <Button 
+              onClick={onSearch} 
+              className="flex-1 h-12 text-lg bg-primary hover:bg-primary-dark transition-colors"
+            >
+              <Search className="h-5 w-5 mr-2" />
+              ძიება
+            </Button>
+            
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                onClick={onResetFilters}
+                className="h-12 px-6 text-muted-foreground hover:text-destructive border-destructive/20"
+              >
+                <X className="h-5 w-5 mr-2" />
+                გასუფთავება
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
