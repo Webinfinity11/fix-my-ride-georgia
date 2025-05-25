@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -42,8 +41,8 @@ const BookingSuccess = ({ mechanic, bookingData }: BookingSuccessProps) => {
   const navigate = useNavigate();
   
   // Safely access nested properties with fallbacks
-  const profile = mechanic?.profile || {};
-  const mechanicProfile = mechanic?.mechanic_profile || {};
+  const profile: ProfileType = mechanic?.profile || {};
+  const mechanicProfile: MechanicProfileType = mechanic?.mechanic_profile || {};
   
   const firstName = profile.first_name || "";
   const lastName = profile.last_name || "";
