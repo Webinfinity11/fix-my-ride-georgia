@@ -419,7 +419,7 @@ const Book = () => {
                         <Checkbox
                           id="mobile"
                           checked={isMobile}
-                          onCheckedChange={setIsMobile}
+                          onCheckedChange={(checked) => setIsMobile(checked === true)}
                         />
                         <Label htmlFor="mobile">ადგილზე მისვლის სერვისი</Label>
                       </div>
