@@ -14,6 +14,7 @@ import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
 import MechanicPortfolio from "@/components/dashboard/mechanic/MechanicPortfolio";
+import AddService from "@/pages/AddService";
 import { toast } from "sonner";
 
 const Dashboard = () => {

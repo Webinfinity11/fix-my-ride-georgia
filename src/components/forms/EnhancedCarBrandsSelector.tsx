@@ -147,7 +147,6 @@ const EnhancedCarBrandsSelector = ({
                 value={customBrand}
                 onChange={(e) => setCustomBrand(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddCustomBrand()}
-                size="sm"
                 disabled={disabled}
               />
               <Button
