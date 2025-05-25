@@ -97,6 +97,16 @@ const Dashboard = () => {
                 }
               />
               <Route
+                path="/add-service"
+                element={
+                  user.role === "mechanic" ? (
+                    <AddService />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+              <Route
                 path="/bookings"
                 element={
                   user.role === "mechanic" ? (

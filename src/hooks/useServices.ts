@@ -153,7 +153,8 @@ export const useServices = () => {
       // Apply filters
       if (filters.searchTerm && filters.searchTerm.trim()) {
         console.log("🔎 Applying search term:", filters.searchTerm);
-        query = query.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
+        // Updated search to include category names
+        query = query.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%,service_categories.name.ilike.%${filters.searchTerm}%`);
       }
 
       if (filters.selectedCategory && filters.selectedCategory !== "all") {
@@ -206,6 +207,7 @@ export const useServices = () => {
           id,
           first_name,
           last_name,
+          phone,
           mechanic_profiles(rating)
         `)
         .in("id", mechanicIds);

@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import Book from "./pages/Book";
 import MechanicProfile from "./pages/MechanicProfile";
 import NotFound from "./pages/NotFound";
+import AddService from "./pages/AddService";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard/*" element={<Dashboard />} />
+              <Route path="/dashboard/add-service" element={<AddService />} />
               <Route path="/book" element={<Book />} />
               <Route path="/book/:mechanicId" element={<Book />} />
               <Route path="/mechanic/:id" element={<MechanicProfile />} />
