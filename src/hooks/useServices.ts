@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -176,6 +175,21 @@ export const useServices = () => {
         const profile = Array.isArray(service.profiles) ? service.profiles[0] : service.profiles;
         const category = service.service_categories;
         
+        // გასწორებული კოდი - უსაფრთხოდ ვამოწმებთ profile-ს არსებობას
+        const mechanicProfile = profile ? {
+          id: profile.id || "",
+          first_name: profile.first_name || "",
+          last_name: profile.last_name || "",
+          rating: Array.isArray(profile.mechanic_profiles) 
+            ? profile.mechanic_profiles[0]?.rating || null
+            : profile.mechanic_profiles?.rating || null,
+        } : {
+          id: "",
+          first_name: "",
+          last_name: "",
+          rating: null,
+        };
+        
         return {
           id: service.id,
           name: service.name,
@@ -195,12 +209,7 @@ export const useServices = () => {
             id: category.id,
             name: category.name
           } : null,
-          mechanic: {
-            id: profile?.id || "",
-            first_name: profile?.first_name || "",
-            last_name: profile?.last_name || "",
-            rating: profile?.mechanic_profiles?.rating || null,
-          }
+          mechanic: mechanicProfile
         };
       });
 
