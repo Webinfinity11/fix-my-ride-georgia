@@ -1,4 +1,3 @@
-
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
@@ -9,7 +8,7 @@ import MechanicCard from "@/components/mechanic/MechanicCard";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import ServiceFilters from "@/components/services/ServiceFilters";
+import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 
 // Sample featured mechanics data
 const featuredMechanics = [
@@ -55,10 +54,16 @@ type ServiceCategory = {
   icon: string | null;
 };
 
+// საქართველოს მთავარი ქალაქები
+const georgianCities = [
+  "თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი",
+  "ზუგდიდი", "ფოთი", "ხაშური", "სამტრედია", "ოზურგეთი"
+];
+
 const Index = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>(georgianCities);
   const [districts, setDistricts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -84,33 +89,17 @@ const Index = () => {
         if (categoriesError) throw categoriesError;
         setCategories(categoriesData || []);
 
-        // Fetch cities
-        const { data: servicesData, error: servicesError } = await supabase
-          .from("mechanic_services")
-          .select("city")
-          .not("city", "is", null);
-
-        if (servicesError) throw servicesError;
-        
-        const uniqueCities = Array.from(
-          new Set(servicesData?.map(s => s.city).filter(Boolean) as string[])
-        ).sort();
-        setCities(uniqueCities);
-
-        // Fetch districts for Tbilisi
+        // თბილისის უბნების fetch თუ თბილისია არჩეული
         if (selectedCity === "თბილისი") {
-          const { data: districtsData, error: districtsError } = await supabase
-            .from("mechanic_services")
-            .select("district")
-            .eq("city", "თბილისი")
-            .not("district", "is", null);
-
-          if (districtsError) throw districtsError;
-          
-          const uniqueDistricts = Array.from(
-            new Set(districtsData?.map(s => s.district).filter(Boolean) as string[])
-          ).sort();
-          setDistricts(uniqueDistricts);
+          const tbilisiDistricts = [
+            "ვაკე", "საბურთალო", "ვერე", "გლდანი", "ისანი", "ნაძალადევი",
+            "ძველი თბილისი", "აბანოთუბანი", "ავლაბარი", "ჩუღურეთი", "სამგორი",
+            "დიღომი", "ვაშლიჯვარი", "მთაწმინდა", "კრწანისი", "ავჭალა",
+            "ლილო", "ორთაჭალა", "დიდუბე", "ფონიჭალა"
+          ];
+          setDistricts(tbilisiDistricts);
+        } else {
+          setDistricts([]);
         }
       } catch (error: any) {
         console.error("Error fetching data:", error);
@@ -183,7 +172,7 @@ const Index = () => {
               </p>
               
               <div className="bg-white rounded-2xl shadow-lg p-8">
-                <ServiceFilters
+                <ModernServiceFilters
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
                   selectedCategory={selectedCategory}
