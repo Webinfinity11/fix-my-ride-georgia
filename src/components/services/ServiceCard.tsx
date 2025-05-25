@@ -151,9 +151,9 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
       </CardContent>
 
       <CardFooter className="pt-3 px-6 pb-6">
-        <Link to={`/service/${service.id}`} className="w-full">
+        <Link to={`/book?service=${service.id}`} className="w-full">
           <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg py-2.5 font-medium transition-colors">
-            დეტალების ნახვა
+            დაჯავშნა
           </Button>
         </Link>
       </CardFooter>

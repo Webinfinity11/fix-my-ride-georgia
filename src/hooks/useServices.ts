@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -104,7 +105,8 @@ export const useServices = () => {
     try {
       console.log("Fetching services with filters:", filters);
       
-      let query = supabase
+      // First fetch services with categories
+      let servicesQuery = supabase
         .from("mechanic_services")
         .select(`
           id,
@@ -121,75 +123,89 @@ export const useServices = () => {
           accepts_cash_payment,
           rating,
           review_count,
-          service_categories!mechanic_services_category_id_fkey(id, name),
-          profiles!mechanic_services_mechanic_id_fkey(
-            id,
-            first_name,
-            last_name,
-            mechanic_profiles(rating)
-          )
+          category_id,
+          mechanic_id
         `)
         .eq("is_active", true);
 
       // Apply filters
       if (filters.searchTerm && filters.searchTerm.trim()) {
-        query = query.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
+        servicesQuery = servicesQuery.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
       }
 
       if (filters.selectedCategory && filters.selectedCategory !== "all") {
-        query = query.eq("category_id", filters.selectedCategory);
+        servicesQuery = servicesQuery.eq("category_id", filters.selectedCategory);
       }
 
       if (filters.selectedCity) {
-        query = query.eq("city", filters.selectedCity);
+        servicesQuery = servicesQuery.eq("city", filters.selectedCity);
       }
 
       if (filters.selectedDistrict) {
-        query = query.eq("district", filters.selectedDistrict);
+        servicesQuery = servicesQuery.eq("district", filters.selectedDistrict);
       }
 
       if (filters.onSiteOnly) {
-        query = query.eq("on_site_service", true);
+        servicesQuery = servicesQuery.eq("on_site_service", true);
       }
 
       if (filters.minRating) {
-        query = query.gte("rating", filters.minRating);
+        servicesQuery = servicesQuery.gte("rating", filters.minRating);
       }
 
-      const { data, error } = await query.order("created_at", { ascending: false });
+      const { data: servicesData, error: servicesError } = await servicesQuery
+        .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Supabase query error:", error);
-        throw error;
+      if (servicesError) {
+        console.error("Supabase query error:", servicesError);
+        throw servicesError;
       }
 
-      console.log("Raw service data:", data);
-
-      if (!data) {
+      if (!servicesData) {
         setServices([]);
         return;
       }
 
-      let filteredServices = data.map(service => {
-        // Handle profile data - it could be an array or single object
-        const profile = Array.isArray(service.profiles) ? service.profiles[0] : service.profiles;
-        const category = service.service_categories;
+      // Filter by car brands on frontend
+      let filteredServices = servicesData;
+      if (filters.selectedBrands.length > 0) {
+        filteredServices = servicesData.filter(service => 
+          service.car_brands && 
+          filters.selectedBrands.some(brand => service.car_brands?.includes(brand))
+        );
+      }
+
+      // Now fetch categories and profiles separately
+      const serviceIds = filteredServices.map(s => s.id);
+      const categoryIds = [...new Set(filteredServices.map(s => s.category_id).filter(Boolean))];
+      const mechanicIds = [...new Set(filteredServices.map(s => s.mechanic_id))];
+
+      // Fetch categories
+      const { data: categoriesData } = await supabase
+        .from("service_categories")
+        .select("id, name")
+        .in("id", categoryIds);
+
+      // Fetch mechanic profiles
+      const { data: mechanicsData } = await supabase
+        .from("profiles")
+        .select(`
+          id,
+          first_name,
+          last_name,
+          mechanic_profiles(rating)
+        `)
+        .in("id", mechanicIds);
+
+      // Transform and combine data
+      const transformedServices: ServiceType[] = filteredServices.map(service => {
+        const category = categoriesData?.find(cat => cat.id === service.category_id);
+        const mechanic = mechanicsData?.find(mech => mech.id === service.mechanic_id);
         
-        // გასწორებული კოდი - უსაფრთხოდ ვამოწმებთ profile-ს არსებობას
-        const mechanicProfile = profile ? {
-          id: profile.id || "",
-          first_name: profile.first_name || "",
-          last_name: profile.last_name || "",
-          rating: Array.isArray(profile.mechanic_profiles) 
-            ? profile.mechanic_profiles[0]?.rating || null
-            : profile.mechanic_profiles?.rating || null,
-        } : {
-          id: "",
-          first_name: "",
-          last_name: "",
-          rating: null,
-        };
-        
+        const mechanicProfile = Array.isArray(mechanic?.mechanic_profiles) 
+          ? mechanic.mechanic_profiles[0] 
+          : mechanic?.mechanic_profiles;
+
         return {
           id: service.id,
           name: service.name,
@@ -209,20 +225,17 @@ export const useServices = () => {
             id: category.id,
             name: category.name
           } : null,
-          mechanic: mechanicProfile
+          mechanic: {
+            id: mechanic?.id || "",
+            first_name: mechanic?.first_name || "",
+            last_name: mechanic?.last_name || "",
+            rating: mechanicProfile?.rating || null,
+          }
         };
       });
 
-      // Filter by car brands
-      if (filters.selectedBrands.length > 0) {
-        filteredServices = filteredServices.filter(service => 
-          service.car_brands && 
-          filters.selectedBrands.some(brand => service.car_brands?.includes(brand))
-        );
-      }
-
-      console.log("Processed services:", filteredServices);
-      setServices(filteredServices);
+      console.log("Processed services:", transformedServices);
+      setServices(transformedServices);
     } catch (error: any) {
       console.error("Error fetching services:", error);
       toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
