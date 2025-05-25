@@ -1,9 +1,12 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface LocationSelectorProps {
   selectedCity: string;
@@ -12,22 +15,24 @@ interface LocationSelectorProps {
   onDistrictChange: (district: string) => void;
 }
 
+// საქართველოს 10 მთავარი ქალაქი
 const georgianCities = [
   "თბილისი",
-  "ქუთაისი", 
-  "ბათუმი",
+  "ბათუმი", 
+  "ქუთაისი",
   "რუსთავი",
   "გორი",
   "ზუგდიდი",
   "ფოთი",
-  "კობულეთი",
   "ხაშური",
-  "სამტრედია"
+  "სამტრედია",
+  "ოზურგეთი"
 ];
 
+// თბილისის უბნები
 const tbilisiDistricts = [
   "ვაკე",
-  "საბურთალო",
+  "საბურთალო", 
   "ვერე",
   "გლდანი",
   "ისანი",
@@ -48,39 +53,31 @@ const tbilisiDistricts = [
   "ფონიჭალა"
 ];
 
-const LocationSelector = ({ selectedCity, selectedDistrict, onCityChange, onDistrictChange }: LocationSelectorProps) => {
-  const [citySearch, setCitySearch] = useState("");
-  const [districtSearch, setDistrictSearch] = useState("");
+const LocationSelector = ({ 
+  selectedCity, 
+  selectedDistrict, 
+  onCityChange, 
+  onDistrictChange 
+}: LocationSelectorProps) => {
+  const [showDistrict, setShowDistrict] = useState(false);
 
-  const filteredCities = georgianCities.filter(city => 
-    city.toLowerCase().includes(citySearch.toLowerCase())
-  );
-
-  const filteredDistricts = tbilisiDistricts.filter(district => 
-    district.toLowerCase().includes(districtSearch.toLowerCase())
-  );
+  useEffect(() => {
+    setShowDistrict(selectedCity === "თბილისი");
+    if (selectedCity !== "თბილისი") {
+      onDistrictChange("");
+    }
+  }, [selectedCity, onDistrictChange]);
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-2">
-        <Label className="text-base">ქალაქი</Label>
+        <Label htmlFor="city">ქალაქი *</Label>
         <Select value={selectedCity} onValueChange={onCityChange}>
           <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
             <SelectValue placeholder="აირჩიეთ ქალაქი" />
           </SelectTrigger>
           <SelectContent>
-            <div className="p-2">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="ძიება..."
-                  value={citySearch}
-                  onChange={(e) => setCitySearch(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
-            </div>
-            {filteredCities.map((city) => (
+            {georgianCities.map((city) => (
               <SelectItem key={city} value={city}>
                 {city}
               </SelectItem>
@@ -89,26 +86,15 @@ const LocationSelector = ({ selectedCity, selectedDistrict, onCityChange, onDist
         </Select>
       </div>
 
-      {selectedCity === "თბილისი" && (
+      {showDistrict && (
         <div className="space-y-2">
-          <Label className="text-base">უბანი</Label>
+          <Label htmlFor="district">უბანი</Label>
           <Select value={selectedDistrict} onValueChange={onDistrictChange}>
             <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
               <SelectValue placeholder="აირჩიეთ უბანი" />
             </SelectTrigger>
             <SelectContent>
-              <div className="p-2">
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="ძიება..."
-                    value={districtSearch}
-                    onChange={(e) => setDistrictSearch(e.target.value)}
-                    className="pl-8"
-                  />
-                </div>
-              </div>
-              {filteredDistricts.map((district) => (
+              {tbilisiDistricts.map((district) => (
                 <SelectItem key={district} value={district}>
                   {district}
                 </SelectItem>
