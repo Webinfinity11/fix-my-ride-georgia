@@ -1,6 +1,5 @@
-
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface Service {
   id: number;
@@ -113,9 +112,9 @@ export const useServices = (): UseServicesReturn => {
         .from('mechanic_services')
         .select(`
           *,
-          profiles!mechanic_services_mechanic_id_fkey(id, first_name, last_name, city, district, phone),
-          mechanic_profiles!mechanic_services_mechanic_id_fkey(specialization, rating),
-          service_categories!mechanic_services_category_id_fkey(id, name, description)
+          profiles:mechanic_id(id, first_name, last_name, city, district, phone),
+          mechanic_profiles:mechanic_id(rating, specialization),
+          service_categories:category_id(id, name, description)
         `)
         .eq('is_active', true);
 
@@ -125,7 +124,8 @@ export const useServices = (): UseServicesReturn => {
         query = query.or(`
           name.ilike.%${searchTerm}%,
           description.ilike.%${searchTerm}%,
-          custom_category.ilike.%${searchTerm}%
+          custom_category.ilike.%${searchTerm}%,
+          service_categories.name.ilike.%${searchTerm}%
         `);
       }
 
@@ -165,26 +165,7 @@ export const useServices = (): UseServicesReturn => {
 
       // Transform data to match Service interface
       const transformedServices: Service[] = (data || []).map(service => ({
-        id: service.id,
-        name: service.name,
-        description: service.description,
-        category_id: service.category_id,
-        custom_category: service.custom_category,
-        price_from: service.price_from,
-        price_to: service.price_to,
-        estimated_hours: service.estimated_hours,
-        city: service.city,
-        district: service.district,
-        car_brands: service.car_brands,
-        on_site_service: service.on_site_service,
-        accepts_card_payment: service.accepts_card_payment,
-        accepts_cash_payment: service.accepts_cash_payment,
-        working_days: service.working_days,
-        working_hours_start: service.working_hours_start,
-        working_hours_end: service.working_hours_end,
-        photos: service.photos,
-        rating: service.rating,
-        review_count: service.review_count,
+        ...service,
         mechanic: {
           id: service.profiles?.id || '',
           first_name: service.profiles?.first_name || '',
