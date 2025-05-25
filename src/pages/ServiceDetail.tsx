@@ -160,6 +160,11 @@ const ServiceDetail = () => {
 
       if (mechanicError) throw mechanicError;
 
+      // გასწორებული კოდი - უსაფრთხოდ ვამოწმებთ mechanic_profiles-ს არსებობას
+      const mechanicProfile = Array.isArray(mechanicData.mechanic_profiles) 
+        ? mechanicData.mechanic_profiles[0] 
+        : mechanicData.mechanic_profiles;
+
       const transformedService: ServiceType = {
         id: serviceData.id,
         name: serviceData.name,
@@ -186,11 +191,11 @@ const ServiceDetail = () => {
           last_name: mechanicData.last_name,
           city: mechanicData.city,
           district: mechanicData.district,
-          rating: mechanicData.mechanic_profiles?.rating || null,
-          review_count: mechanicData.mechanic_profiles?.review_count || null,
-          specialization: mechanicData.mechanic_profiles?.specialization || null,
-          experience_years: mechanicData.mechanic_profiles?.experience_years || null,
-          is_mobile: mechanicData.mechanic_profiles?.is_mobile || false
+          rating: mechanicProfile?.rating || null,
+          review_count: mechanicProfile?.review_count || null,
+          specialization: mechanicProfile?.specialization || null,
+          experience_years: mechanicProfile?.experience_years || null,
+          is_mobile: mechanicProfile?.is_mobile || false
         }
       };
 
