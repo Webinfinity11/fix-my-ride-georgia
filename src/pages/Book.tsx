@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -69,19 +68,24 @@ const Book = () => {
 
           if (mechanicError) throw mechanicError;
 
+          // გასწორებული კოდი - უსაფრთხოდ ვამოწმებთ mechanic_profiles-ს არსებობას
+          const mechanicProfile = Array.isArray(mechanicData.mechanic_profiles) 
+            ? mechanicData.mechanic_profiles[0] 
+            : mechanicData.mechanic_profiles;
+
           // Format the mechanic data to match MechanicType
           const formattedMechanic: MechanicType = {
             id: mechanicData.id,
             first_name: mechanicData.first_name,
             last_name: mechanicData.last_name,
-            rating: mechanicData.mechanic_profiles?.rating || null,
+            rating: mechanicProfile?.rating || null,
             profile: {
-              specialization: mechanicData.mechanic_profiles?.specialization || null,
-              hourly_rate: mechanicData.mechanic_profiles?.hourly_rate || null,
-              is_mobile: mechanicData.mechanic_profiles?.is_mobile || null,
+              specialization: mechanicProfile?.specialization || null,
+              hourly_rate: mechanicProfile?.hourly_rate || null,
+              is_mobile: mechanicProfile?.is_mobile || null,
             },
             mechanic_profile: {
-              rating: mechanicData.mechanic_profiles?.rating || null,
+              rating: mechanicProfile?.rating || null,
             },
           };
 
@@ -120,20 +124,35 @@ const Book = () => {
     }
 
     try {
+      const bookingData: any = {
+        mechanic_id: mechanicId!,
+        service_id: parseInt(serviceId),
+        scheduled_date: format(date, "yyyy-MM-dd"),
+        scheduled_time: time,
+        notes: notes || null,
+        user_id: user.id,
+      };
+
+      // თუ მობილური სერვისია, address-იც დავამატოთ
+      if (isMobile && address) {
+        bookingData.address = address;
+      }
+
       const { error } = await supabase
         .from("bookings")
-        .insert({
-          mechanic_id: mechanicId!,
-          service_id: parseInt(serviceId),
-          scheduled_date: format(date, "yyyy-MM-dd"),
-          scheduled_time: time,
-          notes: notes || null,
-          user_id: user.id,
-        });
+        .insert(bookingData);
 
       if (error) throw error;
 
       toast.success("თქვენი მოთხოვნა წარმატებით გაიგზავნა");
+      
+      // Form-ის გასუფთავება წარმატებული submission-ის შემდეგ
+      setDate(undefined);
+      setTime("");
+      setIsMobile(false);
+      setAddress("");
+      setNotes("");
+      
     } catch (error: any) {
       console.error("Error submitting booking:", error);
       toast.error("მოთხოვნის გაგზავნისას შეცდომა დაფიქსირდა");
