@@ -110,6 +110,12 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     e.preventDefault();
     if (!user) return;
 
+    // ქალაქის ვალიდაცია
+    if (!formData.city) {
+      toast.error("გთხოვთ აირჩიოთ ქალაქი");
+      return;
+    }
+
     setLoading(true);
     try {
       const serviceData = {
@@ -128,7 +134,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         car_brands: formData.car_brands,
         on_site_service: formData.on_site_service,
         photos: formData.photos,
-        city: formData.city || null,
+        city: formData.city,
         district: formData.district || null
       };
 
@@ -188,10 +194,16 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
   };
 
   const handleOtherBrand = () => {
-    if (otherBrand.trim() && !formData.car_brands.includes(otherBrand.trim())) {
-      handleInputChange("car_brands", [...formData.car_brands, otherBrand.trim()]);
-      setOtherBrand("");
-      setShowOtherInput(false);
+    if (otherBrand.trim()) {
+      const trimmedBrand = otherBrand.trim();
+      if (!formData.car_brands.includes(trimmedBrand)) {
+        handleInputChange("car_brands", [...formData.car_brands, trimmedBrand]);
+        setOtherBrand("");
+        setShowOtherInput(false);
+        toast.success(`"${trimmedBrand}" დაემატა`);
+      } else {
+        toast.error("ეს მარკა უკვე არჩეულია");
+      }
     }
   };
 
@@ -204,6 +216,11 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
 
   const handleDistrictChange = (district: string) => {
     handleInputChange("district", district);
+  };
+
+  const removeBrand = (brandToRemove: string) => {
+    const newCarBrands = formData.car_brands.filter(brand => brand !== brandToRemove);
+    handleInputChange("car_brands", newCarBrands);
   };
 
   return (
@@ -240,7 +257,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">კატეგორია</Label>
+              <Label htmlFor="category">კატეგორია *</Label>
               <Select
                 value={formData.category_id.toString()}
                 onValueChange={(value) => handleInputChange("category_id", parseInt(value))}
@@ -440,6 +457,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                   variant="outline"
                   size="sm"
                   onClick={() => setShowOtherInput(!showOtherInput)}
+                  className="border-primary/20 hover:bg-primary/5"
                 >
                   სხვა მარკა
                 </Button>
@@ -453,8 +471,19 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
                   value={otherBrand}
                   onChange={(e) => setOtherBrand(e.target.value)}
                   className="border-primary/20 focus-visible:ring-primary"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleOtherBrand();
+                    }
+                  }}
                 />
-                <Button type="button" onClick={handleOtherBrand} size="sm">
+                <Button 
+                  type="button" 
+                  onClick={handleOtherBrand} 
+                  size="sm"
+                  className="bg-primary hover:bg-primary-light"
+                >
                   დამატება
                 </Button>
               </div>
@@ -474,16 +503,17 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             </div>
             
             {formData.car_brands.length > 0 && (
-              <div className="mt-2">
-                <p className="text-sm text-muted-foreground mb-2">არჩეული მარკები:</p>
-                <div className="flex flex-wrap gap-1">
+              <div className="mt-4">
+                <p className="text-sm text-muted-foreground mb-2">არჩეული მარკები ({formData.car_brands.length}):</p>
+                <div className="flex flex-wrap gap-2">
                   {formData.car_brands.map(brand => (
-                    <Badge key={brand} variant="outline" className="bg-muted/50">
+                    <Badge key={brand} variant="outline" className="bg-muted/50 flex items-center gap-1">
                       {brand}
                       <button
                         type="button"
-                        onClick={() => handleCarBrandToggle(brand)}
-                        className="ml-1 text-muted-foreground hover:text-foreground"
+                        onClick={() => removeBrand(brand)}
+                        className="ml-1 text-muted-foreground hover:text-destructive transition-colors"
+                        title="ამოღება"
                       >
                         ×
                       </button>
@@ -513,7 +543,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             </Button>
             <Button
               type="submit"
-              disabled={loading || !formData.name}
+              disabled={loading || !formData.name || !formData.city}
               className="bg-primary hover:bg-primary-light transition-colors"
             >
               {loading ? "მუშავდება..." : service ? "განახლება" : "დამატება"}
