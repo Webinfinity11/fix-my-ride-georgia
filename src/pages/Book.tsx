@@ -146,11 +146,14 @@ const Book = () => {
         return;
       }
 
-      // Fix: profiles is a single object, not an array
-      const profile = serviceData.profiles;
-      const mechanicProfile = Array.isArray(profile.mechanic_profiles) 
-        ? profile.mechanic_profiles[0] 
-        : profile.mechanic_profiles;
+      const profile = Array.isArray(serviceData.profiles) 
+        ? serviceData.profiles[0] 
+        : serviceData.profiles;
+        
+      const mechanicProfile = profile?.mechanic_profiles;
+      const mechProfile = Array.isArray(mechanicProfile) 
+        ? mechanicProfile[0] 
+        : mechanicProfile;
 
       const transformedService: ServiceType = {
         id: serviceData.id,
@@ -162,11 +165,11 @@ const Book = () => {
         city: serviceData.city,
         district: serviceData.district,
         mechanic: {
-          id: profile.id,
-          first_name: profile.first_name,
-          last_name: profile.last_name,
-          phone: profile.phone,
-          rating: mechanicProfile?.rating || null,
+          id: profile?.id || "",
+          first_name: profile?.first_name || "",
+          last_name: profile?.last_name || "",
+          phone: profile?.phone || null,
+          rating: mechProfile?.rating || null,
         },
         category: serviceData.service_categories
       };
@@ -174,7 +177,7 @@ const Book = () => {
       setService(transformedService);
 
       // Set mobile service if mechanic supports it
-      if (mechanicProfile?.is_mobile) {
+      if (mechProfile?.is_mobile) {
         setIsMobile(false); // User can choose
       }
       
@@ -416,7 +419,7 @@ const Book = () => {
                         <Checkbox
                           id="mobile"
                           checked={isMobile}
-                          onCheckedChange={(checked) => setIsMobile(checked === true)}
+                          onCheckedChange={setIsMobile}
                         />
                         <Label htmlFor="mobile">ადგილზე მისვლის სერვისი</Label>
                       </div>
