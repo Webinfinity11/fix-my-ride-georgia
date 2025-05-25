@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,19 +7,23 @@ import { format } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
+type ProfileType = {
+  first_name?: string;
+  last_name?: string;
+  city?: string;
+  district?: string;
+  phone?: string | null;
+};
+
+type MechanicProfileType = {
+  specialization?: string | null;
+  is_mobile?: boolean;
+};
+
 type MechanicType = {
   id: string;
-  profile: {
-    first_name: string;
-    last_name: string;
-    city: string;
-    district: string;
-    phone?: string | null;
-  };
-  mechanic_profile: {
-    specialization: string | null;
-    is_mobile: boolean;
-  };
+  profile?: ProfileType;
+  mechanic_profile?: MechanicProfileType;
 };
 
 type BookingData = {
@@ -36,7 +41,7 @@ interface BookingSuccessProps {
 const BookingSuccess = ({ mechanic, bookingData }: BookingSuccessProps) => {
   const navigate = useNavigate();
   
-  // გასწორებული კოდი - უსაფრთხოდ ვამოწმებთ nested objects-ს არსებობას
+  // Safely access nested properties with fallbacks
   const profile = mechanic?.profile || {};
   const mechanicProfile = mechanic?.mechanic_profile || {};
   
