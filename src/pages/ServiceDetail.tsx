@@ -65,6 +65,7 @@ type ServiceType = {
     last_name: string;
     city: string;
     district: string;
+    phone: string | null;
     rating: number | null;
     review_count: number | null;
     specialization: string | null;
@@ -157,7 +158,7 @@ const ServiceDetail = () => {
         }
       }
 
-      // Fetch mechanic profile
+      // Fetch mechanic profile with phone
       const { data: mechanicData, error: mechanicError } = await supabase
         .from("profiles")
         .select(`
@@ -166,6 +167,7 @@ const ServiceDetail = () => {
           last_name,
           city,
           district,
+          phone,
           mechanic_profiles(rating, review_count, specialization, experience_years, is_mobile)
         `)
         .eq("id", serviceData.mechanic_id)
@@ -203,6 +205,7 @@ const ServiceDetail = () => {
           last_name: mechanicData.last_name,
           city: mechanicData.city,
           district: mechanicData.district,
+          phone: mechanicData.phone,
           rating: mechanicProfile?.rating || null,
           review_count: mechanicProfile?.review_count || null,
           specialization: mechanicProfile?.specialization || null,
@@ -245,6 +248,14 @@ const ServiceDetail = () => {
         }`}
       />
     ));
+  };
+
+  const handlePhoneCall = (phoneNumber: string) => {
+    if (phoneNumber) {
+      window.location.href = `tel:${phoneNumber}`;
+    } else {
+      toast.error("ტელეფონის ნომერი არ არის მითითებული");
+    }
   };
 
   const nextPhoto = () => {
@@ -319,11 +330,11 @@ const ServiceDetail = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Header />
       
-      <main className="py-8">
+      <main className="py-4 lg:py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             {/* Breadcrumb */}
-            <div className="mb-8">
+            <div className="mb-6">
               <Button
                 variant="ghost"
                 onClick={() => navigate("/services-detail")}
@@ -334,12 +345,12 @@ const ServiceDetail = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
               {/* Main Content */}
-              <div className="lg:col-span-2 space-y-8">
+              <div className="xl:col-span-2 space-y-6 lg:space-y-8">
                 {/* Hero Photo Section */}
                 <div className="relative group">
-                  <Card className="border-0 shadow-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50">
+                  <Card className="border-0 shadow-xl lg:shadow-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50">
                     <div className="relative">
                       {service.photos && service.photos.length > 0 ? (
                         <>
@@ -421,20 +432,20 @@ const ServiceDetail = () => {
                     </div>
 
                     {/* Service Header */}
-                    <CardContent className="p-8">
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <h1 className="text-3xl font-bold text-gray-900">{service.name}</h1>
+                    <CardContent className="p-6 lg:p-8">
+                      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 break-words">{service.name}</h1>
                             {service.category && (
-                              <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-3 py-1">
+                              <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-3 py-1 w-fit">
                                 {service.category.name}
                               </Badge>
                             )}
                           </div>
                           
                           {service.rating && (
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-wrap items-center gap-3 mb-4">
                               <div className="flex items-center gap-1">
                                 {renderStars(Math.round(service.rating))}
                               </div>
@@ -444,12 +455,12 @@ const ServiceDetail = () => {
                           )}
                         </div>
 
-                        <div className="text-right">
-                          <div className="text-3xl font-bold text-primary mb-1">
+                        <div className="text-left lg:text-right flex-shrink-0">
+                          <div className="text-2xl lg:text-3xl font-bold text-primary mb-2">
                             {formatPrice(service.price_from, service.price_to)}
                           </div>
                           {service.estimated_hours && (
-                            <div className="flex items-center text-gray-500 text-sm">
+                            <div className="flex items-center justify-start lg:justify-end text-gray-500 text-sm">
                               <Clock className="h-4 w-4 mr-1" />
                               {service.estimated_hours} საათი
                             </div>
@@ -458,8 +469,8 @@ const ServiceDetail = () => {
                       </div>
 
                       {service.description && (
-                        <div className="prose prose-gray max-w-none">
-                          <p className="text-gray-700 text-lg leading-relaxed">{service.description}</p>
+                        <div className="mt-6">
+                          <p className="text-gray-700 text-base lg:text-lg leading-relaxed break-words">{service.description}</p>
                         </div>
                       )}
                     </CardContent>
@@ -467,19 +478,19 @@ const ServiceDetail = () => {
                 </div>
 
                 {/* Service Features */}
-                <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
-                  <CardContent className="p-8">
-                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                <Card className="border-0 shadow-lg lg:shadow-xl bg-white/70 backdrop-blur-sm">
+                  <CardContent className="p-6 lg:p-8">
+                    <h2 className="text-xl lg:text-2xl font-bold mb-6 flex items-center gap-2">
                       <Zap className="h-6 w-6 text-primary" />
                       სერვისის თავისებურებები
                     </h2>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                       <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
-                        <MapPin className="h-8 w-8 text-blue-600" />
-                        <div>
-                          <p className="font-semibold text-blue-900">მდებარეობა</p>
-                          <p className="text-blue-700">
+                        <MapPin className="h-6 lg:h-8 w-6 lg:w-8 text-blue-600 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-blue-900 text-sm lg:text-base">მდებარეობა</p>
+                          <p className="text-blue-700 text-sm break-words">
                             {service.city}{service.district ? `, ${service.district}` : ''}
                           </p>
                         </div>
@@ -487,19 +498,19 @@ const ServiceDetail = () => {
 
                       {service.on_site_service && (
                         <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl">
-                          <Car className="h-8 w-8 text-green-600" />
-                          <div>
-                            <p className="font-semibold text-green-900">მისვლით</p>
-                            <p className="text-green-700">ადგილზე მისვლა</p>
+                          <Car className="h-6 lg:h-8 w-6 lg:w-8 text-green-600 flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="font-semibold text-green-900 text-sm lg:text-base">მისვლით</p>
+                            <p className="text-green-700 text-sm">ადგილზე მისვლა</p>
                           </div>
                         </div>
                       )}
 
                       <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl">
-                        <Calendar className="h-8 w-8 text-purple-600" />
-                        <div>
-                          <p className="font-semibold text-purple-900">სამუშაო დღეები</p>
-                          <p className="text-purple-700 text-sm">
+                        <Calendar className="h-6 lg:h-8 w-6 lg:w-8 text-purple-600 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-purple-900 text-sm lg:text-base">სამუშაო დღეები</p>
+                          <p className="text-purple-700 text-xs lg:text-sm break-words">
                             {formatWorkingDays(service.working_days)}
                           </p>
                         </div>
@@ -507,10 +518,10 @@ const ServiceDetail = () => {
 
                       {service.working_hours_start && service.working_hours_end && (
                         <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl">
-                          <Clock className="h-8 w-8 text-orange-600" />
-                          <div>
-                            <p className="font-semibold text-orange-900">სამუშაო საათები</p>
-                            <p className="text-orange-700">
+                          <Clock className="h-6 lg:h-8 w-6 lg:w-8 text-orange-600 flex-shrink-0" />
+                          <div className="min-w-0">
+                            <p className="font-semibold text-orange-900 text-sm lg:text-base">სამუშაო საათები</p>
+                            <p className="text-orange-700 text-sm">
                               {service.working_hours_start} - {service.working_hours_end}
                             </p>
                           </div>
@@ -518,10 +529,10 @@ const ServiceDetail = () => {
                       )}
 
                       <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-teal-50 to-teal-100 rounded-xl">
-                        <Shield className="h-8 w-8 text-teal-600" />
-                        <div>
-                          <p className="font-semibold text-teal-900">გადახდა</p>
-                          <div className="flex gap-2 mt-1">
+                        <Shield className="h-6 lg:h-8 w-6 lg:w-8 text-teal-600 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-teal-900 text-sm lg:text-base">გადახდა</p>
+                          <div className="flex flex-wrap gap-1 mt-1">
                             {service.accepts_cash_payment && (
                               <Badge variant="outline" className="text-xs border-teal-300 text-teal-700">
                                 ნაღდი
@@ -541,18 +552,18 @@ const ServiceDetail = () => {
 
                 {/* Car Brands */}
                 {service.car_brands && service.car_brands.length > 0 && (
-                  <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
-                    <CardContent className="p-8">
-                      <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <Card className="border-0 shadow-lg lg:shadow-xl bg-white/70 backdrop-blur-sm">
+                    <CardContent className="p-6 lg:p-8">
+                      <h2 className="text-xl lg:text-2xl font-bold mb-6 flex items-center gap-2">
                         <Car className="h-6 w-6 text-primary" />
                         მანქანის მარკები
                       </h2>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2 lg:gap-3">
                         {service.car_brands.map(brand => (
                           <Badge 
                             key={brand} 
                             variant="secondary" 
-                            className="px-4 py-2 text-sm bg-gradient-to-r from-gray-100 to-gray-200 hover:from-primary hover:to-blue-600 hover:text-white transition-all duration-200"
+                            className="px-3 lg:px-4 py-1 lg:py-2 text-sm bg-gradient-to-r from-gray-100 to-gray-200 hover:from-primary hover:to-blue-600 hover:text-white transition-all duration-200"
                           >
                             {brand}
                           </Badge>
@@ -564,24 +575,24 @@ const ServiceDetail = () => {
               </div>
 
               {/* Sidebar */}
-              <div className="space-y-6">
+              <div className="space-y-6 xl:sticky xl:top-8 xl:self-start">
                 {/* Mechanic Card */}
-                <Card className="border-0 shadow-2xl bg-gradient-to-br from-white to-blue-50 sticky top-8">
-                  <CardContent className="p-8">
+                <Card className="border-0 shadow-xl lg:shadow-2xl bg-gradient-to-br from-white to-blue-50">
+                  <CardContent className="p-6 lg:p-8">
                     <div className="text-center mb-6">
-                      <Avatar className="w-20 h-20 mx-auto mb-4 ring-4 ring-primary/20">
+                      <Avatar className="w-16 lg:w-20 h-16 lg:h-20 mx-auto mb-4 ring-4 ring-primary/20">
                         <AvatarImage src={`https://avatar.vercel.sh/${service.mechanic.id}.png`} />
-                        <AvatarFallback className="bg-gradient-to-br from-primary to-blue-600 text-white text-xl">
+                        <AvatarFallback className="bg-gradient-to-br from-primary to-blue-600 text-white text-lg lg:text-xl">
                           {service.mechanic.first_name[0]}{service.mechanic.last_name[0]}
                         </AvatarFallback>
                       </Avatar>
                       
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">
+                      <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-1 break-words">
                         {service.mechanic.first_name} {service.mechanic.last_name}
                       </h3>
                       
                       {service.mechanic.specialization && (
-                        <p className="text-gray-600 mb-3">{service.mechanic.specialization}</p>
+                        <p className="text-gray-600 mb-3 text-sm lg:text-base break-words">{service.mechanic.specialization}</p>
                       )}
 
                       {service.mechanic.rating && (
@@ -597,21 +608,30 @@ const ServiceDetail = () => {
 
                     <div className="space-y-4 mb-6">
                       <div className="flex items-center gap-3 text-gray-600">
-                        <MapPin className="h-5 w-5 text-primary" />
-                        <span>{service.mechanic.city}{service.mechanic.district ? `, ${service.mechanic.district}` : ''}</span>
+                        <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
+                        <span className="text-sm lg:text-base break-words">
+                          {service.mechanic.city}{service.mechanic.district ? `, ${service.mechanic.district}` : ''}
+                        </span>
                       </div>
                       
                       {service.mechanic.experience_years && (
                         <div className="flex items-center gap-3 text-gray-600">
-                          <Award className="h-5 w-5 text-primary" />
-                          <span>{service.mechanic.experience_years} წლის გამოცდილება</span>
+                          <Award className="h-5 w-5 text-primary flex-shrink-0" />
+                          <span className="text-sm lg:text-base">{service.mechanic.experience_years} წლის გამოცდილება</span>
                         </div>
                       )}
 
                       {service.mechanic.is_mobile && (
                         <div className="flex items-center gap-3 text-gray-600">
-                          <Car className="h-5 w-5 text-primary" />
-                          <span>მობილური სერვისი</span>
+                          <Car className="h-5 w-5 text-primary flex-shrink-0" />
+                          <span className="text-sm lg:text-base">მობილური სერვისი</span>
+                        </div>
+                      )}
+
+                      {service.mechanic.phone && (
+                        <div className="flex items-center gap-3 text-gray-600">
+                          <Phone className="h-5 w-5 text-primary flex-shrink-0" />
+                          <span className="text-sm lg:text-base break-all">{service.mechanic.phone}</span>
                         </div>
                       )}
                     </div>
@@ -624,9 +644,15 @@ const ServiceDetail = () => {
                         </Button>
                       </Link>
                       
-                      <Button variant="outline" className="w-full border-2 hover:bg-gray-50" size="lg">
+                      <Button 
+                        onClick={() => handlePhoneCall(service.mechanic.phone || '')}
+                        variant="outline" 
+                        className="w-full border-2 hover:bg-green-50 hover:border-green-500 hover:text-green-700 transition-all duration-200" 
+                        size="lg"
+                        disabled={!service.mechanic.phone}
+                      >
                         <Phone className="h-5 w-5 mr-2" />
-                        დაკავშირება
+                        {service.mechanic.phone ? 'დარეკვა' : 'ნომერი არ არის'}
                       </Button>
 
                       <Link to={`/mechanic/${service.mechanic.id}`} className="w-full block">
@@ -641,19 +667,19 @@ const ServiceDetail = () => {
 
                 {/* Additional Info */}
                 {service.category?.description && (
-                  <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-amber-50">
+                  <Card className="border-0 shadow-lg lg:shadow-xl bg-gradient-to-br from-white to-amber-50">
                     <CardContent className="p-6">
                       <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                         <ThumbsUp className="h-5 w-5 text-amber-600" />
                         კატეგორიის შესახებ
                       </h3>
-                      <p className="text-gray-700 leading-relaxed">{service.category.description}</p>
+                      <p className="text-gray-700 leading-relaxed text-sm lg:text-base break-words">{service.category.description}</p>
                     </CardContent>
                   </Card>
                 )}
 
                 {/* Stats Card */}
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-green-50">
+                <Card className="border-0 shadow-lg lg:shadow-xl bg-gradient-to-br from-white to-green-50">
                   <CardContent className="p-6">
                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                       <Eye className="h-5 w-5 text-green-600" />
@@ -661,15 +687,15 @@ const ServiceDetail = () => {
                     </h3>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-600">ნახვები:</span>
+                        <span className="text-gray-600 text-sm lg:text-base">ნახვები:</span>
                         <span className="font-semibold">1,234</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-600">ჯავშნები:</span>
+                        <span className="text-gray-600 text-sm lg:text-base">ჯავშნები:</span>
                         <span className="font-semibold">89</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-600">წარმატებული:</span>
+                        <span className="text-gray-600 text-sm lg:text-base">წარმატებული:</span>
                         <span className="font-semibold text-green-600">95%</span>
                       </div>
                     </div>
