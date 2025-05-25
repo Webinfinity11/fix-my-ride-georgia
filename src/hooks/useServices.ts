@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -204,6 +205,7 @@ export const useServices = () => {
           accepts_cash_payment: service.accepts_cash_payment,
           rating: service.rating,
           review_count: service.review_count,
+          photos: service.photos, // Add the missing photos property
           category: null, // Will be null in fallback
           mechanic: {
             id: "",
