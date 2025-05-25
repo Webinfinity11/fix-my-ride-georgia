@@ -113,8 +113,9 @@ export const useServices = (): UseServicesReturn => {
         .from('mechanic_services')
         .select(`
           *,
-          profiles:mechanic_id(id, first_name, last_name, city, district, phone, specialization),
-          service_categories:category_id(id, name, description)
+          profiles!mechanic_services_mechanic_id_fkey(id, first_name, last_name, city, district, phone),
+          mechanic_profiles!mechanic_services_mechanic_id_fkey(specialization, rating),
+          service_categories!mechanic_services_category_id_fkey(id, name, description)
         `)
         .eq('is_active', true);
 
@@ -124,8 +125,7 @@ export const useServices = (): UseServicesReturn => {
         query = query.or(`
           name.ilike.%${searchTerm}%,
           description.ilike.%${searchTerm}%,
-          custom_category.ilike.%${searchTerm}%,
-          service_categories.name.ilike.%${searchTerm}%
+          custom_category.ilike.%${searchTerm}%
         `);
       }
 
@@ -165,25 +165,35 @@ export const useServices = (): UseServicesReturn => {
 
       // Transform data to match Service interface
       const transformedServices: Service[] = (data || []).map(service => ({
-        ...service,
-        mechanic: service.profiles ? {
-          id: service.profiles.id,
-          first_name: service.profiles.first_name,
-          last_name: service.profiles.last_name,
-          city: service.profiles.city,
-          district: service.profiles.district,
-          phone: service.profiles.phone,
-          specialization: service.profiles.specialization,
-          rating: service.profiles.rating || 0
-        } : {
-          id: '',
-          first_name: '',
-          last_name: '',
-          city: '',
-          district: '',
-          phone: null,
-          specialization: null,
-          rating: 0
+        id: service.id,
+        name: service.name,
+        description: service.description,
+        category_id: service.category_id,
+        custom_category: service.custom_category,
+        price_from: service.price_from,
+        price_to: service.price_to,
+        estimated_hours: service.estimated_hours,
+        city: service.city,
+        district: service.district,
+        car_brands: service.car_brands,
+        on_site_service: service.on_site_service,
+        accepts_card_payment: service.accepts_card_payment,
+        accepts_cash_payment: service.accepts_cash_payment,
+        working_days: service.working_days,
+        working_hours_start: service.working_hours_start,
+        working_hours_end: service.working_hours_end,
+        photos: service.photos,
+        rating: service.rating,
+        review_count: service.review_count,
+        mechanic: {
+          id: service.profiles?.id || '',
+          first_name: service.profiles?.first_name || '',
+          last_name: service.profiles?.last_name || '',
+          city: service.profiles?.city || '',
+          district: service.profiles?.district || '',
+          phone: service.profiles?.phone || null,
+          specialization: service.mechanic_profiles?.specialization || null,
+          rating: service.mechanic_profiles?.rating || 0
         },
         category: service.service_categories
       }));
