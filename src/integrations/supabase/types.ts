@@ -292,6 +292,7 @@ export type Database = {
           category_id: number | null
           city: string | null
           created_at: string
+          custom_category: string | null
           description: string | null
           district: string | null
           estimated_hours: number | null
@@ -319,6 +320,7 @@ export type Database = {
           category_id?: number | null
           city?: string | null
           created_at?: string
+          custom_category?: string | null
           description?: string | null
           district?: string | null
           estimated_hours?: number | null
@@ -346,6 +348,7 @@ export type Database = {
           category_id?: number | null
           city?: string | null
           created_at?: string
+          custom_category?: string | null
           description?: string | null
           district?: string | null
           estimated_hours?: number | null
