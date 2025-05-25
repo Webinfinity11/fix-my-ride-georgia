@@ -157,7 +157,7 @@ const ServiceDetail = () => {
         }
       }
 
-      // Fetch mechanic profile with phone number
+      // Fetch mechanic profile
       const { data: mechanicData, error: mechanicError } = await supabase
         .from("profiles")
         .select(`
@@ -166,7 +166,6 @@ const ServiceDetail = () => {
           last_name,
           city,
           district,
-          phone,
           mechanic_profiles(rating, review_count, specialization, experience_years, is_mobile)
         `)
         .eq("id", serviceData.mechanic_id)
@@ -211,9 +210,6 @@ const ServiceDetail = () => {
           is_mobile: mechanicProfile?.is_mobile || false
         }
       };
-
-      // Add phone number to mechanic data
-      (transformedService.mechanic as any).phone = mechanicData.phone;
 
       setService(transformedService);
       if (transformedService.photos && transformedService.photos.length > 0) {
@@ -338,9 +334,9 @@ const ServiceDetail = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
-              <div className="xl:col-span-2 space-y-8">
+              <div className="lg:col-span-2 space-y-8">
                 {/* Hero Photo Section */}
                 <div className="relative group">
                   <Card className="border-0 shadow-2xl overflow-hidden bg-gradient-to-br from-white to-gray-50">
@@ -618,19 +614,6 @@ const ServiceDetail = () => {
                           <span>მობილური სერვისი</span>
                         </div>
                       )}
-
-                      {/* Display phone number if available */}
-                      {(service.mechanic as any).phone && (
-                        <div className="flex items-center gap-3 text-gray-600">
-                          <Phone className="h-5 w-5 text-primary" />
-                          <a 
-                            href={`tel:${(service.mechanic as any).phone}`} 
-                            className="hover:text-primary transition-colors"
-                          >
-                            {(service.mechanic as any).phone}
-                          </a>
-                        </div>
-                      )}
                     </div>
 
                     <div className="space-y-3">
@@ -641,12 +624,11 @@ const ServiceDetail = () => {
                         </Button>
                       </Link>
                       
-                      {/* Show phone button or call button based on phone availability */}
-                      {(service.mechanic as any).phone ? (
-                        <a href={`tel:${(service.mechanic as any).phone}`} className="w-full block">
-                          <Button variant="outline" className="w-full border-2 hover:bg-primary hover:text-white hover:border-primary transition-all duration-200" size="lg">
+                      {mechanicInfo.phone ? (
+                        <a href={`tel:${mechanicInfo.phone}`} className="w-full block">
+                          <Button variant="outline" className="w-full border-2 hover:bg-gray-50" size="lg">
                             <Phone className="h-5 w-5 mr-2" />
-                            {(service.mechanic as any).phone}
+                            {mechanicInfo.phone}
                           </Button>
                         </a>
                       ) : (
