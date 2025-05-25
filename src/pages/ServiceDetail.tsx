@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -90,6 +89,12 @@ const ServiceDetail = () => {
     try {
       console.log("Fetching service with ID:", id);
       
+      const serviceId = parseInt(id as string);
+      if (isNaN(serviceId)) {
+        toast.error("არასწორი სერვისის ID");
+        return;
+      }
+      
       const { data: serviceData, error: serviceError } = await supabase
         .from("mechanic_services")
         .select(`
@@ -114,7 +119,7 @@ const ServiceDetail = () => {
           category_id,
           mechanic_id
         `)
-        .eq("id", id)
+        .eq("id", serviceId)
         .eq("is_active", true)
         .single();
 
