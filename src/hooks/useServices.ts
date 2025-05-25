@@ -28,6 +28,7 @@ export type ServiceType = {
     first_name: string;
     last_name: string;
     rating: number | null;
+    phone: string | null;
   };
 };
 
@@ -124,7 +125,6 @@ export const useServices = () => {
     setLoading(true);
     
     try {
-      // Try the main query first with proper relationships
       console.log("🚀 Attempting main query...");
       let query = supabase
         .from("mechanic_services")
@@ -150,12 +150,13 @@ export const useServices = () => {
         `)
         .eq("is_active", true);
 
-      // Apply filters
+      // Enhanced search - Apply search term filtering only if provided
       if (filters.searchTerm && filters.searchTerm.trim()) {
-        console.log("🔎 Applying search term:", filters.searchTerm);
-        query = query.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
+        console.log("🔎 Applying enhanced search term:", filters.searchTerm);
+        // We'll do the enhanced search client-side to include categories and mechanic data
       }
 
+      // Apply other filters
       if (filters.selectedCategory && filters.selectedCategory !== "all") {
         console.log("📂 Applying category filter:", filters.selectedCategory);
         query = query.eq("category_id", filters.selectedCategory);
@@ -206,6 +207,7 @@ export const useServices = () => {
           id,
           first_name,
           last_name,
+          phone,
           mechanic_profiles(rating)
         `)
         .in("id", mechanicIds);
@@ -252,9 +254,40 @@ export const useServices = () => {
             first_name: mechanic?.first_name || "",
             last_name: mechanic?.last_name || "",
             rating: mechanicProfile?.rating || null,
+            phone: mechanic?.phone || null,
           }
         };
       });
+
+      // Enhanced client-side search filtering
+      if (filters.searchTerm && filters.searchTerm.trim()) {
+        const searchLower = filters.searchTerm.toLowerCase().trim();
+        console.log("🔍 Applying enhanced client-side search for:", searchLower);
+        
+        transformedServices = transformedServices.filter(service => {
+          // Search in service name
+          const nameMatch = service.name?.toLowerCase().includes(searchLower);
+          
+          // Search in service description
+          const descriptionMatch = service.description?.toLowerCase().includes(searchLower);
+          
+          // Search in category name
+          const categoryMatch = service.category?.name?.toLowerCase().includes(searchLower);
+          
+          // Search in mechanic first name
+          const mechanicFirstNameMatch = service.mechanic.first_name?.toLowerCase().includes(searchLower);
+          
+          // Search in mechanic last name
+          const mechanicLastNameMatch = service.mechanic.last_name?.toLowerCase().includes(searchLower);
+          
+          // Search in mechanic phone (remove spaces and special characters for phone search)
+          const phoneMatch = service.mechanic.phone?.replace(/[\s\-\(\)]/g, '').includes(searchLower.replace(/[\s\-\(\)]/g, ''));
+          
+          return nameMatch || descriptionMatch || categoryMatch || mechanicFirstNameMatch || mechanicLastNameMatch || phoneMatch;
+        });
+        
+        console.log("✅ Enhanced search results:", transformedServices.length);
+      }
 
       // Filter by car brands (client-side filtering)
       if (filters.selectedBrands.length > 0) {

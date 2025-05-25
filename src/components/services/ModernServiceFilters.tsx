@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,11 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { 
   Search, 
   MapPin, 
@@ -19,7 +25,9 @@ import {
   Car, 
   Filter,
   X,
-  CheckCircle
+  CheckCircle,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 
 type ServiceCategory = {
@@ -134,164 +142,219 @@ const ModernServiceFilters = ({
 
   return (
     <Card className="border-primary/20 shadow-lg">
-      <CardContent className="p-6">
-        <div className="space-y-6">
+      <CardContent className="p-4 md:p-6">
+        <div className="space-y-4 md:space-y-6">
           {/* Main Search Bar */}
           <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 md:h-5 w-4 md:w-5 text-muted-foreground" />
             <Input
-              placeholder="მოძებნეთ სერვისი, ხელოსანი..."
+              placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-12 text-lg border-2 border-primary/20 focus-visible:ring-primary"
+              className="pl-10 md:pl-12 h-12 md:h-14 text-base md:text-lg border-2 border-primary/20 focus-visible:ring-primary"
             />
           </form>
 
-          {/* Quick Filters Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Category */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">კატეგორია</Label>
-              <Select
-                value={selectedCategory.toString()}
-                onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}
-              >
-                <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">ყველა კატეგორია</SelectItem>
-                  {categories.map(category => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* City */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium flex items-center gap-1">
-                <MapPin className="h-4 w-4" />
-                ქალაქი
-              </Label>
-              <Select
-                value={selectedCity || "all"}
-                onValueChange={handleCityChange}
-              >
-                <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">ყველა ქალაქი</SelectItem>
-                  {cities.map(city => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* District - only show if Tbilisi is selected */}
-            {selectedCity === "თბილისი" && (
+          {/* Quick Filters - Mobile: Stacked, Desktop: Grid */}
+          <div className="space-y-3 md:space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
+              {/* Category */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium">უბანი</Label>
+                <Label className="text-sm font-medium hidden md:block">კატეგორია</Label>
                 <Select
-                  value={selectedDistrict || "all"}
-                  onValueChange={handleDistrictChange}
+                  value={selectedCategory.toString()}
+                  onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}
                 >
-                  <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
-                    <SelectValue />
+                  <SelectTrigger className="h-11 md:h-12 border-primary/20 focus-visible:ring-primary">
+                    <SelectValue placeholder="კატეგორია" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">ყველა უბანი</SelectItem>
-                    {tbilisiDistricts.map(district => (
-                      <SelectItem key={district} value={district}>
-                        {district}
+                    <SelectItem value="all">ყველა კატეგორია</SelectItem>
+                    {categories.map(category => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            )}
 
-            {/* Rating */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium flex items-center gap-1">
-                <Star className="h-4 w-4" />
-                მინიმალური რეიტინგი
+              {/* City */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium hidden md:flex items-center gap-1">
+                  <MapPin className="h-4 w-4" />
+                  ქალაქი
+                </Label>
+                <Select
+                  value={selectedCity || "all"}
+                  onValueChange={handleCityChange}
+                >
+                  <SelectTrigger className="h-11 md:h-12 border-primary/20 focus-visible:ring-primary">
+                    <SelectValue placeholder="ქალაქი" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">ყველა ქალაქი</SelectItem>
+                    {cities.map(city => (
+                      <SelectItem key={city} value={city}>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          {city}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* District - only show if Tbilisi is selected */}
+              {selectedCity === "თბილისი" && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium hidden md:block">უბანი</Label>
+                  <Select
+                    value={selectedDistrict || "all"}
+                    onValueChange={handleDistrictChange}
+                  >
+                    <SelectTrigger className="h-11 md:h-12 border-primary/20 focus-visible:ring-primary">
+                      <SelectValue placeholder="უბანი" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">ყველა უბანი</SelectItem>
+                      {tbilisiDistricts.map(district => (
+                        <SelectItem key={district} value={district}>
+                          {district}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* Rating */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium hidden md:flex items-center gap-1">
+                  <Star className="h-4 w-4" />
+                  რეიტინგი
+                </Label>
+                <Select
+                  value={minRating?.toString() || "all"}
+                  onValueChange={(value) => setMinRating(value === "all" ? null : parseInt(value))}
+                >
+                  <SelectTrigger className="h-11 md:h-12 border-primary/20 focus-visible:ring-primary">
+                    <SelectValue placeholder="რეიტინგი" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">ყველა რეიტინგი</SelectItem>
+                    <SelectItem value="4">4+ ვარსკვლავი</SelectItem>
+                    <SelectItem value="3">3+ ვარსკვლავი</SelectItem>
+                    <SelectItem value="2">2+ ვარსკვლავი</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* On-site service checkbox */}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="on_site"
+                checked={onSiteOnly}
+                onCheckedChange={setOnSiteOnly}
+              />
+              <Label htmlFor="on_site" className="text-sm flex items-center gap-1">
+                <CheckCircle className="h-4 w-4" />
+                ადგილზე მისვლა
               </Label>
-              <Select
-                value={minRating?.toString() || "all"}
-                onValueChange={(value) => setMinRating(value === "all" ? null : parseInt(value))}
-              >
-                <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">ყველა რეიტინგი</SelectItem>
-                  <SelectItem value="4">4+ ვარსკვლავი</SelectItem>
-                  <SelectItem value="3">3+ ვარსკვლავი</SelectItem>
-                  <SelectItem value="2">2+ ვარსკვლავი</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
           {/* Advanced Filters Toggle */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="border-primary/20 hover:bg-primary/5"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                დამატებითი ფილტრები
-                {activeFiltersCount > 0 && (
-                  <Badge variant="secondary" className="ml-2">
-                    {activeFiltersCount}
-                  </Badge>
-                )}
-              </Button>
-              
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="on_site"
-                  checked={onSiteOnly}
-                  onCheckedChange={setOnSiteOnly}
-                />
-                <Label htmlFor="on_site" className="text-sm flex items-center gap-1">
-                  <CheckCircle className="h-4 w-4" />
-                  ადგილზე მისვლა
-                </Label>
-              </div>
+          <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+            <div className="flex items-center justify-between">
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="border-primary/20 hover:bg-primary/5"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  დამატებითი ფილტრები
+                  {activeFiltersCount > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      {activeFiltersCount}
+                    </Badge>
+                  )}
+                  {showAdvanced ? (
+                    <ChevronUp className="h-4 w-4 ml-2" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+
+              {hasActiveFilters && (
+                <Button
+                  variant="outline"
+                  onClick={onResetFilters}
+                  size="sm"
+                  className="text-muted-foreground hover:text-destructive border-destructive/20"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">გასუფთავება</span>
+                </Button>
+              )}
             </div>
 
-            {hasActiveFilters && (
-              <Button
-                variant="outline"
-                onClick={onResetFilters}
-                className="text-muted-foreground hover:text-destructive border-destructive/20"
-              >
-                <X className="h-4 w-4 mr-2" />
-                გასუფთავება
-              </Button>
-            )}
-          </div>
-
-          {/* Advanced Filters */}
-          {showAdvanced && (
-            <div className="space-y-4 pt-4 border-t border-primary/10">
+            {/* Advanced Filters Content */}
+            <CollapsibleContent className="space-y-4 pt-4 border-t border-primary/10">
               {/* Car Brands */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium flex items-center gap-1">
                   <Car className="h-4 w-4" />
                   მანქანის მარკები
                 </Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                
+                {/* Mobile: Show first 6 brands, then collapsible */}
+                <div className="md:hidden space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    {commonCarBrands.slice(0, 6).map(brand => (
+                      <div key={brand} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`brand-${brand}`}
+                          checked={selectedBrands.includes(brand)}
+                          onCheckedChange={() => handleBrandToggle(brand)}
+                        />
+                        <Label htmlFor={`brand-${brand}`} className="text-sm">
+                          {brand}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Collapsible>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="outline" size="sm" className="w-full">
+                        მეტის ნახვა ({commonCarBrands.length - 6})
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        {commonCarBrands.slice(6).map(brand => (
+                          <div key={brand} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`brand-${brand}`}
+                              checked={selectedBrands.includes(brand)}
+                              onCheckedChange={() => handleBrandToggle(brand)}
+                            />
+                            <Label htmlFor={`brand-${brand}`} className="text-sm">
+                              {brand}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+
+                {/* Desktop: Show all brands in grid */}
+                <div className="hidden md:grid grid-cols-6 gap-2">
                   {commonCarBrands.map(brand => (
                     <div key={brand} className="flex items-center space-x-2">
                       <Checkbox
@@ -322,16 +385,16 @@ const ModernServiceFilters = ({
                   </div>
                 )}
               </div>
-            </div>
-          )}
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Search Button */}
           <div className="flex gap-3">
             <Button 
               onClick={onSearch} 
-              className="flex-1 h-12 text-lg bg-primary hover:bg-primary-dark transition-colors"
+              className="flex-1 h-12 md:h-14 text-base md:text-lg bg-primary hover:bg-primary-dark transition-colors"
             >
-              <Search className="h-5 w-5 mr-2" />
+              <Search className="h-4 md:h-5 w-4 md:w-5 mr-2" />
               ძიება
             </Button>
             
@@ -339,10 +402,10 @@ const ModernServiceFilters = ({
               <Button
                 variant="outline"
                 onClick={onResetFilters}
-                className="h-12 px-6 text-muted-foreground hover:text-destructive border-destructive/20"
+                className="h-12 md:h-14 px-4 md:px-6 text-muted-foreground hover:text-destructive border-destructive/20"
               >
-                <X className="h-5 w-5 mr-2" />
-                გასუფთავება
+                <X className="h-4 md:h-5 w-4 md:w-5 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">გასუფთავება</span>
               </Button>
             )}
           </div>
