@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -29,7 +28,6 @@ const Header = () => {
   const navigationItems = [
     { name: "მთავარი", href: "/" },
     { name: "ყველა სერვისი", href: "/services-detail" },
-    { name: "ხელოსნების ძიება", href: "/search" },
   ];
 
   return (
