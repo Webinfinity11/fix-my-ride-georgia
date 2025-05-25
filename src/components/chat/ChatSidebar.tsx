@@ -4,6 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Hash, User } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
+import { JoinChannelsButton } from './JoinChannelsButton';
 
 export const ChatSidebar = () => {
   const { rooms, activeRoom, setActiveRoom } = useChat();
@@ -19,6 +20,9 @@ export const ChatSidebar = () => {
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
+          {/* Test Button */}
+          <JoinChannelsButton />
+          
           {/* Channels */}
           <div>
             <div className="flex items-center justify-between mb-3">

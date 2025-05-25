@@ -1,18 +1,18 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Header from "@/components/layout/Header";
+import { Header } from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Wrench, FileCheck, Car } from "lucide-react";
+import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Wrench, FileCheck, Car, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
+import { useChat } from "@/context/ChatContext";
 
 type MechanicType = {
   id: string;
@@ -81,6 +81,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { createDirectChat } = useChat();
   const [activeTab, setActiveTab] = useState("services");
   const [mechanic, setMechanic] = useState<MechanicType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
@@ -240,6 +241,20 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     toast.success(`დაჯავშნის პროცესი დაიწყო${serviceId ? ` სერვისისთვის #${serviceId}` : ''}!`);
   };
   
+  const handleStartChat = async () => {
+    if (!user) {
+      toast.error("ჩატისთვის საჭიროა ავტორიზაცია");
+      navigate("/login");
+      return;
+    }
+
+    if (!id) return;
+
+    await createDirectChat(id);
+    navigate("/chat");
+    toast.success("ჩატი გახსნილია");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -395,20 +410,30 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
                 </div>
               </div>
               
-              <Button 
-                size="lg" 
-                className="bg-secondary hover:bg-secondary/90 text-white shrink-0"
-                onClick={() => {
-                  if (!user) {
-                    toast.error("ჯავშნის გასაკეთებლად გთხოვთ გაიაროთ ავტორიზაცია");
-                    navigate("/login");
-                    return;
-                  }
-                  toast.success(`დაჯავშნის პროცესი დაიწყო!`);
-                }}
-              >
-                <Calendar className="h-5 w-5 mr-2" /> დაჯავშნა
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="bg-white text-primary hover:bg-gray-100"
+                  onClick={handleStartChat}
+                >
+                  <MessageCircle className="h-5 w-5 mr-2" /> მიწერა
+                </Button>
+                <Button 
+                  size="lg" 
+                  className="bg-secondary hover:bg-secondary/90 text-white shrink-0"
+                  onClick={() => {
+                    if (!user) {
+                      toast.error("ჯავშნის გასაკეთებლად გთხოვთ გაიაროთ ავტორიზაცია");
+                      navigate("/login");
+                      return;
+                    }
+                    toast.success(`დაჯავშნის პროცესი დაიწყო!`);
+                  }}
+                >
+                  <Calendar className="h-5 w-5 mr-2" /> დაჯავშნა
+                </Button>
+              </div>
             </div>
           </div>
         </div>
