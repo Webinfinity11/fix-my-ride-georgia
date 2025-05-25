@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -37,6 +36,14 @@ interface BookingSuccessProps {
 const BookingSuccess = ({ mechanic, bookingData }: BookingSuccessProps) => {
   const navigate = useNavigate();
   
+  // გასწორებული კოდი - უსაფრთხოდ ვამოწმებთ nested objects-ს არსებობას
+  const profile = mechanic?.profile || {};
+  const mechanicProfile = mechanic?.mechanic_profile || {};
+  
+  const firstName = profile.first_name || "";
+  const lastName = profile.last_name || "";
+  const phone = profile.phone || null;
+  
   return (
     <div className="p-6">
       <div className="flex flex-col items-center justify-center py-6 animate-fade-in">
@@ -51,7 +58,7 @@ const BookingSuccess = ({ mechanic, bookingData }: BookingSuccessProps) => {
           ჯავშანი წარმატებით გაკეთდა!
         </h2>
         <p className="mb-8 text-muted-foreground max-w-md text-center animate-fade-in delay-100">
-          თქვენი მოთხოვნა გაეგზავნა <span className="font-medium">{mechanic.profile.first_name} {mechanic.profile.last_name}</span>-ს.
+          თქვენი მოთხოვნა გაეგზავნა <span className="font-medium">{firstName} {lastName}</span>-ს.
           დაელოდეთ ჯავშნის დადასტურებას.
         </p>
         
@@ -69,7 +76,7 @@ const BookingSuccess = ({ mechanic, bookingData }: BookingSuccessProps) => {
                 </div>
                 <div className="flex-grow">
                   <p className="text-sm text-muted-foreground">სერვისი</p>
-                  <p className="font-medium">{bookingData.service_name}</p>
+                  <p className="font-medium">{bookingData.service_name || "—"}</p>
                 </div>
               </div>
               
@@ -95,15 +102,15 @@ const BookingSuccess = ({ mechanic, bookingData }: BookingSuccessProps) => {
                 </div>
               </div>
 
-              {mechanic.profile.phone && (
+              {phone && (
                 <div className="p-4 flex items-center">
                   <div className="bg-primary/10 p-2 rounded-full mr-3 flex-shrink-0">
                     <PhoneCall className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-grow">
                     <p className="text-sm text-muted-foreground">კონტაქტი</p>
-                    <a href={`tel:${mechanic.profile.phone}`} className="font-medium text-primary hover:underline flex items-center">
-                      {mechanic.profile.phone}
+                    <a href={`tel:${phone}`} className="font-medium text-primary hover:underline flex items-center">
+                      {phone}
                     </a>
                   </div>
                 </div>
