@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { ChatProvider } from '@/context/ChatContext';
 import { ChatSidebar } from '@/components/chat/ChatSidebar';
 import { ChatWindow } from '@/components/chat/ChatWindow';
 import { Header } from '@/components/layout/Header';
@@ -8,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui/card';
 import { MessageCircle } from 'lucide-react';
 
-const ChatContent = () => {
+const Chat = () => {
   const { user } = useAuth();
 
   if (!user) {
@@ -40,14 +39,6 @@ const ChatContent = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-const Chat = () => {
-  return (
-    <ChatProvider>
-      <ChatContent />
-    </ChatProvider>
   );
 };
 
