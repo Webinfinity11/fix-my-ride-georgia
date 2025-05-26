@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Settings, Plus, MessageCircle } from "lucide-react";
+import { LogOut, User, Settings, Plus, MessageCircle, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { MobileMenu } from "./MobileMenu";
 
@@ -35,7 +35,9 @@ const Header = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Mobile Menu & Logo */}
         <div className="flex items-center gap-3">
-          <MobileMenu />
+          <div className="md:hidden">
+            <MobileMenu />
+          </div>
           <Link to="/" className="text-xl md:text-2xl font-bold text-primary">
             FixUp
           </Link>
@@ -55,10 +57,12 @@ const Header = () => {
           <Link to="/contact" className="text-gray-700 hover:text-primary transition-colors font-medium">
             კონტაქტი
           </Link>
-          <Link to="/chat" className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium">
-            <MessageCircle className="h-4 w-4" />
-            <span>ჩატი</span>
-          </Link>
+          {user && (
+            <Link to="/chat" className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium">
+              <MessageCircle className="h-4 w-4" />
+              <span>ჩატი</span>
+            </Link>
+          )}
         </nav>
 
         {/* Auth Section */}
@@ -88,6 +92,10 @@ const Header = () => {
               <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                 <User className="mr-2 h-4 w-4" />
                 <span>პროფილი</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/chat")}>
+                <MessageCircle className="mr-2 h-4 w-4" />
+                <span>ჩატი</span>
               </DropdownMenuItem>
               {user.role === 'mechanic' && (
                 <DropdownMenuItem onClick={() => navigate("/add-service")}>

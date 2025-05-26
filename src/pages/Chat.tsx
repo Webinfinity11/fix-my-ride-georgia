@@ -6,6 +6,8 @@ import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui/card';
 import { MessageCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const Chat = () => {
   const { user } = useAuth();
@@ -18,9 +20,17 @@ const Chat = () => {
           <Card className="max-w-md mx-auto p-8 text-center">
             <MessageCircle className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h2 className="text-xl font-semibold mb-2">ჩატისთვის საჭიროა ავტორიზაცია</h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 mb-4">
               ჩატის სისტემის გამოსაყენებლად გთხოვთ, გაიაროთ ავტორიზაცია.
             </p>
+            <div className="space-y-2">
+              <Link to="/login">
+                <Button className="w-full">შესვლა</Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="outline" className="w-full">რეგისტრაცია</Button>
+              </Link>
+            </div>
           </Card>
         </div>
       </div>

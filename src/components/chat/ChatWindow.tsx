@@ -3,10 +3,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
 import { Send, Hash, User } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { useAuth } from '@/context/AuthContext';
+import { MessageBubble } from './MessageBubble';
 
 export const ChatWindow = () => {
   const { activeRoom, messages, sendMessage } = useChat();
@@ -65,36 +65,22 @@ export const ChatWindow = () => {
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.sender_id === user?.id ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              <Card className={`p-3 max-w-sm ${
-                message.sender_id === user?.id 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-white'
-              }`}>
-                {message.sender_id !== user?.id && (
-                  <div className="text-xs font-medium text-gray-600 mb-1">
-                    {message.sender_name}
-                  </div>
-                )}
-                <div className="text-sm break-words">{message.content}</div>
-                <div className={`text-xs mt-1 ${
-                  message.sender_id === user?.id ? 'text-primary-foreground/70' : 'text-gray-400'
-                }`}>
-                  {new Date(message.created_at).toLocaleTimeString('ka-GE', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              </Card>
+        <div className="space-y-1">
+          {messages.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">მესიჯები არ არის</p>
+              <p className="text-sm text-gray-400">დაწყებეთ საუბარი...</p>
             </div>
-          ))}
+          ) : (
+            messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                isOwn={message.sender_id === user?.id}
+                showAvatar={activeRoom.type === 'channel'}
+              />
+            ))
+          )}
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
