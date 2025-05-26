@@ -23,12 +23,10 @@ export const SendMessageButton: React.FC<SendMessageButtonProps> = ({
   className = ""
 }) => {
   const { user } = useAuth();
-  const { createDirectChat, setActiveRoom, loadRooms } = useChat();
+  const { createDirectChat } = useChat();
   const navigate = useNavigate();
 
   const handleSendMessage = async () => {
-    console.log('Send message button clicked', { mechanicId, mechanicName, user: user?.id });
-
     if (!user) {
       toast.error("მესიჯის გასაგზავნად საჭიროა ავტორიზაცია");
       navigate('/login');
@@ -41,23 +39,9 @@ export const SendMessageButton: React.FC<SendMessageButtonProps> = ({
     }
 
     try {
-      console.log('Creating direct chat...');
-      const roomId = await createDirectChat(mechanicId);
-      
-      console.log('Direct chat created, room ID:', roomId);
-      
-      // Set the active room
-      setActiveRoom({
-        id: roomId,
-        name: `პირადი ჩატი - ${mechanicName}`,
-        type: 'direct',
-        is_public: false
-      });
-
-      // Navigate to chat page
+      await createDirectChat(mechanicId);
       navigate('/chat');
       toast.success(`${mechanicName}-თან ჩატი გაიხსნა`);
-      
     } catch (error) {
       console.error('Error creating direct chat:', error);
       toast.error("ჩატის გახსნისას შეცდომა დაფიქსირდა");
