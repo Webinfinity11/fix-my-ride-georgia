@@ -1,153 +1,113 @@
 
-import { Link, useNavigate } from 'react-router-dom';
-import { Star, MapPin, Check, MessageCircle } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useChat } from '@/context/ChatContext';
-import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
+import { MapPin, Star, Phone, Clock, DollarSign } from "lucide-react";
+import { SendMessageButton } from "./SendMessageButton";
 
-// Type definition for mechanic
-type MechanicProps = {
-  id: string;
-  name: string;
-  avatar?: string;
-  specialization: string;
-  location: string;
-  rating: number;
-  reviewCount: number;
-  verified: boolean;
-  services: string[];
-  // Additional optional properties
-  isMobile?: boolean;
-  experience?: number;
-  description?: string;
-};
-
-const MechanicCard = ({
-  id,
-  name,
-  avatar,
-  specialization,
-  location,
-  rating,
-  reviewCount,
-  verified,
-  services,
-  // Additional props
-  isMobile,
-  experience,
-  description,
-}: MechanicProps) => {
-  const { createDirectChat } = useChat();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
-  // Generate initials from name for avatar fallback
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
-
-  const handleStartChat = async () => {
-    if (!user) {
-      toast.error("ჩატისთვის საჭიროა ავტორიზაცია");
-      navigate("/login");
-      return;
-    }
-
-    await createDirectChat(id);
-    navigate("/chat");
-    toast.success("ჩატი გახსნილია");
+interface MechanicCardProps {
+  mechanic: {
+    id: string;
+    profiles: {
+      first_name: string;
+      last_name: string;
+      phone?: string;
+      city?: string;
+      district?: string;
+      avatar_url?: string;
+    };
+    specialization?: string;
+    hourly_rate?: number;
+    rating?: number;
+    review_count?: number;
+    is_mobile?: boolean;
+    working_hours?: any;
   };
+}
+
+export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
+  const fullName = `${mechanic.profiles.first_name} ${mechanic.profiles.last_name}`;
+  const location = mechanic.profiles.city && mechanic.profiles.district 
+    ? `${mechanic.profiles.city}, ${mechanic.profiles.district}`
+    : mechanic.profiles.city || "მდებარეობა მითითებული არ არის";
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden card-hover">
-      <div className="p-6">
-        <div className="flex items-start">
-          {/* Avatar */}
-          <Avatar className="h-16 w-16 rounded-full mr-4">
-            <AvatarImage src={avatar} />
-            <AvatarFallback className="bg-primary text-primary-foreground">
-              {initials}
+    <Card className="h-full hover:shadow-lg transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-4 mb-4">
+          <Avatar className="h-16 w-16">
+            <AvatarImage src={mechanic.profiles.avatar_url} />
+            <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+              {mechanic.profiles.first_name?.charAt(0)}{mechanic.profiles.last_name?.charAt(0)}
             </AvatarFallback>
           </Avatar>
           
-          <div className="flex-1">
-            {/* Name and verification */}
-            <div className="flex items-center mb-1">
-              <h3 className="text-lg font-semibold mr-2">{name}</h3>
-              {verified && (
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center">
-                  <Check className="h-3 w-3 mr-1" /> დადასტურებული
-                </Badge>
-              )}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-lg mb-1 truncate">{fullName}</h3>
+            {mechanic.specialization && (
+              <p className="text-sm text-muted-foreground mb-2">{mechanic.specialization}</p>
+            )}
+            
+            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
+              <MapPin className="h-4 w-4" />
+              <span className="truncate">{location}</span>
             </div>
-            
-            {/* Specialization */}
-            <p className="text-sm text-muted-foreground mb-2">{specialization}</p>
-            
-            {/* Location */}
-            <div className="flex items-center text-sm text-gray-500 mb-3">
-              <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-              <span>{location}</span>
-            </div>
-            
-            {/* Rating */}
-            <div className="flex items-center mb-4">
-              <div className="flex items-center bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-sm">
-                <Star className="h-4 w-4 fill-yellow-500 text-yellow-500 mr-1" />
-                <span className="font-medium">{rating.toFixed(1)}</span>
+
+            {mechanic.rating && (
+              <div className="flex items-center gap-1 mb-2">
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-sm font-medium">{mechanic.rating}</span>
+                <span className="text-sm text-muted-foreground">
+                  ({mechanic.review_count || 0} შეფასება)
+                </span>
               </div>
-              <span className="text-sm text-gray-500 ml-2">({reviewCount} შეფასება)</span>
-            </div>
-            
-            {/* Services */}
-            <div className="flex flex-wrap gap-2">
-              {services.slice(0, 3).map((service, index) => (
-                <Badge key={index} variant="secondary" className="bg-muted text-muted-foreground">
-                  {service}
-                </Badge>
-              ))}
-              {services.length > 3 && (
-                <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                  +{services.length - 3} მეტი
-                </Badge>
-              )}
-            </div>
+            )}
           </div>
         </div>
-      </div>
-      
-      {/* Action footer */}
-      <div className="bg-muted px-6 py-3 flex justify-between items-center gap-3">
-        <Link 
-          to={`/mechanic/${id}`} 
-          className="text-primary font-medium hover:text-primary-light transition-colors"
-        >
-          ნახეთ პროფილი
-        </Link>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleStartChat}
-            className="flex items-center gap-2"
-          >
-            <MessageCircle className="h-4 w-4" />
-            მიწერა
-          </Button>
-          <Link
-            to={`/book/${id}`}
-            className="bg-secondary hover:bg-secondary/90 text-white px-4 py-1.5 rounded text-sm font-medium"
-          >
-            დაჯავშნა
-          </Link>
+
+        <div className="space-y-2">
+          {mechanic.hourly_rate && (
+            <div className="flex items-center gap-2 text-sm">
+              <DollarSign className="h-4 w-4" />
+              <span>{mechanic.hourly_rate} ₾/საათი</span>
+            </div>
+          )}
+
+          {mechanic.is_mobile && (
+            <Badge variant="secondary" className="text-xs">
+              <Clock className="h-3 w-3 mr-1" />
+              ადგილზე მისვლა
+            </Badge>
+          )}
         </div>
-      </div>
-    </div>
+      </CardContent>
+
+      <CardFooter className="p-4 pt-0 flex gap-2">
+        <Link to={`/mechanic/${mechanic.id}`} className="flex-1">
+          <Button variant="outline" className="w-full">
+            დეტალები
+          </Button>
+        </Link>
+        
+        <SendMessageButton 
+          mechanicId={mechanic.id}
+          mechanicName={fullName}
+          variant="default"
+          size="default"
+          className="flex-1"
+        />
+        
+        {mechanic.profiles.phone && (
+          <Button variant="ghost" size="icon" asChild>
+            <a href={`tel:${mechanic.profiles.phone}`}>
+              <Phone className="h-4 w-4" />
+            </a>
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
   );
 };
-
-export default MechanicCard;
