@@ -30,6 +30,7 @@ interface ChatContextType {
   sendMessage: (content: string) => Promise<void>;
   createDirectChat: (userId: string) => Promise<void>;
   joinChannel: (roomId: string) => Promise<void>;
+  loadRooms: () => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -240,7 +241,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setActiveRoom,
       sendMessage,
       createDirectChat,
-      joinChannel
+      joinChannel,
+      loadRooms
     }}>
       {children}
     </ChatContext.Provider>

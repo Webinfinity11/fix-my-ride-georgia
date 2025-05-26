@@ -1,3 +1,4 @@
+
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
@@ -5,7 +6,7 @@ import HowItWorks from "@/components/home/HowItWorks";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import MechanicCard from "@/components/mechanic/MechanicCard";
+import { MechanicCard } from "@/components/mechanic/MechanicCard";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -409,15 +410,19 @@ const Index = () => {
               {featuredMechanics.map((mechanic) => (
                 <MechanicCard 
                   key={mechanic.id} 
-                  id={mechanic.id}
-                  name={mechanic.name}
-                  avatar={mechanic.avatar}
-                  specialization={mechanic.specialization}
-                  location={mechanic.location}
-                  rating={mechanic.rating}
-                  reviewCount={mechanic.reviewCount}
-                  verified={mechanic.verified}
-                  services={mechanic.services}
+                  mechanic={{
+                    id: mechanic.id,
+                    profiles: {
+                      first_name: mechanic.name.split(' ')[0],
+                      last_name: mechanic.name.split(' ')[1] || '',
+                      avatar_url: mechanic.avatar,
+                      city: mechanic.location.split(', ')[0],
+                      district: mechanic.location.split(', ')[1]
+                    },
+                    specialization: mechanic.specialization,
+                    rating: mechanic.rating,
+                    review_count: mechanic.reviewCount
+                  }}
                 />
               ))}
             </div>
