@@ -6,19 +6,32 @@ import { Badge } from '@/components/ui/badge';
 import { Hash, User, Users } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { GroupChatCreator } from './GroupChatCreator';
+import { toast } from 'sonner';
 
 export const ChatList = () => {
-  const { rooms, activeRoom, setActiveRoom } = useChat();
+  const { rooms, activeRoom, setActiveRoom, joinChannel } = useChat();
 
   const channels = rooms.filter(room => room.type === 'channel');
   const directChats = rooms.filter(room => room.type === 'direct');
 
-  return (
-    <div className="w-64 border-r bg-gray-50 flex flex-col h-full">
-      <div className="p-4 border-b bg-white">
-        <h2 className="font-semibold text-lg">ჩატები</h2>
-      </div>
+  const handleRoomClick = async (room: any) => {
+    console.log('Room clicked:', room);
+    
+    try {
+      // If it's a public channel and user isn't a participant, join first
+      if (room.type === 'channel' && room.is_public) {
+        await joinChannel(room.id);
+      }
+      
+      setActiveRoom(room);
+    } catch (error) {
+      console.error('Error joining/selecting room:', error);
+      toast.error('ჩატის გახსნისას შეცდომა');
+    }
+  };
 
+  return (
+    <div className="flex flex-col h-full">
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
           {/* Group Creation */}
@@ -38,11 +51,14 @@ export const ChatList = () => {
                   key={room.id}
                   variant={activeRoom?.id === room.id ? "default" : "ghost"}
                   className="w-full justify-start h-auto p-2 text-left"
-                  onClick={() => setActiveRoom(room)}
+                  onClick={() => handleRoomClick(room)}
                 >
                   <Hash className="h-4 w-4 mr-2 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="truncate">{room.name}</div>
+                    {room.description && (
+                      <div className="text-xs text-gray-500 truncate">{room.description}</div>
+                    )}
                     {room.unread_count && room.unread_count > 0 && (
                       <Badge variant="destructive" className="text-xs ml-2">
                         {room.unread_count}
@@ -73,7 +89,7 @@ export const ChatList = () => {
                   key={room.id}
                   variant={activeRoom?.id === room.id ? "default" : "ghost"}
                   className="w-full justify-start h-auto p-2 text-left"
-                  onClick={() => setActiveRoom(room)}
+                  onClick={() => handleRoomClick(room)}
                 >
                   <User className="h-4 w-4 mr-2 flex-shrink-0" />
                   <div className="flex-1 min-w-0">

@@ -1,16 +1,31 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChatSidebar } from '@/components/chat/ChatSidebar';
 import { ChatWindow } from '@/components/chat/ChatWindow';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/context/AuthContext';
+import { useChat } from '@/context/ChatContext';
 import { Card } from '@/components/ui/card';
 import { MessageCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const Chat = () => {
   const { user } = useAuth();
+  const { rooms, setActiveRoom } = useChat();
+  const [searchParams] = useSearchParams();
+
+  // Handle direct room navigation from URL
+  useEffect(() => {
+    const roomId = searchParams.get('room');
+    if (roomId && rooms.length > 0) {
+      const room = rooms.find(r => r.id === roomId);
+      if (room) {
+        console.log('Auto-selecting room from URL:', room);
+        setActiveRoom(room);
+      }
+    }
+  }, [roomId, rooms, setActiveRoom]);
 
   if (!user) {
     return (

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,10 +30,11 @@ export const GroupChatCreator = () => {
     }
 
     setLoading(true);
+    console.log('Creating group chat:', formData.name);
     
     try {
       // Create new group chat
-      const { data: newRoom, error } = await supabase
+      const { data: newRoom, error: roomError } = await supabase
         .from('chat_rooms')
         .insert({
           name: formData.name.trim(),
@@ -46,18 +46,30 @@ export const GroupChatCreator = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (roomError) {
+        console.error('Room creation error:', roomError);
+        toast.error(`ჯგუფის შექმნისას შეცდომა: ${roomError.message}`);
+        return;
+      }
+
+      console.log('Room created successfully:', newRoom);
 
       // Add creator as participant
-      await supabase
+      const { error: participantError } = await supabase
         .from('chat_participants')
         .insert({
           room_id: newRoom.id,
           user_id: user.id
         });
 
+      if (participantError) {
+        console.error('Participant error:', participantError);
+        toast.error('ჯგუფში შესვლისას შეცდომა');
+        return;
+      }
+
       // Add welcome message
-      await supabase
+      const { error: messageError } = await supabase
         .from('messages')
         .insert({
           room_id: newRoom.id,
@@ -65,14 +77,19 @@ export const GroupChatCreator = () => {
           content: `მოგესალმებით ${formData.name}-ში! 🚗`
         });
 
+      if (messageError) {
+        console.error('Welcome message error:', messageError);
+        // Don't fail the whole process for this
+      }
+
       toast.success(`ჯგუფი "${formData.name}" შეიქმნა`);
       setFormData({ name: '', description: '' });
       setOpen(false);
-      loadRooms();
+      await loadRooms();
       
     } catch (error) {
-      console.error('Error creating group chat:', error);
-      toast.error("ჯგუფის შექმნისას შეცდომა დაფიქსირდა");
+      console.error('Unexpected error creating group:', error);
+      toast.error("ჯგუფის შექმნისას მოულოდნელი შეცდომა");
     } finally {
       setLoading(false);
     }
