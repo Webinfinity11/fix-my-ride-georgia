@@ -13,7 +13,7 @@ import Footer from "@/components/layout/Footer";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 
 interface Service {
-  id: string;
+  id: number; // Changed from string to number to match database
   name: string;
   description: string;
   price_from: number;
@@ -56,11 +56,11 @@ const ServiceDetail = () => {
               )
             )
           `)
-          .eq("id", id)
+          .eq("id", parseInt(id)) // Convert string to number for database query
           .single();
 
         if (error) throw error;
-        setService(data);
+        setService(data); // Now the types match correctly
       } catch (error) {
         console.error("Error fetching service:", error);
       } finally {
