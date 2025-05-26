@@ -25,7 +25,7 @@ const Chat = () => {
         setActiveRoom(room);
       }
     }
-  }, [roomId, rooms, setActiveRoom]);
+  }, [searchParams, rooms, setActiveRoom]);
 
   if (!user) {
     return (
