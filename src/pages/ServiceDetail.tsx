@@ -533,13 +533,9 @@ const ServiceDetail = () => {
                         variant="ghost"
                         size="sm"
                         onClick={togglePhoneVisibility}
-                        className="h-8 w-8 p-0"
+                        className="text-xs"
                       >
-                        {showFullPhone ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showFullPhone ? "დამალვა" : "ნომრის ნახვა"}
                       </Button>
                     </div>
                   </div>
