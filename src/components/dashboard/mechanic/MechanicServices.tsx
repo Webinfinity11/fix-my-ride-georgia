@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Wrench, Edit, Trash2, Plus, Tag, Search, Clock, CreditCard, Banknote, Car } from "lucide-react";
+import { Wrench, Edit, Trash2, Plus, Tag, Search, Clock, CreditCard, Banknote, Car, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -34,6 +34,9 @@ type ServiceType = {
   working_hours_end?: string;
   car_brands?: string[];
   on_site_service?: boolean;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 type ServiceCategoryType = {
@@ -397,6 +400,16 @@ const MechanicServices = () => {
                           <p className="mb-4 text-sm text-muted-foreground">
                             {service.description}
                           </p>
+                        )}
+                        
+                        {service.address && (
+                          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+                              <MapPin size={14} />
+                              <span>მისამართი:</span>
+                            </div>
+                            <span className="text-sm">{service.address}</span>
+                          </div>
                         )}
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">

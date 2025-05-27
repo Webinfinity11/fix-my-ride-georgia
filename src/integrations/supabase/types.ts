@@ -365,6 +365,7 @@ export type Database = {
         Row: {
           accepts_card_payment: boolean | null
           accepts_cash_payment: boolean | null
+          address: string | null
           car_brands: string[] | null
           category_id: number | null
           city: string | null
@@ -393,6 +394,7 @@ export type Database = {
         Insert: {
           accepts_card_payment?: boolean | null
           accepts_cash_payment?: boolean | null
+          address?: string | null
           car_brands?: string[] | null
           category_id?: number | null
           city?: string | null
@@ -421,6 +423,7 @@ export type Database = {
         Update: {
           accepts_card_payment?: boolean | null
           accepts_cash_payment?: boolean | null
+          address?: string | null
           car_brands?: string[] | null
           category_id?: number | null
           city?: string | null

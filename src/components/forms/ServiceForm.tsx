@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, DollarSign, Clock, Calendar, Car, CreditCard, Banknote, MapPin } from "lucide-react";
 import PhotoUpload from "@/components/forms/PhotoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
+import MapLocationPicker from "@/components/forms/MapLocationPicker";
 
 type ServiceType = {
   id: number;
@@ -39,6 +40,9 @@ type ServiceType = {
   photos?: string[];
   city?: string;
   district?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
 };
 
 type ServiceCategoryType = {
@@ -94,7 +98,10 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     on_site_service: service?.on_site_service || false,
     photos: service?.photos || [],
     city: service?.city || "",
-    district: service?.district || ""
+    district: service?.district || "",
+    address: service?.address || "",
+    latitude: service?.latitude || null,
+    longitude: service?.longitude || null
   });
 
   const [selectAllBrands, setSelectAllBrands] = useState(false);
@@ -135,7 +142,10 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         on_site_service: formData.on_site_service,
         photos: formData.photos,
         city: formData.city,
-        district: formData.district || null
+        district: formData.district || null,
+        address: formData.address || null,
+        latitude: formData.latitude,
+        longitude: formData.longitude
       };
 
       if (service) {
@@ -166,6 +176,14 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleLocationChange = (lat: number, lng: number) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng
+    }));
   };
 
   const handleWorkingDayToggle = (day: string) => {
@@ -287,6 +305,34 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
               onCityChange={handleCityChange}
               onDistrictChange={handleDistrictChange}
             />
+          </div>
+
+          <div className="space-y-4">
+            <Label className="text-base font-medium flex items-center gap-1">
+              <MapPin size={14} />
+              ზუსტი მისამართი და რუკაზე მდებარეობა
+            </Label>
+            
+            <div className="space-y-2">
+              <Label htmlFor="address">ზუსტი მისამართი</Label>
+              <Input
+                id="address"
+                value={formData.address}
+                onChange={(e) => handleInputChange("address", e.target.value)}
+                placeholder="მაგ.: ყაზბეგის ავენუ 15, მე-2 სართული"
+                className="border-primary/20 focus-visible:ring-primary"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>რუკაზე მდებარეობა</Label>
+              <MapLocationPicker
+                latitude={formData.latitude || undefined}
+                longitude={formData.longitude || undefined}
+                onLocationChange={handleLocationChange}
+                interactive={true}
+              />
+            </div>
           </div>
 
           <div className="space-y-2">

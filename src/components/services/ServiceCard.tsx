@@ -15,6 +15,7 @@ interface ServiceType {
   estimated_hours: number | null;
   city: string | null;
   district: string | null;
+  address: string | null;
   car_brands: string[] | null;
   on_site_service: boolean;
   accepts_card_payment: boolean;
@@ -60,7 +61,9 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   };
 
   const formatLocation = () => {
-    if (service.city && service.district) {
+    if (service.address) {
+      return service.address;
+    } else if (service.city && service.district) {
       return `${service.city}, ${service.district}`;
     } else if (service.city) {
       return service.city;
@@ -114,9 +117,9 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
           </div>
 
           {/* Location */}
-          <div className="flex items-center text-sm text-gray-600">
-            <MapPin className="w-4 h-4 mr-1 text-primary" />
-            {formatLocation()}
+          <div className="flex items-start text-sm text-gray-600">
+            <MapPin className="w-4 h-4 mr-1 text-primary flex-shrink-0 mt-0.5" />
+            <span className="line-clamp-2">{formatLocation()}</span>
           </div>
 
           {/* Mechanic Info */}
