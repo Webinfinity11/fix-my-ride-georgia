@@ -84,9 +84,15 @@ const LocationMapPicker = ({
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearchClick = () => {
     searchLocation(searchAddress);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchLocation(searchAddress);
+    }
   };
 
   useEffect(() => {
@@ -155,23 +161,25 @@ const LocationMapPicker = ({
   return (
     <div className="space-y-4">
       {interactive && (
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
+        <div className="flex gap-2">
           <Input
             type="text"
             placeholder="ჩაწერეთ მისამართი (მაგ: რუსთაველის გამზირი 25, თბილისი)"
             value={searchAddress}
             onChange={(e) => setSearchAddress(e.target.value)}
+            onKeyPress={handleKeyPress}
             className="flex-1 border-primary/20 focus-visible:ring-primary"
           />
           <Button 
-            type="submit" 
+            type="button"
+            onClick={handleSearchClick}
             disabled={isSearching || !searchAddress.trim()}
             className="bg-primary hover:bg-primary-light"
           >
             <Search size={16} className="mr-1" />
             {isSearching ? "ეძებს..." : "ძიება"}
           </Button>
-        </form>
+        </div>
       )}
       
       <div 
