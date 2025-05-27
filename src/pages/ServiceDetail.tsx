@@ -46,6 +46,9 @@ type ServiceType = {
   estimated_hours: number | null;
   city: string | null;
   district: string | null;
+  address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   car_brands: string[] | null;
   on_site_service: boolean;
   accepts_card_payment: boolean;
@@ -122,6 +125,9 @@ const ServiceDetail = () => {
           estimated_hours,
           city,
           district,
+          address,
+          latitude,
+          longitude,
           car_brands,
           on_site_service,
           accepts_card_payment,
@@ -190,6 +196,9 @@ const ServiceDetail = () => {
         estimated_hours: serviceData.estimated_hours,
         city: serviceData.city,
         district: serviceData.district,
+        address: serviceData.address,
+        latitude: serviceData.latitude,
+        longitude: serviceData.longitude,
         car_brands: serviceData.car_brands,
         on_site_service: serviceData.on_site_service,
         accepts_card_payment: serviceData.accepts_card_payment,
