@@ -35,6 +35,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
+import LocationMapPicker from "@/components/forms/LocationMapPicker";
 
 type ServiceType = {
   id: number;
@@ -550,6 +551,36 @@ const ServiceDetail = () => {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Location Map Section */}
+                {(service.latitude && service.longitude) && (
+                  <Card className="border-0 shadow-lg lg:shadow-xl bg-white/70 backdrop-blur-sm">
+                    <CardContent className="p-6 lg:p-8">
+                      <h2 className="text-xl lg:text-2xl font-bold mb-6 flex items-center gap-2">
+                        <MapPin className="h-6 w-6 text-primary" />
+                        მდებარეობა რუკაზე
+                      </h2>
+                      
+                      {service.address && (
+                        <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
+                          <p className="text-blue-900 font-medium">
+                            {service.address}
+                          </p>
+                          <p className="text-blue-700 text-sm">
+                            {service.city}{service.district ? `, ${service.district}` : ''}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <LocationMapPicker
+                        latitude={service.latitude}
+                        longitude={service.longitude}
+                        onLocationChange={() => {}} // მხოლოდ ჩვენებისთვის, ცვლილება არ სჭირდება
+                        interactive={false}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Car Brands */}
                 {service.car_brands && service.car_brands.length > 0 && (
