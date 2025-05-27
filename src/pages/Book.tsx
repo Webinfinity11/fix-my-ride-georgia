@@ -91,6 +91,12 @@ const Book = () => {
   const [notes, setNotes] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  // UUID validation function
+  const isValidUUID = (uuid: string) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  };
+
   useEffect(() => {
     console.log("📝 Book component mounted with params:", { serviceId, mechanicId, paramMechanicId });
     
@@ -104,7 +110,17 @@ const Book = () => {
       console.log("🔧 Fetching service data for ID:", serviceId);
       fetchService();
     } else if (mechanicId) {
-      console.log("👨‍🔧 Fetching mechanic data for ID:", mechanicId);
+      console.log("👨‍🔧 Checking mechanic ID format:", mechanicId);
+      
+      // Validate mechanic ID format
+      if (!isValidUUID(mechanicId)) {
+        console.error("❌ Invalid mechanic ID format:", mechanicId);
+        toast.error("არასწორი ხელოსნის ID ფორმატი");
+        navigate("/services-detail");
+        return;
+      }
+      
+      console.log("✅ Valid mechanic UUID, fetching data");
       fetchMechanic();
     } else {
       toast.error("სერვისი ან ხელოსანი არ არის მითითებული");
@@ -210,15 +226,6 @@ const Book = () => {
       setLoading(true);
       console.log("🔍 Fetching mechanic with ID:", mechanicId);
       
-      // Validate that mechanicId is a valid UUID format
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(mechanicId)) {
-        console.error("❌ Invalid UUID format for mechanic ID:", mechanicId);
-        toast.error("არასწორი ხელოსნის ID");
-        navigate("/services-detail");
-        return;
-      }
-      
       const { data: mechanicData, error: mechanicError } = await supabase
         .from("profiles")
         .select(`
@@ -306,6 +313,13 @@ const Book = () => {
     try {
       const targetMechanicId = service?.mechanic.id || mechanicId!;
       console.log("📝 Submitting booking with mechanic ID:", targetMechanicId);
+
+      // Validate mechanic ID before submitting
+      if (!isValidUUID(targetMechanicId)) {
+        console.error("❌ Invalid mechanic ID format for booking:", targetMechanicId);
+        toast.error("არასწორი ხელოსნის ID");
+        return;
+      }
 
       const bookingData = {
         user_id: user.id,

@@ -34,6 +34,14 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
     ? `${mechanic.profiles.city}, ${mechanic.profiles.district}`
     : mechanic.profiles.city || "მდებარეობა მითითებული არ არის";
 
+  // UUID validation function
+  const isValidUUID = (uuid: string) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  };
+
+  console.log("🔧 MechanicCard - Mechanic ID:", mechanic.id, "Is valid UUID:", isValidUUID(mechanic.id));
+
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
       <CardContent className="p-4">
@@ -86,26 +94,35 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
       </CardContent>
 
       <CardFooter className="p-4 pt-0 flex gap-2">
-        <Link to={`/mechanic/${mechanic.id}`} className="flex-1">
-          <Button variant="outline" className="w-full">
-            დეტალები
-          </Button>
-        </Link>
-        
-        <SendMessageButton 
-          mechanicId={mechanic.id}
-          mechanicName={fullName}
-          variant="default"
-          size="default"
-          className="flex-1"
-        />
-        
-        {mechanic.profiles.phone && (
-          <Button variant="ghost" size="icon" asChild>
-            <a href={`tel:${mechanic.profiles.phone}`}>
-              <Phone className="h-4 w-4" />
-            </a>
-          </Button>
+        {/* Only show links if mechanic ID is valid UUID */}
+        {isValidUUID(mechanic.id) ? (
+          <>
+            <Link to={`/mechanic/${mechanic.id}`} className="flex-1">
+              <Button variant="outline" className="w-full">
+                დეტალები
+              </Button>
+            </Link>
+            
+            <SendMessageButton 
+              mechanicId={mechanic.id}
+              mechanicName={fullName}
+              variant="default"
+              size="default"
+              className="flex-1"
+            />
+            
+            {mechanic.profiles.phone && (
+              <Button variant="ghost" size="icon" asChild>
+                <a href={`tel:${mechanic.profiles.phone}`}>
+                  <Phone className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
+          </>
+        ) : (
+          <div className="flex-1 text-center text-sm text-muted-foreground">
+            არასწორი ხელოსნის ID
+          </div>
         )}
       </CardFooter>
     </Card>

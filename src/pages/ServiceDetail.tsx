@@ -62,6 +62,12 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // UUID validation function
+  const isValidUUID = (uuid: string) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  };
+
   useEffect(() => {
     if (id) {
       fetchService(parseInt(id));
@@ -160,6 +166,8 @@ const ServiceDetail = () => {
           phone: profile?.phone || null,
         };
       }
+
+      console.log("🔍 Mechanic ID validation:", mechanicData.id, "Is valid UUID:", isValidUUID(mechanicData.id));
 
       const transformedService: ServiceType = {
         id: serviceData.id,
@@ -442,7 +450,7 @@ const ServiceDetail = () => {
               <Button 
                 className="w-full" 
                 size="lg"
-                onClick={() => navigate(`/book/${service.id}`)}
+                onClick={() => navigate(`/book?service=${service.id}`)}
               >
                 <Calendar className="mr-2 h-4 w-4" />
                 დაჯავშვნა
@@ -479,9 +487,11 @@ const ServiceDetail = () => {
 
               <div className="flex gap-2">
                 {service.mechanic.phone && (
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <Phone className="h-4 w-4 mr-2" />
-                    დარეკვა
+                  <Button variant="outline" size="sm" className="flex-1" asChild>
+                    <a href={`tel:${service.mechanic.phone}`}>
+                      <Phone className="h-4 w-4 mr-2" />
+                      დარეკვა
+                    </a>
                   </Button>
                 )}
                 <Button variant="outline" size="sm" className="flex-1">
@@ -490,13 +500,20 @@ const ServiceDetail = () => {
                 </Button>
               </div>
 
-              <Button 
-                variant="secondary" 
-                className="w-full"
-                onClick={() => navigate(`/mechanic/${service.mechanic.id}`)}
-              >
-                პროფილის ნახვა
-              </Button>
+              {/* Only show profile link if mechanic ID is valid UUID */}
+              {isValidUUID(service.mechanic.id) ? (
+                <Button 
+                  variant="secondary" 
+                  className="w-full"
+                  onClick={() => navigate(`/mechanic/${service.mechanic.id}`)}
+                >
+                  პროფილის ნახვა
+                </Button>
+              ) : (
+                <div className="text-center text-sm text-muted-foreground">
+                  ხელოსნის პროფილი მიუწვდომელია
+                </div>
+              )}
             </CardContent>
           </Card>
 
