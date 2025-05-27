@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 
 type ServiceType = {
   id: number;
@@ -644,10 +645,18 @@ const ServiceDetail = () => {
                         </Button>
                       </Link>
                       
+                      <SendMessageButton 
+                        mechanicId={service.mechanic.id}
+                        mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
+                        variant="outline"
+                        size="lg"
+                        className="w-full border-2 hover:bg-blue-50 hover:border-blue-500 hover:text-blue-700"
+                      />
+
                       <Button 
                         onClick={() => handlePhoneCall(service.mechanic.phone || '')}
-                        variant="outline" 
-                        className="w-full border-2 hover:bg-green-50 hover:border-green-500 hover:text-green-700 transition-all duration-200" 
+                        variant="ghost" 
+                        className="w-full hover:bg-green-50 hover:text-green-700 transition-all duration-200" 
                         size="lg"
                         disabled={!service.mechanic.phone}
                       >
