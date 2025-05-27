@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import { useState, useEffect, useRef } from "react";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -24,33 +24,6 @@ interface SimpleMapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map events
-const MapEventHandler = ({ 
-  onLocationChange, 
-  interactive 
-}: { 
-  onLocationChange: (lat: number, lng: number) => void; 
-  interactive: boolean; 
-}) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (interactive && map) {
-      const handleClick = (e: L.LeafletMouseEvent) => {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      };
-
-      map.on('click', handleClick);
-
-      return () => {
-        map.off('click', handleClick);
-      };
-    }
-  }, [map, onLocationChange, interactive]);
-
-  return null;
-};
-
 const SimpleMapLocationPicker = ({ 
   latitude, 
   longitude, 
@@ -58,6 +31,7 @@ const SimpleMapLocationPicker = ({
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
@@ -74,6 +48,17 @@ const SimpleMapLocationPicker = ({
     onLocationChange(lat, lng);
   };
 
+  // Handle map creation and add event listeners
+  const handleMapCreated = (map: L.Map) => {
+    mapRef.current = map;
+    
+    if (interactive) {
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        handleLocationChange(e.latlng.lat, e.latlng.lng);
+      });
+    }
+  };
+
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
       <MapContainer
@@ -86,14 +71,15 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
+        ref={(mapInstance) => {
+          if (mapInstance) {
+            handleMapCreated(mapInstance);
+          }
+        }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapEventHandler 
-          onLocationChange={handleLocationChange} 
-          interactive={interactive} 
         />
         {position && <Marker position={position} />}
       </MapContainer>
