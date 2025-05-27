@@ -4,13 +4,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Send, Hash, User, Circle } from 'lucide-react';
+import { Send, Hash, User, Circle, Menu } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { useAuth } from '@/context/AuthContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const ChatWindow = () => {
   const { activeRoom, messages, sendMessage, onlineUsers } = useChat();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [messageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -53,10 +55,15 @@ export const ChatWindow = () => {
   if (!activeRoom) {
     return (
       <div className="flex items-center justify-center h-full bg-gray-50">
-        <div className="text-center">
+        <div className="text-center px-4">
           <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900">ჩატის არჩევა</h3>
-          <p className="text-gray-500">აირჩიეთ ჩატი საუბრის დასაწყებად</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">ჩატის არჩევა</h3>
+          <p className="text-gray-500 text-sm">
+            {isMobile 
+              ? 'მენიუდან აირჩიეთ ჩატი საუბრის დასაწყებად' 
+              : 'აირჩიეთ ჩატი საუბრის დასაწყებად'
+            }
+          </p>
         </div>
       </div>
     );
@@ -72,12 +79,12 @@ export const ChatWindow = () => {
           ) : (
             <User className="h-5 w-5 text-gray-500" />
           )}
-          <div className="flex-1">
-            <h2 className="font-semibold text-lg">
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-lg truncate">
               {getChatTitle()}
             </h2>
             {activeRoom.description && (
-              <p className="text-sm text-gray-500">{activeRoom.description}</p>
+              <p className="text-sm text-gray-500 truncate">{activeRoom.description}</p>
             )}
             {activeRoom.type === 'direct' && (
               <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -90,7 +97,8 @@ export const ChatWindow = () => {
           {activeRoom.type === 'channel' && (
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Circle className="h-3 w-3 fill-green-500 text-green-500" />
-              <span>{onlineUsers.length} ონლაინ</span>
+              <span className="hidden sm:inline">{onlineUsers.length} ონლაინ</span>
+              <span className="sm:hidden">{onlineUsers.length}</span>
             </div>
           )}
         </div>
@@ -106,16 +114,16 @@ export const ChatWindow = () => {
                 message.sender_id === user?.id ? 'justify-end' : 'justify-start'
               }`}
             >
-              <Card className={`p-3 max-w-sm ${
+              <Card className={`p-3 max-w-xs sm:max-w-sm ${
                 message.sender_id === user?.id 
                   ? 'bg-primary text-primary-foreground' 
                   : 'bg-white'
               }`}>
                 {message.sender_id !== user?.id && (
                   <div className="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1">
-                    <span>{message.sender_name}</span>
+                    <span className="truncate">{message.sender_name}</span>
                     {onlineUsers.includes(message.sender_id) && (
-                      <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+                      <Circle className="h-2 w-2 fill-green-500 text-green-500 flex-shrink-0" />
                     )}
                   </div>
                 )}

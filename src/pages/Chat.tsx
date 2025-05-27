@@ -1,14 +1,19 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ChatSidebar } from '@/components/chat/ChatSidebar';
 import { ChatWindow } from '@/components/chat/ChatWindow';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui/card';
-import { MessageCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { MessageCircle, Menu } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Chat = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!user) {
     return (
@@ -22,6 +27,35 @@ const Chat = () => {
               ჩატის სისტემის გამოსაყენებლად გთხოვთ, გაიაროთ ავტორიზაცია.
             </p>
           </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="h-[calc(100vh-64px)] flex flex-col">
+          {/* Mobile Header with Menu Button */}
+          <div className="border-b bg-white p-4 flex items-center justify-between">
+            <h1 className="text-lg font-semibold">ჩატები</h1>
+            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-80">
+                <ChatSidebar />
+              </SheetContent>
+            </Sheet>
+          </div>
+          
+          {/* Chat Window */}
+          <div className="flex-1">
+            <ChatWindow />
+          </div>
         </div>
       </div>
     );
