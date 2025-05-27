@@ -30,11 +30,14 @@ const SimpleMapLocationPicker = ({
   onLocationChange, 
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
+  console.log("🗺️ SimpleMapLocationPicker rendering", { latitude, longitude, interactive });
+  
   const [position, setPosition] = useState<[number, number] | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
+    console.log("🗺️ Position useEffect triggered", { latitude, longitude });
     if (latitude !== undefined && longitude !== undefined) {
       setPosition([latitude, longitude]);
     }
@@ -42,10 +45,12 @@ const SimpleMapLocationPicker = ({
 
   // Handle map events when map is available and ready
   useEffect(() => {
+    console.log("🗺️ Map events useEffect", { mapReady, interactive, hasMap: !!mapRef.current });
     const map = mapRef.current;
     if (!map || !interactive || !mapReady) return;
 
     const handleClick = (e: L.LeafletMouseEvent) => {
+      console.log("🗺️ Map clicked", e.latlng);
       const { lat, lng } = e.latlng;
       setPosition([lat, lng]);
       onLocationChange(lat, lng);
@@ -54,6 +59,7 @@ const SimpleMapLocationPicker = ({
     map.on('click', handleClick);
 
     return () => {
+      console.log("🗺️ Cleaning up map events");
       map.off('click', handleClick);
     };
   }, [interactive, onLocationChange, mapReady]);
@@ -63,10 +69,12 @@ const SimpleMapLocationPicker = ({
   const center: [number, number] = position || defaultCenter;
 
   const handleMapRef = (map: L.Map | null) => {
+    console.log("🗺️ Map ref callback", { map: !!map });
     mapRef.current = map;
     if (map) {
       // Wait for the map to be fully initialized
       map.whenReady(() => {
+        console.log("🗺️ Map is ready");
         setMapReady(true);
       });
     } else {
@@ -74,28 +82,39 @@ const SimpleMapLocationPicker = ({
     }
   };
 
-  return (
-    <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
-      <MapContainer
-        center={center}
-        zoom={13}
-        style={{ height: "100%", width: "100%" }}
-        scrollWheelZoom={interactive}
-        dragging={interactive}
-        touchZoom={interactive}
-        doubleClickZoom={interactive}
-        boxZoom={interactive}
-        keyboard={interactive}
-        ref={handleMapRef}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {position && <Marker position={position} />}
-      </MapContainer>
-    </div>
-  );
+  console.log("🗺️ Rendering map with center:", center, "position:", position);
+
+  try {
+    return (
+      <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
+        <MapContainer
+          center={center}
+          zoom={13}
+          style={{ height: "100%", width: "100%" }}
+          scrollWheelZoom={interactive}
+          dragging={interactive}
+          touchZoom={interactive}
+          doubleClickZoom={interactive}
+          boxZoom={interactive}
+          keyboard={interactive}
+          ref={handleMapRef}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {position && <Marker position={position} />}
+        </MapContainer>
+      </div>
+    );
+  } catch (error) {
+    console.error("🗺️ Error rendering SimpleMapLocationPicker:", error);
+    return (
+      <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20 flex items-center justify-center bg-gray-100">
+        <p className="text-gray-500">Map failed to load</p>
+      </div>
+    );
+  }
 };
 
 export default SimpleMapLocationPicker;
