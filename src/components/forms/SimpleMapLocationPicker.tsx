@@ -1,10 +1,10 @@
 
-import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { useState, useEffect, useRef } from "react";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 // Fix for default markers in react-leaflet
-import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
@@ -31,6 +31,7 @@ const SimpleMapLocationPicker = ({
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
@@ -47,16 +48,16 @@ const SimpleMapLocationPicker = ({
     onLocationChange(lat, lng);
   };
 
-  // Inner component that uses useMapEvents
-  const MapClickHandler = () => {
-    useMapEvents({
-      click: (e) => {
-        if (interactive) {
-          handleLocationChange(e.latlng.lat, e.latlng.lng);
-        }
-      },
-    });
-    return null;
+  // Handle when map is created
+  const handleMapCreated = (map: L.Map) => {
+    mapRef.current = map;
+    
+    if (interactive) {
+      // Add click event listener directly to the map
+      map.on('click', (e: L.LeafletMouseEvent) => {
+        handleLocationChange(e.latlng.lat, e.latlng.lng);
+      });
+    }
   };
 
   return (
@@ -71,13 +72,13 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
+        whenCreated={handleMapCreated}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {position && <Marker position={position} />}
-        {interactive && <MapClickHandler />}
       </MapContainer>
     </div>
   );
