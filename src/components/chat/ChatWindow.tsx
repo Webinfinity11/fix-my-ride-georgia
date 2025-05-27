@@ -30,6 +30,26 @@ export const ChatWindow = () => {
     }
   };
 
+  const getChatTitle = () => {
+    if (!activeRoom) return '';
+    
+    if (activeRoom.type === 'channel') {
+      return activeRoom.name || 'არხი';
+    } else {
+      if (activeRoom.other_participant) {
+        return `${activeRoom.other_participant.first_name} ${activeRoom.other_participant.last_name}`;
+      }
+      return 'პირადი ჩატი';
+    }
+  };
+
+  const isOtherParticipantOnline = () => {
+    if (activeRoom?.type === 'direct' && activeRoom.other_participant) {
+      return onlineUsers.includes(activeRoom.other_participant.id);
+    }
+    return false;
+  };
+
   if (!activeRoom) {
     return (
       <div className="flex items-center justify-center h-full bg-gray-50">
@@ -54,17 +74,25 @@ export const ChatWindow = () => {
           )}
           <div className="flex-1">
             <h2 className="font-semibold text-lg">
-              {activeRoom.name || 'პირადი ჩატი'}
+              {getChatTitle()}
             </h2>
             {activeRoom.description && (
               <p className="text-sm text-gray-500">{activeRoom.description}</p>
             )}
+            {activeRoom.type === 'direct' && (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Circle className={`h-2 w-2 ${isOtherParticipantOnline() ? 'fill-green-500 text-green-500' : 'fill-gray-300 text-gray-300'}`} />
+                <span>{isOtherParticipantOnline() ? 'ონლაინ' : 'ოფლაინ'}</span>
+              </div>
+            )}
           </div>
-          {/* Online indicator */}
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Circle className="h-3 w-3 fill-green-500 text-green-500" />
-            <span>{onlineUsers.length} ონლაინ</span>
-          </div>
+          {/* Online indicator for channels */}
+          {activeRoom.type === 'channel' && (
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Circle className="h-3 w-3 fill-green-500 text-green-500" />
+              <span>{onlineUsers.length} ონლაინ</span>
+            </div>
+          )}
         </div>
       </div>
 

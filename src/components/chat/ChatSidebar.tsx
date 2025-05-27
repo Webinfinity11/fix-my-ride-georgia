@@ -12,6 +12,13 @@ export const ChatSidebar = () => {
   const channels = rooms.filter(room => room.type === 'channel');
   const directChats = rooms.filter(room => room.type === 'direct');
 
+  const getDirectChatName = (room: any) => {
+    if (room.other_participant) {
+      return `${room.other_participant.first_name} ${room.other_participant.last_name}`;
+    }
+    return 'პირადი ჩატი';
+  };
+
   return (
     <div className="w-64 border-r bg-gray-50 flex flex-col">
       <div className="p-4 border-b bg-white">
@@ -64,8 +71,11 @@ export const ChatSidebar = () => {
                 >
                   <User className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span className="truncate">
-                    {room.name || 'პირადი ჩატი'}
+                    {getDirectChatName(room)}
                   </span>
+                  {room.other_participant && onlineUsers.includes(room.other_participant.id) && (
+                    <Circle className="h-2 w-2 fill-green-500 text-green-500 ml-auto" />
+                  )}
                 </Button>
               ))}
             </div>

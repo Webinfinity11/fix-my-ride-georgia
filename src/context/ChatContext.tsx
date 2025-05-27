@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -10,6 +9,12 @@ interface ChatRoom {
   description?: string | null;
   is_public: boolean;
   unread_count?: number;
+  other_participant?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    avatar_url?: string;
+  } | null;
 }
 
 interface Message {
@@ -42,7 +47,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
-  // ჩატების ჩატვირთვა
+  // ჩატების ჩატვირთვა მონაწილეების ინფორმაციით
   const loadRooms = async () => {
     if (!user) return;
 
@@ -69,19 +74,55 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('📊 Raw rooms data:', data);
 
     if (data) {
-      const roomsData = data
-        .map(p => p.chat_rooms)
-        .filter(Boolean)
-        .map(room => ({
-          id: room.id,
-          name: room.name,
-          type: room.type as 'direct' | 'channel',
-          description: room.description,
-          is_public: room.is_public
-        }));
+      const roomsWithParticipants = await Promise.all(
+        data
+          .map(p => p.chat_rooms)
+          .filter(Boolean)
+          .map(async (room) => {
+            let otherParticipant = null;
+            
+            // პირადი ჩატისთვის მოვძებნოთ მეორე მონაწილე
+            if (room.type === 'direct') {
+              const { data: participants, error: participantsError } = await supabase
+                .from('chat_participants')
+                .select(`
+                  user_id,
+                  profiles (
+                    id,
+                    first_name,
+                    last_name,
+                    avatar_url
+                  )
+                `)
+                .eq('room_id', room.id)
+                .neq('user_id', user.id);
+
+              if (!participantsError && participants && participants.length > 0) {
+                const participant = participants[0];
+                if (participant.profiles) {
+                  otherParticipant = {
+                    id: participant.profiles.id,
+                    first_name: participant.profiles.first_name,
+                    last_name: participant.profiles.last_name,
+                    avatar_url: participant.profiles.avatar_url
+                  };
+                }
+              }
+            }
+
+            return {
+              id: room.id,
+              name: room.name,
+              type: room.type as 'direct' | 'channel',
+              description: room.description,
+              is_public: room.is_public,
+              other_participant: otherParticipant
+            };
+          })
+      );
       
-      console.log('🏠 Processed rooms:', roomsData);
-      setRooms(roomsData);
+      console.log('🏠 Processed rooms with participants:', roomsWithParticipants);
+      setRooms(roomsWithParticipants);
     }
   };
 
@@ -181,7 +222,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
             name: room.name,
             type: room.type as 'direct' | 'channel',
             description: room.description,
-            is_public: room.is_public
+            is_public: room.is_public,
+            other_participant: null
           };
           console.log('🎯 Returning existing chat room:', chatRoom);
           return chatRoom;
@@ -230,7 +272,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: newRoom.name,
         type: newRoom.type as 'direct' | 'channel',
         description: newRoom.description,
-        is_public: newRoom.is_public
+        is_public: newRoom.is_public,
+        other_participant: null
       };
 
       loadRooms();
@@ -275,9 +318,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         async (payload) => {
           console.log('New message received:', payload);
           
-          // თუ მესიჯი ამჟამინდელ ოთახშია, დავამატოთ მესიჯების სიაში
           if (activeRoom && payload.new.room_id === activeRoom.id) {
-            // Get sender info
             const { data: senderData } = await supabase
               .from('profiles')
               .select('first_name, last_name')
@@ -308,7 +349,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
         (payload) => {
           console.log('User presence update:', payload);
-          // Update online users list
           loadOnlineUsers();
         }
       )
@@ -331,7 +371,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('user_presence')
         .select('user_id')
         .eq('is_online', true)
-        .gte('last_seen', new Date(Date.now() - 5 * 60 * 1000).toISOString()); // Last 5 minutes
+        .gte('last_seen', new Date(Date.now() - 5 * 60 * 1000).toISOString());
 
       if (data) {
         setOnlineUsers(data.map(row => row.user_id));
@@ -348,7 +388,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       supabase.removeChannel(presenceChannel);
       clearInterval(presenceInterval);
       
-      // Mark user as offline when component unmounts
       supabase
         .from('user_presence')
         .update({ is_online: false, last_seen: new Date().toISOString() })
