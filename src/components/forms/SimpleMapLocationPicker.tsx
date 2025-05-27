@@ -60,6 +60,14 @@ const SimpleMapLocationPicker = ({
   const defaultCenter: [number, number] = [41.7151, 44.8271];
   const center: [number, number] = position || defaultCenter;
 
+  const handleMapReady = () => {
+    // Get the map instance from the event target
+    const mapContainer = document.querySelector('.leaflet-container') as any;
+    if (mapContainer && mapContainer._leaflet_map) {
+      setMapInstance(mapContainer._leaflet_map);
+    }
+  };
+
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
       <MapContainer
@@ -72,7 +80,7 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        whenReady={(map) => setMapInstance(map)}
+        whenReady={handleMapReady}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
