@@ -227,7 +227,7 @@ const ServiceDetail = () => {
   };
 
   const maskPhoneNumber = (phone: string) => {
-    if (!phone || phone.length < 3) return phone;
+    if (!phone || phone.length > 3) return phone;
     const maskedPart = phone.slice(0, -3).replace(/\d/g, '*');
     const visiblePart = phone.slice(-3);
     return maskedPart + visiblePart;
