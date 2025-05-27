@@ -41,10 +41,13 @@ export const SendMessageButton: React.FC<SendMessageButtonProps> = ({
     try {
       const room = await createDirectChat(mechanicId);
       if (room) {
-        setActiveRoom(room);
+        navigate('/chat');
+        // პატარა დაყოვნება, რათა ჩატის გვერდი ჩაიტვირთოს
+        setTimeout(() => {
+          setActiveRoom(room);
+        }, 100);
+        toast.success(`${mechanicName}-თან ჩატი გაიხსნა`);
       }
-      navigate('/chat');
-      toast.success(`${mechanicName}-თან ჩატი გაიხსნა`);
     } catch (error) {
       console.error('Error creating direct chat:', error);
       toast.error("ჩატის გახსნისას შეცდომა დაფიქსირდა");
