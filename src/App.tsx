@@ -33,8 +33,8 @@ function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/services" element={<ServiceDetail />} />
-                <Route path="/services-detail" element={<ServicesDetail />} />
+                <Route path="/services" element={<ServicesDetail />} />
+                <Route path="/services-detail" element={<ServiceDetail />} />
                 <Route path="/service-search" element={<ServiceSearch />} />
                 <Route path="/service/:id" element={<ServiceDetail />} />
                 <Route path="/search" element={<Search />} />
