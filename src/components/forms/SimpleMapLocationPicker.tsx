@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -24,6 +24,27 @@ interface SimpleMapLocationPickerProps {
   interactive?: boolean;
 }
 
+// Custom hook component for handling map events
+const MapEventHandler = ({ 
+  onLocationChange, 
+  interactive 
+}: { 
+  onLocationChange: (lat: number, lng: number) => void;
+  interactive: boolean;
+}) => {
+  const map = useMap();
+
+  useMapEvents({
+    click: interactive ? (e) => {
+      console.log("🗺️ Map clicked", e.latlng);
+      const { lat, lng } = e.latlng;
+      onLocationChange(lat, lng);
+    } : undefined,
+  });
+
+  return null;
+};
+
 const SimpleMapLocationPicker = ({ 
   latitude, 
   longitude, 
@@ -33,8 +54,6 @@ const SimpleMapLocationPicker = ({
   console.log("🗺️ SimpleMapLocationPicker rendering", { latitude, longitude, interactive });
   
   const [position, setPosition] = useState<[number, number] | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
-  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     console.log("🗺️ Position useEffect triggered", { latitude, longitude });
@@ -43,44 +62,9 @@ const SimpleMapLocationPicker = ({
     }
   }, [latitude, longitude]);
 
-  // Handle map events when map is available and ready
-  useEffect(() => {
-    console.log("🗺️ Map events useEffect", { mapReady, interactive, hasMap: !!mapRef.current });
-    const map = mapRef.current;
-    if (!map || !interactive || !mapReady) return;
-
-    const handleClick = (e: L.LeafletMouseEvent) => {
-      console.log("🗺️ Map clicked", e.latlng);
-      const { lat, lng } = e.latlng;
-      setPosition([lat, lng]);
-      onLocationChange(lat, lng);
-    };
-
-    map.on('click', handleClick);
-
-    return () => {
-      console.log("🗺️ Cleaning up map events");
-      map.off('click', handleClick);
-    };
-  }, [interactive, onLocationChange, mapReady]);
-
   // Default center: Tbilisi, Georgia
   const defaultCenter: [number, number] = [41.7151, 44.8271];
   const center: [number, number] = position || defaultCenter;
-
-  const handleMapRef = (map: L.Map | null) => {
-    console.log("🗺️ Map ref callback", { map: !!map });
-    mapRef.current = map;
-    if (map) {
-      // Wait for the map to be fully initialized
-      map.whenReady(() => {
-        console.log("🗺️ Map is ready");
-        setMapReady(true);
-      });
-    } else {
-      setMapReady(false);
-    }
-  };
 
   console.log("🗺️ Rendering map with center:", center, "position:", position);
 
@@ -97,13 +81,16 @@ const SimpleMapLocationPicker = ({
           doubleClickZoom={interactive}
           boxZoom={interactive}
           keyboard={interactive}
-          ref={handleMapRef}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {position && <Marker position={position} />}
+          <MapEventHandler onLocationChange={(lat, lng) => {
+            setPosition([lat, lng]);
+            onLocationChange(lat, lng);
+          }} interactive={interactive} />
         </MapContainer>
       </div>
     );
