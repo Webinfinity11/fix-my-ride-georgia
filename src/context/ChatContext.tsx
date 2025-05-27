@@ -126,16 +126,27 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .in('user_id', [user.id, userId]);
 
     if (existing && existing.length > 0) {
-      // თუ არსებობს, ვხსნით
-      const room = existing[0].chat_rooms;
-      setActiveRoom({
-        id: room.id,
-        name: room.name,
-        type: room.type as 'direct' | 'channel',
-        description: room.description,
-        is_public: room.is_public
-      });
-      return;
+      // Check if both users are in the same room
+      const roomCounts = existing.reduce((acc, row) => {
+        acc[row.room_id] = (acc[row.room_id] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const sharedRoom = Object.keys(roomCounts).find(roomId => roomCounts[roomId] === 2);
+      
+      if (sharedRoom) {
+        const room = existing.find(row => row.room_id === sharedRoom)?.chat_rooms;
+        if (room) {
+          setActiveRoom({
+            id: room.id,
+            name: room.name,
+            type: room.type as 'direct' | 'channel',
+            description: room.description,
+            is_public: room.is_public
+          });
+          return;
+        }
+      }
     }
 
     // ახალი პირადი ჩატის შექმნა
@@ -187,15 +198,55 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (!user) return;
 
-    // მესიჯების მოსმენა
-    const messageSubscription = supabase
-      .channel('messages')
+    console.log('Setting up real-time subscriptions for user:', user.id);
+
+    // მესიჯების real-time მოსმენა
+    const messageChannel = supabase
+      .channel('messages_realtime')
       .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'messages' 
+        },
+        async (payload) => {
+          console.log('New message received:', payload);
+          
+          // თუ მესიჯი ამჟამინდელ ოთახშია, დავამატოთ მესიჯების სიაში
           if (activeRoom && payload.new.room_id === activeRoom.id) {
-            loadMessages(activeRoom.id);
+            // Get sender info
+            const { data: senderData } = await supabase
+              .from('profiles')
+              .select('first_name, last_name')
+              .eq('id', payload.new.sender_id)
+              .single();
+
+            const newMessage: Message = {
+              ...payload.new as Message,
+              sender_name: senderData 
+                ? `${senderData.first_name || ''} ${senderData.last_name || ''}`.trim() || 'Unknown'
+                : 'Unknown'
+            };
+
+            setMessages(prev => [...prev, newMessage]);
           }
+        }
+      )
+      .subscribe();
+
+    // User presence real-time მოსმენა
+    const presenceChannel = supabase
+      .channel('user_presence_realtime')
+      .on('postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_presence'
+        },
+        (payload) => {
+          console.log('User presence update:', payload);
+          // Update online users list
+          loadOnlineUsers();
         }
       )
       .subscribe();
@@ -211,14 +262,36 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
     };
 
+    // Load online users
+    const loadOnlineUsers = async () => {
+      const { data } = await supabase
+        .from('user_presence')
+        .select('user_id')
+        .eq('is_online', true)
+        .gte('last_seen', new Date(Date.now() - 5 * 60 * 1000).toISOString()); // Last 5 minutes
+
+      if (data) {
+        setOnlineUsers(data.map(row => row.user_id));
+      }
+    };
+
     updatePresence();
+    loadOnlineUsers();
     const presenceInterval = setInterval(updatePresence, 30000);
 
     return () => {
-      messageSubscription.unsubscribe();
+      console.log('Cleaning up real-time subscriptions');
+      supabase.removeChannel(messageChannel);
+      supabase.removeChannel(presenceChannel);
       clearInterval(presenceInterval);
+      
+      // Mark user as offline when component unmounts
+      supabase
+        .from('user_presence')
+        .update({ is_online: false, last_seen: new Date().toISOString() })
+        .eq('user_id', user.id);
     };
-  }, [user, activeRoom]);
+  }, [user, activeRoom?.id]);
 
   useEffect(() => {
     if (user) {

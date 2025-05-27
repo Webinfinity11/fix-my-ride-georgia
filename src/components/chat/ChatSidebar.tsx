@@ -2,12 +2,12 @@
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Hash, User } from 'lucide-react';
+import { Hash, User, Circle } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { JoinChannelsButton } from './JoinChannelsButton';
 
 export const ChatSidebar = () => {
-  const { rooms, activeRoom, setActiveRoom } = useChat();
+  const { rooms, activeRoom, setActiveRoom, onlineUsers } = useChat();
 
   const channels = rooms.filter(room => room.type === 'channel');
   const directChats = rooms.filter(room => room.type === 'direct');
@@ -15,7 +15,13 @@ export const ChatSidebar = () => {
   return (
     <div className="w-64 border-r bg-gray-50 flex flex-col">
       <div className="p-4 border-b bg-white">
-        <h2 className="font-semibold text-lg">ჩატები</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-lg">ჩატები</h2>
+          <div className="flex items-center gap-1 text-xs text-gray-500">
+            <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+            <span>{onlineUsers.length}</span>
+          </div>
+        </div>
       </div>
 
       <ScrollArea className="flex-1">

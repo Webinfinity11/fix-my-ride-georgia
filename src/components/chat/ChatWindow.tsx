@@ -4,12 +4,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Send, Hash, User } from 'lucide-react';
+import { Send, Hash, User, Circle } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { useAuth } from '@/context/AuthContext';
 
 export const ChatWindow = () => {
-  const { activeRoom, messages, sendMessage } = useChat();
+  const { activeRoom, messages, sendMessage, onlineUsers } = useChat();
   const { user } = useAuth();
   const [messageInput, setMessageInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -52,13 +52,18 @@ export const ChatWindow = () => {
           ) : (
             <User className="h-5 w-5 text-gray-500" />
           )}
-          <div>
+          <div className="flex-1">
             <h2 className="font-semibold text-lg">
               {activeRoom.name || 'პირადი ჩატი'}
             </h2>
             {activeRoom.description && (
               <p className="text-sm text-gray-500">{activeRoom.description}</p>
             )}
+          </div>
+          {/* Online indicator */}
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Circle className="h-3 w-3 fill-green-500 text-green-500" />
+            <span>{onlineUsers.length} ონლაინ</span>
           </div>
         </div>
       </div>
@@ -79,8 +84,11 @@ export const ChatWindow = () => {
                   : 'bg-white'
               }`}>
                 {message.sender_id !== user?.id && (
-                  <div className="text-xs font-medium text-gray-600 mb-1">
-                    {message.sender_name}
+                  <div className="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1">
+                    <span>{message.sender_name}</span>
+                    {onlineUsers.includes(message.sender_id) && (
+                      <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+                    )}
                   </div>
                 )}
                 <div className="text-sm break-words">{message.content}</div>
