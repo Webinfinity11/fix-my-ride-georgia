@@ -48,8 +48,8 @@ const SimpleMapLocationPicker = ({
     onLocationChange(lat, lng);
   };
 
-  // Handle when map is created
-  const handleMapCreated = (map: L.Map) => {
+  // Handle when map is ready
+  const handleMapReady = (map: L.Map) => {
     mapRef.current = map;
     
     if (interactive) {
@@ -72,7 +72,7 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        whenCreated={handleMapCreated}
+        whenReady={handleMapReady}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
