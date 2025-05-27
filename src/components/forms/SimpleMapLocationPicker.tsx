@@ -1,6 +1,6 @@
 
-import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -32,16 +32,16 @@ const MapEventHandler = ({
   onLocationChange: (lat: number, lng: number) => void;
   interactive: boolean;
 }) => {
-  const map = useMap();
-
-  useMapEvents({
-    click: interactive ? (e) => {
+  // Only register click events if interactive is true
+  const eventHandlers = interactive ? {
+    click: (e: any) => {
       console.log("🗺️ Map clicked", e.latlng);
       const { lat, lng } = e.latlng;
       onLocationChange(lat, lng);
-    } : undefined,
-  });
+    }
+  } : {};
 
+  useMapEvents(eventHandlers);
   return null;
 };
 
