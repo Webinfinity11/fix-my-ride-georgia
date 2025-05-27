@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -283,11 +284,19 @@ const ServiceDetail = () => {
   }
 
   const formatPrice = (priceFrom: number | null, priceTo: number | null) => {
-    if (!priceFrom && !priceTo) return "ფასი შეთანხმებით";
+    // Check if both prices are null, undefined, or 0
+    if ((!priceFrom || priceFrom === 0) && (!priceTo || priceTo === 0)) {
+      return "ფასი შეთანხმებით";
+    }
+    
+    // If we have valid prices, format them
     if (priceFrom && priceTo && priceFrom !== priceTo) {
       return `₾${priceFrom} - ₾${priceTo}`;
     }
-    return `₾${priceFrom || priceTo}`;
+    
+    // Return single price if available
+    const singlePrice = priceFrom || priceTo;
+    return singlePrice ? `₾${singlePrice}` : "ფასი შეთანხმებით";
   };
 
   const handleLocationChange = () => {
