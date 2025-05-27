@@ -17,7 +17,9 @@ import {
   Calendar,
   ArrowLeft,
   Phone,
-  MessageCircle
+  MessageCircle,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
@@ -63,6 +65,7 @@ const ServiceDetail = () => {
   const navigate = useNavigate();
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showFullPhone, setShowFullPhone] = useState(false);
 
   // UUID validation function
   const isValidUUID = (uuid: string) => {
@@ -221,6 +224,17 @@ const ServiceDetail = () => {
     if (service) {
       fetchService(service.id);
     }
+  };
+
+  const maskPhoneNumber = (phone: string) => {
+    if (!phone || phone.length < 3) return phone;
+    const maskedPart = phone.slice(0, -3).replace(/\d/g, '*');
+    const visiblePart = phone.slice(-3);
+    return maskedPart + visiblePart;
+  };
+
+  const togglePhoneVisibility = () => {
+    setShowFullPhone(!showFullPhone);
   };
 
   if (loading) {
@@ -504,6 +518,32 @@ const ServiceDetail = () => {
                     )}
                   </div>
                 </div>
+
+                {/* Phone Number Display */}
+                {service.mechanic.phone && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <span className="font-mono text-sm">
+                          {showFullPhone ? service.mechanic.phone : maskPhoneNumber(service.mechanic.phone)}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={togglePhoneVisibility}
+                        className="h-8 w-8 p-0"
+                      >
+                        {showFullPhone ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex gap-2">
                   {service.mechanic.phone && (
