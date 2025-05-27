@@ -11,11 +11,14 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          address: string | null
           car_id: number | null
           created_at: string
           id: number
+          is_mobile_service: boolean | null
           mechanic_id: string
           notes: string | null
+          phone_number: string | null
           price: number | null
           scheduled_date: string
           scheduled_time: string
@@ -25,11 +28,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          address?: string | null
           car_id?: number | null
           created_at?: string
           id?: number
+          is_mobile_service?: boolean | null
           mechanic_id: string
           notes?: string | null
+          phone_number?: string | null
           price?: number | null
           scheduled_date: string
           scheduled_time: string
@@ -39,11 +45,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          address?: string | null
           car_id?: number | null
           created_at?: string
           id?: number
+          is_mobile_service?: boolean | null
           mechanic_id?: string
           notes?: string | null
+          phone_number?: string | null
           price?: number | null
           scheduled_date?: string
           scheduled_time?: string
