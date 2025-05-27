@@ -32,7 +32,7 @@ const NotFound = () => {
           </Button>
           
           <Button variant="outline" asChild>
-            <Link to="/service-search" className="flex items-center gap-2">
+            <Link to="/services" className="flex items-center gap-2">
               <Search size={18} />
               სერვისების ძიება
             </Link>
