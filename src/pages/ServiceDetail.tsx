@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
 import ServiceReviews from "@/components/reviews/ServiceReviews";
 import Layout from "@/components/layout/Layout";
+import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 
 interface ServiceType {
   id: number;
@@ -550,10 +551,13 @@ const ServiceDetail = () => {
                       </a>
                     </Button>
                   )}
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    წერილი
-                  </Button>
+                  <SendMessageButton 
+                    mechanicId={service.mechanic.id}
+                    mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  />
                 </div>
 
                 {/* Only show profile link if mechanic ID is valid UUID */}
