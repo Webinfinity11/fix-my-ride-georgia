@@ -13,7 +13,6 @@ import CustomerCars from "@/components/dashboard/customer/CustomerCars";
 import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
-import MechanicPortfolio from "@/components/dashboard/mechanic/MechanicPortfolio";
 import { toast } from "sonner";
 
 const Dashboard = () => {
@@ -122,16 +121,6 @@ const Dashboard = () => {
                       <MechanicBookings />
                     ) : (
                       <CustomerBookings />
-                    )
-                  }
-                />
-                <Route
-                  path="/portfolio"
-                  element={
-                    user.role === "mechanic" ? (
-                      <MechanicPortfolio />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
                     )
                   }
                 />

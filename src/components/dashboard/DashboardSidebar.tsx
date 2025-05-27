@@ -7,7 +7,6 @@ import {
   Wrench,
   Calendar,
   LogOut,
-  Images,
   Settings,
 } from "lucide-react";
 
@@ -44,16 +43,10 @@ const DashboardSidebar = () => {
         )}
 
         {user?.role === "mechanic" && (
-          <>
-            <NavLink to="/dashboard/services" className={navLinkClasses}>
-              <Wrench size={18} />
-              <span>სერვისები</span>
-            </NavLink>
-            <NavLink to="/dashboard/portfolio" className={navLinkClasses}>
-              <Images size={18} />
-              <span>პორტფოლიო</span>
-            </NavLink>
-          </>
+          <NavLink to="/dashboard/services" className={navLinkClasses}>
+            <Wrench size={18} />
+            <span>სერვისები</span>
+          </NavLink>
         )}
 
         <NavLink to="/dashboard/bookings" className={navLinkClasses}>
