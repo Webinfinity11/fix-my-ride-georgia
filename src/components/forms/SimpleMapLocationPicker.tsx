@@ -60,16 +60,14 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        ref={(mapInstance) => {
-          if (mapInstance) {
-            mapRef.current = mapInstance;
-            
-            // Add click event listener if interactive
-            if (interactive) {
-              mapInstance.on('click', (e: L.LeafletMouseEvent) => {
-                handleLocationChange(e.latlng.lat, e.latlng.lng);
-              });
-            }
+        whenReady={(map) => {
+          mapRef.current = map;
+          
+          // Add click event listener if interactive
+          if (interactive) {
+            map.on('click', (e: L.LeafletMouseEvent) => {
+              handleLocationChange(e.latlng.lat, e.latlng.lng);
+            });
           }
         }}
       >
