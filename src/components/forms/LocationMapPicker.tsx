@@ -2,6 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 
 // Fix marker icons
 import icon from "leaflet/dist/images/marker-icon.png";
@@ -41,6 +44,50 @@ const LocationMapPicker = ({
   
   const [currentLat, setCurrentLat] = useState(latitude || defaultLat);
   const [currentLng, setCurrentLng] = useState(longitude || defaultLng);
+  const [searchAddress, setSearchAddress] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Geocoding function using Nominatim API
+  const searchLocation = async (address: string) => {
+    if (!address.trim()) return;
+    
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&countrycodes=ge`
+      );
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        const newLat = parseFloat(lat);
+        const newLng = parseFloat(lon);
+        
+        setCurrentLat(newLat);
+        setCurrentLng(newLng);
+        onLocationChange(newLat, newLng);
+        
+        // Update map view and marker
+        if (mapInstanceRef.current && markerRef.current) {
+          const newLatLng = L.latLng(newLat, newLng);
+          markerRef.current.setLatLng(newLatLng);
+          mapInstanceRef.current.setView(newLatLng, 16);
+        }
+      } else {
+        alert("მისამართი ვერ მოიძებნა. გთხოვთ სცადოთ სხვა მისამართი.");
+      }
+    } catch (error) {
+      console.error("Error searching location:", error);
+      alert("ძიებისას მოხდა შეცდომა. გთხოვთ სცადოთ თავიდან.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchLocation(searchAddress);
+  };
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -106,15 +153,36 @@ const LocationMapPicker = ({
   }, [latitude, longitude]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      {interactive && (
+        <form onSubmit={handleSearchSubmit} className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="ჩაწერეთ მისამართი (მაგ: რუსთაველის გამზირი 25, თბილისი)"
+            value={searchAddress}
+            onChange={(e) => setSearchAddress(e.target.value)}
+            className="flex-1 border-primary/20 focus-visible:ring-primary"
+          />
+          <Button 
+            type="submit" 
+            disabled={isSearching || !searchAddress.trim()}
+            className="bg-primary hover:bg-primary-light"
+          >
+            <Search size={16} className="mr-1" />
+            {isSearching ? "ეძებს..." : "ძიება"}
+          </Button>
+        </form>
+      )}
+      
       <div 
         ref={mapRef} 
         className="h-64 w-full rounded-lg border border-primary/20"
         style={{ minHeight: '256px' }}
       />
+      
       {interactive && (
         <p className="text-xs text-muted-foreground">
-          რუკაზე დაჭერით ან მაკერის გადატანით შეგიძლიათ აირჩიოთ ზუსტი ლოკაცია
+          რუკაზე დაჭერით, მაკერის გადატანით ან მისამართის ძიებით შეგიძლიათ აირჩიოთ ზუსტი ლოკაცია
         </p>
       )}
     </div>
