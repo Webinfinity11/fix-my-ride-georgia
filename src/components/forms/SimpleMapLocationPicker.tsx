@@ -24,25 +24,6 @@ interface SimpleMapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map events
-const MapEventHandler = ({ 
-  onLocationChange, 
-  interactive 
-}: { 
-  onLocationChange: (lat: number, lng: number) => void;
-  interactive: boolean;
-}) => {
-  useMapEvents({
-    click(e) {
-      if (interactive) {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      }
-    },
-  });
-
-  return null;
-};
-
 const SimpleMapLocationPicker = ({ 
   latitude, 
   longitude, 
@@ -66,6 +47,18 @@ const SimpleMapLocationPicker = ({
     onLocationChange(lat, lng);
   };
 
+  // Inner component that uses useMapEvents
+  const MapClickHandler = () => {
+    useMapEvents({
+      click: (e) => {
+        if (interactive) {
+          handleLocationChange(e.latlng.lat, e.latlng.lng);
+        }
+      },
+    });
+    return null;
+  };
+
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
       <MapContainer
@@ -84,10 +77,7 @@ const SimpleMapLocationPicker = ({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {position && <Marker position={position} />}
-        <MapEventHandler 
-          onLocationChange={handleLocationChange} 
-          interactive={interactive} 
-        />
+        {interactive && <MapClickHandler />}
       </MapContainer>
     </div>
   );
