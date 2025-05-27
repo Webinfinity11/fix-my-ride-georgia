@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,12 +51,19 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   };
 
   const formatPrice = () => {
-    if (service.price_from && service.price_to) {
-      return `${service.price_from} - ${service.price_to} ₾`;
-    } else if (service.price_from) {
-      return `${service.price_from}₾-დან`;
+    // Check if both prices are null, undefined, or 0
+    if ((!service.price_from || service.price_from === 0) && (!service.price_to || service.price_to === 0)) {
+      return "ფასი შეთანხმებით";
     }
-    return "ფასი შეთანხმებით";
+    
+    // If we have valid prices, format them
+    if (service.price_from && service.price_from > 0 && service.price_to && service.price_to > 0 && service.price_from !== service.price_to) {
+      return `₾${service.price_from} - ₾${service.price_to}`;
+    }
+    
+    // Return single price if available and greater than 0
+    const singlePrice = (service.price_from && service.price_from > 0) ? service.price_from : (service.price_to && service.price_to > 0) ? service.price_to : null;
+    return singlePrice ? `₾${singlePrice}` : "ფასი შეთანხმებით";
   };
 
   const formatLocation = () => {

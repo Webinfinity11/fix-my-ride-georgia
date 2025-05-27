@@ -290,12 +290,12 @@ const ServiceDetail = () => {
     }
     
     // If we have valid prices, format them
-    if (priceFrom && priceTo && priceFrom !== priceTo) {
+    if (priceFrom && priceFrom > 0 && priceTo && priceTo > 0 && priceFrom !== priceTo) {
       return `₾${priceFrom} - ₾${priceTo}`;
     }
     
-    // Return single price if available
-    const singlePrice = priceFrom || priceTo;
+    // Return single price if available and greater than 0
+    const singlePrice = (priceFrom && priceFrom > 0) ? priceFrom : (priceTo && priceTo > 0) ? priceTo : null;
     return singlePrice ? `₾${singlePrice}` : "ფასი შეთანხმებით";
   };
 
