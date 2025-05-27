@@ -48,7 +48,7 @@ const SimpleMapLocationPicker = ({
   };
 
   // Handle map creation and add click event listener
-  const handleMapCreated = (map: L.Map) => {
+  const handleMapReady = (map: L.Map) => {
     if (interactive) {
       map.on('click', (e: L.LeafletMouseEvent) => {
         handleLocationChange(e.latlng.lat, e.latlng.lng);
@@ -68,7 +68,7 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        whenCreated={handleMapCreated}
+        whenReady={handleMapReady}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
