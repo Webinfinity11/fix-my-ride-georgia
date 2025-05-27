@@ -24,8 +24,8 @@ interface SimpleMapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map clicks - simplified to avoid context issues
-function MapClickHandler({ onLocationChange, interactive }: { 
+// Component to handle map events - must be inside MapContainer
+function MapEventHandler({ onLocationChange, interactive }: { 
   onLocationChange: (lat: number, lng: number) => void;
   interactive: boolean;
 }) {
@@ -76,13 +76,14 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
+        key={`${center[0]}-${center[1]}`} // Force remount when center changes significantly
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {position && <Marker position={position} />}
-        <MapClickHandler onLocationChange={handleLocationChange} interactive={interactive} />
+        {interactive && <MapEventHandler onLocationChange={handleLocationChange} interactive={interactive} />}
       </MapContainer>
     </div>
   );
