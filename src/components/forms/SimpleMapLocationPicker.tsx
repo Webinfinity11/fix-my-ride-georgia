@@ -26,18 +26,21 @@ interface SimpleMapLocationPickerProps {
 }
 
 // Component to handle map clicks
-function LocationMarker({ position, onLocationChange }: { 
+function LocationMarker({ position, onLocationChange, interactive }: { 
   position: LatLng | null; 
   onLocationChange: (lat: number, lng: number) => void;
+  interactive: boolean;
 }) {
   useMapEvents({
     click(e) {
-      onLocationChange(e.latlng.lat, e.latlng.lng);
+      if (interactive) {
+        onLocationChange(e.latlng.lat, e.latlng.lng);
+      }
     },
   });
 
   return position === null ? null : (
-    <Marker position={position}></Marker>
+    <Marker position={position} />
   );
 }
 
@@ -82,12 +85,11 @@ const SimpleMapLocationPicker = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {interactive && (
-          <LocationMarker position={position} onLocationChange={handleLocationChange} />
-        )}
-        {!interactive && position && (
-          <Marker position={position}></Marker>
-        )}
+        <LocationMarker 
+          position={position} 
+          onLocationChange={handleLocationChange} 
+          interactive={interactive}
+        />
       </MapContainer>
     </div>
   );
