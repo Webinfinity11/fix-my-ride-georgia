@@ -1,6 +1,6 @@
 
-import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -24,6 +24,22 @@ interface SimpleMapLocationPickerProps {
   interactive?: boolean;
 }
 
+// Component to handle map click events using react-leaflet hooks
+const MapClickHandler = ({ onLocationChange, interactive }: { 
+  onLocationChange: (lat: number, lng: number) => void; 
+  interactive: boolean; 
+}) => {
+  useMapEvents({
+    click: (e) => {
+      if (interactive) {
+        onLocationChange(e.latlng.lat, e.latlng.lng);
+      }
+    },
+  });
+  
+  return null;
+};
+
 const SimpleMapLocationPicker = ({ 
   latitude, 
   longitude, 
@@ -31,7 +47,6 @@ const SimpleMapLocationPicker = ({
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
@@ -48,16 +63,6 @@ const SimpleMapLocationPicker = ({
     onLocationChange(lat, lng);
   };
 
-  const handleMapCreated = (map: L.Map) => {
-    mapRef.current = map;
-    
-    if (interactive) {
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        handleLocationChange(e.latlng.lat, e.latlng.lng);
-      });
-    }
-  };
-
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
       <MapContainer
@@ -70,12 +75,12 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        whenCreated={handleMapCreated}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapClickHandler onLocationChange={handleLocationChange} interactive={interactive} />
         {position && <Marker position={position} />}
       </MapContainer>
     </div>
