@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -46,34 +45,65 @@ const ServiceReviews = ({ serviceId, onReviewAdded }: ServiceReviewsProps) => {
     setLoading(true);
     
     try {
-      const { data: reviewsData, error } = await supabase
+      // First fetch reviews
+      const { data: reviewsData, error: reviewsError } = await supabase
         .from("service_reviews")
         .select(`
           id,
           rating,
           comment,
           created_at,
-          user_id,
-          profiles!service_reviews_user_id_fkey(
-            first_name,
-            last_name,
-            avatar_url
-          )
+          user_id
         `)
         .eq("service_id", serviceId)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("❌ Error fetching reviews:", error);
-        throw error;
+      if (reviewsError) {
+        console.error("❌ Error fetching reviews:", reviewsError);
+        throw reviewsError;
       }
 
       console.log("✅ Reviews fetched:", reviewsData);
-      setReviews(reviewsData || []);
+
+      // If we have reviews, fetch the associated profile data
+      let reviewsWithProfiles: Review[] = [];
+      
+      if (reviewsData && reviewsData.length > 0) {
+        // Get unique user IDs
+        const userIds = [...new Set(reviewsData.map(review => review.user_id))];
+        
+        // Fetch profiles for these users
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, first_name, last_name, avatar_url")
+          .in("id", userIds);
+
+        if (profilesError) {
+          console.error("❌ Error fetching profiles:", profilesError);
+          // Continue without profile data
+        }
+
+        console.log("👤 Profiles fetched:", profilesData);
+
+        // Combine reviews with profile data
+        reviewsWithProfiles = reviewsData.map(review => {
+          const profile = profilesData?.find(p => p.id === review.user_id);
+          return {
+            ...review,
+            profiles: profile ? {
+              first_name: profile.first_name,
+              last_name: profile.last_name,
+              avatar_url: profile.avatar_url
+            } : undefined
+          };
+        });
+      }
+
+      setReviews(reviewsWithProfiles);
 
       // Check if current user has already reviewed this service
       if (user) {
-        const userReview = reviewsData?.find(review => review.user_id === user.id);
+        const userReview = reviewsWithProfiles.find(review => review.user_id === user.id);
         setUserHasReviewed(!!userReview);
       }
 
@@ -245,7 +275,7 @@ const ServiceReviews = ({ serviceId, onReviewAdded }: ServiceReviewsProps) => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium text-sm">
-                          {review.profiles?.first_name} {review.profiles?.last_name}
+                          {review.profiles?.first_name || "უცნობი"} {review.profiles?.last_name || "მომხმარებელი"}
                         </p>
                         <div className="flex items-center gap-2">
                           {renderStars(review.rating)}
