@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -78,7 +77,7 @@ const SearchFilter = () => {
     if (selectedCategory) params.set("category", selectedCategory.toString());
     if (selectedCity) params.set("city", selectedCity);
     
-    navigate(`/services-detail?${params.toString()}`);
+    navigate(`/services?${params.toString()}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
