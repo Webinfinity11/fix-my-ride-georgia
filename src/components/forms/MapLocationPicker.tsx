@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -26,70 +26,14 @@ interface MapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map events and marker
-const MapController = ({ 
-  position, 
-  onLocationChange, 
-  interactive 
-}: { 
-  position: [number, number]; 
-  onLocationChange: (lat: number, lng: number) => void; 
-  interactive: boolean; 
-}) => {
-  const map = useMap();
-
-  // Handle map clicks
-  useMapEvents({
-    click(e) {
-      if (interactive) {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      }
-    },
-  });
-
-  // Update map view when position changes
-  useEffect(() => {
-    if (map) {
-      map.setView(position, map.getZoom());
-    }
-  }, [map, position]);
-
-  // Handle marker drag
-  const eventHandlers = useMemo(
-    () => ({
-      dragend(e: any) {
-        const marker = e.target;
-        if (marker != null) {
-          const newPos = marker.getLatLng();
-          onLocationChange(newPos.lat, newPos.lng);
-        }
-      },
-    }),
-    [onLocationChange]
-  );
-
-  return (
-    <Marker
-      draggable={interactive}
-      eventHandlers={interactive ? eventHandlers : {}}
-      position={position}
-    >
-      <Popup>
-        {interactive 
-          ? "გადაიტანეთ მაკერი სასურველ ადგილზე ან დააჭირეთ რუკას" 
-          : "სერვისის ლოკაცია"
-        }
-      </Popup>
-    </Marker>
-  );
-};
-
 const MapLocationPicker = ({ 
   latitude, 
   longitude, 
   onLocationChange, 
   interactive = false 
 }: MapLocationPickerProps) => {
+  console.log("🗺️ MapLocationPicker rendering", { latitude, longitude, interactive });
+  
   // Default coordinates for Tbilisi
   const defaultLat = 41.7151;
   const defaultLng = 44.8271;
@@ -99,6 +43,10 @@ const MapLocationPicker = ({
   const displayLat = latitude || defaultLat;
   const displayLng = longitude || defaultLng;
 
+  // State for map instance
+  const [map, setMap] = useState<L.Map | null>(null);
+  const [marker, setMarker] = useState<L.Marker | null>(null);
+
   // Memoize center position to prevent unnecessary re-renders
   const center = useMemo<[number, number]>(() => [
     displayLat, 
@@ -107,11 +55,54 @@ const MapLocationPicker = ({
 
   // Handle location change with validation
   const handleLocationChange = useCallback((lat: number, lng: number) => {
+    console.log("🗺️ Location changed", { lat, lng });
     // Validate coordinates
     if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
       onLocationChange(lat, lng);
     }
   }, [onLocationChange]);
+
+  // Set up map event handlers when map is ready
+  useEffect(() => {
+    if (map && interactive) {
+      const handleMapClick = (e: L.LeafletMouseEvent) => {
+        console.log("🗺️ Map clicked", e.latlng);
+        const { lat, lng } = e.latlng;
+        handleLocationChange(lat, lng);
+      };
+
+      map.on('click', handleMapClick);
+
+      return () => {
+        map.off('click', handleMapClick);
+      };
+    }
+  }, [map, interactive, handleLocationChange]);
+
+  // Update marker position when coordinates change
+  useEffect(() => {
+    if (marker && (latitude !== undefined && longitude !== undefined)) {
+      const newLatLng = L.latLng(latitude, longitude);
+      marker.setLatLng(newLatLng);
+      
+      if (map) {
+        map.setView(newLatLng, map.getZoom());
+      }
+    }
+  }, [marker, map, latitude, longitude]);
+
+  // Set up marker drag events
+  const handleMarkerRef = useCallback((markerRef: L.Marker | null) => {
+    if (markerRef && interactive) {
+      setMarker(markerRef);
+      
+      markerRef.on('dragend', (e: any) => {
+        const newPos = e.target.getLatLng();
+        console.log("🗺️ Marker dragged", newPos);
+        handleLocationChange(newPos.lat, newPos.lng);
+      });
+    }
+  }, [interactive, handleLocationChange]);
 
   return (
     <div className="space-y-4">
@@ -122,16 +113,24 @@ const MapLocationPicker = ({
           style={{ height: "100%", width: "100%" }}
           scrollWheelZoom={true}
           attributionControl={true}
+          ref={setMap}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          <MapController
+          <Marker
             position={center}
-            onLocationChange={handleLocationChange}
-            interactive={interactive}
-          />
+            draggable={interactive}
+            ref={handleMarkerRef}
+          >
+            <Popup>
+              {interactive 
+                ? "გადაიტანეთ მაკერი სასურველ ადგილზე ან დააჭირეთ რუკას" 
+                : "სერვისის ლოკაცია"
+              }
+            </Popup>
+          </Marker>
         </MapContainer>
       </div>
       
