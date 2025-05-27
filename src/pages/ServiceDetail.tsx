@@ -68,6 +68,11 @@ const ServiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // UUID validation function
   const isValidUUID = (uuid: string) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
