@@ -38,6 +38,7 @@ export const ChatWindow = () => {
     if (activeRoom.type === 'channel') {
       return activeRoom.name || 'არხი';
     } else {
+      // For direct chats, show the other participant's name
       if (activeRoom.other_participant) {
         return `${activeRoom.other_participant.first_name} ${activeRoom.other_participant.last_name}`;
       }
