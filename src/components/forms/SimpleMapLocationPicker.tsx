@@ -32,16 +32,17 @@ const MapEventHandler = ({
   onLocationChange: (lat: number, lng: number) => void;
   interactive: boolean;
 }) => {
-  // Only register click events if interactive is true
-  const eventHandlers = interactive ? {
+  // Always register the click handler, but conditionally execute it
+  useMapEvents({
     click: (e: any) => {
-      console.log("🗺️ Map clicked", e.latlng);
-      const { lat, lng } = e.latlng;
-      onLocationChange(lat, lng);
+      if (interactive) {
+        console.log("🗺️ Map clicked", e.latlng);
+        const { lat, lng } = e.latlng;
+        onLocationChange(lat, lng);
+      }
     }
-  } : {};
-
-  useMapEvents(eventHandlers);
+  });
+  
   return null;
 };
 
