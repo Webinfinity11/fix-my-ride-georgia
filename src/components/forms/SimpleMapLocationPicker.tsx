@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -24,27 +24,6 @@ interface SimpleMapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Custom hook component for handling map events
-const MapClickHandler = ({ 
-  onLocationChange, 
-  interactive 
-}: { 
-  onLocationChange: (lat: number, lng: number) => void;
-  interactive: boolean;
-}) => {
-  const map = useMapEvents({
-    click: (e) => {
-      if (interactive) {
-        console.log("🗺️ Map clicked", e.latlng);
-        const { lat, lng } = e.latlng;
-        onLocationChange(lat, lng);
-      }
-    }
-  });
-  
-  return null;
-};
-
 const SimpleMapLocationPicker = ({ 
   latitude, 
   longitude, 
@@ -54,6 +33,7 @@ const SimpleMapLocationPicker = ({
   console.log("🗺️ SimpleMapLocationPicker rendering", { latitude, longitude, interactive });
   
   const [position, setPosition] = useState<[number, number] | null>(null);
+  const [map, setMap] = useState<L.Map | null>(null);
 
   useEffect(() => {
     console.log("🗺️ Position useEffect triggered", { latitude, longitude });
@@ -62,16 +42,29 @@ const SimpleMapLocationPicker = ({
     }
   }, [latitude, longitude]);
 
+  // Set up map click handler when map is ready
+  useEffect(() => {
+    if (map && interactive) {
+      const handleMapClick = (e: L.LeafletMouseEvent) => {
+        console.log("🗺️ Map clicked", e.latlng);
+        const { lat, lng } = e.latlng;
+        setPosition([lat, lng]);
+        onLocationChange(lat, lng);
+      };
+
+      map.on('click', handleMapClick);
+
+      return () => {
+        map.off('click', handleMapClick);
+      };
+    }
+  }, [map, interactive, onLocationChange]);
+
   // Default center: Tbilisi, Georgia
   const defaultCenter: [number, number] = [41.7151, 44.8271];
   const center: [number, number] = position || defaultCenter;
 
   console.log("🗺️ Rendering map with center:", center, "position:", position);
-
-  const handleLocationChange = (lat: number, lng: number) => {
-    setPosition([lat, lng]);
-    onLocationChange(lat, lng);
-  };
 
   try {
     return (
@@ -86,16 +79,13 @@ const SimpleMapLocationPicker = ({
           doubleClickZoom={interactive}
           boxZoom={interactive}
           keyboard={interactive}
+          ref={setMap}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {position && <Marker position={position} />}
-          <MapClickHandler 
-            onLocationChange={handleLocationChange} 
-            interactive={interactive} 
-          />
         </MapContainer>
       </div>
     );
