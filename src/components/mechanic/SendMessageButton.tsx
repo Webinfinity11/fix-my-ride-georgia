@@ -23,7 +23,7 @@ export const SendMessageButton: React.FC<SendMessageButtonProps> = ({
   className = ""
 }) => {
   const { user } = useAuth();
-  const { createDirectChat } = useChat();
+  const { createDirectChat, setActiveRoom } = useChat();
   const navigate = useNavigate();
 
   const handleSendMessage = async () => {
@@ -39,7 +39,10 @@ export const SendMessageButton: React.FC<SendMessageButtonProps> = ({
     }
 
     try {
-      await createDirectChat(mechanicId);
+      const room = await createDirectChat(mechanicId);
+      if (room) {
+        setActiveRoom(room);
+      }
       navigate('/chat');
       toast.success(`${mechanicName}-თან ჩატი გაიხსნა`);
     } catch (error) {

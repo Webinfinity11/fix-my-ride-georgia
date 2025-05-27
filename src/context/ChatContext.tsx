@@ -28,7 +28,7 @@ interface ChatContextType {
   onlineUsers: string[];
   setActiveRoom: (room: ChatRoom | null) => void;
   sendMessage: (content: string) => Promise<void>;
-  createDirectChat: (userId: string) => Promise<void>;
+  createDirectChat: (userId: string) => Promise<ChatRoom | null>;
   joinChannel: (roomId: string) => Promise<void>;
   loadRooms: () => Promise<void>;
 }
@@ -115,8 +115,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // პირადი ჩატის შექმნა
-  const createDirectChat = async (userId: string) => {
-    if (!user) return;
+  const createDirectChat = async (userId: string): Promise<ChatRoom | null> => {
+    if (!user) return null;
 
     // ჯერ ვამოწმებთ არსებობს თუ არა
     const { data: existing } = await supabase
@@ -137,14 +137,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (sharedRoom) {
         const room = existing.find(row => row.room_id === sharedRoom)?.chat_rooms;
         if (room) {
-          setActiveRoom({
+          const chatRoom = {
             id: room.id,
             name: room.name,
             type: room.type as 'direct' | 'channel',
             description: room.description,
             is_public: room.is_public
-          });
-          return;
+          };
+          return chatRoom;
         }
       }
     }
@@ -167,15 +167,19 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         { room_id: newRoom.id, user_id: userId }
       ]);
 
-      setActiveRoom({
+      const chatRoom = {
         id: newRoom.id,
         name: newRoom.name,
         type: newRoom.type as 'direct' | 'channel',
         description: newRoom.description,
         is_public: newRoom.is_public
-      });
+      };
+
       loadRooms();
+      return chatRoom;
     }
+
+    return null;
   };
 
   // არხში შესვლა
