@@ -72,10 +72,10 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   };
 
   return (
-    <Card className="group cursor-pointer border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
+    <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
       <CardContent className="p-0">
-        {/* Service Gallery */}
-        <div className="relative overflow-hidden">
+        {/* Service Gallery - Now clickable */}
+        <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
           <ServiceGallery 
             photos={service.photos || []} 
             serviceName={service.name}
@@ -83,10 +83,13 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         </div>
 
         <div className="p-4 space-y-3">
-          {/* Header */}
+          {/* Header - Title is now clickable */}
           <div className="space-y-2">
             <div className="flex items-start justify-between">
-              <h3 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+              <h3 
+                className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
+                onClick={handleViewDetails}
+              >
                 {service.name}
               </h3>
               {service.category && (
