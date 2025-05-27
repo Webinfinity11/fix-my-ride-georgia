@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Fix for default markers in react-leaflet
@@ -27,7 +26,7 @@ interface SimpleMapLocationPickerProps {
 
 // Component to handle map clicks
 function LocationMarker({ position, onLocationChange, interactive }: { 
-  position: LatLng | null; 
+  position: [number, number] | null; 
   onLocationChange: (lat: number, lng: number) => void;
   interactive: boolean;
 }) {
@@ -50,23 +49,23 @@ const SimpleMapLocationPicker = ({
   onLocationChange, 
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
-  const [position, setPosition] = useState<LatLng | null>(null);
+  const [position, setPosition] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
-      setPosition(new LatLng(latitude, longitude));
+      setPosition([latitude, longitude]);
     }
   }, [latitude, longitude]);
 
   const handleLocationChange = (lat: number, lng: number) => {
-    const newPosition = new LatLng(lat, lng);
+    const newPosition: [number, number] = [lat, lng];
     setPosition(newPosition);
     onLocationChange(lat, lng);
   };
 
   // Default center: Tbilisi, Georgia
   const defaultCenter: [number, number] = [41.7151, 44.8271];
-  const center: [number, number] = position ? [position.lat, position.lng] : defaultCenter;
+  const center: [number, number] = position || defaultCenter;
 
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
