@@ -53,14 +53,13 @@ const LocationMapPicker = ({
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Add marker
-    const marker = L.marker([currentLat, currentLng]).addTo(map);
+    // Add marker with draggable option
+    const marker = L.marker([currentLat, currentLng], {
+      draggable: interactive
+    }).addTo(map);
     
     if (interactive) {
       marker.bindPopup('გადაიტანეთ მაკერი ან დააჭირეთ რუკას ლოკაციის შესაცვლელად');
-      
-      // Make marker draggable
-      marker.setDraggable(true);
       
       // Handle marker drag
       marker.on('dragend', (e) => {
