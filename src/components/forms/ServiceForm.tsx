@@ -19,7 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, DollarSign, Clock, Calendar, Car, CreditCard, Banknote, MapPin } from "lucide-react";
 import PhotoUpload from "@/components/forms/PhotoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
-import MapLocationPicker from "@/components/forms/MapLocationPicker";
+import SimpleMapLocationPicker from "@/components/forms/SimpleMapLocationPicker";
 
 type ServiceType = {
   id: number;
@@ -326,7 +326,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
 
             <div className="space-y-2">
               <Label>რუკაზე მდებარეობა</Label>
-              <MapLocationPicker
+              <SimpleMapLocationPicker
                 latitude={formData.latitude || undefined}
                 longitude={formData.longitude || undefined}
                 onLocationChange={handleLocationChange}

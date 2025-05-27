@@ -12,6 +12,7 @@ export type ServiceType = {
   estimated_hours: number | null;
   city: string | null;
   district: string | null;
+  address: string | null;
   car_brands: string[] | null;
   on_site_service: boolean;
   accepts_card_payment: boolean;
@@ -137,6 +138,7 @@ export const useServices = () => {
           estimated_hours,
           city,
           district,
+          address,
           car_brands,
           on_site_service,
           accepts_card_payment,
@@ -238,6 +240,7 @@ export const useServices = () => {
           estimated_hours: service.estimated_hours,
           city: service.city,
           district: service.district,
+          address: service.address,
           car_brands: service.car_brands,
           on_site_service: service.on_site_service || false,
           accepts_card_payment: service.accepts_card_payment || false,
