@@ -31,7 +31,7 @@ const SimpleMapLocationPicker = ({
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null);
-  const [map, setMap] = useState<L.Map | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
@@ -41,6 +41,7 @@ const SimpleMapLocationPicker = ({
 
   // Handle map events when map is available
   useEffect(() => {
+    const map = mapRef.current;
     if (!map || !interactive) return;
 
     const handleClick = (e: L.LeafletMouseEvent) => {
@@ -54,11 +55,15 @@ const SimpleMapLocationPicker = ({
     return () => {
       map.off('click', handleClick);
     };
-  }, [map, interactive, onLocationChange]);
+  }, [interactive, onLocationChange]);
 
   // Default center: Tbilisi, Georgia
   const defaultCenter: [number, number] = [41.7151, 44.8271];
   const center: [number, number] = position || defaultCenter;
+
+  const handleMapRef = (map: L.Map | null) => {
+    mapRef.current = map;
+  };
 
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
@@ -72,7 +77,7 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        ref={setMap}
+        ref={handleMapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
