@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
+import ServiceReviews from "@/components/reviews/ServiceReviews";
 
 interface ServiceType {
   id: number;
@@ -211,6 +212,13 @@ const ServiceDetail = () => {
       navigate("/services");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReviewAdded = () => {
+    // Refresh service data to get updated rating and review count
+    if (service) {
+      fetchService(service.id);
     }
   };
 
@@ -424,6 +432,12 @@ const ServiceDetail = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Service Reviews */}
+          <ServiceReviews 
+            serviceId={service.id} 
+            onReviewAdded={handleReviewAdded}
+          />
         </div>
 
         {/* Sidebar */}
