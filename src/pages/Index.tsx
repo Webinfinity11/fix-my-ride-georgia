@@ -1,4 +1,3 @@
-
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
@@ -27,48 +26,25 @@ import {
   Sparkles
 } from "lucide-react";
 
-// Sample featured mechanics data
-const featuredMechanics = [
-  {
-    id: "1",
-    name: "გიორგი გიორგაძე",
-    avatar: "",
-    specialization: "ძრავის სპეციალისტი",
-    location: "თბილისი, საბურთალო",
-    rating: 4.8,
-    reviewCount: 124,
-    verified: true,
-    services: ["ძრავის შეკეთება", "დიაგნოსტიკა", "ელექტროობა"]
-  },
-  {
-    id: "2",
-    name: "ნიკა მაისურაძე",
-    avatar: "",
-    specialization: "საჭის სისტემა, სამუხრუჭე სისტემა",
-    location: "თბილისი, ვაკე",
-    rating: 4.6,
-    reviewCount: 98,
-    verified: true,
-    services: ["საჭის სისტემა", "სამუხრუჭე სისტემა", "საკიდი"]
-  },
-  {
-    id: "3",
-    name: "თემურ კახიძე",
-    avatar: "",
-    specialization: "ელექტრო სისტემების სპეციალისტი",
-    location: "თბილისი, დიდუბე",
-    rating: 4.7,
-    reviewCount: 87,
-    verified: false,
-    services: ["ელექტროობა", "კომპიუტერული დიაგნოსტიკა", "სტარტერი და გენერატორი"]
-  }
-];
-
 type ServiceCategory = {
   id: number;
   name: string;
   description: string | null;
   icon: string | null;
+};
+
+type FeaturedMechanic = {
+  id: string;
+  profiles: {
+    first_name: string;
+    last_name: string;
+    avatar_url?: string;
+    city?: string;
+    district?: string;
+  };
+  specialization?: string;
+  rating?: number;
+  review_count?: number;
 };
 
 // საქართველოს მთავარი ქალაქები
@@ -94,9 +70,11 @@ const stats = [
 const Index = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [featuredMechanics, setFeaturedMechanics] = useState<FeaturedMechanic[]>([]);
   const [cities, setCities] = useState<string[]>(georgianCities);
   const [districts, setDistricts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mechanicsLoading, setMechanicsLoading] = useState(true);
   
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -141,6 +119,72 @@ const Index = () => {
 
     fetchData();
   }, [selectedCity]);
+
+  // Fetch featured mechanics
+  useEffect(() => {
+    const fetchFeaturedMechanics = async () => {
+      console.log("🔄 Fetching featured mechanics...");
+      setMechanicsLoading(true);
+      
+      try {
+        // Fetch mechanic profiles with highest ratings
+        const { data: mechanicsData, error: mechanicsError } = await supabase
+          .from("mechanic_profiles")
+          .select(`
+            id,
+            specialization,
+            rating,
+            review_count,
+            profiles!inner (
+              first_name,
+              last_name,
+              avatar_url,
+              city,
+              district
+            )
+          `)
+          .not("rating", "is", null)
+          .gte("rating", 4.5)
+          .order("rating", { ascending: false })
+          .order("review_count", { ascending: false })
+          .limit(3);
+
+        if (mechanicsError) {
+          console.error("❌ Error fetching mechanics:", mechanicsError);
+          throw mechanicsError;
+        }
+
+        console.log("✅ Featured mechanics data:", mechanicsData);
+
+        if (mechanicsData && mechanicsData.length > 0) {
+          const transformedMechanics: FeaturedMechanic[] = mechanicsData.map(mechanic => ({
+            id: mechanic.id,
+            profiles: {
+              first_name: mechanic.profiles.first_name,
+              last_name: mechanic.profiles.last_name,
+              avatar_url: mechanic.profiles.avatar_url,
+              city: mechanic.profiles.city,
+              district: mechanic.profiles.district,
+            },
+            specialization: mechanic.specialization,
+            rating: mechanic.rating,
+            review_count: mechanic.review_count,
+          }));
+
+          setFeaturedMechanics(transformedMechanics);
+        }
+
+      } catch (error: any) {
+        console.error("❌ Error fetching featured mechanics:", error);
+        // Keep empty array on error
+        setFeaturedMechanics([]);
+      } finally {
+        setMechanicsLoading(false);
+      }
+    };
+
+    fetchFeaturedMechanics();
+  }, []);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -406,26 +450,38 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {featuredMechanics.map((mechanic) => (
-                <MechanicCard 
-                  key={mechanic.id} 
-                  mechanic={{
-                    id: mechanic.id,
-                    profiles: {
-                      first_name: mechanic.name.split(' ')[0],
-                      last_name: mechanic.name.split(' ')[1] || '',
-                      avatar_url: mechanic.avatar,
-                      city: mechanic.location.split(', ')[0],
-                      district: mechanic.location.split(', ')[1]
-                    },
-                    specialization: mechanic.specialization,
-                    rating: mechanic.rating,
-                    review_count: mechanic.reviewCount
-                  }}
-                />
-              ))}
-            </div>
+            {mechanicsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                {[...Array(3)].map((_, i) => (
+                  <Card key={i} className="animate-pulse border-0 shadow-lg">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="h-16 w-16 bg-gray-200 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : featuredMechanics.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                {featuredMechanics.map((mechanic) => (
+                  <MechanicCard 
+                    key={mechanic.id} 
+                    mechanic={mechanic}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-xl text-gray-600 mb-4">ჯერ არ არის რეკომენდირებული ხელოსნები</p>
+                <p className="text-gray-500">ხელოსნები შეაფასდებიან მომხმარებლების მიერ რეიტინგის მიხედვით</p>
+              </div>
+            )}
             
             <div className="text-center">
               <Link to="/search?tab=mechanics">
