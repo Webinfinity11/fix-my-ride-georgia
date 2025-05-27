@@ -92,6 +92,8 @@ const Book = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   useEffect(() => {
+    console.log("📝 Book component mounted with params:", { serviceId, mechanicId, paramMechanicId });
+    
     if (!user) {
       toast.error("გთხოვთ შედით სისტემაში");
       navigate("/login");
@@ -99,8 +101,10 @@ const Book = () => {
     }
 
     if (serviceId) {
+      console.log("🔧 Fetching service data for ID:", serviceId);
       fetchService();
     } else if (mechanicId) {
+      console.log("👨‍🔧 Fetching mechanic data for ID:", mechanicId);
       fetchMechanic();
     } else {
       toast.error("სერვისი ან ხელოსანი არ არის მითითებული");
@@ -113,6 +117,7 @@ const Book = () => {
 
     try {
       setLoading(true);
+      console.log("🔍 Fetching service with ID:", serviceId);
       
       const { data: serviceData, error: serviceError } = await supabase
         .from("mechanic_services")
@@ -127,19 +132,26 @@ const Book = () => {
           district,
           mechanic_id,
           service_categories(name),
-          profiles!inner(
-            id,
-            first_name,
-            last_name,
-            phone,
-            mechanic_profiles(rating, specialization, is_mobile)
+          mechanic_profiles(
+            rating,
+            specialization,
+            is_mobile,
+            profiles(
+              id,
+              first_name,
+              last_name,
+              phone
+            )
           )
         `)
         .eq("id", parseInt(serviceId))
         .eq("is_active", true)
         .single();
 
-      if (serviceError) throw serviceError;
+      if (serviceError) {
+        console.error("❌ Service fetch error:", serviceError);
+        throw serviceError;
+      }
 
       if (!serviceData) {
         toast.error("სერვისი ვერ მოიძებნა");
@@ -147,14 +159,14 @@ const Book = () => {
         return;
       }
 
-      const profile = Array.isArray(serviceData.profiles) 
-        ? serviceData.profiles[0] 
-        : serviceData.profiles;
+      console.log("✅ Service data fetched:", serviceData);
+
+      const mechanicProfile = Array.isArray(serviceData.mechanic_profiles) 
+        ? serviceData.mechanic_profiles[0] 
+        : serviceData.mechanic_profiles;
         
-      const mechanicProfile = profile?.mechanic_profiles;
-      const mechProfile = Array.isArray(mechanicProfile) 
-        ? mechanicProfile[0] 
-        : mechanicProfile;
+      const profile = mechanicProfile?.profiles;
+      const profileData = Array.isArray(profile) ? profile[0] : profile;
 
       const transformedService: ServiceType = {
         id: serviceData.id,
@@ -166,11 +178,11 @@ const Book = () => {
         city: serviceData.city,
         district: serviceData.district,
         mechanic: {
-          id: profile?.id || "",
-          first_name: profile?.first_name || "",
-          last_name: profile?.last_name || "",
-          phone: profile?.phone || null,
-          rating: mechProfile?.rating || null,
+          id: profileData?.id || serviceData.mechanic_id || "",
+          first_name: profileData?.first_name || "",
+          last_name: profileData?.last_name || "",
+          phone: profileData?.phone || null,
+          rating: mechanicProfile?.rating || null,
         },
         category: serviceData.service_categories
       };
@@ -178,12 +190,12 @@ const Book = () => {
       setService(transformedService);
 
       // Set mobile service if mechanic supports it
-      if (mechProfile?.is_mobile) {
+      if (mechanicProfile?.is_mobile) {
         setIsMobile(false); // User can choose
       }
       
     } catch (error: any) {
-      console.error("Error fetching service:", error);
+      console.error("❌ Error fetching service:", error);
       toast.error("სერვისის ჩატვირთვისას შეცდომა დაფიქსირდა");
       navigate("/services-detail");
     } finally {
@@ -196,6 +208,16 @@ const Book = () => {
 
     try {
       setLoading(true);
+      console.log("🔍 Fetching mechanic with ID:", mechanicId);
+      
+      // Validate that mechanicId is a valid UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(mechanicId)) {
+        console.error("❌ Invalid UUID format for mechanic ID:", mechanicId);
+        toast.error("არასწორი ხელოსნის ID");
+        navigate("/services-detail");
+        return;
+      }
       
       const { data: mechanicData, error: mechanicError } = await supabase
         .from("profiles")
@@ -211,7 +233,18 @@ const Book = () => {
         .eq("id", mechanicId)
         .single();
 
-      if (mechanicError) throw mechanicError;
+      if (mechanicError) {
+        console.error("❌ Mechanic fetch error:", mechanicError);
+        throw mechanicError;
+      }
+
+      if (!mechanicData) {
+        toast.error("ხელოსანი ვერ მოიძებნა");
+        navigate("/services-detail");
+        return;
+      }
+
+      console.log("✅ Mechanic data fetched:", mechanicData);
 
       const mechanicProfile = Array.isArray(mechanicData.mechanic_profiles) 
         ? mechanicData.mechanic_profiles[0] 
@@ -232,7 +265,7 @@ const Book = () => {
       setMechanic(transformedMechanic);
       
     } catch (error: any) {
-      console.error("Error fetching mechanic:", error);
+      console.error("❌ Error fetching mechanic:", error);
       toast.error("ხელოსნის ჩატვირთვისას შეცდომა დაფიქსირდა");
       navigate("/services-detail");
     } finally {
@@ -271,9 +304,12 @@ const Book = () => {
     setSubmitting(true);
 
     try {
+      const targetMechanicId = service?.mechanic.id || mechanicId!;
+      console.log("📝 Submitting booking with mechanic ID:", targetMechanicId);
+
       const bookingData = {
         user_id: user.id,
-        mechanic_id: service?.mechanic.id || mechanicId!,
+        mechanic_id: targetMechanicId,
         service_id: serviceId ? parseInt(serviceId) : null,
         scheduled_date: format(date, "yyyy-MM-dd"),
         scheduled_time: time,
@@ -284,19 +320,25 @@ const Book = () => {
         status: "pending"
       };
 
+      console.log("📋 Booking data to submit:", bookingData);
+
       const { error } = await supabase
         .from("bookings")
         .insert([bookingData]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Booking submission error:", error);
+        throw error;
+      }
 
+      console.log("✅ Booking submitted successfully");
       toast.success("ჯავშანი წარმატებით გაიგზავნა!");
       
       // Navigate to success page or dashboard
       navigate("/dashboard/bookings");
       
     } catch (error: any) {
-      console.error("Error submitting booking:", error);
+      console.error("❌ Error submitting booking:", error);
       toast.error("ჯავშნის გაგზავნისას შეცდომა დაფიქსირდა");
     } finally {
       setSubmitting(false);
