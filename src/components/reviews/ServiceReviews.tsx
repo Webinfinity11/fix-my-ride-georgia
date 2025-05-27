@@ -54,7 +54,7 @@ const ServiceReviews = ({ serviceId, onReviewAdded }: ServiceReviewsProps) => {
           comment,
           created_at,
           user_id,
-          profiles!inner(
+          profiles!service_reviews_user_id_fkey(
             first_name,
             last_name,
             avatar_url
