@@ -46,7 +46,7 @@ const Header = () => {
           <Link to="/" className="text-gray-700 hover:text-primary transition-colors font-medium">
             მთავარი
           </Link>
-          <Link to="/services-detail" className="text-gray-700 hover:text-primary transition-colors font-medium">
+          <Link to="/services" className="text-gray-700 hover:text-primary transition-colors font-medium">
             სერვისები
           </Link>
           <Link to="/about" className="text-gray-700 hover:text-primary transition-colors font-medium">
