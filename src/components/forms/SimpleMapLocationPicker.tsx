@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Fix for default markers in react-leaflet
@@ -24,22 +24,6 @@ interface SimpleMapLocationPickerProps {
   interactive?: boolean;
 }
 
-// Component to handle map events - must be inside MapContainer
-function MapEventHandler({ onLocationChange, interactive }: { 
-  onLocationChange: (lat: number, lng: number) => void;
-  interactive: boolean;
-}) {
-  useMapEvents({
-    click(e) {
-      if (interactive) {
-        onLocationChange(e.latlng.lat, e.latlng.lng);
-      }
-    },
-  });
-
-  return null;
-}
-
 const SimpleMapLocationPicker = ({ 
   latitude, 
   longitude, 
@@ -47,6 +31,7 @@ const SimpleMapLocationPicker = ({
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null);
+  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
@@ -54,11 +39,22 @@ const SimpleMapLocationPicker = ({
     }
   }, [latitude, longitude]);
 
-  const handleLocationChange = (lat: number, lng: number) => {
-    const newPosition: [number, number] = [lat, lng];
-    setPosition(newPosition);
-    onLocationChange(lat, lng);
-  };
+  // Handle map click events
+  useEffect(() => {
+    if (!mapInstance || !interactive) return;
+
+    const handleMapClick = (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+      setPosition([lat, lng]);
+      onLocationChange(lat, lng);
+    };
+
+    mapInstance.on('click', handleMapClick);
+
+    return () => {
+      mapInstance.off('click', handleMapClick);
+    };
+  }, [mapInstance, interactive, onLocationChange]);
 
   // Default center: Tbilisi, Georgia
   const defaultCenter: [number, number] = [41.7151, 44.8271];
@@ -76,14 +72,13 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        key={`${center[0]}-${center[1]}`} // Force remount when center changes significantly
+        whenCreated={setMapInstance}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {position && <Marker position={position} />}
-        {interactive && <MapEventHandler onLocationChange={handleLocationChange} interactive={interactive} />}
       </MapContainer>
     </div>
   );
