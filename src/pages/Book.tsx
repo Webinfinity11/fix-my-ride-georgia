@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -321,10 +322,20 @@ const Book = () => {
         return;
       }
 
+      // Validate service ID if provided
+      const numericServiceId = serviceId ? parseInt(serviceId) : null;
+      console.log("📝 Service ID validation:", { serviceId, numericServiceId });
+      
+      if (serviceId && (isNaN(numericServiceId!) || numericServiceId! <= 0)) {
+        console.error("❌ Invalid service ID:", serviceId);
+        toast.error("არასწორი სერვისის ID");
+        return;
+      }
+
       const bookingData = {
         user_id: user.id,
         mechanic_id: targetMechanicId,
-        service_id: serviceId ? parseInt(serviceId) : null,
+        service_id: numericServiceId,
         scheduled_date: format(date, "yyyy-MM-dd"),
         scheduled_time: time,
         is_mobile_service: isMobile,
@@ -334,26 +345,49 @@ const Book = () => {
         status: "pending"
       };
 
-      console.log("📋 Booking data to submit:", bookingData);
+      console.log("📋 Final booking data to submit:", JSON.stringify(bookingData, null, 2));
 
-      const { error } = await supabase
+      const { data: result, error } = await supabase
         .from("bookings")
-        .insert([bookingData]);
+        .insert([bookingData])
+        .select();
 
       if (error) {
-        console.error("❌ Booking submission error:", error);
+        console.error("❌ Detailed booking submission error:", {
+          error,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         throw error;
       }
 
-      console.log("✅ Booking submitted successfully");
+      console.log("✅ Booking submitted successfully:", result);
       toast.success("ჯავშანი წარმატებით გაიგზავნა!");
       
       // Navigate to success page or dashboard
       navigate("/dashboard/bookings");
       
     } catch (error: any) {
-      console.error("❌ Error submitting booking:", error);
-      toast.error("ჯავშნის გაგზავნისას შეცდომა დაფიქსირდა");
+      console.error("❌ Error submitting booking:", {
+        error,
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code
+      });
+      
+      // More specific error messages
+      if (error?.code === '23503') {
+        toast.error("ხელოსანი ან სერვისი ვერ მოიძებნა");
+      } else if (error?.code === '23505') {
+        toast.error("ჯავშანი უკვე არსებობს ამ დროისთვის");
+      } else if (error?.message?.includes('invalid input syntax')) {
+        toast.error("არასწორი მონაცემების ფორმატი");
+      } else {
+        toast.error(`ჯავშნის გაგზავნისას შეცდომა: ${error?.message || 'უცნობი შეცდომა'}`);
+      }
     } finally {
       setSubmitting(false);
     }
