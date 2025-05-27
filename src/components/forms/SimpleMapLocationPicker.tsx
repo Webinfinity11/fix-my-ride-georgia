@@ -25,16 +25,15 @@ interface SimpleMapLocationPickerProps {
 }
 
 // Custom hook component for handling map events
-const MapEventHandler = ({ 
+const MapClickHandler = ({ 
   onLocationChange, 
   interactive 
 }: { 
   onLocationChange: (lat: number, lng: number) => void;
   interactive: boolean;
 }) => {
-  // Always register the click handler, but conditionally execute it
-  useMapEvents({
-    click: (e: any) => {
+  const map = useMapEvents({
+    click: (e) => {
       if (interactive) {
         console.log("🗺️ Map clicked", e.latlng);
         const { lat, lng } = e.latlng;
@@ -69,6 +68,11 @@ const SimpleMapLocationPicker = ({
 
   console.log("🗺️ Rendering map with center:", center, "position:", position);
 
+  const handleLocationChange = (lat: number, lng: number) => {
+    setPosition([lat, lng]);
+    onLocationChange(lat, lng);
+  };
+
   try {
     return (
       <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
@@ -88,10 +92,10 @@ const SimpleMapLocationPicker = ({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {position && <Marker position={position} />}
-          <MapEventHandler onLocationChange={(lat, lng) => {
-            setPosition([lat, lng]);
-            onLocationChange(lat, lng);
-          }} interactive={interactive} />
+          <MapClickHandler 
+            onLocationChange={handleLocationChange} 
+            interactive={interactive} 
+          />
         </MapContainer>
       </div>
     );
