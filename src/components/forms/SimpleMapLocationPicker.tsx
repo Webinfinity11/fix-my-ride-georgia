@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -31,7 +31,7 @@ const SimpleMapLocationPicker = ({
   interactive = true 
 }: SimpleMapLocationPickerProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null);
-  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
@@ -39,32 +39,27 @@ const SimpleMapLocationPicker = ({
     }
   }, [latitude, longitude]);
 
-  // Handle map click events
-  useEffect(() => {
-    if (!mapInstance || !interactive) return;
-
-    const handleMapClick = (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      setPosition([lat, lng]);
-      onLocationChange(lat, lng);
-    };
-
-    mapInstance.on('click', handleMapClick);
-
-    return () => {
-      mapInstance.off('click', handleMapClick);
-    };
-  }, [mapInstance, interactive, onLocationChange]);
-
   // Default center: Tbilisi, Georgia
   const defaultCenter: [number, number] = [41.7151, 44.8271];
   const center: [number, number] = position || defaultCenter;
 
-  const handleMapReady = () => {
-    // Get the map instance from the event target
-    const mapContainer = document.querySelector('.leaflet-container') as any;
-    if (mapContainer && mapContainer._leaflet_map) {
-      setMapInstance(mapContainer._leaflet_map);
+  const handleMapReady = (map: L.Map) => {
+    mapRef.current = map;
+    
+    if (interactive) {
+      // Add click handler
+      const handleMapClick = (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng;
+        setPosition([lat, lng]);
+        onLocationChange(lat, lng);
+      };
+
+      map.on('click', handleMapClick);
+
+      // Cleanup function
+      return () => {
+        map.off('click', handleMapClick);
+      };
     }
   };
 
@@ -80,7 +75,11 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        whenReady={handleMapReady}
+        ref={(map) => {
+          if (map) {
+            handleMapReady(map);
+          }
+        }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
