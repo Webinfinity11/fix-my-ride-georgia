@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,7 +73,7 @@ const ServiceDetail = () => {
     setLoading(true);
     
     try {
-      // Fetch service details
+      // Fetch service details with mechanic profile
       const { data: serviceData, error: serviceError } = await supabase
         .from("mechanic_services")
         .select(`
@@ -98,7 +97,17 @@ const ServiceDetail = () => {
           photos,
           category_id,
           mechanic_id,
-          service_categories(id, name)
+          service_categories(id, name),
+          mechanic_profiles(
+            id,
+            rating,
+            profiles(
+              id,
+              first_name,
+              last_name,
+              phone
+            )
+          )
         `)
         .eq("id", serviceId)
         .eq("is_active", true)
@@ -118,32 +127,39 @@ const ServiceDetail = () => {
 
       console.log("✅ Service data fetched:", serviceData);
 
-      // Fetch mechanic profile
-      const { data: mechanicData, error: mechanicError } = await supabase
-        .from("profiles")
-        .select(`
-          id,
-          first_name,
-          last_name,
-          phone,
-          mechanic_profiles(rating)
-        `)
-        .eq("id", serviceData.mechanic_id)
-        .single();
-
-      if (mechanicError) {
-        console.error("❌ Mechanic fetch error:", mechanicError);
-      }
-
-      console.log("✅ Mechanic data fetched:", mechanicData);
-
-      const mechanicProfile = Array.isArray(mechanicData?.mechanic_profiles) 
-        ? mechanicData.mechanic_profiles[0] 
-        : mechanicData?.mechanic_profiles;
-
+      // Extract nested data safely
       const category = Array.isArray(serviceData.service_categories) 
         ? serviceData.service_categories[0] 
         : serviceData.service_categories;
+
+      const mechanicProfile = Array.isArray(serviceData.mechanic_profiles) 
+        ? serviceData.mechanic_profiles[0] 
+        : serviceData.mechanic_profiles;
+
+      console.log("🧑‍🔧 Mechanic profile data:", mechanicProfile);
+
+      // Handle case where mechanic profile might not exist
+      let mechanicData = {
+        id: serviceData.mechanic_id || "",
+        first_name: "უცნობი",
+        last_name: "ხელოსანი",
+        rating: null,
+        phone: null,
+      };
+
+      if (mechanicProfile?.profiles) {
+        const profile = Array.isArray(mechanicProfile.profiles) 
+          ? mechanicProfile.profiles[0] 
+          : mechanicProfile.profiles;
+        
+        mechanicData = {
+          id: profile?.id || serviceData.mechanic_id || "",
+          first_name: profile?.first_name || "უცნობი",
+          last_name: profile?.last_name || "ხელოსანი",
+          rating: mechanicProfile?.rating || null,
+          phone: profile?.phone || null,
+        };
+      }
 
       const transformedService: ServiceType = {
         id: serviceData.id,
@@ -168,13 +184,7 @@ const ServiceDetail = () => {
           id: category.id,
           name: category.name
         } : null,
-        mechanic: {
-          id: mechanicData?.id || "",
-          first_name: mechanicData?.first_name || "",
-          last_name: mechanicData?.last_name || "",
-          rating: mechanicProfile?.rating || null,
-          phone: mechanicData?.phone || null,
-        }
+        mechanic: mechanicData
       };
 
       console.log("🗺️ Service location data:", {
@@ -182,6 +192,8 @@ const ServiceDetail = () => {
         longitude: transformedService.longitude,
         address: transformedService.address
       });
+
+      console.log("🧑‍🔧 Final mechanic data:", transformedService.mechanic);
 
       setService(transformedService);
       
