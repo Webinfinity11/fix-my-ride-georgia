@@ -153,13 +153,13 @@ const Index = () => {
     if (onSiteOnly) params.set("onSite", "true");
     if (minRating) params.set("minRating", minRating.toString());
     
-    navigate(`/services-detail?${params.toString()}`);
+    navigate(`/services?${params.toString()}`);
   };
 
   const handleQuickSearch = (query: string) => {
     const params = new URLSearchParams();
     params.set("q", query);
-    navigate(`/services-detail?${params.toString()}`);
+    navigate(`/services?${params.toString()}`);
   };
 
   const handleResetFilters = () => {
@@ -289,7 +289,7 @@ const Index = () => {
 
               {/* Quick Access Buttons */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services-detail?onSite=true")}>
+                <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?onSite=true")}>
                   <CardContent className="p-6 text-center">
                     <div className="p-4 bg-green-500 rounded-full w-fit mx-auto mb-4 group-hover:scale-110 transition-transform">
                       <MapPin className="h-8 w-8 text-white" />
@@ -299,7 +299,7 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services-detail?minRating=4")}>
+                <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?minRating=4")}>
                   <CardContent className="p-6 text-center">
                     <div className="p-4 bg-blue-500 rounded-full w-fit mx-auto mb-4 group-hover:scale-110 transition-transform">
                       <Star className="h-8 w-8 text-white" />
@@ -309,7 +309,7 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services-detail")}>
+                <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services")}>
                   <CardContent className="p-6 text-center">
                     <div className="p-4 bg-purple-500 rounded-full w-fit mx-auto mb-4 group-hover:scale-110 transition-transform">
                       <Zap className="h-8 w-8 text-white" />
@@ -379,7 +379,7 @@ const Index = () => {
             )}
             
             <div className="text-center mt-12">
-              <Link to="/services-detail">
+              <Link to="/services">
                 <Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                   ყველა სერვისის ნახვა
                   <ArrowRight className="h-5 w-5 ml-2" />
