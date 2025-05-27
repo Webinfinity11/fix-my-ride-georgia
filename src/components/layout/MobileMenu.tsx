@@ -57,7 +57,7 @@ export const MobileMenu = () => {
             </Link>
             
             <Link 
-              to="/services-detail" 
+              to="/services" 
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
             >
               <Wrench className="h-5 w-5" />
