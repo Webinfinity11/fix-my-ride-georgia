@@ -48,18 +48,6 @@ const SimpleMapLocationPicker = ({
     onLocationChange(lat, lng);
   };
 
-  // Handle when map is created
-  const handleMapCreated = (map: L.Map) => {
-    mapRef.current = map;
-    
-    if (interactive) {
-      // Add click event listener directly to the map
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        handleLocationChange(e.latlng.lat, e.latlng.lng);
-      });
-    }
-  };
-
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
       <MapContainer
@@ -74,7 +62,14 @@ const SimpleMapLocationPicker = ({
         keyboard={interactive}
         ref={(mapInstance) => {
           if (mapInstance) {
-            handleMapCreated(mapInstance);
+            mapRef.current = mapInstance;
+            
+            // Add click event listener if interactive
+            if (interactive) {
+              mapInstance.on('click', (e: L.LeafletMouseEvent) => {
+                handleLocationChange(e.latlng.lat, e.latlng.lng);
+              });
+            }
           }
         }}
       >
