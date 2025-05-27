@@ -32,6 +32,7 @@ const SimpleMapLocationPicker = ({
 }: SimpleMapLocationPickerProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null);
   const mapRef = useRef<L.Map | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     if (latitude !== undefined && longitude !== undefined) {
@@ -39,10 +40,10 @@ const SimpleMapLocationPicker = ({
     }
   }, [latitude, longitude]);
 
-  // Handle map events when map is available
+  // Handle map events when map is available and ready
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !interactive) return;
+    if (!map || !interactive || !mapReady) return;
 
     const handleClick = (e: L.LeafletMouseEvent) => {
       const { lat, lng } = e.latlng;
@@ -55,7 +56,7 @@ const SimpleMapLocationPicker = ({
     return () => {
       map.off('click', handleClick);
     };
-  }, [interactive, onLocationChange]);
+  }, [interactive, onLocationChange, mapReady]);
 
   // Default center: Tbilisi, Georgia
   const defaultCenter: [number, number] = [41.7151, 44.8271];
@@ -63,6 +64,14 @@ const SimpleMapLocationPicker = ({
 
   const handleMapRef = (map: L.Map | null) => {
     mapRef.current = map;
+    if (map) {
+      // Wait for the map to be fully initialized
+      map.whenReady(() => {
+        setMapReady(true);
+      });
+    } else {
+      setMapReady(false);
+    }
   };
 
   return (
