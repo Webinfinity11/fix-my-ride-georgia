@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -23,6 +23,33 @@ interface SimpleMapLocationPickerProps {
   onLocationChange: (lat: number, lng: number) => void;
   interactive?: boolean;
 }
+
+// Component to handle map events
+const MapEventHandler = ({ 
+  onLocationChange, 
+  interactive 
+}: { 
+  onLocationChange: (lat: number, lng: number) => void; 
+  interactive: boolean; 
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (interactive && map) {
+      const handleClick = (e: L.LeafletMouseEvent) => {
+        onLocationChange(e.latlng.lat, e.latlng.lng);
+      };
+
+      map.on('click', handleClick);
+
+      return () => {
+        map.off('click', handleClick);
+      };
+    }
+  }, [map, onLocationChange, interactive]);
+
+  return null;
+};
 
 const SimpleMapLocationPicker = ({ 
   latitude, 
@@ -47,15 +74,6 @@ const SimpleMapLocationPicker = ({
     onLocationChange(lat, lng);
   };
 
-  // Handle map creation and add click event listener
-  const handleMapReady = (map: L.Map) => {
-    if (interactive) {
-      map.on('click', (e: L.LeafletMouseEvent) => {
-        handleLocationChange(e.latlng.lat, e.latlng.lng);
-      });
-    }
-  };
-
   return (
     <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
       <MapContainer
@@ -68,11 +86,14 @@ const SimpleMapLocationPicker = ({
         doubleClickZoom={interactive}
         boxZoom={interactive}
         keyboard={interactive}
-        whenReady={handleMapReady}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapEventHandler 
+          onLocationChange={handleLocationChange} 
+          interactive={interactive} 
         />
         {position && <Marker position={position} />}
       </MapContainer>
