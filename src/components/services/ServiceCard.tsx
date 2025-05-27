@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,19 +52,27 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   };
 
   const formatPrice = () => {
-    // Check if both prices are null, undefined, or 0
-    if ((!service.price_from || service.price_from === 0) && (!service.price_to || service.price_to === 0)) {
+    // If no valid prices are provided, return default text
+    if (!service.price_from && !service.price_to) {
       return "ფასი შეთანხმებით";
     }
     
-    // If we have valid prices, format them
+    // If both prices exist and are greater than 0, show range
     if (service.price_from && service.price_from > 0 && service.price_to && service.price_to > 0 && service.price_from !== service.price_to) {
       return `₾${service.price_from} - ₾${service.price_to}`;
     }
     
-    // Return single price if available and greater than 0
-    const singlePrice = (service.price_from && service.price_from > 0) ? service.price_from : (service.price_to && service.price_to > 0) ? service.price_to : null;
-    return singlePrice ? `₾${singlePrice}` : "ფასი შეთანხმებით";
+    // If only one price exists and is greater than 0, show that price
+    if (service.price_from && service.price_from > 0) {
+      return `₾${service.price_from}`;
+    }
+    
+    if (service.price_to && service.price_to > 0) {
+      return `₾${service.price_to}`;
+    }
+    
+    // If prices are 0 or invalid, return default text
+    return "ფასი შეთანხმებით";
   };
 
   const formatLocation = () => {
