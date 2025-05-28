@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -169,13 +170,7 @@ const RegisterForm = () => {
       }
       
       toast.success(`${formType === 'mechanic' ? 'ხელოსანი' : 'მომხმარებელი'} წარმატებით დარეგისტრირდა!`);
-      
-      // Redirect based on user type
-      if (formType === 'mechanic') {
-        navigate('/add-service');
-      } else {
-        navigate('/');
-      }
+      navigate('/');
     } catch (error: any) {
       toast.error(`რეგისტრაცია ვერ მოხერხდა: ${error.message}`);
     }
