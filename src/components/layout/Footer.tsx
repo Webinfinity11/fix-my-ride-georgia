@@ -63,7 +63,7 @@ const Footer = () => {
               </h3>
               <ul className="space-y-3">
                 <li>
-                  <Link to="/search" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
+                  <Link to="/mechanic" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     ხელოსნების ძიება
                   </Link>
