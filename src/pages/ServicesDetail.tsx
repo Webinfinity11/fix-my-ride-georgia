@@ -9,7 +9,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { useServices } from "@/hooks/useServices";
-import { Filter, Grid, List, RefreshCw } from "lucide-react";
+import { Filter, RefreshCw } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -30,7 +30,6 @@ type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | 
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [visibleServicesCount, setVisibleServicesCount] = useState(12);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(true);
   
@@ -269,40 +268,6 @@ const ServicesDetail = () => {
                       გასუფთავება
                     </Button>
                   )}
-
-                  {/* Sort Options */}
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="px-3 py-2 border border-gray-200 rounded-lg bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  >
-                    <option value="newest">ახალი</option>
-                    <option value="oldest">ძველი</option>
-                    <option value="price_low">ფასი ↑</option>
-                    <option value="price_high">ფასი ↓</option>
-                    <option value="rating">რეიტინგი</option>
-                    <option value="popular">პოპულარული</option>
-                  </select>
-
-                  {/* View Mode Toggle */}
-                  <div className="flex border border-gray-200 rounded-lg bg-white/80 backdrop-blur-sm">
-                    <Button
-                      variant={viewMode === "grid" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("grid")}
-                      className="rounded-r-none"
-                    >
-                      <Grid className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === "list" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("list")}
-                      className="rounded-l-none"
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </div>
               </div>
 
@@ -336,11 +301,7 @@ const ServicesDetail = () => {
             
             {/* Results Section */}
             {loading ? (
-              <div className={`grid gap-6 ${
-                viewMode === "grid" 
-                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-                  : "grid-cols-1"
-              }`}>
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {[...Array(8)].map((_, i) => (
                   <ServiceCardSkeleton key={i} />
                 ))}
@@ -362,11 +323,7 @@ const ServicesDetail = () => {
                 </div>
                 
                 {/* Services Grid */}
-                <div className={`grid gap-6 ${
-                  viewMode === "grid" 
-                    ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
-                    : "grid-cols-1"
-                }`}>
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {sortedServices.slice(0, visibleServicesCount).map(service => (
                     <ServiceCard 
                       key={service.id} 
