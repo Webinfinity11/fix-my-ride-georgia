@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -20,6 +19,7 @@ import Book from "./pages/Book";
 import MechanicProfile from "./pages/MechanicProfile";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
+import Mechanics from "./pages/Mechanics";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +34,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/services" element={<ServicesDetail />} />
+                <Route path="/mechanic" element={<Mechanics />} />
                 <Route path="/service-search" element={<ServiceSearch />} />
                 <Route path="/service/:id" element={<ServiceDetail />} />
                 <Route path="/search" element={<Search />} />
