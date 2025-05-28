@@ -153,7 +153,8 @@ export const useMechanics = () => {
         query = query.eq("specialization", filters.selectedSpecialization);
       }
 
-      const { data: mechanicsData, error: mechanicsError } = await query.order("created_at", { ascending: false });
+      // Order by rating descending instead of created_at
+      const { data: mechanicsData, error: mechanicsError } = await query.order("rating", { ascending: false, nullsLast: true });
 
       if (mechanicsError) {
         console.error("❌ Main query failed:", mechanicsError);
