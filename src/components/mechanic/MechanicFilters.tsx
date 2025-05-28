@@ -65,6 +65,38 @@ const MechanicFilters = ({
   onSearch,
   onResetFilters,
 }: MechanicFiltersProps) => {
+  const handleCityChange = (value: string) => {
+    if (value === "all") {
+      setSelectedCity(null);
+    } else {
+      setSelectedCity(value);
+    }
+  };
+
+  const handleDistrictChange = (value: string) => {
+    if (value === "all") {
+      setSelectedDistrict(null);
+    } else {
+      setSelectedDistrict(value);
+    }
+  };
+
+  const handleSpecializationChange = (value: string) => {
+    if (value === "all") {
+      setSelectedSpecialization(null);
+    } else {
+      setSelectedSpecialization(value);
+    }
+  };
+
+  const handleRatingChange = (value: string) => {
+    if (value === "all") {
+      setMinRating(null);
+    } else {
+      setMinRating(parseInt(value));
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Search Input */}
@@ -85,12 +117,12 @@ const MechanicFilters = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             ქალაქი
           </label>
-          <Select value={selectedCity || ""} onValueChange={(value) => setSelectedCity(value || null)}>
+          <Select value={selectedCity || "all"} onValueChange={handleCityChange}>
             <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
               <SelectValue placeholder="აირჩიეთ ქალაქი" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">ყველა ქალაქი</SelectItem>
+              <SelectItem value="all">ყველა ქალაქი</SelectItem>
               {cities.map(city => (
                 <SelectItem key={city} value={city}>
                   {city}
@@ -105,12 +137,12 @@ const MechanicFilters = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               უბანი
             </label>
-            <Select value={selectedDistrict || ""} onValueChange={(value) => setSelectedDistrict(value || null)}>
+            <Select value={selectedDistrict || "all"} onValueChange={handleDistrictChange}>
               <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
                 <SelectValue placeholder="აირჩიეთ უბანი" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">ყველა უბანი</SelectItem>
+                <SelectItem value="all">ყველა უბანი</SelectItem>
                 {districts.map(district => (
                   <SelectItem key={district} value={district}>
                     {district}
@@ -128,12 +160,12 @@ const MechanicFilters = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             სპეციალიზაცია
           </label>
-          <Select value={selectedSpecialization || ""} onValueChange={(value) => setSelectedSpecialization(value || null)}>
+          <Select value={selectedSpecialization || "all"} onValueChange={handleSpecializationChange}>
             <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
               <SelectValue placeholder="აირჩიეთ სპეციალიზაცია" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">ყველა სპეციალიზაცია</SelectItem>
+              <SelectItem value="all">ყველა სპეციალიზაცია</SelectItem>
               {specializations.map(specialization => (
                 <SelectItem key={specialization} value={specialization}>
                   {specialization}
@@ -147,12 +179,12 @@ const MechanicFilters = ({
           <label className="block text-sm font-medium text-gray-700 mb-2">
             მინიმალური რეიტინგი
           </label>
-          <Select value={minRating?.toString() || ""} onValueChange={(value) => setMinRating(value ? parseInt(value) : null)}>
+          <Select value={minRating?.toString() || "all"} onValueChange={handleRatingChange}>
             <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
               <SelectValue placeholder="აირჩიეთ რეიტინგი" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">ყველა რეიტინგი</SelectItem>
+              <SelectItem value="all">ყველა რეიტინგი</SelectItem>
               <SelectItem value="4">4+ ⭐</SelectItem>
               <SelectItem value="3">3+ ⭐</SelectItem>
               <SelectItem value="2">2+ ⭐</SelectItem>
