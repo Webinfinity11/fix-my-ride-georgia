@@ -1,4 +1,3 @@
-
 import { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
@@ -233,7 +232,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('✅ Mechanic profile created');
       }
 
-      setState(prev => ({ ...prev, loading: false }));
+      // Don't set loading to false here - let the auth state change handler do it
+      // This ensures the user stays logged in after registration
       return { error: null, data: { user: authData.user, profile: profileData } };
     }
 

@@ -31,9 +31,9 @@ const AddService = () => {
     // Wait for auth to initialize before checking access
     if (initialized && !loading) {
       if (!user) {
-        console.log('❌ No user found, redirecting to login');
-        toast.error("სერვისის დასამატებლად გაიარეთ ავტორიზაცია");
-        navigate("/login");
+        console.log('❌ No user found, redirecting to registration for mechanics');
+        toast.error("სერვისის დასამატებლად გაიარეთ რეგისტრაცია ხელოსნად");
+        navigate("/register?type=mechanic");
         return;
       }
       

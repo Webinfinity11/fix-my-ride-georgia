@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -164,36 +163,17 @@ const RegisterForm = () => {
         }
       }
       
-      // If user is mechanic, create mechanic profile
-      if (formType === 'mechanic' && data?.user) {
-        console.log('🔧 Creating mechanic profile...');
-        const { error: mechanicError } = await supabase
-          .from('mechanic_profiles')
-          .insert({
-            id: data.user.id,
-            is_mobile: formData.isMobile
-          });
-        
-        if (mechanicError) {
-          console.error('❌ Mechanic profile creation error:', mechanicError);
-          toast.error(`ხელოსნის პროფილის შექმნა ვერ მოხერხდა: ${mechanicError.message}`);
-        } else {
-          console.log('✅ Mechanic profile created successfully');
-        }
-      }
-      
+      // Show success message
       toast.success(`${formType === 'mechanic' ? 'ხელოსანი' : 'მომხმარებელი'} წარმატებით დარეგისტრირდა!`);
       
-      // Wait a moment for auth context to update, then redirect
-      setTimeout(() => {
-        if (formType === 'mechanic') {
-          console.log('🔄 Redirecting mechanic to add-service page');
-          navigate('/add-service');
-        } else {
-          console.log('🔄 Redirecting customer to home page');
-          navigate('/');
-        }
-      }, 1000);
+      // Redirect based on user type - no timeout needed, user should stay logged in
+      if (formType === 'mechanic') {
+        console.log('🔄 Redirecting mechanic to add-service page');
+        navigate('/add-service');
+      } else {
+        console.log('🔄 Redirecting customer to home page');
+        navigate('/');
+      }
       
     } catch (error: any) {
       console.error('❌ Unexpected registration error:', error);
