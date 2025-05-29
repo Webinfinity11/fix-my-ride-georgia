@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import ServiceForm from "@/components/forms/ServiceForm";
 import ServiceStats from "@/components/dashboard/ServiceStats";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type ServiceType = {
   id: number;
@@ -57,6 +58,7 @@ const weekDaysMap: Record<string, string> = {
 
 const MechanicServices = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [services, setServices] = useState<ServiceType[]>([]);
   const [categories, setCategories] = useState<ServiceCategoryType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,6 +74,14 @@ const MechanicServices = () => {
     fetchCategories();
     fetchStats();
   }, [user]);
+
+  // Show form by default if no services exist (for new mechanics)
+  useEffect(() => {
+    if (!loading && services.length === 0 && !showForm) {
+      console.log('🎯 No services found, showing add service form by default');
+      setShowForm(true);
+    }
+  }, [loading, services.length, showForm]);
 
   const fetchStats = async () => {
     if (!user) return;
@@ -246,13 +256,15 @@ const MechanicServices = () => {
         </Button>
       </div>
 
-      {/* Service Statistics */}
-      <ServiceStats
-        totalServices={services.length}
-        activeServices={activeServicesCount}
-        totalBookings={totalBookings}
-        avgRating={avgRating}
-      />
+      {/* Service Statistics - Hidden on mobile */}
+      {!isMobile && (
+        <ServiceStats
+          totalServices={services.length}
+          activeServices={activeServicesCount}
+          totalBookings={totalBookings}
+          avgRating={avgRating}
+        />
+      )}
 
       {showForm ? (
         <ServiceForm
