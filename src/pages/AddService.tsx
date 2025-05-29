@@ -38,9 +38,9 @@ const AddService = () => {
       }
       
       if (user.role !== "mechanic") {
-        console.log('❌ User is not a mechanic, redirecting to dashboard');
+        console.log('❌ User is not a mechanic, redirecting to dashboard services');
         toast.error("მხოლოდ მექანიკოსებს შეუძლიათ სერვისის დამატება");
-        navigate("/dashboard");
+        navigate("/dashboard/services");
         return;
       }
       

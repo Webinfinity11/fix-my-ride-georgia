@@ -43,7 +43,16 @@ const DashboardSidebar = () => {
         )}
 
         {user?.role === "mechanic" && (
-          <NavLink to="/dashboard/services" className={navLinkClasses}>
+          <NavLink 
+            to="/dashboard/services" 
+            className={({ isActive }) => {
+              // Also highlight this link when on add-service page
+              const isServicesPage = window.location.pathname === '/add-service' || isActive;
+              return `flex items-center gap-2 px-4 py-2 rounded-md ${
+                isServicesPage ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
+              }`;
+            }}
+          >
             <Wrench size={18} />
             <span>სერვისები</span>
           </NavLink>

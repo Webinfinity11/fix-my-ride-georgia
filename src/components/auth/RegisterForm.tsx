@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -166,10 +167,10 @@ const RegisterForm = () => {
       // Show success message
       toast.success(`${formType === 'mechanic' ? 'ხელოსანი' : 'მომხმარებელი'} წარმატებით დარეგისტრირდა!`);
       
-      // Redirect based on user type - no timeout needed, user should stay logged in
+      // Redirect based on user type - user should stay logged in
       if (formType === 'mechanic') {
-        console.log('🔄 Redirecting mechanic to add-service page');
-        navigate('/add-service');
+        console.log('🔄 Redirecting mechanic to dashboard services page');
+        navigate('/dashboard/services');
       } else {
         console.log('🔄 Redirecting customer to home page');
         navigate('/');
