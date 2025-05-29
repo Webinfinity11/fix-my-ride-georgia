@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -12,9 +13,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 const RegisterForm = () => {
   const [searchParams] = useSearchParams();
-  const defaultType = searchParams.get('type') || 'customer';
+  const defaultType = searchParams.get('type') || 'mechanic'; // Default to mechanic
   const [formType, setFormType] = useState<UserRole>(
-    defaultType === 'mechanic' ? 'mechanic' : 'customer'
+    defaultType === 'customer' ? 'customer' : 'mechanic'
   );
   
   const { signUp, loading } = useAuth();
@@ -117,6 +118,8 @@ const RegisterForm = () => {
     }
     
     try {
+      console.log('🚀 Starting registration process for:', formType);
+      
       // Register the user
       const { data, error } = await signUp(
         formData.email,
@@ -133,12 +136,16 @@ const RegisterForm = () => {
       );
       
       if (error) {
+        console.error('❌ Registration error:', error);
         toast.error(`რეგისტრაცია ვერ მოხერხდა: ${error.message}`);
         return;
       }
       
+      console.log('✅ User registration successful:', data?.user?.id);
+      
       // If user is created and we have an avatar, upload it
       if (data?.user && formData.avatar) {
+        console.log('📸 Uploading avatar...');
         const avatarUrl = await uploadAvatar(data.user.id);
         
         if (avatarUrl) {
@@ -149,13 +156,17 @@ const RegisterForm = () => {
             .eq('id', data.user.id);
           
           if (updateError) {
+            console.error('❌ Avatar update error:', updateError);
             toast.error(`პროფილის განახლება ვერ მოხერხდა: ${updateError.message}`);
+          } else {
+            console.log('✅ Avatar uploaded successfully');
           }
         }
       }
       
       // If user is mechanic, create mechanic profile
       if (formType === 'mechanic' && data?.user) {
+        console.log('🔧 Creating mechanic profile...');
         const { error: mechanicError } = await supabase
           .from('mechanic_profiles')
           .insert({
@@ -164,19 +175,28 @@ const RegisterForm = () => {
           });
         
         if (mechanicError) {
+          console.error('❌ Mechanic profile creation error:', mechanicError);
           toast.error(`ხელოსნის პროფილის შექმნა ვერ მოხერხდა: ${mechanicError.message}`);
+        } else {
+          console.log('✅ Mechanic profile created successfully');
         }
       }
       
       toast.success(`${formType === 'mechanic' ? 'ხელოსანი' : 'მომხმარებელი'} წარმატებით დარეგისტრირდა!`);
       
-      // Redirect based on user type
-      if (formType === 'mechanic') {
-        navigate('/add-service');
-      } else {
-        navigate('/');
-      }
+      // Wait a moment for auth context to update, then redirect
+      setTimeout(() => {
+        if (formType === 'mechanic') {
+          console.log('🔄 Redirecting mechanic to add-service page');
+          navigate('/add-service');
+        } else {
+          console.log('🔄 Redirecting customer to home page');
+          navigate('/');
+        }
+      }, 1000);
+      
     } catch (error: any) {
+      console.error('❌ Unexpected registration error:', error);
       toast.error(`რეგისტრაცია ვერ მოხერხდა: ${error.message}`);
     }
   };
@@ -190,11 +210,11 @@ const RegisterForm = () => {
       
       <Tabs defaultValue={formType} onValueChange={(v) => setFormType(v as UserRole)} className="mb-6">
         <TabsList className="grid grid-cols-2 w-full">
-          <TabsTrigger value="customer" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
-            <User size={16} /> მომხმარებელი
-          </TabsTrigger>
           <TabsTrigger value="mechanic" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
             <Wrench size={16} /> ხელოსანი
+          </TabsTrigger>
+          <TabsTrigger value="customer" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+            <User size={16} /> მომხმარებელი
           </TabsTrigger>
         </TabsList>
       </Tabs>

@@ -15,22 +15,38 @@ type ServiceCategoryType = {
 };
 
 const AddService = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, initialized } = useAuth();
   const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategoryType[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
-      toast.error("სერვისის დასამატებლად გაიარეთ ავტორიზაცია");
-      navigate("/login");
-    }
+    console.log('🏁 AddService page loaded, auth state:', { 
+      user: user?.id, 
+      role: user?.role, 
+      loading, 
+      initialized 
+    });
     
-    if (!loading && user && user.role !== "mechanic") {
-      toast.error("მხოლოდ მექანიკოსებს შეუძლიათ სერვისის დამატება");
-      navigate("/dashboard");
+    // Wait for auth to initialize before checking access
+    if (initialized && !loading) {
+      if (!user) {
+        console.log('❌ No user found, redirecting to login');
+        toast.error("სერვისის დასამატებლად გაიარეთ ავტორიზაცია");
+        navigate("/login");
+        return;
+      }
+      
+      if (user.role !== "mechanic") {
+        console.log('❌ User is not a mechanic, redirecting to dashboard');
+        toast.error("მხოლოდ მექანიკოსებს შეუძლიათ სერვისის დამატება");
+        navigate("/dashboard");
+        return;
+      }
+      
+      console.log('✅ Mechanic access granted');
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, initialized, navigate]);
 
   useEffect(() => {
     fetchCategories();
@@ -38,14 +54,17 @@ const AddService = () => {
 
   const fetchCategories = async () => {
     try {
+      console.log('📋 Fetching service categories');
       const { data, error } = await supabase
         .from("service_categories")
         .select("id, name, description")
         .order("name", { ascending: true });
 
       if (error) throw error;
+      console.log('✅ Categories loaded:', data?.length);
       setCategories(data || []);
     } catch (error: any) {
+      console.error('❌ Categories fetch error:', error);
       toast.error(`კატეგორიების ჩატვირთვა ვერ მოხერხდა: ${error.message}`);
     } finally {
       setLoadingCategories(false);
@@ -53,15 +72,17 @@ const AddService = () => {
   };
 
   const handleFormSubmit = () => {
+    console.log('✅ Service added successfully');
     toast.success("სერვისი წარმატებით დაემატა!");
     navigate("/dashboard/services");
   };
 
   const handleCancel = () => {
+    console.log('❌ Service addition cancelled');
     navigate("/dashboard/services");
   };
 
-  if (loading || loadingCategories) {
+  if (loading || loadingCategories || !initialized) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
