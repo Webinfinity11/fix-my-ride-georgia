@@ -498,18 +498,10 @@ const Index = () => {
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       
                       <div className="relative z-10">
-                        {/* Icon Container */}
+                        {/* Icon Container - Fixed */}
                         <div className="flex items-center justify-center mb-4">
                           <div className="p-3 lg:p-4 bg-gradient-to-r from-primary to-blue-600 rounded-full group-hover:scale-110 transition-transform duration-300">
-                            {category.icon ? (
-                              <img 
-                                src={category.icon} 
-                                alt={category.name}
-                                className="h-6 w-6 lg:h-8 lg:w-8 text-white filter brightness-0 invert"
-                              />
-                            ) : (
-                              <Wrench className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
-                            )}
+                            <Wrench className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
                           </div>
                         </div>
                         
