@@ -1,4 +1,3 @@
-
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
@@ -458,26 +457,28 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Services Categories */}
+        {/* Our Services Section - Redesigned */}
         <section className="py-12 lg:py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 lg:mb-16">
               <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
                 <Zap className="h-4 w-4 mr-2" />
-                სერვისის კატეგორიები
+                ჩვენი სერვისები
               </Badge>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">ჩვენი სერვისები</h2>
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                სრული სპექტრის ავტო-სერვისი
+              </h2>
               <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
-                აღმოაჩინეთ ჩვენი მრავალფეროვანი სერვისები ავტომობილებისთვის
+                პროფესიონალური მომსახურება ყველა ტიპის ავტომობილისთვის
               </p>
             </div>
             
             {loading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
                 {[...Array(8)].map((_, i) => (
-                  <Card key={i} className="animate-pulse border-0 shadow-lg">
-                    <CardContent className="p-4 lg:p-6">
-                      <div className="h-10 w-10 lg:h-12 lg:w-12 bg-gray-200 rounded-full mb-3 lg:mb-4"></div>
+                  <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
+                    <CardContent className="p-4 lg:p-6 text-center">
+                      <div className="h-12 w-12 lg:h-16 lg:w-16 bg-gray-200 rounded-full mb-4 mx-auto"></div>
                       <div className="h-5 lg:h-6 bg-gray-200 rounded mb-2"></div>
                       <div className="h-3 lg:h-4 bg-gray-200 rounded"></div>
                     </CardContent>
@@ -485,7 +486,53 @@ const Index = () => {
                 ))}
               </div>
             ) : (
-              <ServiceCategories categories={categories} />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                {categories.map((category) => (
+                  <Card 
+                    key={category.id} 
+                    className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white cursor-pointer overflow-hidden"
+                    onClick={() => navigate(`/services?category=${category.id}`)}
+                  >
+                    <CardContent className="p-4 lg:p-6 text-center relative">
+                      {/* Background Gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      
+                      <div className="relative z-10">
+                        {/* Icon Container */}
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="p-3 lg:p-4 bg-gradient-to-r from-primary to-blue-600 rounded-full group-hover:scale-110 transition-transform duration-300">
+                            {category.icon ? (
+                              <img 
+                                src={category.icon} 
+                                alt={category.name}
+                                className="h-6 w-6 lg:h-8 lg:w-8 text-white filter brightness-0 invert"
+                              />
+                            ) : (
+                              <Wrench className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Category Info */}
+                        <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                          {category.name}
+                        </h3>
+                        
+                        {category.description && (
+                          <p className="text-xs lg:text-sm text-gray-600 line-clamp-2">
+                            {category.description}
+                          </p>
+                        )}
+                        
+                        {/* Hover Arrow */}
+                        <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <ArrowRight className="h-4 w-4 text-primary mx-auto" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             )}
             
             <div className="text-center mt-8 lg:mt-12">
@@ -499,24 +546,26 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Featured Mechanics with 4+ Stars */}
+        {/* Recommended Mechanics */}
         <section className="py-12 lg:py-20 bg-gradient-to-br from-gray-50 to-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12 lg:mb-16">
               <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                ტოპ ხელოსნები
+                რეკომენდირებული ხელოსნები
               </Badge>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">4+ ვარსკვლავიანი ხელოსნები</h2>
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                ჩვენი საუკეთესო ხელოსნები
+              </h2>
               <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
-                გაეცანით ჩვენს საუკეთესო ხელოსნებს, რომლებმაც მოიპოვეს 4 ვარსკვლავზე მაღალი შეფასება
+                გაეცანით ხელოსნებს, რომლებმაც მოიპოვეს კლიენტების უმაღლესი შეფასება
               </p>
             </div>
             
             {mechanicsLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
                 {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="animate-pulse border-0 shadow-lg">
+                  <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
                     <CardContent className="p-4 lg:p-6">
                       <div className="flex items-start gap-4 mb-4">
                         <div className="h-12 w-12 lg:h-16 lg:w-16 bg-gray-200 rounded-full"></div>
@@ -525,6 +574,10 @@ const Index = () => {
                           <div className="h-3 lg:h-4 bg-gray-200 rounded mb-2"></div>
                           <div className="h-3 lg:h-4 bg-gray-200 rounded"></div>
                         </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded"></div>
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                       </div>
                     </CardContent>
                   </Card>
@@ -541,8 +594,17 @@ const Index = () => {
               </div>
             ) : (
               <div className="text-center py-8 lg:py-12">
-                <p className="text-lg lg:text-xl text-gray-600 mb-4">ჯერ არ არის 4+ ვარსკვლავიანი ხელოსნები</p>
-                <p className="text-base lg:text-lg text-gray-500">ხელოსნები შეაფასდებიან მომხმარებლების მიერ რეიტინგის მიხედვით</p>
+                <div className="max-w-md mx-auto">
+                  <div className="p-4 bg-gray-100 rounded-full w-fit mx-auto mb-4">
+                    <Star className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg lg:text-xl font-semibold text-gray-700 mb-2">
+                    მალე დაემატება რეკომენდირებული ხელოსნები
+                  </h3>
+                  <p className="text-base lg:text-lg text-gray-500">
+                    ხელოსნები შეაფასდებიან მომხმარებლების მიერ რეიტინგის მიხედვით
+                  </p>
+                </div>
               </div>
             )}
             
