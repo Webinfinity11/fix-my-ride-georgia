@@ -133,7 +133,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
                   variant="ghost"
                   size="icon"
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white"
-                  onClick={nextVideo}
+                  onClick={nextImage}
                 >
                   <ChevronRight className="w-6 h-6" />
                 </Button>
