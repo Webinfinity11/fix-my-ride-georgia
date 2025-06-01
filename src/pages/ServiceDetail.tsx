@@ -20,11 +20,15 @@ import {
   Phone,
   MessageCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  Image,
+  Video
 } from "lucide-react";
 import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
 import ServiceReviews from "@/components/reviews/ServiceReviews";
+import ServiceGallery from "@/components/services/ServiceGallery";
+import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
 import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 
@@ -47,6 +51,7 @@ interface ServiceType {
   rating: number | null;
   review_count: number | null;
   photos: string[] | null;
+  videos: string[] | null;
   category: {
     id: number;
     name: string;
@@ -113,6 +118,7 @@ const ServiceDetail = () => {
           rating,
           review_count,
           photos,
+          videos,
           category_id,
           mechanic_id,
           service_categories(id, name),
@@ -200,6 +206,7 @@ const ServiceDetail = () => {
         rating: serviceData.rating,
         review_count: serviceData.review_count,
         photos: serviceData.photos || [],
+        videos: serviceData.videos || [],
         category: category ? {
           id: category.id,
           name: category.name
@@ -534,21 +541,38 @@ const ServiceDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Service Images */}
+            {/* Service Photos */}
             {service.photos && service.photos.length > 0 && (
               <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    ფოტოები
+                  </CardTitle>
+                </CardHeader>
                 <CardContent className="p-4 lg:p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {service.photos.slice(0, 4).map((photo, index) => (
-                      <img
-                        key={index}
-                        src={photo}
-                        alt={`${service.name} ფოტო ${index + 1}`}
-                        className="w-full h-40 md:h-48 object-cover rounded-lg"
-                        loading={index === 0 ? "eager" : "lazy"}
-                      />
-                    ))}
-                  </div>
+                  <ServiceGallery 
+                    photos={service.photos} 
+                    serviceName={service.name} 
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Service Videos */}
+            {service.videos && service.videos.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Video className="h-5 w-5" />
+                    ვიდეოები
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 lg:p-6">
+                  <ServiceVideoGallery 
+                    videos={service.videos} 
+                    serviceName={service.name} 
+                  />
                 </CardContent>
               </Card>
             )}
