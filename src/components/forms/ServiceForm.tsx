@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, DollarSign, Clock, Calendar, Car, CreditCard, Banknote, MapPin } from "lucide-react";
 import PhotoUpload from "@/components/forms/PhotoUpload";
+import VideoUpload from "@/components/forms/VideoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
 
@@ -38,6 +40,7 @@ type ServiceType = {
   car_brands?: string[];
   on_site_service?: boolean;
   photos?: string[];
+  videos?: string[];
   city?: string;
   district?: string;
   address?: string;
@@ -97,6 +100,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
     car_brands: service?.car_brands || [],
     on_site_service: service?.on_site_service || false,
     photos: service?.photos || [],
+    videos: service?.videos || [],
     city: service?.city || "",
     district: service?.district || "",
     address: service?.address || "",
@@ -141,6 +145,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         car_brands: formData.car_brands,
         on_site_service: formData.on_site_service,
         photos: formData.photos,
+        videos: formData.videos,
         city: formData.city,
         district: formData.district || null,
         address: formData.address || null,
@@ -576,6 +581,14 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
             mechanicId={user?.id || ""}
             maxPhotos={5}
             bucketName="service-photos"
+          />
+
+          <VideoUpload
+            videos={formData.videos}
+            onVideosChange={(videos) => handleInputChange("videos", videos)}
+            mechanicId={user?.id || ""}
+            maxVideos={3}
+            bucketName="service-videos"
           />
 
           <div className="flex gap-3 pt-6 border-t border-primary/10">
