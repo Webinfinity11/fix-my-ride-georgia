@@ -1,8 +1,8 @@
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X, ZoomIn, Image } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
 
 interface ServiceGalleryProps {
   photos: string[];
@@ -25,21 +25,26 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
     setCurrentImageIndex((prev) => (prev - 1 + photos.length) % photos.length);
   };
 
+  const openGallery = () => {
+    setIsGalleryOpen(true);
+  };
+
   return (
     <div className="space-y-4">
-      {/* Main Image */}
-      <div className="relative group">
-        <img
-          src={photos[currentImageIndex]}
-          alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
-          className="w-full h-48 sm:h-64 object-cover rounded-lg cursor-pointer transition-all duration-300 hover:shadow-lg"
-          onClick={() => setIsGalleryOpen(true)}
-          loading="lazy"
-        />
+      {/* Main Image - Square Format */}
+      <div className="relative group cursor-pointer" onClick={openGallery}>
+        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <img
+            src={photos[currentImageIndex]}
+            alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
+            className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
+            loading="lazy"
+          />
+        </div>
         
         {/* Zoom overlay */}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
-          <div className="bg-white bg-opacity-90 rounded-full p-2 group-hover:scale-110 transition-transform duration-200">
+          <div className="bg-white bg-opacity-90 rounded-full p-3 group-hover:scale-110 transition-transform duration-200">
             <ZoomIn className="text-primary w-6 h-6" />
           </div>
         </div>
@@ -80,29 +85,35 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
         )}
       </div>
 
-      {/* Thumbnail strip */}
+      {/* Thumbnail strip - Square thumbnails */}
       {photos.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-2">
           {photos.map((photo, index) => (
-            <img
-              key={index}
-              src={photo}
-              alt={`${serviceName} - ფოტო ${index + 1}`}
-              className={`w-16 h-16 object-cover rounded cursor-pointer flex-shrink-0 border-2 transition-all duration-200 hover:scale-105 ${
-                index === currentImageIndex
-                  ? "border-primary shadow-md"
-                  : "border-transparent hover:border-gray-300"
-              }`}
+            <div 
+              key={index} 
+              className="flex-shrink-0 cursor-pointer"
               onClick={() => setCurrentImageIndex(index)}
-              loading="lazy"
-            />
+            >
+              <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden">
+                <img
+                  src={photo}
+                  alt={`${serviceName} - ფოტო ${index + 1}`}
+                  className={`w-full h-full object-cover border-2 transition-all duration-200 hover:scale-105 ${
+                    index === currentImageIndex
+                      ? "border-primary shadow-md"
+                      : "border-transparent hover:border-gray-300"
+                  }`}
+                  loading="lazy"
+                />
+              </div>
+            </div>
           ))}
         </div>
       )}
 
       {/* Fullscreen Gallery Dialog */}
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
-        <DialogContent className="max-w-4xl w-full h-[80vh] p-0">
+        <DialogContent className="max-w-6xl w-full h-[90vh] p-0">
           <div className="relative h-full bg-black rounded-lg overflow-hidden">
             <Button
               variant="ghost"
@@ -113,11 +124,13 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
               <X className="w-4 h-4" />
             </Button>
 
-            <img
-              src={photos[currentImageIndex]}
-              alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
-              className="w-full h-full object-contain"
-            />
+            <div className="w-full h-full flex items-center justify-center p-4">
+              <img
+                src={photos[currentImageIndex]}
+                alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
 
             {photos.length > 1 && (
               <>
