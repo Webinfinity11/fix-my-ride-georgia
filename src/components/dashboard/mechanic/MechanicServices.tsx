@@ -315,7 +315,7 @@ const MechanicServices = () => {
                       } else {
                         const numValue = parseInt(value, 10);
                         if (!isNaN(numValue)) {
-                          setFilterCategory(numValue);
+                          setFilterCategory(numValue as number);
                         }
                       }
                     }}
