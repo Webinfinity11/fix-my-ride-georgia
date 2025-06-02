@@ -77,6 +77,12 @@ const MechanicServices = () => {
     }
   }, [loading, services.length, showForm]);
 
+  useEffect(() => {
+    fetchServices();
+    fetchCategories();
+    fetchStats();
+  }, [user]);
+
   const fetchStats = async () => {
     if (!user) return;
 
@@ -303,7 +309,7 @@ const MechanicServices = () => {
                 <div className="w-full">
                   <Select 
                     value={filterCategory}
-                    onValueChange={(value: string) => setFilterCategory(value)}
+                    onValueChange={setFilterCategory}
                   >
                     <SelectTrigger className="border-primary/20 focus-visible:ring-primary w-full">
                       <SelectValue placeholder="ყველა კატეგორია" />
