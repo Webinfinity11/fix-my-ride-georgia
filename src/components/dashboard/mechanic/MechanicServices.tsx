@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -308,14 +309,14 @@ const MechanicServices = () => {
                 
                 <div className="w-full">
                   <Select 
-                    value={filterCategory === "all" ? "all" : String(filterCategory)}
+                    value={filterCategory === "all" ? "all" : filterCategory.toString()}
                     onValueChange={(value: string) => {
                       if (value === "all") {
                         setFilterCategory("all");
                       } else {
                         const numValue = parseInt(value, 10);
                         if (!isNaN(numValue)) {
-                          setFilterCategory(numValue as number);
+                          setFilterCategory(numValue);
                         }
                       }
                     }}
