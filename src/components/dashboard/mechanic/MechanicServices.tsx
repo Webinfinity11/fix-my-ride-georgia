@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -69,12 +68,6 @@ const MechanicServices = () => {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [totalBookings, setTotalBookings] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
-
-  useEffect(() => {
-    fetchServices();
-    fetchCategories();
-    fetchStats();
-  }, [user]);
 
   // Show form by default if no services exist (for new mechanics)
   useEffect(() => {
