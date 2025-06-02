@@ -214,7 +214,8 @@ const MechanicServices = () => {
       (service.description && service.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (service.category_name && service.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesCategory = filterCategory === "all" || service.category_id === parseInt(filterCategory);
+    const matchesCategory = filterCategory === "all" || 
+      (service.category_id !== null && service.category_id === parseInt(filterCategory, 10));
     
     return matchesSearch && matchesCategory;
   });
@@ -308,7 +309,7 @@ const MechanicServices = () => {
                 <div className="w-full">
                   <Select 
                     value={filterCategory}
-                    onValueChange={(value) => setFilterCategory(value)}
+                    onValueChange={setFilterCategory}
                   >
                     <SelectTrigger className="border-primary/20 focus-visible:ring-primary w-full">
                       <SelectValue placeholder="ყველა კატეგორია" />
