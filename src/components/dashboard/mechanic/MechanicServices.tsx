@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -65,7 +66,7 @@ const MechanicServices = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState<ServiceType | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<number | "all">("all");
   const [totalBookings, setTotalBookings] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
 
@@ -215,7 +216,7 @@ const MechanicServices = () => {
       (service.category_name && service.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCategory = filterCategory === "all" || 
-      (service.category_id !== null && service.category_id.toString() === filterCategory);
+      (service.category_id !== null && service.category_id === filterCategory);
     
     return matchesSearch && matchesCategory;
   });
@@ -308,8 +309,8 @@ const MechanicServices = () => {
                 
                 <div className="w-full">
                   <Select 
-                    value={filterCategory}
-                    onValueChange={setFilterCategory}
+                    value={filterCategory.toString()}
+                    onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value))}
                   >
                     <SelectTrigger className="border-primary/20 focus-visible:ring-primary w-full">
                       <SelectValue placeholder="ყველა კატეგორია" />
