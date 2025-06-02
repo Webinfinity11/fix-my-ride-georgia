@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -315,7 +316,7 @@ const MechanicServices = () => {
                       } else {
                         const numValue = parseInt(value, 10);
                         if (!isNaN(numValue)) {
-                          setFilterCategory(numValue);
+                          setFilterCategory(numValue as number);
                         }
                       }
                     }}
