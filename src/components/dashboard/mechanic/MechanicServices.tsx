@@ -245,7 +245,7 @@ const MechanicServices = () => {
   }
 
   return (
-    <div className="px-2 sm:px-0">
+    <div className="px-4 sm:px-6 lg:px-0 max-w-full overflow-hidden">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-primary">ჩემი სერვისები</h1>
         <Button 
@@ -293,7 +293,7 @@ const MechanicServices = () => {
               </Button>
             </div>
           ) : (
-            <div>
+            <div className="max-w-full">
               <div className="flex flex-col gap-3 mb-6">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -308,7 +308,7 @@ const MechanicServices = () => {
                 
                 <Select 
                   value={filterCategory.toString()} 
-                  onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value))}
+                  onValueChange={(value) => setFilterCategory(value === "all" ? "all" : Number(value))}
                 >
                   <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
                     <SelectValue placeholder="ყველა კატეგორია" />
@@ -324,7 +324,7 @@ const MechanicServices = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-wrap gap-2 mb-6 overflow-x-visible">
+              <div className="flex flex-wrap gap-2 mb-6">
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -365,31 +365,33 @@ const MechanicServices = () => {
               ) : (
                 <div className="space-y-4">
                   {filteredServices.map((service) => (
-                    <Card key={service.id} className={`border-l-4 ${service.is_active ? 'border-l-green-500' : 'border-l-gray-300'} hover:shadow-md transition-shadow duration-200`}>
+                    <Card key={service.id} className={`border-l-4 ${service.is_active ? 'border-l-green-500' : 'border-l-gray-300'} hover:shadow-md transition-shadow duration-200 max-w-full`}>
                       <CardContent className="p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row justify-between mb-4 gap-4">
+                        <div className="flex flex-col gap-4 mb-4">
                           <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <div className="flex flex-col gap-2">
                               <h3 className="text-base sm:text-lg font-medium break-words">{service.name}</h3>
-                              <Badge
-                                variant={service.is_active ? "secondary" : "outline"}
-                                className={`${service.is_active ? "bg-green-100 text-green-800" : ""} self-start sm:self-auto flex-shrink-0`}
-                              >
-                                {service.is_active ? "აქტიური" : "არააქტიური"}
-                              </Badge>
-                            </div>
-                            {service.category_name && (
-                              <div className="flex items-center text-muted-foreground text-sm mt-1">
-                                <Tag size={14} className="mr-1 text-primary/70 flex-shrink-0" />
-                                <span className="break-words">{service.category_name}</span>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <Badge
+                                  variant={service.is_active ? "secondary" : "outline"}
+                                  className={`${service.is_active ? "bg-green-100 text-green-800" : ""} flex-shrink-0`}
+                                >
+                                  {service.is_active ? "აქტიური" : "არააქტიური"}
+                                </Badge>
+                                {service.category_name && (
+                                  <div className="flex items-center text-muted-foreground text-sm">
+                                    <Tag size={14} className="mr-1 text-primary/70 flex-shrink-0" />
+                                    <span className="break-words">{service.category_name}</span>
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            </div>
                           </div>
-                          <div className="flex flex-row sm:flex-col lg:flex-row gap-2 flex-wrap">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <Button
                               variant={service.is_active ? "outline" : "default"}
                               size="sm"
-                              className={`${service.is_active ? "border-primary/20 hover:bg-primary/5" : "bg-primary hover:bg-primary-light"} flex-1 sm:flex-none`}
+                              className={`${service.is_active ? "border-primary/20 hover:bg-primary/5" : "bg-primary hover:bg-primary-light"} w-full sm:w-auto`}
                               onClick={() => handleToggleActive(service.id, service.is_active)}
                             >
                               {service.is_active ? "გამორთვა" : "ჩართვა"}
@@ -397,20 +399,20 @@ const MechanicServices = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="border-primary/20 hover:bg-primary/5 text-primary flex-1 sm:flex-none"
+                              className="border-primary/20 hover:bg-primary/5 text-primary w-full sm:w-auto"
                               onClick={() => handleEdit(service)}
                             >
-                              <Edit size={16} className="sm:mr-0 lg:mr-2" />
-                              <span className="sm:hidden lg:inline">რედაქტირება</span>
+                              <Edit size={16} className="mr-2" />
+                              რედაქტირება
                             </Button>
                             <Button
                               variant="destructive"
                               size="sm"
-                              className="flex-1 sm:flex-none"
+                              className="w-full sm:w-auto"
                               onClick={() => handleDelete(service.id)}
                             >
-                              <Trash2 size={16} className="sm:mr-0 lg:mr-2" />
-                              <span className="sm:hidden lg:inline">წაშლა</span>
+                              <Trash2 size={16} className="mr-2" />
+                              წაშლა
                             </Button>
                           </div>
                         </div>
@@ -469,7 +471,7 @@ const MechanicServices = () => {
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dashed border-gray-200">
+                        <div className="grid grid-cols-1 gap-4 mt-4 pt-4 border-t border-dashed border-gray-200">
                           <div className="flex flex-col space-y-1">
                             <div className="flex items-center gap-1 text-sm text-muted-foreground">
                               <Clock size={14} className="flex-shrink-0" />
