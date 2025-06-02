@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -216,7 +215,7 @@ const MechanicServices = () => {
       (service.category_name && service.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCategory = filterCategory === "all" || 
-      (service.category_id !== null && service.category_id === filterCategory);
+      (typeof filterCategory === "number" && service.category_id === filterCategory);
     
     return matchesSearch && matchesCategory;
   });
