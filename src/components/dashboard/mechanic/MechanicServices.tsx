@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -309,7 +310,7 @@ const MechanicServices = () => {
                 <div className="w-full">
                   <Select 
                     value={filterCategory}
-                    onValueChange={setFilterCategory}
+                    onValueChange={(value: string) => setFilterCategory(value)}
                   >
                     <SelectTrigger className="border-primary/20 focus-visible:ring-primary w-full">
                       <SelectValue placeholder="ყველა კატეგორია" />
