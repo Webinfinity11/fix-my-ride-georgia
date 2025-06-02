@@ -215,7 +215,7 @@ const MechanicServices = () => {
       (service.category_name && service.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesCategory = filterCategory === "all" || 
-      (service.category_id !== null && service.category_id === parseInt(filterCategory, 10));
+      (service.category_id !== null && service.category_id.toString() === filterCategory);
     
     return matchesSearch && matchesCategory;
   });
