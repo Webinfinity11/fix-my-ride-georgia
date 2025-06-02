@@ -307,7 +307,7 @@ const MechanicServices = () => {
                 
                 <div className="w-full">
                   <Select 
-                    value={filterCategory.toString()} 
+                    value={filterCategory === "all" ? "all" : filterCategory.toString()} 
                     onValueChange={(value) => {
                       if (value === "all") {
                         setFilterCategory("all");
