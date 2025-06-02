@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -309,7 +308,7 @@ const MechanicServices = () => {
                 
                 <div className="w-full">
                   <Select 
-                    value={filterCategory === "all" ? "all" : filterCategory.toString()}
+                    value={filterCategory === "all" ? "all" : String(filterCategory)}
                     onValueChange={(value: string) => {
                       if (value === "all") {
                         setFilterCategory("all");
