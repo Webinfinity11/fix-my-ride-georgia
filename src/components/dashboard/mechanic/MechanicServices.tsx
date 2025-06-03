@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -66,7 +65,7 @@ const MechanicServices = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState<ServiceType | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState<number | "all">("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
   const [totalBookings, setTotalBookings] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
 
@@ -215,7 +214,7 @@ const MechanicServices = () => {
       (service.description && service.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (service.category_name && service.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesCategory = filterCategory === "all" || service.category_id === filterCategory;
+    const matchesCategory = filterCategory === "all" || service.category_id?.toString() === filterCategory;
     
     return matchesSearch && matchesCategory;
   });
@@ -307,17 +306,8 @@ const MechanicServices = () => {
                 </div>
                 
                 <Select 
-                  value={filterCategory.toString()} 
-                  onValueChange={(value) => {
-                    if (value === "all") {
-                      setFilterCategory("all");
-                    } else {
-                      const numValue = parseInt(value, 10);
-                      if (!isNaN(numValue)) {
-                        setFilterCategory(numValue);
-                      }
-                    }
-                  }}
+                  value={filterCategory} 
+                  onValueChange={setFilterCategory}
                 >
                   <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
                     <SelectValue placeholder="ყველა კატეგორია" />
