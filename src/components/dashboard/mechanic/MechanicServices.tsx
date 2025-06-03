@@ -70,6 +70,12 @@ const MechanicServices = () => {
   const [totalBookings, setTotalBookings] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
 
+  useEffect(() => {
+    fetchServices();
+    fetchCategories();
+    fetchStats();
+  }, [user]);
+
   // Show form by default if no services exist (for new mechanics)
   useEffect(() => {
     if (!loading && services.length === 0 && !showForm) {
@@ -77,12 +83,6 @@ const MechanicServices = () => {
       setShowForm(true);
     }
   }, [loading, services.length, showForm]);
-
-  useEffect(() => {
-    fetchServices();
-    fetchCategories();
-    fetchStats();
-  }, [user]);
 
   const fetchStats = async () => {
     if (!user) return;
@@ -215,8 +215,7 @@ const MechanicServices = () => {
       (service.description && service.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (service.category_name && service.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesCategory = filterCategory === "all" || 
-      (typeof filterCategory === "number" && service.category_id === filterCategory);
+    const matchesCategory = filterCategory === "all" || service.category_id === filterCategory;
     
     return matchesSearch && matchesCategory;
   });
@@ -246,7 +245,7 @@ const MechanicServices = () => {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-0 w-full max-w-full overflow-hidden">
+    <div className="px-2 sm:px-0">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-primary">ჩემი სერვისები</h1>
         <Button 
@@ -294,53 +293,42 @@ const MechanicServices = () => {
               </Button>
             </div>
           ) : (
-            <div className="w-full max-w-full">
-              <div className="flex flex-col gap-3 mb-6 w-full">
-                <div className="relative w-full">
+            <div>
+              <div className="flex flex-col gap-3 mb-6">
+                <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="სერვისის ძიება..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="pl-10 border-primary/20 focus-visible:ring-primary w-full"
+                    className="pl-10 border-primary/20 focus-visible:ring-primary"
                     size={isMobile ? "sm" : "default"}
                   />
                 </div>
                 
-                <div className="w-full">
-                  <Select 
-                    value={filterCategory === "all" ? "all" : filterCategory.toString()}
-                    onValueChange={(value: string) => {
-                      if (value === "all") {
-                        setFilterCategory("all");
-                      } else {
-                        const numValue = parseInt(value, 10);
-                        if (!isNaN(numValue)) {
-                          setFilterCategory(numValue as number);
-                        }
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="border-primary/20 focus-visible:ring-primary w-full">
-                      <SelectValue placeholder="ყველა კატეგორია" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">ყველა კატეგორია</SelectItem>
-                      {categories.map(category => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select 
+                  value={filterCategory.toString()} 
+                  onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value))}
+                >
+                  <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
+                    <SelectValue placeholder="ყველა კატეგორია" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">ყველა კატეგორია</SelectItem>
+                    {categories.map(category => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto">
+              <div className="flex flex-wrap gap-2 mb-6 overflow-x-visible">
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0 min-w-fit"
+                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0"
                   onClick={() => setFilterCategory("all")}
                 >
                   ყველა
@@ -351,7 +339,7 @@ const MechanicServices = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0 min-w-fit"
+                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0"
                 >
                   აქტიური
                   <Badge variant="secondary" className="ml-1 bg-green-100 text-green-800">
@@ -361,7 +349,7 @@ const MechanicServices = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0 min-w-fit"
+                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0"
                 >
                   არააქტიური
                   <Badge variant="secondary" className="ml-1">
@@ -375,35 +363,33 @@ const MechanicServices = () => {
                   <p className="text-muted-foreground text-sm sm:text-base">სერვისები ვერ მოიძებნა</p>
                 </div>
               ) : (
-                <div className="space-y-4 w-full">
+                <div className="space-y-4">
                   {filteredServices.map((service) => (
-                    <Card key={service.id} className={`border-l-4 ${service.is_active ? 'border-l-green-500' : 'border-l-gray-300'} hover:shadow-md transition-shadow duration-200 w-full max-w-full`}>
-                      <CardContent className="p-4 sm:p-6 w-full">
-                        <div className="flex flex-col gap-4 mb-4">
+                    <Card key={service.id} className={`border-l-4 ${service.is_active ? 'border-l-green-500' : 'border-l-gray-300'} hover:shadow-md transition-shadow duration-200`}>
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-col sm:flex-row justify-between mb-4 gap-4">
                           <div className="flex-1 min-w-0">
-                            <div className="flex flex-col gap-2">
-                              <h3 className="text-base sm:text-lg font-medium break-words word-wrap">{service.name}</h3>
-                              <div className="flex flex-wrap items-center gap-2">
-                                <Badge
-                                  variant={service.is_active ? "secondary" : "outline"}
-                                  className={`${service.is_active ? "bg-green-100 text-green-800" : ""} flex-shrink-0`}
-                                >
-                                  {service.is_active ? "აქტიური" : "არააქტიური"}
-                                </Badge>
-                                {service.category_name && (
-                                  <div className="flex items-center text-muted-foreground text-sm min-w-0">
-                                    <Tag size={14} className="mr-1 text-primary/70 flex-shrink-0" />
-                                    <span className="break-words word-wrap truncate">{service.category_name}</span>
-                                  </div>
-                                )}
-                              </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                              <h3 className="text-base sm:text-lg font-medium break-words">{service.name}</h3>
+                              <Badge
+                                variant={service.is_active ? "secondary" : "outline"}
+                                className={`${service.is_active ? "bg-green-100 text-green-800" : ""} self-start sm:self-auto flex-shrink-0`}
+                              >
+                                {service.is_active ? "აქტიური" : "არააქტიური"}
+                              </Badge>
                             </div>
+                            {service.category_name && (
+                              <div className="flex items-center text-muted-foreground text-sm mt-1">
+                                <Tag size={14} className="mr-1 text-primary/70 flex-shrink-0" />
+                                <span className="break-words">{service.category_name}</span>
+                              </div>
+                            )}
                           </div>
-                          <div className="flex flex-col gap-2 w-full">
+                          <div className="flex flex-row sm:flex-col lg:flex-row gap-2 flex-wrap">
                             <Button
                               variant={service.is_active ? "outline" : "default"}
                               size="sm"
-                              className={`${service.is_active ? "border-primary/20 hover:bg-primary/5" : "bg-primary hover:bg-primary-light"} w-full`}
+                              className={`${service.is_active ? "border-primary/20 hover:bg-primary/5" : "bg-primary hover:bg-primary-light"} flex-1 sm:flex-none`}
                               onClick={() => handleToggleActive(service.id, service.is_active)}
                             >
                               {service.is_active ? "გამორთვა" : "ჩართვა"}
@@ -411,26 +397,26 @@ const MechanicServices = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="border-primary/20 hover:bg-primary/5 text-primary w-full"
+                              className="border-primary/20 hover:bg-primary/5 text-primary flex-1 sm:flex-none"
                               onClick={() => handleEdit(service)}
                             >
-                              <Edit size={16} className="mr-2" />
-                              რედაქტირება
+                              <Edit size={16} className="sm:mr-0 lg:mr-2" />
+                              <span className="sm:hidden lg:inline">რედაქტირება</span>
                             </Button>
                             <Button
                               variant="destructive"
                               size="sm"
-                              className="w-full"
+                              className="flex-1 sm:flex-none"
                               onClick={() => handleDelete(service.id)}
                             >
-                              <Trash2 size={16} className="mr-2" />
-                              წაშლა
+                              <Trash2 size={16} className="sm:mr-0 lg:mr-2" />
+                              <span className="sm:hidden lg:inline">წაშლა</span>
                             </Button>
                           </div>
                         </div>
                         
                         {service.description && (
-                          <p className="mb-4 text-sm text-muted-foreground break-words word-wrap">
+                          <p className="mb-4 text-sm text-muted-foreground break-words">
                             {service.description}
                           </p>
                         )}
@@ -441,14 +427,14 @@ const MechanicServices = () => {
                               <MapPin size={14} className="flex-shrink-0" />
                               <span>მისამართი:</span>
                             </div>
-                            <span className="text-sm break-words word-wrap">{service.address}</span>
+                            <span className="text-sm break-words">{service.address}</span>
                           </div>
                         )}
                         
                         <div className="grid grid-cols-1 gap-4 mt-4">
                           <div className="flex flex-col space-y-1">
                             <span className="text-xs text-muted-foreground">ფასი:</span>
-                            <span className="font-medium text-sm break-words word-wrap">
+                            <span className="font-medium text-sm break-words">
                               {service.price_from
                                 ? service.price_to
                                   ? `${service.price_from} - ${service.price_to} GEL`
@@ -483,13 +469,13 @@ const MechanicServices = () => {
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 gap-4 mt-4 pt-4 border-t border-dashed border-gray-200">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dashed border-gray-200">
                           <div className="flex flex-col space-y-1">
                             <div className="flex items-center gap-1 text-sm text-muted-foreground">
                               <Clock size={14} className="flex-shrink-0" />
                               <span>სამუშაო დღეები:</span>
                             </div>
-                            <span className="text-sm break-words word-wrap">{formatWorkingDays(service.working_days)}</span>
+                            <span className="text-sm break-words">{formatWorkingDays(service.working_days)}</span>
                           </div>
                           
                           <div className="flex flex-col space-y-1">
