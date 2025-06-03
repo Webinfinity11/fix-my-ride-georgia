@@ -308,7 +308,7 @@ const MechanicServices = () => {
                 
                 <Select 
                   value={filterCategory.toString()} 
-                  onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value))}
+                  onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value) as number)}
                 >
                   <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
                     <SelectValue placeholder="ყველა კატეგორია" />
