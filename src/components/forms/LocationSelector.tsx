@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import {
@@ -50,7 +51,9 @@ const tbilisiDistricts = [
   "ლილო",
   "ორთაჭალა",
   "დიდუბე",
-  "ფონიჭალა"
+  "ფონიჭალა",
+  "ვაზისუბანი",
+  "ვარკეთილი"
 ];
 
 const LocationSelector = ({ 
