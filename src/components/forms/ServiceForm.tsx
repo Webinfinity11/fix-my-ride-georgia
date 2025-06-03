@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -144,7 +145,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         car_brands: formData.car_brands,
         on_site_service: formData.on_site_service,
         photos: formData.photos,
-        videos: formData.videos || [], // Ensure videos is always an array
+        videos: formData.videos,
         city: formData.city,
         district: formData.district || null,
         address: formData.address || null,

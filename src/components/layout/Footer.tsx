@@ -36,7 +36,7 @@ const Footer = () => {
                 <div className="bg-white/10 p-2 rounded-lg mr-2">
                   <Wrench className="h-6 w-6 text-secondary" />
                 </div>
-                <span className="text-xl font-bold">FixUp</span>
+                <span className="text-xl font-bold">ავტოხელოსანი</span>
               </Link>
               <p className="text-blue-100 mb-6 leading-relaxed">
                 პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს. 
@@ -146,13 +146,13 @@ const Footer = () => {
                   <div className="bg-white/10 p-2 rounded-lg mr-3">
                     <Phone className="h-5 w-5 text-secondary shrink-0" />
                   </div>
-                  <span className="text-blue-100">+995 598 14 95 96</span>
+                  <span className="text-blue-100">+995 555 12 34 56</span>
                 </li>
                 <li className="flex items-center">
                   <div className="bg-white/10 p-2 rounded-lg mr-3">
                     <Mail className="h-5 w-5 text-secondary shrink-0" />
                   </div>
-                  <span className="text-blue-100">info@fixup.ge</span>
+                  <span className="text-blue-100">info@avtokhelosani.ge</span>
                 </li>
               </ul>
             </div>
@@ -161,7 +161,7 @@ const Footer = () => {
         
         <div className="border-t border-white/20 pt-8 pb-10 text-center text-blue-200">
           <p className="flex items-center justify-center gap-1 text-sm">
-            &copy; {new Date().getFullYear()} FixUp. შექმნილია 
+            &copy; {new Date().getFullYear()} ავტოხელოსანი. შექმნილია 
             <Heart className="h-4 w-4 text-secondary mx-1" fill="currentColor" /> 
             -ით. ყველა უფლება დაცულია.
           </p>

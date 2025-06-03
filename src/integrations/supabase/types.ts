@@ -396,7 +396,6 @@ export type Database = {
           rating: number | null
           review_count: number | null
           updated_at: string
-          videos: string[] | null
           working_days: string[] | null
           working_hours_end: string | null
           working_hours_start: string | null
@@ -426,7 +425,6 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           updated_at?: string
-          videos?: string[] | null
           working_days?: string[] | null
           working_hours_end?: string | null
           working_hours_start?: string | null
@@ -456,7 +454,6 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           updated_at?: string
-          videos?: string[] | null
           working_days?: string[] | null
           working_hours_end?: string | null
           working_hours_start?: string | null

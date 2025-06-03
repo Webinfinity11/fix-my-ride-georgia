@@ -131,7 +131,7 @@ const VideoUpload = ({
       <div className="flex items-center justify-between">
         <Label className="text-base flex items-center gap-1">
           <Video size={16} />
-          ვიდეოები (არასავალდებულო)
+          ვიდეოები
         </Label>
         <span className="text-sm text-muted-foreground">
           {videos.length}/{maxVideos}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -245,13 +244,12 @@ const MechanicServices = () => {
   }
 
   return (
-    <div className="px-2 sm:px-0">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-primary">ჩემი სერვისები</h1>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-primary">ჩემი სერვისები</h1>
         <Button 
           onClick={() => { setEditingService(null); setShowForm(true); }} 
-          className="bg-primary hover:bg-primary-light transition-colors w-full sm:w-auto"
-          size={isMobile ? "sm" : "default"}
+          className="bg-primary hover:bg-primary-light transition-colors"
         >
           <Plus size={16} className="mr-2" />
           დამატება
@@ -278,31 +276,29 @@ const MechanicServices = () => {
       ) : (
         <>
           {services.length === 0 ? (
-            <div className="bg-muted/50 p-4 sm:p-8 rounded-lg text-center border border-primary/10 shadow-sm">
-              <Wrench size={isMobile ? 32 : 48} className="mx-auto text-primary/60 mb-4" />
-              <h3 className="text-base sm:text-lg font-medium mb-2">სერვისები არ არის</h3>
-              <p className="text-muted-foreground mb-4 text-sm sm:text-base">
+            <div className="bg-muted/50 p-8 rounded-lg text-center border border-primary/10 shadow-sm">
+              <Wrench size={48} className="mx-auto text-primary/60 mb-4" />
+              <h3 className="text-lg font-medium mb-2">სერვისები არ არის</h3>
+              <p className="text-muted-foreground mb-4">
                 თქვენ ჯერ არ გაქვთ დამატებული სერვისები
               </p>
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-primary hover:bg-primary-light transition-colors w-full sm:w-auto"
-                size={isMobile ? "sm" : "default"}
+                className="bg-primary hover:bg-primary-light transition-colors"
               >
                 დაამატეთ პირველი სერვისი
               </Button>
             </div>
           ) : (
             <div>
-              <div className="flex flex-col gap-3 mb-6">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="სერვისის ძიება..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                     className="pl-10 border-primary/20 focus-visible:ring-primary"
-                    size={isMobile ? "sm" : "default"}
                   />
                 </div>
                 
@@ -310,7 +306,7 @@ const MechanicServices = () => {
                   value={filterCategory.toString()} 
                   onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value))}
                 >
-                  <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
+                  <SelectTrigger className="w-full sm:w-[180px] border-primary/20 focus-visible:ring-primary">
                     <SelectValue placeholder="ყველა კატეგორია" />
                   </SelectTrigger>
                   <SelectContent>
@@ -324,11 +320,11 @@ const MechanicServices = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-wrap gap-2 mb-6 overflow-x-visible">
+              <div className="flex gap-2 mb-6">
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0"
+                  className="relative border-primary/20 hover:bg-primary/5"
                   onClick={() => setFilterCategory("all")}
                 >
                   ყველა
@@ -339,7 +335,7 @@ const MechanicServices = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0"
+                  className="relative border-primary/20 hover:bg-primary/5"
                 >
                   აქტიური
                   <Badge variant="secondary" className="ml-1 bg-green-100 text-green-800">
@@ -349,7 +345,7 @@ const MechanicServices = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="relative border-primary/20 hover:bg-primary/5 flex-shrink-0"
+                  className="relative border-primary/20 hover:bg-primary/5"
                 >
                   არააქტიური
                   <Badge variant="secondary" className="ml-1">
@@ -359,64 +355,61 @@ const MechanicServices = () => {
               </div>
 
               {filteredServices.length === 0 ? (
-                <div className="text-center p-4 sm:p-8 bg-muted/50 rounded-lg border border-primary/10">
-                  <p className="text-muted-foreground text-sm sm:text-base">სერვისები ვერ მოიძებნა</p>
+                <div className="text-center p-8 bg-muted/50 rounded-lg border border-primary/10">
+                  <p className="text-muted-foreground">სერვისები ვერ მოიძებნა</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {filteredServices.map((service) => (
                     <Card key={service.id} className={`border-l-4 ${service.is_active ? 'border-l-green-500' : 'border-l-gray-300'} hover:shadow-md transition-shadow duration-200`}>
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row justify-between mb-4 gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                              <h3 className="text-base sm:text-lg font-medium break-words">{service.name}</h3>
+                      <CardContent className="p-6">
+                        <div className="flex justify-between mb-4">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-lg font-medium">{service.name}</h3>
                               <Badge
                                 variant={service.is_active ? "secondary" : "outline"}
-                                className={`${service.is_active ? "bg-green-100 text-green-800" : ""} self-start sm:self-auto flex-shrink-0`}
+                                className={service.is_active ? "bg-green-100 text-green-800" : ""}
                               >
                                 {service.is_active ? "აქტიური" : "არააქტიური"}
                               </Badge>
                             </div>
                             {service.category_name && (
                               <div className="flex items-center text-muted-foreground text-sm mt-1">
-                                <Tag size={14} className="mr-1 text-primary/70 flex-shrink-0" />
-                                <span className="break-words">{service.category_name}</span>
+                                <Tag size={14} className="mr-1 text-primary/70" />
+                                {service.category_name}
                               </div>
                             )}
                           </div>
-                          <div className="flex flex-row sm:flex-col lg:flex-row gap-2 flex-wrap">
+                          <div className="flex space-x-2">
                             <Button
                               variant={service.is_active ? "outline" : "default"}
                               size="sm"
-                              className={`${service.is_active ? "border-primary/20 hover:bg-primary/5" : "bg-primary hover:bg-primary-light"} flex-1 sm:flex-none`}
+                              className={service.is_active ? "border-primary/20 hover:bg-primary/5" : "bg-primary hover:bg-primary-light"}
                               onClick={() => handleToggleActive(service.id, service.is_active)}
                             >
                               {service.is_active ? "გამორთვა" : "ჩართვა"}
                             </Button>
                             <Button
                               variant="outline"
-                              size="sm"
-                              className="border-primary/20 hover:bg-primary/5 text-primary flex-1 sm:flex-none"
+                              size="icon"
+                              className="border-primary/20 hover:bg-primary/5 text-primary"
                               onClick={() => handleEdit(service)}
                             >
-                              <Edit size={16} className="sm:mr-0 lg:mr-2" />
-                              <span className="sm:hidden lg:inline">რედაქტირება</span>
+                              <Edit size={16} />
                             </Button>
                             <Button
                               variant="destructive"
-                              size="sm"
-                              className="flex-1 sm:flex-none"
+                              size="icon"
                               onClick={() => handleDelete(service.id)}
                             >
-                              <Trash2 size={16} className="sm:mr-0 lg:mr-2" />
-                              <span className="sm:hidden lg:inline">წაშლა</span>
+                              <Trash2 size={16} />
                             </Button>
                           </div>
                         </div>
                         
                         {service.description && (
-                          <p className="mb-4 text-sm text-muted-foreground break-words">
+                          <p className="mb-4 text-sm text-muted-foreground">
                             {service.description}
                           </p>
                         )}
@@ -424,17 +417,17 @@ const MechanicServices = () => {
                         {service.address && (
                           <div className="mb-4 p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
-                              <MapPin size={14} className="flex-shrink-0" />
+                              <MapPin size={14} />
                               <span>მისამართი:</span>
                             </div>
-                            <span className="text-sm break-words">{service.address}</span>
+                            <span className="text-sm">{service.address}</span>
                           </div>
                         )}
                         
-                        <div className="grid grid-cols-1 gap-4 mt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                           <div className="flex flex-col space-y-1">
                             <span className="text-xs text-muted-foreground">ფასი:</span>
-                            <span className="font-medium text-sm break-words">
+                            <span className="font-medium">
                               {service.price_from
                                 ? service.price_to
                                   ? `${service.price_from} - ${service.price_to} GEL`
@@ -446,22 +439,22 @@ const MechanicServices = () => {
                           {service.estimated_hours !== null && (
                             <div className="flex flex-col space-y-1">
                               <span className="text-xs text-muted-foreground">სავარაუდო დრო:</span>
-                              <span className="font-medium text-sm">{service.estimated_hours} საათი</span>
+                              <span className="font-medium">{service.estimated_hours} საათი</span>
                             </div>
                           )}
                           
                           <div className="flex flex-col space-y-1">
                             <span className="text-xs text-muted-foreground">გადახდის მეთოდები:</span>
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-2">
                               {service.accepts_cash_payment !== false && (
                                 <div className="flex items-center gap-1 text-sm">
-                                  <Banknote size={14} className="text-green-600 flex-shrink-0" />
+                                  <Banknote size={14} className="text-green-600" />
                                   <span>ნაღდი</span>
                                 </div>
                               )}
                               {service.accepts_card_payment && (
                                 <div className="flex items-center gap-1 text-sm">
-                                  <CreditCard size={14} className="text-blue-600 flex-shrink-0" />
+                                  <CreditCard size={14} className="text-blue-600" />
                                   <span>ბარათი</span>
                                 </div>
                               )}
@@ -469,33 +462,33 @@ const MechanicServices = () => {
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dashed border-gray-200">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-dashed border-gray-200">
                           <div className="flex flex-col space-y-1">
                             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Clock size={14} className="flex-shrink-0" />
+                              <Clock size={14} />
                               <span>სამუშაო დღეები:</span>
                             </div>
-                            <span className="text-sm break-words">{formatWorkingDays(service.working_days)}</span>
+                            <span>{formatWorkingDays(service.working_days)}</span>
                           </div>
                           
                           <div className="flex flex-col space-y-1">
                             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Clock size={14} className="flex-shrink-0" />
+                              <Clock size={14} />
                               <span>სამუშაო საათები:</span>
                             </div>
-                            <span className="text-sm">{formatWorkingHours(service.working_hours_start, service.working_hours_end)}</span>
+                            <span>{formatWorkingHours(service.working_hours_start, service.working_hours_end)}</span>
                           </div>
                         </div>
                         
                         {service.car_brands && service.car_brands.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
                             <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                              <Car size={14} className="flex-shrink-0" />
+                              <Car size={14} />
                               <span>მანქანის მარკები:</span>
                             </div>
                             <div className="flex flex-wrap gap-1">
                               {service.car_brands.map(brand => (
-                                <Badge key={brand} variant="outline" className="bg-muted/50 text-xs">
+                                <Badge key={brand} variant="outline" className="bg-muted/50">
                                   {brand}
                                 </Badge>
                               ))}
@@ -505,7 +498,7 @@ const MechanicServices = () => {
                         
                         {service.on_site_service && (
                           <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                               შესაძლებელია ადგილზე მისვლა
                             </Badge>
                           </div>
