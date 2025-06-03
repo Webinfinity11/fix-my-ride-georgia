@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -303,8 +304,8 @@ const MechanicServices = () => {
                 </div>
                 
                 <Select 
-                  value={filterCategory.toString()} 
-                  onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value))}
+                  value={filterCategory === "all" ? "all" : filterCategory.toString()} 
+                  onValueChange={(value) => setFilterCategory(value === "all" ? "all" : parseInt(value) as number)}
                 >
                   <SelectTrigger className="w-full sm:w-[180px] border-primary/20 focus-visible:ring-primary">
                     <SelectValue placeholder="ყველა კატეგორია" />
