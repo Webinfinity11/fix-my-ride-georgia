@@ -1,9 +1,9 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink } from "lucide-react";
+import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import ServiceGallery from "./ServiceGallery";
 
 interface ServiceType {
@@ -32,6 +32,7 @@ interface ServiceType {
     first_name: string;
     last_name: string;
     rating: number | null;
+    phone_number?: string | null;
   };
 }
 
@@ -41,6 +42,7 @@ interface ServiceCardProps {
 
 const ServiceCard = ({ service }: ServiceCardProps) => {
   const navigate = useNavigate();
+  const [showPhone, setShowPhone] = useState(false);
 
   const handleViewDetails = () => {
     navigate(`/service/${service.id}`);
@@ -49,6 +51,22 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const handleViewMechanic = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/mechanic/${service.mechanic.id}`);
+  };
+
+  const handlePhoneClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!service.mechanic.phone_number) {
+      return;
+    }
+
+    if (!showPhone) {
+      // First click - show phone number
+      setShowPhone(true);
+    } else {
+      // Second click - make the call
+      window.location.href = `tel:${service.mechanic.phone_number}`;
+    }
   };
 
   const formatPrice = () => {
@@ -84,6 +102,14 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
       return service.city;
     }
     return "მდებარეობა მითითებული არ არის";
+  };
+
+  const formatPhoneNumber = (phone: string) => {
+    // Format Georgian phone numbers nicely
+    if (phone.startsWith('+995')) {
+      return phone.replace('+995', '+995 ').replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    }
+    return phone;
   };
 
   return (
@@ -209,13 +235,28 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             </div>
           )}
 
-          {/* Action Button */}
-          <Button 
-            onClick={handleViewDetails} 
-            className="w-full bg-primary hover:bg-primary-light transition-colors"
-          >
-            დეტალების ნახვა
-          </Button>
+          {/* Action Buttons */}
+          <div className="space-y-2">
+            {/* Phone Button */}
+            {service.mechanic.phone_number && (
+              <Button 
+                onClick={handlePhoneClick}
+                variant="outline"
+                className="w-full border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                {showPhone ? formatPhoneNumber(service.mechanic.phone_number) : "დარეკვა"}
+              </Button>
+            )}
+            
+            {/* Details Button */}
+            <Button 
+              onClick={handleViewDetails} 
+              className="w-full bg-primary hover:bg-primary-light transition-colors"
+            >
+              დეტალების ნახვა
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
