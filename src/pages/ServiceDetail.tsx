@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,11 +20,15 @@ import {
   Phone,
   MessageCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  Image,
+  Video
 } from "lucide-react";
 import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
 import ServiceReviews from "@/components/reviews/ServiceReviews";
+import ServiceGallery from "@/components/services/ServiceGallery";
+import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
 import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 
@@ -46,6 +51,7 @@ interface ServiceType {
   rating: number | null;
   review_count: number | null;
   photos: string[] | null;
+  videos: string[] | null;
   category: {
     id: number;
     name: string;
@@ -112,6 +118,7 @@ const ServiceDetail = () => {
           rating,
           review_count,
           photos,
+          videos,
           category_id,
           mechanic_id,
           service_categories(id, name),
@@ -199,6 +206,7 @@ const ServiceDetail = () => {
         rating: serviceData.rating,
         review_count: serviceData.review_count,
         photos: serviceData.photos || [],
+        videos: serviceData.videos || [],
         category: category ? {
           id: category.id,
           name: category.name
@@ -246,6 +254,10 @@ const ServiceDetail = () => {
   if (loading) {
     return (
       <Layout>
+        <Helmet>
+          <title>იტვირთება... | AutoMechanico</title>
+          <meta name="description" content="ავტოსერვისის ინფორმაცია იტვირთება..." />
+        </Helmet>
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse space-y-8">
             <div className="h-4 bg-gray-200 rounded w-1/3"></div>
@@ -269,6 +281,11 @@ const ServiceDetail = () => {
   if (!service) {
     return (
       <Layout>
+        <Helmet>
+          <title>სერვისი ვერ მოიძებნა | AutoMechanico</title>
+          <meta name="description" content="მოთხოვნილი ავტოსერვისი ვერ მოიძებნა ან აღარ არსებობს." />
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">სერვისი ვერ მოიძებნა</h1>
@@ -311,8 +328,93 @@ const ServiceDetail = () => {
     console.log("🗺️ Map location change triggered (read-only mode)");
   };
 
+  // Generate structured data for SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": service.name,
+    "description": service.description || `${service.name} - ავტოსერვისი`,
+    "provider": {
+      "@type": "Person",
+      "name": `${service.mechanic.first_name} ${service.mechanic.last_name}`,
+      "telephone": service.mechanic.phone,
+      "address": service.address ? {
+        "@type": "PostalAddress",
+        "addressLocality": service.city,
+        "addressRegion": service.district,
+        "streetAddress": service.address
+      } : undefined
+    },
+    "areaServed": {
+      "@type": "City",
+      "name": service.city
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": service.price_from || "Price on request",
+      "priceCurrency": "GEL",
+      "availability": "InStock"
+    },
+    "aggregateRating": service.rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": service.rating,
+      "reviewCount": service.review_count || 0,
+      "bestRating": 5,
+      "worstRating": 1
+    } : undefined
+  };
+
+  const pageTitle = `${service.name} - ${service.mechanic.first_name} ${service.mechanic.last_name} | AutoMechanico`;
+  const pageDescription = service.description 
+    ? `${service.description.substring(0, 150)}...`
+    : `${service.name} ავტოსერვისი ${service.city}-ში. ხელოსანი: ${service.mechanic.first_name} ${service.mechanic.last_name}. ${service.rating ? `შეფასება: ${service.rating}/5` : ''}`;
+
   return (
     <Layout>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={`ავტოსერვისი, ${service.name}, ${service.city}, ხელოსანი, ${service.category?.name || ''}, ავტო სერვისი`} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/service/${service.id}`} />
+        {service.photos && service.photos.length > 0 && (
+          <meta property="og:image" content={service.photos[0]} />
+        )}
+        <meta property="og:locale" content="ka_GE" />
+        <meta property="og:site_name" content="AutoMechanico" />
+
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        {service.photos && service.photos.length > 0 && (
+          <meta name="twitter:image" content={service.photos[0]} />
+        )}
+
+        {/* Additional SEO meta tags */}
+        <meta name="author" content={`${service.mechanic.first_name} ${service.mechanic.last_name}`} />
+        <meta name="geo.region" content="GE" />
+        <meta name="geo.placename" content={service.city} />
+        {service.latitude && service.longitude && (
+          <>
+            <meta name="geo.position" content={`${service.latitude};${service.longitude}`} />
+            <meta name="ICBM" content={`${service.latitude}, ${service.longitude}`} />
+          </>
+        )}
+
+        {/* Canonical URL */}
+        <link rel="canonical" href={`${window.location.origin}/service/${service.id}`} />
+
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
+
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
         <Breadcrumb className="mb-6">
@@ -343,7 +445,7 @@ const ServiceDetail = () => {
             უკან
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{service.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{service.name}</h1>
             {service.category && (
               <Badge variant="secondary" className="mt-2">
                 {service.category.name}
@@ -352,23 +454,125 @@ const ServiceDetail = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Service Images */}
+          <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
+            {/* Mobile Mechanic Info - Only visible on mobile */}
+            <Card className="lg:hidden">
+              <CardHeader>
+                <CardTitle>მექანიკოსი</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src="" alt={service.mechanic.first_name} />
+                    <AvatarFallback>
+                      {service.mechanic.first_name.charAt(0)}
+                      {service.mechanic.last_name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-medium">
+                      {service.mechanic.first_name} {service.mechanic.last_name}
+                    </h4>
+                    {service.mechanic.rating && (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm">{service.mechanic.rating}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Phone Number Display */}
+                {service.mechanic.phone && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <span className="font-mono text-sm">
+                          {showFullPhone ? service.mechanic.phone : maskPhoneNumber(service.mechanic.phone)}
+                        </span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={togglePhoneVisibility}
+                        className="text-xs"
+                      >
+                        {showFullPhone ? "დამალვა" : "ნომრის ნახვა"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  {service.mechanic.phone && (
+                    <Button variant="outline" size="sm" className="flex-1" asChild>
+                      <a href={`tel:${service.mechanic.phone}`}>
+                        <Phone className="h-4 w-4 mr-2" />
+                        დარეკვა
+                      </a>
+                    </Button>
+                  )}
+                  <SendMessageButton 
+                    mechanicId={service.mechanic.id}
+                    mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                  />
+                </div>
+
+                {/* Only show profile link if mechanic ID is valid UUID */}
+                {isValidUUID(service.mechanic.id) ? (
+                  <Button 
+                    variant="secondary" 
+                    className="w-full"
+                    onClick={() => navigate(`/mechanic/${service.mechanic.id}`)}
+                  >
+                    პროფილის ნახვა
+                  </Button>
+                ) : (
+                  <div className="text-center text-sm text-muted-foreground">
+                    ხელოსნის პროფილი მიუწვდომელია
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Service Photos */}
             {service.photos && service.photos.length > 0 && (
               <Card>
-                <CardContent className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {service.photos.slice(0, 4).map((photo, index) => (
-                      <img
-                        key={index}
-                        src={photo}
-                        alt={`${service.name} ფოტო ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                    ))}
-                  </div>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    ფოტოები
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 lg:p-6">
+                  <ServiceGallery 
+                    photos={service.photos} 
+                    serviceName={service.name} 
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Service Videos */}
+            {service.videos && service.videos.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Video className="h-5 w-5" />
+                    ვიდეოები
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 lg:p-6">
+                  <ServiceVideoGallery 
+                    videos={service.videos} 
+                    serviceName={service.name} 
+                  />
                 </CardContent>
               </Card>
             )}
@@ -382,6 +586,67 @@ const ServiceDetail = () => {
                 <p className="text-gray-600 leading-relaxed">
                   {service.description || "აღწერა არ არის მითითებული"}
                 </p>
+              </CardContent>
+            </Card>
+
+            {/* Mobile Location Info - Only visible on mobile */}
+            {(service.city || service.district) && (
+              <Card className="lg:hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    მისამართი
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm">
+                    {service.city && (
+                      <div>
+                        <span className="font-medium">ქალაქი:</span> {service.city}
+                      </div>
+                    )}
+                    {service.district && (
+                      <div>
+                        <span className="font-medium">რაიონი:</span> {service.district}
+                      </div>
+                    )}
+                    {service.address && (
+                      <div>
+                        <span className="font-medium">მისამართი:</span> {service.address}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Mobile Price & Booking - Only visible on mobile */}
+            <Card className="lg:hidden">
+              <CardHeader>
+                <CardTitle className="text-2xl text-primary">
+                  {formatPrice(service.price_from, service.price_to)}
+                </CardTitle>
+                {service.rating && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="font-medium">{service.rating}</span>
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      ({service.review_count || 0} შეფასება)
+                    </span>
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  onClick={() => navigate(`/book?service=${service.id}`)}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  დაჯავშვნა
+                </Button>
               </CardContent>
             </Card>
 
@@ -482,8 +747,8 @@ const ServiceDetail = () => {
             />
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Desktop Sidebar - Hidden on mobile */}
+          <div className="space-y-6 order-1 lg:order-2 hidden lg:block">
             {/* Price & Booking */}
             <Card>
               <CardHeader>

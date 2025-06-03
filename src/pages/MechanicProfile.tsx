@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
+import MechanicReviews from "@/components/reviews/MechanicReviews";
 
 type MechanicType = {
   id: string;
@@ -86,7 +87,6 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
   const [mechanic, setMechanic] = useState<MechanicType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
   const [certificates, setCertificates] = useState<CertificateType[]>([]);
-  const [reviews, setReviews] = useState<ReviewType[]>([]);
   const [loading, setLoading] = useState(true);
   
   // If the component is in booking mode, update the active tab to services
@@ -178,40 +178,6 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         if (certificatesError) throw certificatesError;
         setCertificates(certificatesData || []);
         
-        // Fetch reviews with user data
-        const { data: reviewsData, error: reviewsError } = await supabase
-          .from("reviews")
-          .select(`
-            id,
-            rating,
-            comment,
-            created_at,
-            images,
-            user_id,
-            profiles(first_name, last_name)
-          `)
-          .eq("mechanic_id", id)
-          .order("created_at", { ascending: false });
-        
-        if (reviewsError) throw reviewsError;
-        
-        // Transform reviews data to match ReviewType
-        const formattedReviews: ReviewType[] = (reviewsData || []).map(review => ({
-          id: review.id,
-          rating: review.rating,
-          comment: review.comment,
-          created_at: review.created_at,
-          user: {
-            first_name: review.profiles?.first_name || "Unknown",
-            last_name: review.profiles?.last_name || "User"
-          },
-          // Handle JSON type for images by properly converting to string[]
-          images: Array.isArray(review.images) 
-            ? review.images.map(img => String(img))
-            : null
-        }));
-        
-        setReviews(formattedReviews);
       } catch (error) {
         console.error("Error fetching mechanic data:", error);
         toast.error("ხელოსნის მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");
@@ -253,6 +219,60 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     await createDirectChat(id);
     navigate("/chat");
     toast.success("ჩატი გახსნილია");
+  };
+
+  const handleReviewAdded = () => {
+    // Refresh mechanic data to update rating
+    if (id) {
+      const fetchUpdatedMechanic = async () => {
+        const { data: mechanicData, error } = await supabase
+          .from("profiles")
+          .select(`
+            id,
+            first_name, 
+            last_name, 
+            email, 
+            phone, 
+            city, 
+            district, 
+            street,
+            is_verified,
+            mechanic_profiles!inner(
+              description, 
+              specialization, 
+              experience_years, 
+              rating, 
+              review_count, 
+              is_mobile,
+              accepts_card_payment,
+              working_hours,
+              verified_at
+            )
+          `)
+          .eq("id", id)
+          .eq("role", "mechanic")
+          .single();
+        
+        if (!error && mechanicData) {
+          const formattedMechanic: MechanicType = {
+            id: mechanicData.id,
+            profile: {
+              first_name: mechanicData.first_name,
+              last_name: mechanicData.last_name,
+              email: mechanicData.email,
+              phone: mechanicData.phone,
+              city: mechanicData.city,
+              district: mechanicData.district,
+              street: mechanicData.street,
+              is_verified: mechanicData.is_verified
+            },
+            mechanic_profile: mechanicData.mechanic_profiles
+          };
+          setMechanic(formattedMechanic);
+        }
+      };
+      fetchUpdatedMechanic();
+    }
   };
 
   if (loading) {
@@ -618,58 +638,11 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
                   </TabsContent>
                   
                   <TabsContent value="reviews" className="p-6">
-                    <div className="flex items-center mb-8">
-                      <div className="bg-primary/10 rounded-xl p-4 text-center mr-6">
-                        <p className="text-3xl font-bold text-primary">
-                          {mechanic?.mechanic_profile.rating?.toFixed(1) || "N/A"}
-                        </p>
-                        <div className="flex justify-center my-1">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`h-4 w-4 ${i < Math.floor(mechanic?.mechanic_profile.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-                            />
-                          ))}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {mechanic?.mechanic_profile.review_count} შეფასებიდან
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <h3 className="text-lg font-medium mb-1">მომხმარებლების შეფასებები</h3>
-                        <p className="text-muted-foreground">მომხმარებლების გამოცდილების საფუძველზე</p>
-                      </div>
-                    </div>
-                    
-                    {reviews.length > 0 ? (
-                      <div className="space-y-6">
-                        {reviews.map((review) => (
-                          <div key={review.id} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="font-medium">
-                                {review.user?.first_name} {review.user?.last_name}
-                              </p>
-                              <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star 
-                                    key={i} 
-                                    className={`h-4 w-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                            <p className="text-muted-foreground text-sm mb-3">
-                              {format(new Date(review.created_at), "dd/MM/yyyy")}
-                            </p>
-                            <p>{review.comment || "შეფასება კომენტარის გარეშე"}</p>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">ამ ხელოსანს ჯერ არ აქვს შეფასებები</p>
-                      </div>
+                    {id && (
+                      <MechanicReviews 
+                        mechanicId={id} 
+                        onReviewAdded={handleReviewAdded}
+                      />
                     )}
                   </TabsContent>
                 </Tabs>
