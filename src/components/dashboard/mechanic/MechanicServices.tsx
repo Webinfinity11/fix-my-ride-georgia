@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +19,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import EditServiceDialog from "./EditServiceDialog";
 
 interface Service {
   id: number;
@@ -53,6 +52,8 @@ const MechanicServices = () => {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const fetchServices = async () => {
     // Get current user session
@@ -135,6 +136,15 @@ const MechanicServices = () => {
       console.error('Error deleting service:', error);
       toast.error('სერვისის წაშლისას შეცდომა დაფიქსირდა');
     }
+  };
+
+  const handleEditService = (service: Service) => {
+    setEditingService(service);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleServiceUpdated = () => {
+    refetch();
   };
 
   const filteredServices = services.filter(service => {
@@ -421,7 +431,11 @@ const MechanicServices = () => {
                       ნახვა
                     </Button>
                   </Link>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleEditService(service)}
+                  >
                     <Edit className="w-4 h-4" />
                   </Button>
                   <Button 
@@ -438,9 +452,15 @@ const MechanicServices = () => {
           ))}
         </div>
       )}
+
+      <EditServiceDialog
+        service={editingService}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onServiceUpdated={handleServiceUpdated}
+      />
     </div>
   );
 };
 
 export default MechanicServices;
-
