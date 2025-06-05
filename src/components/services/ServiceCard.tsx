@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone } from "lucide-react";
+import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, ImageOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ServiceGallery from "./ServiceGallery";
@@ -112,15 +112,32 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
     return phone;
   };
 
+  // Check if service has photos
+  const hasPhotos = service.photos && service.photos.length > 0;
+
   return (
     <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
       <CardContent className="p-0">
-        {/* Service Gallery - Now clickable */}
+        {/* Service Gallery or Placeholder */}
         <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
-          <ServiceGallery 
-            photos={service.photos || []} 
-            serviceName={service.name}
-          />
+          {hasPhotos ? (
+            <ServiceGallery 
+              photos={service.photos || []} 
+              serviceName={service.name}
+            />
+          ) : (
+            <div className="aspect-[4/3] bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col items-center justify-center border-b border-primary/10">
+              <div className="text-primary/30 mb-2">
+                <ImageOff size={48} />
+              </div>
+              <div className="text-primary/60 text-sm font-medium">
+                AutoService.ge
+              </div>
+              <div className="text-primary/40 text-xs mt-1">
+                სერვისის ფოტო
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="p-4 space-y-3">
