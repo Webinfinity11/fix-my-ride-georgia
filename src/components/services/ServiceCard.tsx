@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -131,7 +132,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
                 <ImageOff size={48} />
               </div>
               <div className="text-primary/60 text-sm font-medium">
-                AutoService.ge
+                Fixup.ge
               </div>
               <div className="text-primary/40 text-xs mt-1">
                 სერვისის ფოტო
