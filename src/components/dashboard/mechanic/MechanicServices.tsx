@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +42,12 @@ const MechanicServices = () => {
   const [filterStatus, setFilterStatus] = useState<string>("all");
 
   const fetchServices = async () => {
+    // Get current user session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      throw new Error('User not authenticated');
+    }
+
     const { data, error } = await supabase
       .from('mechanic_services')
       .select(`
@@ -64,11 +71,18 @@ const MechanicServices = () => {
           name
         )
       `)
-      .eq('mechanic_id', supabase.auth.user()?.id)
+      .eq('mechanic_id', session.user.id)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data as Service[];
+    
+    // Transform the data to match our Service interface
+    return (data || []).map(service => ({
+      ...service,
+      category: Array.isArray(service.service_categories) 
+        ? service.service_categories[0] 
+        : service.service_categories
+    })) as Service[];
   };
 
   const { data: services = [], isLoading, refetch } = useQuery({
