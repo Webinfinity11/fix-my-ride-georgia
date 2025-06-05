@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,8 +8,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, Edit, Trash2, Eye, Star, MapPin, Clock, CreditCard, Banknote } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Star, MapPin, Clock, CreditCard, Banknote, ChevronDown, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface Service {
   id: number;
@@ -40,6 +52,7 @@ interface Category {
 const MechanicServices = () => {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const fetchServices = async () => {
     // Get current user session
@@ -141,6 +154,14 @@ const MechanicServices = () => {
     return "ფასი შეთანხმებით";
   };
 
+  const getSelectedCategoryName = () => {
+    if (filterCategory === "all") return "ყველა კატეგორია";
+    const category = categories.find(cat => cat.id.toString() === filterCategory);
+    return category ? category.name : "ყველა კატეგორია";
+  };
+
+  const hasActiveFilters = filterCategory !== "all" || filterStatus !== "all";
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -175,58 +196,115 @@ const MechanicServices = () => {
         </Link>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4">
-        <div className="flex flex-wrap gap-2">
+      {/* Compact Filters */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
           <Button
-            variant={filterCategory === "all" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setFilterCategory("all")}
+            variant="outline"
+            onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+            className="flex items-center gap-2"
           >
-            ყველა კატეგორია
+            <Filter className="w-4 h-4" />
+            ფილტრები
+            {hasActiveFilters && (
+              <Badge variant="secondary" className="ml-1 text-xs">
+                აქტიური
+              </Badge>
+            )}
+            <ChevronDown className={`w-4 h-4 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
           </Button>
-          {categories.map(category => (
+          
+          {hasActiveFilters && (
             <Button
-              key={category.id}
-              variant={filterCategory === category.id.toString() ? "default" : "outline"}
+              variant="ghost"
               size="sm"
-              onClick={() => setFilterCategory(category.id.toString())}
+              onClick={() => {
+                setFilterCategory("all");
+                setFilterStatus("all");
+              }}
+              className="text-muted-foreground hover:text-foreground"
             >
-              {category.name}
+              გასუფთავება
             </Button>
-          ))}
+          )}
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            variant={filterStatus === "all" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setFilterStatus("all")}
-          >
-            ყველა სტატუსი
-          </Button>
-          <Button
-            variant={filterStatus === "active" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setFilterStatus("active")}
-          >
-            აქტიური
-          </Button>
-          <Button
-            variant={filterStatus === "inactive" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setFilterStatus("inactive")}
-          >
-            არააქტიური
-          </Button>
-        </div>
+        <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+          <CollapsibleContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+              {/* Category Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">კატეგორია</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {getSelectedCategoryName()}
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 max-h-64 overflow-y-auto bg-background border shadow-lg">
+                    <DropdownMenuItem
+                      onClick={() => setFilterCategory("all")}
+                      className={filterCategory === "all" ? "bg-accent" : ""}
+                    >
+                      ყველა კატეგორია
+                    </DropdownMenuItem>
+                    {categories.map(category => (
+                      <DropdownMenuItem
+                        key={category.id}
+                        onClick={() => setFilterCategory(category.id.toString())}
+                        className={filterCategory === category.id.toString() ? "bg-accent" : ""}
+                      >
+                        {category.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Status Filter */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">სტატუსი</label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {filterStatus === "all" ? "ყველა სტატუსი" : 
+                       filterStatus === "active" ? "აქტიური" : "არააქტიური"}
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 bg-background border shadow-lg">
+                    <DropdownMenuItem
+                      onClick={() => setFilterStatus("all")}
+                      className={filterStatus === "all" ? "bg-accent" : ""}
+                    >
+                      ყველა სტატუსი
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setFilterStatus("active")}
+                      className={filterStatus === "active" ? "bg-accent" : ""}
+                    >
+                      აქტიური
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setFilterStatus("inactive")}
+                      className={filterStatus === "inactive" ? "bg-accent" : ""}
+                    >
+                      არააქტიური
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
 
       {filteredServices.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
             <p className="text-muted-foreground mb-4">
-              {filterCategory !== "all" || filterStatus !== "all" 
+              {hasActiveFilters 
                 ? "მოცემული ფილტრებით სერვისები ვერ მოიძებნა"
                 : "თქვენ ჯერ არ გაქვთ დამატებული სერვისები"
               }
@@ -365,3 +443,4 @@ const MechanicServices = () => {
 };
 
 export default MechanicServices;
+
