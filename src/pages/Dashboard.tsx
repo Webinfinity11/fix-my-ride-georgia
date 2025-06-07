@@ -7,12 +7,14 @@ import Footer from "@/components/layout/Footer";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import CustomerDashboard from "@/components/dashboard/customer/CustomerDashboard";
 import MechanicDashboard from "@/components/dashboard/mechanic/MechanicDashboard";
+import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
 import CustomerProfile from "@/components/dashboard/customer/CustomerProfile";
 import MechanicProfile from "@/components/dashboard/mechanic/MechanicProfile";
 import CustomerCars from "@/components/dashboard/customer/CustomerCars";
 import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
+import AdminUsers from "@/components/dashboard/admin/AdminUsers";
 import { toast } from "sonner";
 
 const Dashboard = () => {
@@ -65,6 +67,26 @@ const Dashboard = () => {
 
   console.log("🏠 Dashboard rendering main content for user:", user.role);
 
+  const getDashboardComponent = () => {
+    switch (user.role) {
+      case "admin":
+        return <AdminDashboard />;
+      case "mechanic":
+        return <MechanicDashboard />;
+      default:
+        return <CustomerDashboard />;
+    }
+  };
+
+  const getProfileComponent = () => {
+    switch (user.role) {
+      case "mechanic":
+        return <MechanicProfile />;
+      default:
+        return <CustomerProfile />;
+    }
+  };
+
   try {
     return (
       <div className="min-h-screen flex flex-col">
@@ -76,23 +98,11 @@ const Dashboard = () => {
               <Routes>
                 <Route
                   path="/"
-                  element={
-                    user.role === "mechanic" ? (
-                      <MechanicDashboard />
-                    ) : (
-                      <CustomerDashboard />
-                    )
-                  }
+                  element={getDashboardComponent()}
                 />
                 <Route
                   path="/profile"
-                  element={
-                    user.role === "mechanic" ? (
-                      <MechanicProfile />
-                    ) : (
-                      <CustomerProfile />
-                    )
-                  }
+                  element={getProfileComponent()}
                 />
                 <Route
                   path="/cars"
@@ -124,6 +134,39 @@ const Dashboard = () => {
                     )
                   }
                 />
+                
+                {/* Admin Routes */}
+                <Route
+                  path="/admin"
+                  element={
+                    user.role === "admin" ? (
+                      <AdminDashboard />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/stats"
+                  element={
+                    user.role === "admin" ? (
+                      <AdminDashboard />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/users"
+                  element={
+                    user.role === "admin" ? (
+                      <AdminUsers />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </div>

@@ -8,6 +8,9 @@ import {
   Calendar,
   LogOut,
   Settings,
+  Shield,
+  BarChart3,
+  Users,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -62,6 +65,32 @@ const DashboardSidebar = () => {
           <Calendar size={18} />
           <span>ჯავშნები</span>
         </NavLink>
+
+        {user?.role === "admin" && (
+          <>
+            <div className="border-t border-muted my-4"></div>
+            <div className="mb-2">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                ადმინისტრაცია
+              </span>
+            </div>
+            
+            <NavLink to="/dashboard/admin" className={navLinkClasses}>
+              <Shield size={18} />
+              <span>ადმინ პანელი</span>
+            </NavLink>
+
+            <NavLink to="/dashboard/admin/stats" className={navLinkClasses}>
+              <BarChart3 size={18} />
+              <span>სტატისტიკა</span>
+            </NavLink>
+
+            <NavLink to="/dashboard/admin/users" className={navLinkClasses}>
+              <Users size={18} />
+              <span>მომხმარებლები</span>
+            </NavLink>
+          </>
+        )}
 
         <button
           onClick={() => signOut()}
