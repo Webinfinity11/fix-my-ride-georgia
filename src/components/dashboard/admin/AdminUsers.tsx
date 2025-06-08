@@ -8,7 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Search, UserCheck, UserX } from "lucide-react";
+import { Search, UserCheck, UserX, Edit2, Wrench } from "lucide-react";
+import UserEditDialog from "./UserEditDialog";
+import UserServicesList from "./UserServicesList";
 
 interface User {
   id: string;
@@ -19,11 +21,15 @@ interface User {
   is_verified: boolean;
   created_at: string;
   city?: string;
+  phone?: string;
 }
 
 const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [servicesDialogOpen, setServicesDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
@@ -52,7 +58,8 @@ const AdminUsers = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success('მომხმარებლის სტატუსი წარმატებით განახლდა');
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Verification error:', error);
       toast.error('შეცდომა მომხმარებლის სტატუსის განახლებისას');
     },
   });
@@ -94,6 +101,16 @@ const AdminUsers = () => {
     }
   };
 
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setEditDialogOpen(true);
+  };
+
+  const handleViewServices = (user: User) => {
+    setSelectedUser(user);
+    setServicesDialogOpen(true);
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -108,112 +125,149 @@ const AdminUsers = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">მომხმარებლების მართვა</h1>
+    <>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">მომხმარებლების მართვა</h1>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>ფილტრები</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="ძებნა სახელით, გვარით ან ელ.ფოსტით..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+        <Card>
+          <CardHeader>
+            <CardTitle>ფილტრები</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="ძებნა სახელით, გვარით ან ელ.ფოსტით..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue placeholder="როლის არჩევა" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">ყველა როლი</SelectItem>
+                  <SelectItem value="customer">მომხმარებელი</SelectItem>
+                  <SelectItem value="mechanic">მექანიკოსი</SelectItem>
+                  <SelectItem value="admin">ადმინი</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="როლის არჩევა" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">ყველა როლი</SelectItem>
-                <SelectItem value="customer">მომხმარებელი</SelectItem>
-                <SelectItem value="mechanic">მექანიკოსი</SelectItem>
-                <SelectItem value="admin">ადმინი</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>მომხმარებლები ({filteredUsers?.length || 0})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {filteredUsers?.map((user) => (
-              <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <h3 className="font-medium">
-                      {user.first_name} {user.last_name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
-                    {user.city && (
-                      <p className="text-xs text-muted-foreground">{user.city}</p>
-                    )}
+        <Card>
+          <CardHeader>
+            <CardTitle>მომხმარებლები ({filteredUsers?.length || 0})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredUsers?.map((user) => (
+                <div key={user.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-medium truncate">
+                        {user.first_name} {user.last_name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                      {user.city && (
+                        <p className="text-xs text-muted-foreground">{user.city}</p>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge className={getRoleBadgeColor(user.role)}>
+                        {getRoleLabel(user.role)}
+                      </Badge>
+                      {user.is_verified ? (
+                        <Badge className="bg-green-100 text-green-800">
+                          ვერიფიცირებული
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">
+                          არავერიფიცირებული
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Badge className={getRoleBadgeColor(user.role)}>
-                      {getRoleLabel(user.role)}
-                    </Badge>
-                    {user.is_verified ? (
-                      <Badge className="bg-green-100 text-green-800">
-                        ვერიფიცირებული
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline">
-                        არავერიფიცირებული
-                      </Badge>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEditUser(user)}
+                    >
+                      <Edit2 className="h-4 w-4 mr-1" />
+                      <span className="hidden sm:inline">რედაქტირება</span>
+                    </Button>
+                    
+                    {user.role === 'mechanic' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleViewServices(user)}
+                      >
+                        <Wrench className="h-4 w-4 mr-1" />
+                        <span className="hidden sm:inline">სერვისები</span>
+                      </Button>
                     )}
+                    
+                    <Button
+                      size="sm"
+                      variant={user.is_verified ? "outline" : "default"}
+                      onClick={() => 
+                        toggleVerificationMutation.mutate({
+                          userId: user.id,
+                          verified: !user.is_verified
+                        })
+                      }
+                      disabled={toggleVerificationMutation.isPending}
+                    >
+                      {user.is_verified ? (
+                        <>
+                          <UserX className="h-4 w-4 mr-1" />
+                          <span className="hidden sm:inline">გაუქმება</span>
+                        </>
+                      ) : (
+                        <>
+                          <UserCheck className="h-4 w-4 mr-1" />
+                          <span className="hidden sm:inline">ვერიფიკაცია</span>
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
-                
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant={user.is_verified ? "outline" : "default"}
-                    onClick={() => 
-                      toggleVerificationMutation.mutate({
-                        userId: user.id,
-                        verified: !user.is_verified
-                      })
-                    }
-                    disabled={toggleVerificationMutation.isPending}
-                  >
-                    {user.is_verified ? (
-                      <>
-                        <UserX className="h-4 w-4 mr-1" />
-                        ვერიფიკაციის გაუქმება
-                      </>
-                    ) : (
-                      <>
-                        <UserCheck className="h-4 w-4 mr-1" />
-                        ვერიფიკაცია
-                      </>
-                    )}
-                  </Button>
+              ))}
+              
+              {filteredUsers?.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  მომხმარებლები ვერ მოიძებნა
                 </div>
-              </div>
-            ))}
-            
-            {filteredUsers?.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                მომხმარებლები ვერ მოიძებნა
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <UserEditDialog
+        user={selectedUser}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+      />
+
+      {selectedUser && (
+        <UserServicesList
+          userId={selectedUser.id}
+          userName={`${selectedUser.first_name} ${selectedUser.last_name}`}
+          open={servicesDialogOpen}
+          onOpenChange={setServicesDialogOpen}
+        />
+      )}
+    </>
   );
 };
 
