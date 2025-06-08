@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,24 +35,35 @@ const AdminUsers = () => {
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
+      console.log('Fetching users...');
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+      }
+      console.log('Fetched users:', data);
       return data as User[];
     },
   });
 
   const toggleVerificationMutation = useMutation({
     mutationFn: async ({ userId, verified }: { userId: string; verified: boolean }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_verified: verified })
-        .eq('id', userId);
+      console.log('Toggling verification for user:', userId, 'to:', verified);
       
-      if (error) throw error;
+      // Use the new admin toggle verification function
+      const { error } = await supabase.rpc('admin_toggle_verification', {
+        p_user_id: userId,
+        p_verified: verified
+      });
+      
+      if (error) {
+        console.error('Verification toggle error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -61,15 +71,15 @@ const AdminUsers = () => {
     },
     onError: (error) => {
       console.error('Verification error:', error);
-      toast.error('შეცდომა მომხმარებლის სტატუსის განახლებისას');
+      toast.error('შეცდომა მომხმარებლის სტატუსის განახლებისას: ' + error.message);
     },
   });
 
   const filteredUsers = users?.filter(user => {
     const matchesSearch = 
-      user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
     
@@ -103,11 +113,13 @@ const AdminUsers = () => {
   };
 
   const handleEditUser = (user: User) => {
+    console.log('Opening edit dialog for user:', user);
     setSelectedUser(user);
     setEditDialogOpen(true);
   };
 
   const handleViewServices = (user: User) => {
+    console.log('Opening services dialog for user:', user);
     setServicesUser(user);
     setServicesDialogOpen(true);
   };
@@ -115,6 +127,7 @@ const AdminUsers = () => {
   const handleEditDialogClose = (open: boolean) => {
     setEditDialogOpen(open);
     if (!open) {
+      console.log('Closing edit dialog, clearing selected user');
       setSelectedUser(null);
     }
   };
@@ -122,6 +135,7 @@ const AdminUsers = () => {
   const handleServicesDialogClose = (open: boolean) => {
     setServicesDialogOpen(open);
     if (!open) {
+      console.log('Closing services dialog, clearing services user');
       setServicesUser(null);
     }
   };
