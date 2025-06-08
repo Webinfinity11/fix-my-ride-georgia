@@ -20,8 +20,14 @@ interface Service {
   description: string | null;
   price_from: number | null;
   price_to: number | null;
+  estimated_hours: number | null;
   city: string | null;
   district: string | null;
+  address: string | null;
+  car_brands: string[] | null;
+  on_site_service: boolean;
+  accepts_card_payment: boolean;
+  accepts_cash_payment: boolean;
   is_active: boolean;
   rating: number | null;
   review_count: number | null;
