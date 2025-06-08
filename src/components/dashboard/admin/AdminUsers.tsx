@@ -30,6 +30,7 @@ const AdminUsers = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [servicesDialogOpen, setServicesDialogOpen] = useState(false);
+  const [servicesUser, setServicesUser] = useState<User | null>(null);
   const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
@@ -107,8 +108,22 @@ const AdminUsers = () => {
   };
 
   const handleViewServices = (user: User) => {
-    setSelectedUser(user);
+    setServicesUser(user);
     setServicesDialogOpen(true);
+  };
+
+  const handleEditDialogClose = (open: boolean) => {
+    setEditDialogOpen(open);
+    if (!open) {
+      setSelectedUser(null);
+    }
+  };
+
+  const handleServicesDialogClose = (open: boolean) => {
+    setServicesDialogOpen(open);
+    if (!open) {
+      setServicesUser(null);
+    }
   };
 
   if (isLoading) {
@@ -256,15 +271,15 @@ const AdminUsers = () => {
       <UserEditDialog
         user={selectedUser}
         open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
+        onOpenChange={handleEditDialogClose}
       />
 
-      {selectedUser && (
+      {servicesUser && (
         <UserServicesList
-          userId={selectedUser.id}
-          userName={`${selectedUser.first_name} ${selectedUser.last_name}`}
+          userId={servicesUser.id}
+          userName={`${servicesUser.first_name} ${servicesUser.last_name}`}
           open={servicesDialogOpen}
-          onOpenChange={setServicesDialogOpen}
+          onOpenChange={handleServicesDialogClose}
         />
       )}
     </>

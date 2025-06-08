@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,8 +35,21 @@ interface UserEditDialogProps {
 
 const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, setValue, watch } = useForm<User>();
-  const [selectedRole, setSelectedRole] = useState<string>(user?.role || 'customer');
+  const { register, handleSubmit, setValue, reset } = useForm<User>();
+  const [selectedRole, setSelectedRole] = useState<string>('customer');
+
+  // Reset form when user changes or dialog opens
+  useEffect(() => {
+    if (user && open) {
+      setValue("first_name", user.first_name);
+      setValue("last_name", user.last_name);
+      setValue("email", user.email);
+      setValue("phone", user.phone || '');
+      setValue("city", user.city || '');
+      setValue("district", user.district || '');
+      setSelectedRole(user.role);
+    }
+  }, [user, open, setValue]);
 
   const updateUserMutation = useMutation({
     mutationFn: async (userData: Partial<User>) => {
@@ -51,23 +64,60 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success('მომხმარებლის ინფორმაცია წარმატებით განახლდა');
       onOpenChange(false);
+      reset();
     },
     onError: () => {
       toast.error('შეცდომა მომხმარებლის ინფორმაციის განახლებისას');
     },
   });
 
+  const deleteUserMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user?.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast.success('მომხმარებელი წარმატებით წაიშალა');
+      onOpenChange(false);
+      reset();
+    },
+    onError: () => {
+      toast.error('შეცდომა მომხმარებლის წაშლისას');
+    },
+  });
+
   const onSubmit = (data: User) => {
     updateUserMutation.mutate({
-      ...data,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email: data.email,
+      phone: data.phone,
+      city: data.city,
+      district: data.district,
       role: selectedRole as 'customer' | 'mechanic' | 'admin',
     });
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`დარწმუნებული ხართ, რომ გსურთ ${user?.first_name} ${user?.last_name}-ის წაშლა?`)) {
+      deleteUserMutation.mutate();
+    }
+  };
+
+  const handleClose = () => {
+    onOpenChange(false);
+    reset();
   };
 
   if (!user) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>მომხმარებლის რედაქტირება</DialogTitle>
@@ -78,8 +128,7 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
             <Label htmlFor="first_name">სახელი</Label>
             <Input
               id="first_name"
-              {...register("first_name")}
-              defaultValue={user.first_name}
+              {...register("first_name", { required: true })}
             />
           </div>
 
@@ -87,8 +136,7 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
             <Label htmlFor="last_name">გვარი</Label>
             <Input
               id="last_name"
-              {...register("last_name")}
-              defaultValue={user.last_name}
+              {...register("last_name", { required: true })}
             />
           </div>
 
@@ -97,8 +145,7 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
             <Input
               id="email"
               type="email"
-              {...register("email")}
-              defaultValue={user.email}
+              {...register("email", { required: true })}
             />
           </div>
 
@@ -107,7 +154,6 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
             <Input
               id="phone"
               {...register("phone")}
-              defaultValue={user.phone || ''}
             />
           </div>
 
@@ -116,7 +162,14 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
             <Input
               id="city"
               {...register("city")}
-              defaultValue={user.city || ''}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="district">უბანი</Label>
+            <Input
+              id="district"
+              {...register("district")}
             />
           </div>
 
@@ -134,21 +187,33 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
             </Select>
           </div>
 
-          <div className="flex gap-2 pt-4">
+          <div className="flex flex-col gap-2 pt-4">
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                className="flex-1"
+              >
+                გაუქმება
+              </Button>
+              <Button
+                type="submit"
+                disabled={updateUserMutation.isPending}
+                className="flex-1"
+              >
+                შენახვა
+              </Button>
+            </div>
+            
             <Button
               type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="flex-1"
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleteUserMutation.isPending}
+              className="w-full"
             >
-              გაუქმება
-            </Button>
-            <Button
-              type="submit"
-              disabled={updateUserMutation.isPending}
-              className="flex-1"
-            >
-              შენახვა
+              წაშლა
             </Button>
           </div>
         </form>

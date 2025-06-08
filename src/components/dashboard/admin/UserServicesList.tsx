@@ -74,11 +74,28 @@ const UserServicesList = ({ userId, userName, open, onOpenChange }: UserServices
   const handleServiceUpdated = () => {
     refetch();
     setEditDialogOpen(false);
+    setSelectedService(null);
+  };
+
+  const handleEditDialogClose = (open: boolean) => {
+    setEditDialogOpen(open);
+    if (!open) {
+      setSelectedService(null);
+    }
+  };
+
+  const handleMainDialogClose = (open: boolean) => {
+    onOpenChange(open);
+    if (!open) {
+      // Clear any selected service when main dialog closes
+      setSelectedService(null);
+      setEditDialogOpen(false);
+    }
   };
 
   if (isLoading) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={handleMainDialogClose}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{userName}-ის სერვისები</DialogTitle>
@@ -95,7 +112,7 @@ const UserServicesList = ({ userId, userName, open, onOpenChange }: UserServices
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={handleMainDialogClose}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{userName}-ის სერვისები ({services?.length || 0})</DialogTitle>
@@ -176,7 +193,7 @@ const UserServicesList = ({ userId, userName, open, onOpenChange }: UserServices
       <EditServiceDialog
         service={selectedService}
         open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
+        onOpenChange={handleEditDialogClose}
         onServiceUpdated={handleServiceUpdated}
       />
     </>
