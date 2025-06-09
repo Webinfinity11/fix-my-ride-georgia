@@ -20,8 +20,7 @@ const MobileBottomNav = () => {
     if (user?.role === 'mechanic') {
       navigate('/add-service');
     } else {
-      // For now, navigate to dashboard as add-car route doesn't exist yet
-      navigate('/dashboard');
+      navigate('/dashboard/cars');
     }
   };
 

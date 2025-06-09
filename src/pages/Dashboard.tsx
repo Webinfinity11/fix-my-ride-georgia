@@ -1,9 +1,7 @@
-
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import Layout from "@/components/layout/Layout";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import CustomerDashboard from "@/components/dashboard/customer/CustomerDashboard";
 import MechanicDashboard from "@/components/dashboard/mechanic/MechanicDashboard";
@@ -49,13 +47,11 @@ const Dashboard = () => {
   if (loading || !initialized || isDataLoading) {
     console.log("🏠 Dashboard showing loading state");
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow flex items-center justify-center">
+      <Layout>
+        <div className="flex items-center justify-center py-8">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </main>
-        <Footer />
-      </div>
+        </div>
+      </Layout>
     );
   }
 
@@ -90,10 +86,16 @@ const Dashboard = () => {
   try {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow flex bg-muted py-8">
+        {/* Desktop Header - only show on desktop */}
+        <div className="hidden md:block">
+          <Header />
+        </div>
+        
+        <main className="flex-grow flex bg-muted py-8 pb-[70px] md:pb-8">
           <div className="container mx-auto px-4 flex flex-col md:flex-row gap-6">
-            <DashboardSidebar />
+            <div className="hidden md:block">
+              <DashboardSidebar />
+            </div>
             <div className="flex-grow bg-background rounded-lg shadow-sm p-6">
               <Routes>
                 <Route
@@ -172,22 +174,22 @@ const Dashboard = () => {
             </div>
           </div>
         </main>
-        <Footer />
+        
+        {/* Mobile Bottom Navigation */}
+        <div className="md:hidden">
+          <MobileBottomNav />
+        </div>
       </div>
     );
   } catch (error) {
     console.error("🏠 Error rendering Dashboard:", error);
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-red-600 mb-2">დაფიქსირდა შეცდომა</h1>
-            <p className="text-gray-600">გთხოვთ განაახლოთ გვერდი</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
+      <Layout>
+        <div className="text-center py-8">
+          <h1 className="text-2xl font-bold text-red-600 mb-2">დაფიქსირდა შეცდომა</h1>
+          <p className="text-gray-600">გთხოვთ განაახლოთ გვერდი</p>
+        </div>
+      </Layout>
     );
   }
 };

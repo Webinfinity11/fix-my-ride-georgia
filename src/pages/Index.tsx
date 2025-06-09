@@ -1,5 +1,7 @@
+
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import ServiceCategories from "@/components/home/ServiceCategories";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -235,7 +237,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
       <Header />
       
       <main className="flex-grow">
@@ -613,6 +615,7 @@ const Index = () => {
       </main>
       
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 };
