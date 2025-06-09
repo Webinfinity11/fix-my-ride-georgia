@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -10,6 +9,7 @@ import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { useServices } from "@/hooks/useServices";
 import { Filter, RefreshCw } from "lucide-react";
+import Layout from "@/components/layout/Layout";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -226,153 +226,155 @@ const ServicesDetail = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      <Header />
-      
-      <main className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
-            {/* Header Section */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">ყველა სერვისი</h1>
-              <p className="text-lg text-gray-600">მოძებნეთ სასურველი ხელოსანი და სერვისი</p>
-            </div>
-            
-            {/* Filters Section */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
-                >
-                  <Filter className="h-4 w-4" />
-                  ფილტრები
-                  {hasActiveFilters && (
-                    <Badge variant="secondary" className="ml-2">
-                      აქტიური
-                    </Badge>
-                  )}
-                </Button>
-
-                <div className="flex items-center gap-4">
-                  {/* Reset Filters */}
-                  {hasActiveFilters && (
-                    <Button
-                      variant="ghost"
-                      onClick={handleResetFilters}
-                      className="text-gray-500 hover:text-red-500"
-                      size="sm"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      გასუფთავება
-                    </Button>
-                  )}
-                </div>
+    <Layout>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        
+        <main className="py-8">
+          <div className="container mx-auto px-4">
+            <div className="max-w-7xl mx-auto">
+              {/* Header Section */}
+              <div className="text-center mb-8">
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">ყველა სერვისი</h1>
+                <p className="text-lg text-gray-600">მოძებნეთ სასურველი ხელოსანი და სერვისი</p>
               </div>
-
-              {/* Filters Panel */}
-              {showFilters && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200">
-                  <ModernServiceFilters
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                    categories={categories}
-                    selectedCity={selectedCity}
-                    setSelectedCity={setSelectedCity}
-                    cities={availableCities}
-                    selectedDistrict={selectedDistrict}
-                    setSelectedDistrict={setSelectedDistrict}
-                    districts={availableDistricts}
-                    selectedBrands={selectedBrands}
-                    setSelectedBrands={setSelectedBrands}
-                    onSiteOnly={onSiteOnly}
-                    setOnSiteOnly={setOnSiteOnly}
-                    minRating={minRating}
-                    setMinRating={setMinRating}
-                    onSearch={handleSearch}
-                    onResetFilters={handleResetFilters}
-                  />
-                </div>
-              )}
-            </div>
-            
-            {/* Results Section */}
-            {loading ? (
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {[...Array(8)].map((_, i) => (
-                  <ServiceCardSkeleton key={i} />
-                ))}
-              </div>
-            ) : sortedServices.length > 0 ? (
-              <div>
-                {/* Results Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <p className="text-gray-600">
-                      ნაპოვნია <span className="font-semibold text-primary">{sortedServices.length}</span> სერვისი
-                    </p>
+              
+              {/* Filters Section */}
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
+                  >
+                    <Filter className="h-4 w-4" />
+                    ფილტრები
                     {hasActiveFilters && (
-                      <Badge variant="outline" className="bg-primary/10 text-primary">
-                        ფილტრებით
+                      <Badge variant="secondary" className="ml-2">
+                        აქტიური
                       </Badge>
+                    )}
+                  </Button>
+
+                  <div className="flex items-center gap-4">
+                    {/* Reset Filters */}
+                    {hasActiveFilters && (
+                      <Button
+                        variant="ghost"
+                        onClick={handleResetFilters}
+                        className="text-gray-500 hover:text-red-500"
+                        size="sm"
+                      >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        გასუფთავება
+                      </Button>
                     )}
                   </div>
                 </div>
-                
-                {/* Services Grid */}
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {sortedServices.slice(0, visibleServicesCount).map(service => (
-                    <ServiceCard 
-                      key={service.id} 
-                      service={service}
-                    />
-                  ))}
-                </div>
 
-                {/* Load More Button */}
-                {sortedServices.length > visibleServicesCount && (
-                  <div className="mt-12 text-center">
-                    <Button
-                      onClick={loadMoreServices}
-                      variant="outline"
-                      size="lg"
-                      className="px-8 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors bg-white/80 backdrop-blur-sm"
-                    >
-                      მეტის ჩვენება ({sortedServices.length - visibleServicesCount} დარჩენილი)
-                    </Button>
+                {/* Filters Panel */}
+                {showFilters && (
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200">
+                    <ModernServiceFilters
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                      selectedCategory={selectedCategory}
+                      setSelectedCategory={setSelectedCategory}
+                      categories={categories}
+                      selectedCity={selectedCity}
+                      setSelectedCity={setSelectedCity}
+                      cities={availableCities}
+                      selectedDistrict={selectedDistrict}
+                      setSelectedDistrict={setSelectedDistrict}
+                      districts={availableDistricts}
+                      selectedBrands={selectedBrands}
+                      setSelectedBrands={setSelectedBrands}
+                      onSiteOnly={onSiteOnly}
+                      setOnSiteOnly={setOnSiteOnly}
+                      minRating={minRating}
+                      setMinRating={setMinRating}
+                      onSearch={handleSearch}
+                      onResetFilters={handleResetFilters}
+                    />
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="text-center py-16">
-                <div className="max-w-md mx-auto">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                    <span className="text-4xl">🔍</span>
+              
+              {/* Results Section */}
+              {loading ? (
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {[...Array(8)].map((_, i) => (
+                    <ServiceCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : sortedServices.length > 0 ? (
+                <div>
+                  {/* Results Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <p className="text-gray-600">
+                        ნაპოვნია <span className="font-semibold text-primary">{sortedServices.length}</span> სერვისი
+                      </p>
+                      {hasActiveFilters && (
+                        <Badge variant="outline" className="bg-primary/10 text-primary">
+                          ფილტრებით
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">სერვისები ვერ მოიძებნა</h3>
-                  <p className="text-gray-600 mb-6">
-                    {hasActiveFilters 
-                      ? "შეცვალეთ საძიებო კრიტერიუმები ან გაასუფთავეთ ფილტრები" 
-                      : "ჯერ არ არის დამატებული სერვისები"
-                    }
-                  </p>
-                  {hasActiveFilters && (
-                    <Button onClick={handleResetFilters} variant="outline">
-                      ფილტრების გასუფთავება
-                    </Button>
+                  
+                  {/* Services Grid */}
+                  <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {sortedServices.slice(0, visibleServicesCount).map(service => (
+                      <ServiceCard 
+                        key={service.id} 
+                        service={service}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Load More Button */}
+                  {sortedServices.length > visibleServicesCount && (
+                    <div className="mt-12 text-center">
+                      <Button
+                        onClick={loadMoreServices}
+                        variant="outline"
+                        size="lg"
+                        className="px-8 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors bg-white/80 backdrop-blur-sm"
+                      >
+                        მეტის ჩვენება ({sortedServices.length - visibleServicesCount} დარჩენილი)
+                      </Button>
+                    </div>
                   )}
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="text-center py-16">
+                  <div className="max-w-md mx-auto">
+                    <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                      <span className="text-4xl">🔍</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">სერვისები ვერ მოიძებნა</h3>
+                    <p className="text-gray-600 mb-6">
+                      {hasActiveFilters 
+                        ? "შეცვალეთ საძიებო კრიტერიუმები ან გაასუფთავეთ ფილტრები" 
+                        : "ჯერ არ არის დამატებული სერვისები"
+                      }
+                    </p>
+                    {hasActiveFilters && (
+                      <Button onClick={handleResetFilters} variant="outline">
+                        ფილტრების გასუფთავება
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </main>
-      
-      <Footer />
-    </div>
+        </main>
+        
+        <Footer />
+      </div>
+    </Layout>
   );
 };
 
