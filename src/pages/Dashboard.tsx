@@ -86,9 +86,9 @@ const Dashboard = () => {
   try {
     return (
       <div className="min-h-screen flex flex-col">
-        {/* Desktop Headers - only show on desktop */}
+        {/* Desktop Header - only show on desktop */}
         <div className="hidden md:block">
-          <Headers />
+          <Header />
         </div>
         
         <main className="flex-grow flex bg-muted py-8 pb-[70px] md:pb-8">
