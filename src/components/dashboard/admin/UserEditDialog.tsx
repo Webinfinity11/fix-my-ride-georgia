@@ -68,21 +68,42 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
       
       console.log('Updating user with data:', formData, 'role:', selectedRole);
       
-      // Use the new admin function
-      const { error } = await supabase.rpc('admin_update_user_profile', {
-        p_user_id: user.id,
-        p_first_name: formData.first_name,
-        p_last_name: formData.last_name,
-        p_email: formData.email,
-        p_phone: formData.phone || null,
-        p_city: formData.city || null,
-        p_district: formData.district || null,
-        p_role: selectedRole as 'customer' | 'mechanic' | 'admin',
-      });
+      // Use direct database update with RLS policies
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          email: formData.email,
+          phone: formData.phone || null,
+          city: formData.city || null,
+          district: formData.district || null,
+          role: selectedRole as 'customer' | 'mechanic' | 'admin',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
       
       if (error) {
         console.error('Update error:', error);
         throw error;
+      }
+
+      // Log admin action separately
+      const { error: logError } = await supabase
+        .from('admin_logs')
+        .insert({
+          target_type: 'user_profile',
+          target_id: user.id,
+          action: 'update',
+          details: {
+            old_data: user,
+            new_data: { ...formData, role: selectedRole }
+          }
+        });
+
+      if (logError) {
+        console.warn('Failed to log admin action:', logError);
+        // Don't throw error for logging failure
       }
     },
     onSuccess: () => {
@@ -102,10 +123,25 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
       
       console.log('Deleting user:', user.id);
       
-      // Use the new admin delete function
-      const { error } = await supabase.rpc('admin_delete_user', {
-        p_user_id: user.id
-      });
+      // Log admin action before deletion
+      const { error: logError } = await supabase
+        .from('admin_logs')
+        .insert({
+          target_type: 'user_profile',
+          target_id: user.id,
+          action: 'delete',
+          details: user
+        });
+
+      if (logError) {
+        console.warn('Failed to log admin action:', logError);
+      }
+
+      // Delete user profile (cascading deletes will handle related data)
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user.id);
       
       if (error) {
         console.error('Delete error:', error);

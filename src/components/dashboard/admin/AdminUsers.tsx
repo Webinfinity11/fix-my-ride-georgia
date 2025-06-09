@@ -54,15 +54,43 @@ const AdminUsers = () => {
     mutationFn: async ({ userId, verified }: { userId: string; verified: boolean }) => {
       console.log('Toggling verification for user:', userId, 'to:', verified);
       
-      // Use the new admin toggle verification function
-      const { error } = await supabase.rpc('admin_toggle_verification', {
-        p_user_id: userId,
-        p_verified: verified
-      });
+      // Get current user data for logging
+      const { data: currentUser } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      // Update verification status using direct database operation
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_verified: verified,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
       
       if (error) {
         console.error('Verification toggle error:', error);
         throw error;
+      }
+
+      // Log admin action
+      const { error: logError } = await supabase
+        .from('admin_logs')
+        .insert({
+          target_type: 'user_verification',
+          target_id: userId,
+          action: verified ? 'verify' : 'unverify',
+          details: {
+            old_status: currentUser?.is_verified,
+            new_status: verified
+          }
+        });
+
+      if (logError) {
+        console.warn('Failed to log admin action:', logError);
+        // Don't throw error for logging failure
       }
     },
     onSuccess: () => {
