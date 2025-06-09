@@ -50,6 +50,7 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
   // Reset form when user changes or dialog opens
   useEffect(() => {
     if (user && open) {
+      console.log('Resetting form with user data:', user);
       reset({
         first_name: user.first_name || '',
         last_name: user.last_name || '',
@@ -74,25 +75,33 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
         throw new Error('Admin user not authenticated');
       }
       
+      // Prepare update data
+      const updateData = {
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone: formData.phone || null,
+        city: formData.city || null,
+        district: formData.district || null,
+        role: selectedRole as 'customer' | 'mechanic' | 'admin',
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('Sending update data to Supabase:', updateData);
+      
       // Use direct database update with RLS policies
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .update({
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          email: formData.email,
-          phone: formData.phone || null,
-          city: formData.city || null,
-          district: formData.district || null,
-          role: selectedRole as 'customer' | 'mechanic' | 'admin',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        .update(updateData)
+        .eq('id', user.id)
+        .select();
       
       if (error) {
         console.error('Update error:', error);
         throw error;
       }
+
+      console.log('Update successful, data returned:', data);
 
       // Log admin action separately
       const { error: logError } = await supabase
@@ -112,8 +121,11 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
         console.warn('Failed to log admin action:', logError);
         // Don't throw error for logging failure
       }
+
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Update mutation successful:', data);
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast.success('მომხმარებლის ინფორმაცია წარმატებით განახლდა');
       onOpenChange(false);
@@ -175,6 +187,7 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
 
   const onSubmit = (data: FormData) => {
     console.log('Form submitted with data:', data);
+    console.log('Selected role:', selectedRole);
     updateUserMutation.mutate(data);
   };
 
