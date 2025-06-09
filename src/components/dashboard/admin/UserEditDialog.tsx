@@ -68,6 +68,12 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
       
       console.log('Updating user with data:', formData, 'role:', selectedRole);
       
+      // Get current admin user
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) {
+        throw new Error('Admin user not authenticated');
+      }
+      
       // Use direct database update with RLS policies
       const { error } = await supabase
         .from('profiles')
@@ -92,11 +98,12 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
       const { error: logError } = await supabase
         .from('admin_logs')
         .insert({
+          admin_id: currentUser.id,
           target_type: 'user_profile',
           target_id: user.id,
           action: 'update',
           details: {
-            old_data: user,
+            old_data: JSON.parse(JSON.stringify(user)),
             new_data: { ...formData, role: selectedRole }
           }
         });
@@ -123,14 +130,21 @@ const UserEditDialog = ({ user, open, onOpenChange }: UserEditDialogProps) => {
       
       console.log('Deleting user:', user.id);
       
+      // Get current admin user
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) {
+        throw new Error('Admin user not authenticated');
+      }
+      
       // Log admin action before deletion
       const { error: logError } = await supabase
         .from('admin_logs')
         .insert({
+          admin_id: currentUser.id,
           target_type: 'user_profile',
           target_id: user.id,
           action: 'delete',
-          details: user
+          details: JSON.parse(JSON.stringify(user))
         });
 
       if (logError) {

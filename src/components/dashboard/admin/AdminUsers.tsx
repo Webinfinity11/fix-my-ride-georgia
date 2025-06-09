@@ -54,8 +54,14 @@ const AdminUsers = () => {
     mutationFn: async ({ userId, verified }: { userId: string; verified: boolean }) => {
       console.log('Toggling verification for user:', userId, 'to:', verified);
       
+      // Get current admin user
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) {
+        throw new Error('Admin user not authenticated');
+      }
+
       // Get current user data for logging
-      const { data: currentUser } = await supabase
+      const { data: currentUserProfile } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -79,11 +85,12 @@ const AdminUsers = () => {
       const { error: logError } = await supabase
         .from('admin_logs')
         .insert({
+          admin_id: currentUser.id,
           target_type: 'user_verification',
           target_id: userId,
           action: verified ? 'verify' : 'unverify',
           details: {
-            old_status: currentUser?.is_verified,
+            old_status: currentUserProfile?.is_verified,
             new_status: verified
           }
         });
