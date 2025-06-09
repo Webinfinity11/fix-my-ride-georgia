@@ -1,8 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ServiceCard from "@/components/services/ServiceCard";
@@ -226,10 +224,8 @@ const ServicesDetail = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      <Header />
-      
-      <main className="py-8">
+    <Layout>
+      <div className="py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
@@ -369,10 +365,8 @@ const ServicesDetail = () => {
             )}
           </div>
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

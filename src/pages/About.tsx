@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -72,10 +71,8 @@ const About = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
-      <main className="flex-grow bg-muted py-12">
+    <Layout>
+      <div className="bg-muted py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm">
             <h1 className="text-3xl font-bold mb-6">ჩვენს შესახებ</h1>
@@ -131,10 +128,8 @@ const About = () => {
             </p>
           </div>
         </div>
-      </main>
-      
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 

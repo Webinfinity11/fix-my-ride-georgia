@@ -2,8 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import Layout from "@/components/layout/Layout";
 import ServiceForm from "@/components/forms/ServiceForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -84,22 +83,19 @@ const AddService = () => {
 
   if (loading || loadingCategories || !initialized) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow flex items-center justify-center">
+      <Layout>
+        <div className="flex items-center justify-center py-8">
           <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </main>
-        <Footer />
-      </div>
+        </div>
+      </Layout>
     );
   }
 
   if (!user || user.role !== "mechanic") return null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      <Header />
-      <main className="flex-grow py-8">
+    <Layout>
+      <div className="py-8">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">ახალი სერვისის დამატება</h1>
@@ -113,9 +109,8 @@ const AddService = () => {
             onCancel={handleCancel}
           />
         </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
+    </Layout>
   );
 };
 
