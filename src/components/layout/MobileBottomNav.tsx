@@ -71,7 +71,7 @@ const MobileBottomNav = () => {
                 <button
                   key={index}
                   onClick={item.onClick}
-                  className="flex flex-col items-center justify-center w-14 h-14 bg-purple-600 rounded-full shadow-lg transform -translate-y-2 transition-all duration-200 hover:bg-purple-700 active:scale-95"
+                  className="flex flex-col items-center justify-center w-14 h-14 bg-primary rounded-full shadow-lg transform -translate-y-2 transition-all duration-200 hover:bg-primary-dark active:scale-95"
                 >
                   <Icon className="h-6 w-6 text-white" />
                 </button>
@@ -86,12 +86,12 @@ const MobileBottomNav = () => {
               >
                 <Icon 
                   className={`h-6 w-6 mb-1 ${
-                    active ? 'text-blue-600' : 'text-gray-400'
+                    active ? 'text-primary' : 'text-gray-400'
                   }`} 
                 />
                 <span 
                   className={`text-xs font-medium ${
-                    active ? 'text-blue-600' : 'text-gray-400'
+                    active ? 'text-primary' : 'text-gray-400'
                   }`}
                 >
                   {item.label}

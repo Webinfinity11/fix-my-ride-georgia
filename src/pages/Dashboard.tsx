@@ -96,9 +96,16 @@ const Dashboard = () => {
         
         <main className="flex-grow flex bg-muted py-8 pb-[70px] md:pb-8">
           <div className="container mx-auto px-4 flex flex-col md:flex-row gap-6">
+            {/* Desktop Sidebar - only show on desktop */}
             <div className="hidden md:block">
               <DashboardSidebar />
             </div>
+            
+            {/* Mobile Sidebar - only show on mobile */}
+            <div className="md:hidden mb-6">
+              <DashboardSidebar />
+            </div>
+            
             <div className="flex-grow bg-background rounded-lg shadow-sm p-6">
               <Routes>
                 <Route
