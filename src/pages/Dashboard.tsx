@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -13,6 +14,8 @@ import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
 import AdminUsers from "@/components/dashboard/admin/AdminUsers";
+import { Header } from "@/components/layout/Header";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { toast } from "sonner";
 
 const Dashboard = () => {
