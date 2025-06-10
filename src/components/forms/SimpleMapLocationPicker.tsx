@@ -68,11 +68,11 @@ const SimpleMapLocationPicker = ({
 
   try {
     return (
-      <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20">
+      <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20 relative z-10" style={{ zIndex: 1 }}>
         <MapContainer
           center={center}
           zoom={13}
-          style={{ height: "100%", width: "100%" }}
+          style={{ height: "100%", width: "100%", zIndex: 1 }}
           scrollWheelZoom={interactive}
           dragging={interactive}
           touchZoom={interactive}
@@ -80,6 +80,7 @@ const SimpleMapLocationPicker = ({
           boxZoom={interactive}
           keyboard={interactive}
           ref={setMap}
+          zoomControl={true}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -92,7 +93,7 @@ const SimpleMapLocationPicker = ({
   } catch (error) {
     console.error("🗺️ Error rendering SimpleMapLocationPicker:", error);
     return (
-      <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20 flex items-center justify-center bg-gray-100">
+      <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20 flex items-center justify-center bg-gray-100 relative z-10" style={{ zIndex: 1 }}>
         <p className="text-gray-500">Map failed to load</p>
       </div>
     );

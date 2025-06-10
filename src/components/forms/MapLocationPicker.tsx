@@ -105,15 +105,16 @@ const MapLocationPicker = ({
   }, [interactive, handleLocationChange]);
 
   return (
-    <div className="space-y-4">
-      <div className="h-64 rounded-lg overflow-hidden border border-primary/20 bg-gray-50">
+    <div className="space-y-4 relative">
+      <div className="h-64 rounded-lg overflow-hidden border border-primary/20 bg-gray-50 relative z-10" style={{ zIndex: 1 }}>
         <MapContainer
           center={center}
           zoom={defaultZoom}
-          style={{ height: "100%", width: "100%" }}
+          style={{ height: "100%", width: "100%", zIndex: 1 }}
           scrollWheelZoom={true}
           attributionControl={true}
           ref={setMap}
+          zoomControl={true}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -135,13 +136,13 @@ const MapLocationPicker = ({
       </div>
       
       {interactive && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground relative z-20">
           რუკაზე დაჭერით ან მაკერის გადატანით შეგიძლიათ აირჩიოთ ზუსტი ლოკაცია
         </p>
       )}
       
       {interactive && (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 relative z-20">
           <div>
             <label 
               htmlFor="latitude" 
@@ -188,7 +189,7 @@ const MapLocationPicker = ({
       )}
       
       {interactive && (displayLat !== defaultLat || displayLng !== defaultLng) && (
-        <div className="text-center">
+        <div className="text-center relative z-20">
           <button
             type="button"
             onClick={() => handleLocationChange(defaultLat, defaultLng)}

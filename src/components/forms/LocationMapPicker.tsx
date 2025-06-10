@@ -99,7 +99,9 @@ const LocationMapPicker = ({
     if (!mapRef.current) return;
 
     // Initialize map
-    const map = L.map(mapRef.current).setView([currentLat, currentLng], 13);
+    const map = L.map(mapRef.current, {
+      zIndex: 1, // Set low z-index for the map container
+    }).setView([currentLat, currentLng], 13);
     
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -159,9 +161,9 @@ const LocationMapPicker = ({
   }, [latitude, longitude]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
       {interactive && (
-        <div className="flex gap-2">
+        <div className="flex gap-2 relative z-20">
           <Input
             type="text"
             placeholder="ჩაწერეთ მისამართი (მაგ: რუსთაველის გამზირი 25, თბილისი)"
@@ -184,12 +186,12 @@ const LocationMapPicker = ({
       
       <div 
         ref={mapRef} 
-        className="h-64 w-full rounded-lg border border-primary/20"
-        style={{ minHeight: '256px' }}
+        className="h-64 w-full rounded-lg border border-primary/20 relative z-10"
+        style={{ minHeight: '256px', zIndex: 1 }}
       />
       
       {interactive && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground relative z-20">
           რუკაზე დაჭერით, მაკერის გადატანით ან მისამართის ძიებით შეგიძლიათ აირჩიოთ ზუსტი ლოკაცია
         </p>
       )}
