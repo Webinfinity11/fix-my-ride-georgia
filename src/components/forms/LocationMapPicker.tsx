@@ -98,20 +98,18 @@ const LocationMapPicker = ({
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Initialize map
-    const map = L.map(mapRef.current, {
-      zIndex: 1, // Set low z-index for the map container
-    }).setView([currentLat, currentLng], 13);
+    // Initialize map without invalid zIndex property
+    map.current = L.map(mapRef.current).setView([currentLat, currentLng], 13);
     
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    }).addTo(map.current);
 
     // Add marker with draggable option
     const marker = L.marker([currentLat, currentLng], {
       draggable: interactive
-    }).addTo(map);
+    }).addTo(map.current);
     
     if (interactive) {
       marker.bindPopup('გადაიტანეთ მაკერი ან დააჭირეთ რუკას ლოკაციის შესაცვლელად');
@@ -125,7 +123,7 @@ const LocationMapPicker = ({
       });
       
       // Handle map click
-      map.on('click', (e) => {
+      map.current.on('click', (e) => {
         const { lat, lng } = e.latlng;
         marker.setLatLng([lat, lng]);
         setCurrentLat(lat);
@@ -136,7 +134,7 @@ const LocationMapPicker = ({
       marker.bindPopup('სერვისის ლოკაცია');
     }
 
-    mapInstanceRef.current = map;
+    mapInstanceRef.current = map.current;
     markerRef.current = marker;
 
     // Cleanup
