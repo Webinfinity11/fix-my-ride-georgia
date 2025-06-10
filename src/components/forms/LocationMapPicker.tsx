@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -99,17 +98,17 @@ const LocationMapPicker = ({
     if (!mapRef.current) return;
 
     // Initialize map without invalid zIndex property
-    map.current = L.map(mapRef.current).setView([currentLat, currentLng], 13);
+    mapInstanceRef.current = L.map(mapRef.current).setView([currentLat, currentLng], 13);
     
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map.current);
+    }).addTo(mapInstanceRef.current);
 
     // Add marker with draggable option
     const marker = L.marker([currentLat, currentLng], {
       draggable: interactive
-    }).addTo(map.current);
+    }).addTo(mapInstanceRef.current);
     
     if (interactive) {
       marker.bindPopup('გადაიტანეთ მაკერი ან დააჭირეთ რუკას ლოკაციის შესაცვლელად');
@@ -123,7 +122,7 @@ const LocationMapPicker = ({
       });
       
       // Handle map click
-      map.current.on('click', (e) => {
+      mapInstanceRef.current.on('click', (e) => {
         const { lat, lng } = e.latlng;
         marker.setLatLng([lat, lng]);
         setCurrentLat(lat);
@@ -134,7 +133,6 @@ const LocationMapPicker = ({
       marker.bindPopup('სერვისის ლოკაცია');
     }
 
-    mapInstanceRef.current = map.current;
     markerRef.current = marker;
 
     // Cleanup
