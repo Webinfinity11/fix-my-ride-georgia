@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -14,6 +13,7 @@ import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
 import AdminUsers from "@/components/dashboard/admin/AdminUsers";
+import ServiceManagement from "@/components/dashboard/admin/ServiceManagement";
 import { Header } from "@/components/layout/Header";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { toast } from "sonner";
@@ -94,19 +94,19 @@ const Dashboard = () => {
           <Header />
         </div>
         
-        <main className="flex-grow flex bg-muted py-8 pb-[70px] md:pb-8">
-          <div className="container mx-auto px-4 flex flex-col md:flex-row gap-6">
+        <main className="flex-grow flex bg-muted py-4 md:py-8 pb-[70px] md:pb-8">
+          <div className="container mx-auto px-2 md:px-4 flex flex-col md:flex-row gap-3 md:gap-6">
             {/* Desktop Sidebar - only show on desktop */}
             <div className="hidden md:block">
               <DashboardSidebar />
             </div>
             
             {/* Mobile Sidebar - only show on mobile */}
-            <div className="md:hidden mb-6">
+            <div className="md:hidden mb-3">
               <DashboardSidebar />
             </div>
             
-            <div className="flex-grow bg-background rounded-lg shadow-sm p-6">
+            <div className="flex-grow bg-background rounded-lg shadow-sm p-3 md:p-6 overflow-hidden">
               <Routes>
                 <Route
                   path="/"
@@ -153,6 +153,16 @@ const Dashboard = () => {
                   element={
                     user.role === "admin" ? (
                       <AdminDashboard />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/service-details"
+                  element={
+                    user.role === "admin" ? (
+                      <ServiceManagement />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

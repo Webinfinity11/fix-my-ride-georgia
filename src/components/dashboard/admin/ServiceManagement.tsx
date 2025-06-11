@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -437,48 +436,53 @@ const ServiceManagement = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Settings className="h-6 w-6" />
-          სერვისის დეტალები
+        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+          <Settings className="h-5 w-5 md:h-6 md:w-6" />
+          <span className="hidden sm:inline">სერვისის დეტალები</span>
+          <span className="sm:hidden">დეტალები</span>
         </h2>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="categories" className="flex items-center gap-2">
-            <Tag className="h-4 w-4" />
-            კატეგორიები
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+          <TabsTrigger value="categories" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+            <Tag className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">კატეგორიები</span>
+            <span className="sm:hidden">კატ.</span>
           </TabsTrigger>
-          <TabsTrigger value="cities" className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            ქალაქები
+          <TabsTrigger value="cities" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+            <MapPin className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">ქალაქები</span>
+            <span className="sm:hidden">ქალ.</span>
           </TabsTrigger>
-          <TabsTrigger value="districts" className="flex items-center gap-2">
-            <Building className="h-4 w-4" />
-            უბნები
+          <TabsTrigger value="districts" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3 col-span-2 md:col-span-1">
+            <Building className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">უბნები</span>
+            <span className="sm:hidden">უბნ.</span>
           </TabsTrigger>
-          <TabsTrigger value="brands" className="flex items-center gap-2">
-            <Car className="h-4 w-4" />
-            მარკები
+          <TabsTrigger value="brands" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3 col-span-2 md:col-span-1">
+            <Car className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">მარკები</span>
+            <span className="sm:hidden">მარკ.</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="categories" className="space-y-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>სერვისის კატეგორიები</CardTitle>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">სერვისის კატეგორიები</CardTitle>
               <Dialog open={dialogOpen && activeTab === "categories"} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={() => openAddDialog("categories")}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    ახალი კატეგორია
+                  <Button onClick={() => openAddDialog("categories")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი კატეგორია</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] max-w-md">
                   <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className="text-lg">
                       {editingItem ? "კატეგორიის რედაქტირება" : "ახალი კატეგორია"}
                     </DialogTitle>
                   </DialogHeader>
@@ -486,45 +490,46 @@ const ServiceManagement = () => {
                 </DialogContent>
               </Dialog>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
                 {categories.map(category => (
                   <div key={category.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">{category.name}</h4>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm md:text-base truncate">{category.name}</h4>
                       {category.description && (
-                        <p className="text-sm text-muted-foreground">{category.description}</p>
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">{category.description}</p>
                       )}
                       {category.icon && (
-                        <Badge variant="outline" className="mt-1">
+                        <Badge variant="outline" className="mt-1 text-xs">
                           {category.icon}
                         </Badge>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 md:gap-2 ml-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => openEditDialog(category, "category")}
+                        className="p-2"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-4 w-4" />
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>კატეგორიის წაშლა</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogTitle className="text-lg">კატეგორიის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
                               დარწმუნებული ხართ, რომ გსურთ "{category.name}" კატეგორიის წაშლა?
                             </AlertDialogDescription>
                           </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>გაუქმება</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(category.id, "category")}>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(category.id, "category")} className="w-full sm:w-auto">
                               წაშლა
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -540,18 +545,18 @@ const ServiceManagement = () => {
 
         <TabsContent value="cities" className="space-y-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>ქალაქები</CardTitle>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">ქალაქები</CardTitle>
               <Dialog open={dialogOpen && activeTab === "cities"} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={() => openAddDialog("cities")}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    ახალი ქალაქი
+                  <Button onClick={() => openAddDialog("cities")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი ქალაქი</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] max-w-md">
                   <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className="text-lg">
                       {editingItem ? "ქალაქის რედაქტირება" : "ახალი ქალაქი"}
                     </DialogTitle>
                   </DialogHeader>
@@ -559,38 +564,39 @@ const ServiceManagement = () => {
                 </DialogContent>
               </Dialog>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
                 {cities.map(city => (
                   <div key={city.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">{city.name}</h4>
-                      <p className="text-sm text-muted-foreground">{city.country}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm md:text-base truncate">{city.name}</h4>
+                      <p className="text-xs md:text-sm text-muted-foreground">{city.country}</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 md:gap-2 ml-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => openEditDialog(city, "city")}
+                        className="p-2"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-4 w-4" />
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>ქალაქის წაშლა</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogTitle className="text-lg">ქალაქის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
                               დარწმუნებული ხართ, რომ გსურთ "{city.name}" ქალაქის წაშლა?
                             </AlertDialogDescription>
                           </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>გაუქმება</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(city.id, "city")}>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(city.id, "city")} className="w-full sm:w-auto">
                               წაშლა
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -606,18 +612,18 @@ const ServiceManagement = () => {
 
         <TabsContent value="districts" className="space-y-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>უბნები</CardTitle>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">უბნები</CardTitle>
               <Dialog open={dialogOpen && activeTab === "districts"} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={() => openAddDialog("districts")}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    ახალი უბანი
+                  <Button onClick={() => openAddDialog("districts")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი უბანი</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] max-w-md">
                   <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className="text-lg">
                       {editingItem ? "უბნის რედაქტირება" : "ახალი უბანი"}
                     </DialogTitle>
                   </DialogHeader>
@@ -625,38 +631,39 @@ const ServiceManagement = () => {
                 </DialogContent>
               </Dialog>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
                 {districts.map(district => (
                   <div key={district.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">{district.name}</h4>
-                      <p className="text-sm text-muted-foreground">{district.city.name}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm md:text-base truncate">{district.name}</h4>
+                      <p className="text-xs md:text-sm text-muted-foreground">{district.city.name}</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 md:gap-2 ml-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => openEditDialog(district, "district")}
+                        className="p-2"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-4 w-4" />
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>უბნის წაშლა</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogTitle className="text-lg">უბნის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
                               დარწმუნებული ხართ, რომ გსურთ "{district.name}" უბნის წაშლა?
                             </AlertDialogDescription>
                           </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>გაუქმება</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(district.id, "district")}>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(district.id, "district")} className="w-full sm:w-auto">
                               წაშლა
                             </AlertDialogAction>
                           </AlertDialogFooter>
@@ -672,18 +679,18 @@ const ServiceManagement = () => {
 
         <TabsContent value="brands" className="space-y-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>ავტომობილის მარკები</CardTitle>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">ავტომობილის მარკები</CardTitle>
               <Dialog open={dialogOpen && activeTab === "brands"} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button onClick={() => openAddDialog("brands")}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    ახალი მარკა
+                  <Button onClick={() => openAddDialog("brands")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი მარკა</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] max-w-md">
                   <DialogHeader>
-                    <DialogTitle>
+                    <DialogTitle className="text-lg">
                       {editingItem ? "მარკის რედაქტირება" : "ახალი მარკა"}
                     </DialogTitle>
                   </DialogHeader>
@@ -691,47 +698,48 @@ const ServiceManagement = () => {
                 </DialogContent>
               </Dialog>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
                 {carBrands.map(brand => (
                   <div key={brand.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
                       {brand.logo_url && (
-                        <img src={brand.logo_url} alt={brand.name} className="h-8 w-8 object-contain" />
+                        <img src={brand.logo_url} alt={brand.name} className="h-6 w-6 md:h-8 md:w-8 object-contain flex-shrink-0" />
                       )}
-                      <div>
-                        <h4 className="font-medium">{brand.name}</h4>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-medium text-sm md:text-base truncate">{brand.name}</h4>
                         {brand.is_popular && (
-                          <Badge variant="secondary" className="mt-1">
+                          <Badge variant="secondary" className="mt-1 text-xs">
                             პოპულარული
                           </Badge>
                         )}
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1 md:gap-2 ml-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => openEditDialog(brand, "brand")}
+                        className="p-2"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
                       </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="outline">
-                            <Trash2 className="h-4 w-4" />
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>მარკის წაშლა</AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogTitle className="text-lg">მარკის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
                               დარწმუნებული ხართ, რომ გსურთ "{brand.name}" მარკის წაშლა?
                             </AlertDialogDescription>
                           </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>გაუქმება</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(brand.id, "brand")}>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(brand.id, "brand")} className="w-full sm:w-auto">
                               წაშლა
                             </AlertDialogAction>
                           </AlertDialogFooter>
