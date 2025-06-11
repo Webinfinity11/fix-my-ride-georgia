@@ -1,13 +1,14 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Generate meta tags for SEO
 export const generateMetaTags = (
   title: string,
   description: string,
   keywords?: string,
   image?: string,
   url?: string,
-  type: 'website' | 'article' | 'profile' = 'website'
+  type?: 'website' | 'article' | 'profile'
 ) => {
   const baseUrl = 'https://avtokhelosani.ge';
   const fullTitle = `${title} | ავტოხელოსანი`;
@@ -20,116 +21,12 @@ export const generateMetaTags = (
     keywords,
     image: imageUrl,
     url: pageUrl,
-    type
+    type: type || 'website'
   };
 };
 
-export const generateSitemap = async (): Promise<string> => {
-  const baseUrl = 'https://avtokhelosani.ge';
-  
-  // Static pages
-  const staticPages = [
-    { url: '/', priority: '1.0', changefreq: 'daily' },
-    { url: '/services', priority: '0.9', changefreq: 'daily' },
-    { url: '/mechanics', priority: '0.9', changefreq: 'daily' },
-    { url: '/search', priority: '0.8', changefreq: 'weekly' },
-    { url: '/about', priority: '0.7', changefreq: 'monthly' },
-    { url: '/contact', priority: '0.7', changefreq: 'monthly' }
-  ];
-
-  // Fetch dynamic data
-  const { data: categories } = await supabase
-    .from('service_categories')
-    .select('id, name');
-
-  const { data: services } = await supabase
-    .from('mechanic_services')
-    .select('id, name, updated_at')
-    .eq('is_active', true);
-
-  const { data: mechanics } = await supabase
-    .from('mechanic_profiles')
-    .select('id')
-    .join('profiles', 'mechanic_profiles.id', 'profiles.id')
-    .select('profiles.updated_at');
-
-  const { data: cities } = await supabase
-    .from('cities')
-    .select('id, name, updated_at');
-
-  let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
-
-  // Add static pages
-  staticPages.forEach(page => {
-    xmlContent += `
-  <url>
-    <loc>${baseUrl}${page.url}</loc>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
-  </url>`;
-  });
-
-  // Add service categories
-  if (categories) {
-    categories.forEach(category => {
-      xmlContent += `
-  <url>
-    <loc>${baseUrl}/services?category=${category.id}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`;
-    });
-  }
-
-  // Add individual services
-  if (services) {
-    services.forEach(service => {
-      const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : undefined;
-      xmlContent += `
-  <url>
-    <loc>${baseUrl}/service/${service.id}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>${lastmod ? `
-    <lastmod>${lastmod}</lastmod>` : ''}
-  </url>`;
-    });
-  }
-
-  // Add mechanic profiles
-  if (mechanics) {
-    mechanics.forEach(mechanic => {
-      xmlContent += `
-  <url>
-    <loc>${baseUrl}/mechanic/${mechanic.id}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`;
-    });
-  }
-
-  // Add cities
-  if (cities) {
-    cities.forEach(city => {
-      xmlContent += `
-  <url>
-    <loc>${baseUrl}/search?city=${encodeURIComponent(city.name)}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>`;
-    });
-  }
-
-  xmlContent += `
-</urlset>`;
-
-  return xmlContent;
-};
-
-export const generateStructuredData = (
-  type: 'Organization' | 'LocalBusiness' | 'Service' | 'Person',
-  data: any
-) => {
+// Generate structured data for different types
+export const generateStructuredData = (type: string, data: any) => {
   const baseStructure = {
     '@context': 'https://schema.org',
     '@type': type
@@ -150,78 +47,179 @@ export const generateStructuredData = (
         },
         ...data
       };
-
+    
     case 'LocalBusiness':
       return {
         ...baseStructure,
-        name: data.name,
-        description: data.description,
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: data.address,
-          addressLocality: data.city,
-          addressCountry: 'GE'
-        },
+        name: data.name || 'ავტოხელოსანი',
+        address: data.address,
         telephone: data.phone,
-        priceRange: data.priceRange,
+        openingHours: data.hours,
         ...data
       };
-
+    
     case 'Service':
       return {
         ...baseStructure,
         name: data.name,
         description: data.description,
         provider: {
-          '@type': 'Person',
-          name: data.providerName
+          '@type': 'Organization',
+          name: 'ავტოხელოსანი'
         },
-        areaServed: data.city,
         ...data
       };
-
+    
     case 'Person':
       return {
         ...baseStructure,
         name: data.name,
-        jobTitle: data.jobTitle || 'ავტომექანიკოსი',
+        jobTitle: data.jobTitle || 'მექანიკოსი',
         worksFor: {
           '@type': 'Organization',
           name: 'ავტოხელოსანი'
         },
         ...data
       };
-
+    
     default:
-      return baseStructure;
+      return { ...baseStructure, ...data };
   }
 };
 
-export const getPageKeywords = (page: string, additionalKeywords: string[] = []): string => {
-  const baseKeywords = [
-    'ავტოხელოსანი',
-    'ავტოსერვისი',
-    'მექანიკოსი',
-    'ავტომობილის რემონტი',
-    'თბილისი',
-    'საქართველო',
-    'ავტოდახმარება'
+// Generate sitemap XML
+export const generateSitemap = async (): Promise<string> => {
+  const baseUrl = 'https://avtokhelosani.ge';
+  
+  // Static pages
+  const staticPages = [
+    { url: '', changefreq: 'daily', priority: '1.0' },
+    { url: '/services', changefreq: 'daily', priority: '0.9' },
+    { url: '/mechanics', changefreq: 'daily', priority: '0.9' },
+    { url: '/search', changefreq: 'weekly', priority: '0.8' },
+    { url: '/about', changefreq: 'monthly', priority: '0.7' },
+    { url: '/contact', changefreq: 'monthly', priority: '0.7' }
   ];
 
-  const pageSpecificKeywords: Record<string, string[]> = {
-    '/': ['ავტოხელოსნის ძებნა', 'ავტოსერვისი ონლაინ', 'მექანიკოსის შერჩევა'],
-    '/services': ['ავტოსერვისები', 'ავტომობილის მომსახურება', 'ავტორემონტი'],
-    '/mechanics': ['ავტომექანიკოსები', 'გამოცდილი ხელოსნები', 'ავტოსპეციალისტები'],
-    '/search': ['ძებნა', 'ფილტრაცია', 'მიკროლოკაცია'],
-    '/about': ['ჩვენს შესახებ', 'კომპანია', 'მისია'],
-    '/contact': ['კონტაქტი', 'დაკავშირება', 'მხარდაჭერა']
+  let urls = staticPages.map(page => 
+    `  <url>
+    <loc>${baseUrl}${page.url}</loc>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`
+  );
+
+  try {
+    // Get services
+    const { data: services } = await supabase
+      .from('mechanic_services')
+      .select('id, name, updated_at')
+      .eq('is_active', true);
+
+    if (services) {
+      const serviceUrls = services.map(service => 
+        `  <url>
+    <loc>${baseUrl}/service/${service.id}</loc>
+    <lastmod>${new Date(service.updated_at).toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`
+      );
+      urls = urls.concat(serviceUrls);
+    }
+
+    // Get mechanics with profiles
+    const { data: mechanics } = await supabase
+      .from('profiles')
+      .select(`
+        id,
+        first_name,
+        last_name,
+        updated_at,
+        mechanic_profiles!inner(id)
+      `)
+      .eq('role', 'mechanic');
+
+    if (mechanics) {
+      const mechanicUrls = mechanics.map(mechanic => 
+        `  <url>
+    <loc>${baseUrl}/mechanic/${mechanic.id}</loc>
+    <lastmod>${new Date(mechanic.updated_at).toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`
+      );
+      urls = urls.concat(mechanicUrls);
+    }
+
+    // Get service categories
+    const { data: categories } = await supabase
+      .from('service_categories')
+      .select('id, name');
+
+    if (categories) {
+      const categoryUrls = categories.map(category => 
+        `  <url>
+    <loc>${baseUrl}/services?category=${category.id}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`
+      );
+      urls = urls.concat(categoryUrls);
+    }
+
+  } catch (error) {
+    console.error('Error fetching data for sitemap:', error);
+  }
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join('\n')}
+</urlset>`;
+};
+
+// Generate breadcrumb structured data
+export const generateBreadcrumbStructuredData = (breadcrumbs: Array<{name: string, url: string}>) => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url
+    }))
   };
+};
 
-  const keywords = [
-    ...baseKeywords,
-    ...(pageSpecificKeywords[page] || []),
-    ...additionalKeywords
-  ];
+// Generate FAQ structured data
+export const generateFAQStructuredData = (faqs: Array<{question: string, answer: string}>) => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer
+      }
+    }))
+  };
+};
 
-  return keywords.join(', ');
+// Generate review/rating structured data
+export const generateReviewStructuredData = (reviews: any[]) => {
+  if (!reviews || reviews.length === 0) return null;
+  
+  const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+  
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'AggregateRating',
+    ratingValue: averageRating.toFixed(1),
+    reviewCount: reviews.length,
+    bestRating: 5,
+    worstRating: 1
+  };
 };
