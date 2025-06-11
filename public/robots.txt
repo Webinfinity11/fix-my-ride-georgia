@@ -1,14 +1,26 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
 
 User-agent: *
 Allow: /
+
+# Allow important pages
+Allow: /services
+Allow: /mechanics
+Allow: /search
+Allow: /about
+Allow: /contact
+
+# Disallow private/admin areas
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /chat
+Disallow: /api
+
+# Allow search engines to crawl service and mechanic pages
+Allow: /service/*
+Allow: /mechanic/*
+
+# Sitemap location
+Sitemap: https://avtokhelosani.ge/sitemap.xml
+
+# Crawl-delay for better server performance
+Crawl-delay: 1
