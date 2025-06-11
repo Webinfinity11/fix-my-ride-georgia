@@ -1,117 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
-
-export interface SitemapUrl {
-  loc: string;
-  lastmod?: string;
-  changefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
-  priority?: number;
-}
-
-export const generateSitemap = async (): Promise<string> => {
-  const baseUrl = 'https://avtokhelosani.ge';
-  const urls: SitemapUrl[] = [];
-
-  // Static pages
-  urls.push(
-    { loc: `${baseUrl}/`, changefreq: 'daily', priority: 1.0 },
-    { loc: `${baseUrl}/services`, changefreq: 'daily', priority: 0.9 },
-    { loc: `${baseUrl}/mechanics`, changefreq: 'daily', priority: 0.9 },
-    { loc: `${baseUrl}/search`, changefreq: 'weekly', priority: 0.8 },
-    { loc: `${baseUrl}/about`, changefreq: 'monthly', priority: 0.7 },
-    { loc: `${baseUrl}/contact`, changefreq: 'monthly', priority: 0.7 }
-  );
-
-  try {
-    // Fetch service categories
-    const { data: categories } = await supabase
-      .from('service_categories')
-      .select('id, name, updated_at')
-      .order('name');
-
-    if (categories) {
-      categories.forEach(category => {
-        urls.push({
-          loc: `${baseUrl}/services/category/${category.id}`,
-          lastmod: category.updated_at || new Date().toISOString(),
-          changefreq: 'weekly',
-          priority: 0.8
-        });
-      });
-    }
-
-    // Fetch cities
-    const { data: cities } = await supabase
-      .from('cities')
-      .select('id, name, updated_at')
-      .order('name');
-
-    if (cities) {
-      cities.forEach(city => {
-        urls.push({
-          loc: `${baseUrl}/services/city/${encodeURIComponent(city.name)}`,
-          lastmod: city.updated_at || new Date().toISOString(),
-          changefreq: 'weekly',
-          priority: 0.7
-        });
-      });
-    }
-
-    // Fetch individual services
-    const { data: services } = await supabase
-      .from('mechanic_services')
-      .select('id, name, updated_at')
-      .eq('is_active', true)
-      .order('updated_at', { ascending: false })
-      .limit(1000); // Limit for performance
-
-    if (services) {
-      services.forEach(service => {
-        urls.push({
-          loc: `${baseUrl}/service/${service.id}`,
-          lastmod: service.updated_at || new Date().toISOString(),
-          changefreq: 'weekly',
-          priority: 0.6
-        });
-      });
-    }
-
-    // Fetch mechanic profiles
-    const { data: mechanics } = await supabase
-      .from('profiles')
-      .select('id, updated_at')
-      .eq('role', 'mechanic')
-      .order('updated_at', { ascending: false })
-      .limit(500); // Limit for performance
-
-    if (mechanics) {
-      mechanics.forEach(mechanic => {
-        urls.push({
-          loc: `${baseUrl}/mechanic/${mechanic.id}`,
-          lastmod: mechanic.updated_at || new Date().toISOString(),
-          changefreq: 'weekly',
-          priority: 0.6
-        });
-      });
-    }
-
-  } catch (error) {
-    console.error('Error generating sitemap:', error);
-  }
-
-  // Generate XML
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(url => `  <url>
-    <loc>${url.loc}</loc>
-    ${url.lastmod ? `<lastmod>${url.lastmod.split('T')[0]}</lastmod>` : ''}
-    ${url.changefreq ? `<changefreq>${url.changefreq}</changefreq>` : ''}
-    ${url.priority ? `<priority>${url.priority}</priority>` : ''}
-  </url>`).join('\n')}
-</urlset>`;
-
-  return xml;
-};
+import { supabase } from '@/integrations/supabase/client';
 
 export const generateMetaTags = (
   title: string,
@@ -122,27 +10,120 @@ export const generateMetaTags = (
   type: 'website' | 'article' | 'profile' = 'website'
 ) => {
   const baseUrl = 'https://avtokhelosani.ge';
-  const defaultImage = `${baseUrl}/placeholder.svg`;
-  
+  const fullTitle = `${title} | ავტოხელოსანი`;
+  const imageUrl = image || `${baseUrl}/placeholder.svg`;
+  const pageUrl = url || baseUrl;
+
   return {
-    title: `${title} | ავტოხელოსანი`,
+    title: fullTitle,
     description,
-    keywords: keywords || 'ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, თბილისი',
-    openGraph: {
-      title,
-      description,
-      type,
-      url: url || baseUrl,
-      image: image || defaultImage,
-      siteName: 'ავტოხელოსანი'
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      image: image || defaultImage
-    }
+    keywords,
+    image: imageUrl,
+    url: pageUrl,
+    type
   };
+};
+
+export const generateSitemap = async (): Promise<string> => {
+  const baseUrl = 'https://avtokhelosani.ge';
+  
+  // Static pages
+  const staticPages = [
+    { url: '/', priority: '1.0', changefreq: 'daily' },
+    { url: '/services', priority: '0.9', changefreq: 'daily' },
+    { url: '/mechanics', priority: '0.9', changefreq: 'daily' },
+    { url: '/search', priority: '0.8', changefreq: 'weekly' },
+    { url: '/about', priority: '0.7', changefreq: 'monthly' },
+    { url: '/contact', priority: '0.7', changefreq: 'monthly' }
+  ];
+
+  // Fetch dynamic data
+  const { data: categories } = await supabase
+    .from('service_categories')
+    .select('id, name');
+
+  const { data: services } = await supabase
+    .from('mechanic_services')
+    .select('id, name, updated_at')
+    .eq('is_active', true);
+
+  const { data: mechanics } = await supabase
+    .from('mechanic_profiles')
+    .select('id')
+    .join('profiles', 'mechanic_profiles.id', 'profiles.id')
+    .select('profiles.updated_at');
+
+  const { data: cities } = await supabase
+    .from('cities')
+    .select('id, name, updated_at');
+
+  let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+
+  // Add static pages
+  staticPages.forEach(page => {
+    xmlContent += `
+  <url>
+    <loc>${baseUrl}${page.url}</loc>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`;
+  });
+
+  // Add service categories
+  if (categories) {
+    categories.forEach(category => {
+      xmlContent += `
+  <url>
+    <loc>${baseUrl}/services?category=${category.id}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+    });
+  }
+
+  // Add individual services
+  if (services) {
+    services.forEach(service => {
+      const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : undefined;
+      xmlContent += `
+  <url>
+    <loc>${baseUrl}/service/${service.id}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>${lastmod ? `
+    <lastmod>${lastmod}</lastmod>` : ''}
+  </url>`;
+    });
+  }
+
+  // Add mechanic profiles
+  if (mechanics) {
+    mechanics.forEach(mechanic => {
+      xmlContent += `
+  <url>
+    <loc>${baseUrl}/mechanic/${mechanic.id}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+    });
+  }
+
+  // Add cities
+  if (cities) {
+    cities.forEach(city => {
+      xmlContent += `
+  <url>
+    <loc>${baseUrl}/search?city=${encodeURIComponent(city.name)}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+    });
+  }
+
+  xmlContent += `
+</urlset>`;
+
+  return xmlContent;
 };
 
 export const generateStructuredData = (
@@ -164,8 +145,8 @@ export const generateStructuredData = (
         description: 'პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს',
         contactPoint: {
           '@type': 'ContactPoint',
-          telephone: '+995-xxx-xxx-xxx',
-          contactType: 'customer service'
+          contactType: 'customer service',
+          availableLanguage: 'Georgian'
         },
         ...data
       };
@@ -177,12 +158,12 @@ export const generateStructuredData = (
         description: data.description,
         address: {
           '@type': 'PostalAddress',
+          streetAddress: data.address,
           addressLocality: data.city,
-          addressRegion: data.district,
           addressCountry: 'GE'
         },
         telephone: data.phone,
-        openingHours: data.workingHours,
+        priceRange: data.priceRange,
         ...data
       };
 
@@ -195,11 +176,7 @@ export const generateStructuredData = (
           '@type': 'Person',
           name: data.providerName
         },
-        offers: {
-          '@type': 'Offer',
-          price: data.priceFrom,
-          priceCurrency: 'GEL'
-        },
+        areaServed: data.city,
         ...data
       };
 
@@ -207,13 +184,10 @@ export const generateStructuredData = (
       return {
         ...baseStructure,
         name: data.name,
-        jobTitle: 'ავტომექანიკოსი',
-        description: data.description,
-        telephone: data.phone,
-        address: {
-          '@type': 'PostalAddress',
-          addressLocality: data.city,
-          addressCountry: 'GE'
+        jobTitle: data.jobTitle || 'ავტომექანიკოსი',
+        worksFor: {
+          '@type': 'Organization',
+          name: 'ავტოხელოსანი'
         },
         ...data
       };
@@ -221,4 +195,33 @@ export const generateStructuredData = (
     default:
       return baseStructure;
   }
+};
+
+export const getPageKeywords = (page: string, additionalKeywords: string[] = []): string => {
+  const baseKeywords = [
+    'ავტოხელოსანი',
+    'ავტოსერვისი',
+    'მექანიკოსი',
+    'ავტომობილის რემონტი',
+    'თბილისი',
+    'საქართველო',
+    'ავტოდახმარება'
+  ];
+
+  const pageSpecificKeywords: Record<string, string[]> = {
+    '/': ['ავტოხელოსნის ძებნა', 'ავტოსერვისი ონლაინ', 'მექანიკოსის შერჩევა'],
+    '/services': ['ავტოსერვისები', 'ავტომობილის მომსახურება', 'ავტორემონტი'],
+    '/mechanics': ['ავტომექანიკოსები', 'გამოცდილი ხელოსნები', 'ავტოსპეციალისტები'],
+    '/search': ['ძებნა', 'ფილტრაცია', 'მიკროლოკაცია'],
+    '/about': ['ჩვენს შესახებ', 'კომპანია', 'მისია'],
+    '/contact': ['კონტაქტი', 'დაკავშირება', 'მხარდაჭერა']
+  };
+
+  const keywords = [
+    ...baseKeywords,
+    ...(pageSpecificKeywords[page] || []),
+    ...additionalKeywords
+  ];
+
+  return keywords.join(', ');
 };
