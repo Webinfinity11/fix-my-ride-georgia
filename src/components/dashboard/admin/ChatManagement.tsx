@@ -77,8 +77,14 @@ const ChatManagement = () => {
 
       if (error) throw error;
 
-      const processedRooms = roomsData?.map(room => ({
-        ...room,
+      const processedRooms: ChatRoom[] = roomsData?.map(room => ({
+        id: room.id,
+        name: room.name,
+        type: (room.type === 'direct' || room.type === 'channel') ? room.type : 'channel',
+        description: room.description,
+        is_public: room.is_public ?? true,
+        created_at: room.created_at,
+        created_by: room.created_by,
         participant_count: Array.isArray(room.chat_participants) ? room.chat_participants.length : 0,
         message_count: Array.isArray(room.messages) ? room.messages.length : 0
       })) || [];
