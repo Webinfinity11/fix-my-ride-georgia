@@ -24,9 +24,6 @@ interface Message {
   content: string;
   created_at: string;
   sender_name?: string;
-  file_url?: string;
-  file_type?: 'image' | 'video' | 'file';
-  file_name?: string;
 }
 
 interface ChatContextType {
@@ -35,7 +32,7 @@ interface ChatContextType {
   messages: Message[];
   onlineUsers: string[];
   setActiveRoom: (room: ChatRoom | null) => void;
-  sendMessage: (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => Promise<void>;
+  sendMessage: (content: string) => Promise<void>;
   createDirectChat: (userId: string) => Promise<ChatRoom | null>;
   joinChannel: (roomId: string) => Promise<void>;
   loadRooms: () => Promise<void>;
@@ -154,41 +151,26 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('💬 Loaded messages:', data);
 
     if (data) {
-      const formattedMessages = data.map(msg => ({
+      setMessages(data.map(msg => ({
         ...msg,
-        sender_name: `${msg.profiles?.first_name || ''} ${msg.profiles?.last_name || ''}`.trim() || 'Unknown',
-        // Ensure file_type is properly typed
-        file_type: msg.file_type && ['image', 'video', 'file'].includes(msg.file_type) 
-          ? msg.file_type as 'image' | 'video' | 'file'
-          : undefined
-      }));
-      
-      setMessages(formattedMessages);
+        sender_name: `${msg.profiles?.first_name || ''} ${msg.profiles?.last_name || ''}`.trim() || 'Unknown'
+      })));
     }
   };
 
   // მესიჯის გაგზავნა
-  const sendMessage = async (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => {
-    if (!activeRoom || !user) return;
-    if (!content.trim() && !fileUrl) return;
+  const sendMessage = async (content: string) => {
+    if (!activeRoom || !user || !content.trim()) return;
 
-    console.log('📤 Sending message:', { content, fileUrl, fileType, fileName, room: activeRoom.id, user: user.id });
-
-    const messageData: any = {
-      room_id: activeRoom.id,
-      sender_id: user.id,
-      content: content.trim()
-    };
-
-    if (fileUrl) {
-      messageData.file_url = fileUrl;
-      messageData.file_type = fileType;
-      messageData.file_name = fileName;
-    }
+    console.log('📤 Sending message:', { content, room: activeRoom.id, user: user.id });
 
     const { error } = await supabase
       .from('messages')
-      .insert(messageData);
+      .insert({
+        room_id: activeRoom.id,
+        sender_id: user.id,
+        content: content.trim()
+      });
 
     if (error) {
       console.error('❌ Error sending message:', error);
@@ -344,14 +326,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .single();
 
             const newMessage: Message = {
-              ...payload.new as any,
+              ...payload.new as Message,
               sender_name: senderData 
                 ? `${senderData.first_name || ''} ${senderData.last_name || ''}`.trim() || 'Unknown'
-                : 'Unknown',
-              // Ensure file_type is properly typed
-              file_type: payload.new.file_type && ['image', 'video', 'file'].includes(payload.new.file_type)
-                ? payload.new.file_type as 'image' | 'video' | 'file'
-                : undefined
+                : 'Unknown'
             };
 
             setMessages(prev => [...prev, newMessage]);

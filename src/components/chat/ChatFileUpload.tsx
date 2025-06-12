@@ -134,7 +134,7 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-md mx-auto">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>ფაილის ატვირთვა</DialogTitle>
           </DialogHeader>
@@ -149,10 +149,10 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
                     fileInputRef.current.click();
                   }
                 }}
-                className="flex flex-col items-center p-3 h-auto text-xs"
+                className="flex flex-col items-center p-4 h-auto"
               >
-                <Image className="h-5 w-5 mb-1" />
-                <span>ფოტო</span>
+                <Image className="h-6 w-6 mb-2" />
+                <span className="text-xs">ფოტო</span>
               </Button>
               
               <Button
@@ -163,10 +163,10 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
                     fileInputRef.current.click();
                   }
                 }}
-                className="flex flex-col items-center p-3 h-auto text-xs"
+                className="flex flex-col items-center p-4 h-auto"
               >
-                <Video className="h-5 w-5 mb-1" />
-                <span>ვიდეო</span>
+                <Video className="h-6 w-6 mb-2" />
+                <span className="text-xs">ვიდეო</span>
               </Button>
               
               <Button
@@ -177,20 +177,20 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
                     fileInputRef.current.click();
                   }
                 }}
-                className="flex flex-col items-center p-3 h-auto text-xs"
+                className="flex flex-col items-center p-4 h-auto"
               >
-                <File className="h-5 w-5 mb-1" />
-                <span>ფაილი</span>
+                <File className="h-6 w-6 mb-2" />
+                <span className="text-xs">ფაილი</span>
               </Button>
             </div>
 
             {uploadingFiles.length > 0 && (
-              <div className="space-y-3 max-h-60 overflow-y-auto">
-                <h4 className="font-medium text-sm">მიმდინარე ატვირთვები:</h4>
+              <div className="space-y-3">
+                <h4 className="font-medium">მიმდინარე ატვირთვები:</h4>
                 {uploadingFiles.map((uploadingFile, index) => (
                   <div key={index} className="border rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
                         {getIcon(uploadingFile.type)}
                         <span className="text-sm font-medium truncate">
                           {uploadingFile.file.name}
@@ -200,7 +200,6 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
                         size="sm"
                         variant="ghost"
                         onClick={() => removeUploadingFile(uploadingFile.file)}
-                        className="flex-shrink-0"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -210,7 +209,7 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
                       <img 
                         src={uploadingFile.preview} 
                         alt="Preview" 
-                        className="w-full h-16 sm:h-20 object-cover rounded mb-2"
+                        className="w-full h-20 object-cover rounded mb-2"
                       />
                     )}
                     
@@ -219,7 +218,7 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
                         <span>{Math.round(uploadingFile.progress)}%</span>
                         <span>{(uploadingFile.file.size / 1024 / 1024).toFixed(2)} MB</span>
                       </div>
-                      <Progress value={uploadingFile.progress} className="h-2" />
+                      <Progress value={uploadingFile.progress} />
                     </div>
                   </div>
                 ))}

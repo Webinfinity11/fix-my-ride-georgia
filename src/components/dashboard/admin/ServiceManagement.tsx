@@ -5,248 +5,251 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Wrench, Edit, Trash2, Plus, Eye, EyeOff, MapPin, Clock, CreditCard, Banknote, Car, Star } from "lucide-react";
+import { Plus, Edit, Trash2, Settings, Tag, MapPin, Building, Car, MessageCircle } from "lucide-react";
+import ChatManagement from './ChatManagement';
 
-interface ServiceCategory {
+type ServiceCategory = {
   id: number;
   name: string;
-  description?: string;
-  icon?: string;
-}
+  description: string | null;
+  icon: string | null;
+};
 
-interface MechanicService {
+type City = {
   id: number;
   name: string;
-  description?: string;
-  price_from?: number;
-  price_to?: number;
-  estimated_hours?: number;
-  is_active: boolean;
-  on_site_service: boolean;
-  accepts_cash_payment: boolean;
-  accepts_card_payment: boolean;
-  car_brands?: string[];
-  category_id?: number;
-  custom_category?: string;
-  city?: string;
-  district?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
-  working_days?: string[];
-  working_hours_start?: string;
-  working_hours_end?: string;
-  photos?: string[];
-  videos?: string[];
-  rating?: number;
-  review_count: number;
-  created_at: string;
-  updated_at: string;
-  mechanic_id: string;
-  service_categories?: ServiceCategory;
-  mechanic_profiles?: {
-    id: string;
-    profiles?: {
-      first_name: string;
-      last_name: string;
-      email: string;
-    };
-  };
-}
+  country: string | null;
+};
 
-interface MechanicUser {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-}
+type District = {
+  id: number;
+  name: string;
+  city_id: number;
+  city: { name: string };
+};
+
+type CarBrand = {
+  id: number;
+  name: string;
+  logo_url: string | null;
+  is_popular: boolean | null;
+};
 
 const ServiceManagement = () => {
-  const [services, setServices] = useState<MechanicService[]>([]);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [mechanicUsers, setMechanicUsers] = useState<MechanicUser[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [carBrands, setCarBrands] = useState<CarBrand[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingService, setEditingService] = useState<MechanicService | null>(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("categories");
   
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category_id: "",
-    custom_category: "",
-    price_from: "",
-    price_to: "",
-    estimated_hours: "",
-    is_active: true,
-    on_site_service: false,
-    accepts_cash_payment: true,
-    accepts_card_payment: false,
-    car_brands: [] as string[],
-    city: "",
-    district: "",
-    address: "",
-    working_days: ["monday", "tuesday", "wednesday", "thursday", "friday"] as string[],
-    working_hours_start: "09:00",
-    working_hours_end: "18:00",
-    mechanic_id: ""
+    icon: "",
+    country: "Georgia",
+    city_id: "",
+    logo_url: "",
+    is_popular: false
   });
 
+  const commonIcons = [
+    "wrench", "car", "gear", "settings", "engine", "wheel", "battery", 
+    "oil", "brake", "transmission", "exhaust", "air-conditioning", "electrical"
+  ];
+
   useEffect(() => {
-    fetchServices();
-    fetchCategories();
-    fetchMechanicUsers();
+    fetchData();
   }, []);
 
-  const fetchMechanicUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email')
-        .eq('role', 'mechanic');
-
-      if (error) throw error;
-      setMechanicUsers(data || []);
-    } catch (error: any) {
-      console.error('Error fetching mechanic users:', error);
-    }
-  };
-
-  const fetchServices = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const { data: servicesData, error } = await supabase
-        .from('mechanic_services')
-        .select(`
-          *,
-          service_categories(id, name, description, icon),
-          mechanic_profiles!mechanic_id(
-            id,
-            profiles!mechanic_profiles_id_fkey(
-              first_name,
-              last_name,
-              email
-            )
-          )
-        `)
-        .order('created_at', { ascending: false });
+      // Fetch categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from("service_categories")
+        .select("*")
+        .order("name");
 
-      if (error) throw error;
+      if (categoriesError) throw categoriesError;
+      setCategories(categoriesData || []);
 
-      setServices(servicesData || []);
+      // Fetch cities
+      const { data: citiesData, error: citiesError } = await supabase
+        .from("cities")
+        .select("*")
+        .order("name");
+
+      if (citiesError) throw citiesError;
+      setCities(citiesData || []);
+
+      // Fetch districts with city names
+      const { data: districtsData, error: districtsError } = await supabase
+        .from("districts")
+        .select("id, name, city_id, cities(name)")
+        .order("name");
+
+      if (districtsError) throw districtsError;
+      setDistricts(districtsData?.map(d => ({
+        id: d.id,
+        name: d.name,
+        city_id: d.city_id,
+        city: { name: Array.isArray(d.cities) ? d.cities[0]?.name || "" : d.cities?.name || "" }
+      })) || []);
+
+      // Fetch car brands
+      const { data: brandsData, error: brandsError } = await supabase
+        .from("car_brands")
+        .select("*")
+        .order("name");
+
+      if (brandsError) throw brandsError;
+      setCarBrands(brandsData || []);
+
     } catch (error: any) {
-      console.error('Error fetching services:', error);
-      toast.error('სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა');
+      console.error("Error fetching data:", error);
+      toast.error("მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('service_categories')
-        .select('*')
-        .order('name');
-
-      if (error) throw error;
-      setCategories(data || []);
-    } catch (error: any) {
-      console.error('Error fetching categories:', error);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.mechanic_id && !editingService) {
-      toast.error('გთხოვთ აირჩიოთ მექანიკი');
-      return;
-    }
-    
     try {
-      const serviceData = {
-        name: formData.name,
-        description: formData.description || null,
-        category_id: formData.category_id ? parseInt(formData.category_id) : null,
-        custom_category: formData.custom_category || null,
-        price_from: formData.price_from ? parseFloat(formData.price_from) : null,
-        price_to: formData.price_to ? parseFloat(formData.price_to) : null,
-        estimated_hours: formData.estimated_hours ? parseInt(formData.estimated_hours) : null,
-        is_active: formData.is_active,
-        on_site_service: formData.on_site_service,
-        accepts_cash_payment: formData.accepts_cash_payment,
-        accepts_card_payment: formData.accepts_card_payment,
-        car_brands: formData.car_brands,
-        city: formData.city || null,
-        district: formData.district || null,
-        address: formData.address || null,
-        working_days: formData.working_days,
-        working_hours_start: formData.working_hours_start,
-        working_hours_end: formData.working_hours_end,
-        mechanic_id: formData.mechanic_id || editingService?.mechanic_id
-      };
+      if (activeTab === "categories") {
+        const categoryData = {
+          name: formData.name,
+          description: formData.description || null,
+          icon: formData.icon || null
+        };
 
-      if (editingService) {
-        const { error } = await supabase
-          .from('mechanic_services')
-          .update(serviceData)
-          .eq('id', editingService.id);
-        
-        if (error) throw error;
-        toast.success('სერვისი წარმატებით განახლდა');
-      } else {
-        const { error } = await supabase
-          .from('mechanic_services')
-          .insert([serviceData]);
-        
-        if (error) throw error;
-        toast.success('სერვისი წარმატებით შეიქმნა');
+        if (editingItem) {
+          const { error } = await supabase
+            .from("service_categories")
+            .update(categoryData)
+            .eq("id", editingItem.id);
+          
+          if (error) throw error;
+          toast.success("კატეგორია წარმატებით განახლდა");
+        } else {
+          const { error } = await supabase
+            .from("service_categories")
+            .insert([categoryData]);
+          
+          if (error) throw error;
+          toast.success("კატეგორია წარმატებით დაემატა");
+        }
+      } else if (activeTab === "cities") {
+        const cityData = {
+          name: formData.name,
+          country: formData.country || "Georgia"
+        };
+
+        if (editingItem) {
+          const { error } = await supabase
+            .from("cities")
+            .update(cityData)
+            .eq("id", editingItem.id);
+          
+          if (error) throw error;
+          toast.success("ქალაქი წარმატებით განახლდა");
+        } else {
+          const { error } = await supabase
+            .from("cities")
+            .insert([cityData]);
+          
+          if (error) throw error;
+          toast.success("ქალაქი წარმატებით დაემატა");
+        }
+      } else if (activeTab === "districts") {
+        const districtData = {
+          name: formData.name,
+          city_id: parseInt(formData.city_id)
+        };
+
+        if (editingItem) {
+          const { error } = await supabase
+            .from("districts")
+            .update(districtData)
+            .eq("id", editingItem.id);
+          
+          if (error) throw error;
+          toast.success("უბანი წარმატებით განახლდა");
+        } else {
+          const { error } = await supabase
+            .from("districts")
+            .insert([districtData]);
+          
+          if (error) throw error;
+          toast.success("უბანი წარმატებით დაემატა");
+        }
+      } else if (activeTab === "brands") {
+        const brandData = {
+          name: formData.name,
+          logo_url: formData.logo_url || null,
+          is_popular: formData.is_popular
+        };
+
+        if (editingItem) {
+          const { error } = await supabase
+            .from("car_brands")
+            .update(brandData)
+            .eq("id", editingItem.id);
+          
+          if (error) throw error;
+          toast.success("მარკა წარმატებით განახლდა");
+        } else {
+          const { error } = await supabase
+            .from("car_brands")
+            .insert([brandData]);
+          
+          if (error) throw error;
+          toast.success("მარკა წარმატებით დაემატა");
+        }
       }
 
       resetForm();
-      fetchServices();
+      fetchData();
     } catch (error: any) {
-      console.error('Error:', error);
-      toast.error('შეცდომა: ' + error.message);
+      console.error("Error:", error);
+      toast.error("შეცდომა: " + error.message);
     }
   };
 
-  const handleDeleteService = async (serviceId: number) => {
+  const handleDelete = async (id: number, type: string) => {
     try {
-      const { error } = await supabase
-        .from('mechanic_services')
-        .delete()
-        .eq('id', serviceId);
+      let error;
+      
+      if (type === "category") {
+        ({ error } = await supabase.from("service_categories").delete().eq("id", id));
+        toast.success("კატეგორია წარმატებით წაიშალა");
+      } else if (type === "city") {
+        ({ error } = await supabase.from("cities").delete().eq("id", id));
+        toast.success("ქალაქი წარმატებით წაიშალა");
+      } else if (type === "district") {
+        ({ error } = await supabase.from("districts").delete().eq("id", id));
+        toast.success("უბანი წარმატებით წაიშალა");
+      } else if (type === "brand") {
+        ({ error } = await supabase.from("car_brands").delete().eq("id", id));
+        toast.success("მარკა წარმატებით წაიშალა");
+      }
       
       if (error) throw error;
-      
-      toast.success('სერვისი წარმატებით წაიშალა');
-      fetchServices();
+      fetchData();
     } catch (error: any) {
-      console.error('Error deleting service:', error);
-      toast.error('სერვისის წაშლისას შეცდომა დაფიქსირდა');
-    }
-  };
-
-  const toggleServiceStatus = async (serviceId: number, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('mechanic_services')
-        .update({ is_active: !currentStatus })
-        .eq('id', serviceId);
-      
-      if (error) throw error;
-      
-      toast.success(`სერვისი ${!currentStatus ? 'გააქტიურდა' : 'დეაქტიურდა'}`);
-      fetchServices();
-    } catch (error: any) {
-      console.error('Error toggling service status:', error);
-      toast.error('სტატუსის შეცვლისას შეცდომა დაფიქსირდა');
+      console.error("Error deleting:", error);
+      toast.error("წაშლისას შეცდომა დაფიქსირდა");
     }
   };
 
@@ -254,52 +257,174 @@ const ServiceManagement = () => {
     setFormData({
       name: "",
       description: "",
-      category_id: "",
-      custom_category: "",
-      price_from: "",
-      price_to: "",
-      estimated_hours: "",
-      is_active: true,
-      on_site_service: false,
-      accepts_cash_payment: true,
-      accepts_card_payment: false,
-      car_brands: [],
-      city: "",
-      district: "",
-      address: "",
-      working_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
-      working_hours_start: "09:00",
-      working_hours_end: "18:00",
-      mechanic_id: ""
+      icon: "",
+      country: "Georgia",
+      city_id: "",
+      logo_url: "",
+      is_popular: false
     });
-    setEditingService(null);
+    setEditingItem(null);
     setDialogOpen(false);
   };
 
-  const openEditDialog = (service: MechanicService) => {
-    setEditingService(service);
-    setFormData({
-      name: service.name,
-      description: service.description || "",
-      category_id: service.category_id?.toString() || "",
-      custom_category: service.custom_category || "",
-      price_from: service.price_from?.toString() || "",
-      price_to: service.price_to?.toString() || "",
-      estimated_hours: service.estimated_hours?.toString() || "",
-      is_active: service.is_active,
-      on_site_service: service.on_site_service,
-      accepts_cash_payment: service.accepts_cash_payment,
-      accepts_card_payment: service.accepts_card_payment,
-      car_brands: service.car_brands || [],
-      city: service.city || "",
-      district: service.district || "",
-      address: service.address || "",
-      working_days: service.working_days || ["monday", "tuesday", "wednesday", "thursday", "friday"],
-      working_hours_start: service.working_hours_start || "09:00",
-      working_hours_end: service.working_hours_end || "18:00",
-      mechanic_id: service.mechanic_id
-    });
+  const openEditDialog = (item: any, type: string) => {
+    setEditingItem({ ...item, type });
+    if (type === "category") {
+      setFormData({
+        name: item.name || "",
+        description: item.description || "",
+        icon: item.icon || "",
+        country: "Georgia",
+        city_id: "",
+        logo_url: "",
+        is_popular: false
+      });
+    } else if (type === "city") {
+      setFormData({
+        name: item.name || "",
+        description: "",
+        icon: "",
+        country: item.country || "Georgia",
+        city_id: "",
+        logo_url: "",
+        is_popular: false
+      });
+    } else if (type === "district") {
+      setFormData({
+        name: item.name || "",
+        description: "",
+        icon: "",
+        country: "Georgia",
+        city_id: item.city_id?.toString() || "",
+        logo_url: "",
+        is_popular: false
+      });
+    } else if (type === "brand") {
+      setFormData({
+        name: item.name || "",
+        description: "",
+        icon: "",
+        country: "Georgia",
+        city_id: "",
+        logo_url: item.logo_url || "",
+        is_popular: item.is_popular || false
+      });
+    }
     setDialogOpen(true);
+  };
+
+  const openAddDialog = (type: string) => {
+    setActiveTab(type);
+    resetForm();
+    setDialogOpen(true);
+  };
+
+  const renderDialogContent = () => {
+    const isEditing = !!editingItem;
+    
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="name">დასახელება *</Label>
+          <Input
+            id="name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+          />
+        </div>
+
+        {activeTab === "categories" && (
+          <>
+            <div>
+              <Label htmlFor="description">აღწერა</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="icon">იკონა</Label>
+              <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="აირჩიეთ იკონა" />
+                </SelectTrigger>
+                <SelectContent>
+                  {commonIcons.map(icon => (
+                    <SelectItem key={icon} value={icon}>
+                      {icon}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+
+        {activeTab === "cities" && (
+          <div>
+            <Label htmlFor="country">ქვეყანა</Label>
+            <Input
+              id="country"
+              value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+            />
+          </div>
+        )}
+
+        {activeTab === "districts" && (
+          <div>
+            <Label htmlFor="city">ქალაქი *</Label>
+            <Select value={formData.city_id} onValueChange={(value) => setFormData({ ...formData, city_id: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="აირჩიეთ ქალაქი" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map(city => (
+                  <SelectItem key={city.id} value={city.id.toString()}>
+                    {city.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {activeTab === "brands" && (
+          <>
+            <div>
+              <Label htmlFor="logo_url">ლოგოს URL</Label>
+              <Input
+                id="logo_url"
+                value={formData.logo_url}
+                onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                placeholder="https://example.com/logo.png"
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="is_popular"
+                checked={formData.is_popular}
+                onChange={(e) => setFormData({ ...formData, is_popular: e.target.checked })}
+              />
+              <Label htmlFor="is_popular">პოპულარული მარკა</Label>
+            </div>
+          </>
+        )}
+
+        <div className="flex gap-2">
+          <Button type="submit">
+            {isEditing ? "განახლება" : "დამატება"}
+          </Button>
+          <Button type="button" variant="outline" onClick={resetForm}>
+            გაუქმება
+          </Button>
+        </div>
+      </form>
+    );
   };
 
   if (loading) {
@@ -312,352 +437,332 @@ const ServiceManagement = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold flex items-center gap-2">
-          <Wrench className="h-6 w-6" />
-          სერვისების მართვა
-        </h3>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
-              <Plus className="h-4 w-4 mr-2" />
-              ახალი სერვისი
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingService ? "სერვისის რედაქტირება" : "ახალი სერვისი"}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {!editingService && (
-                  <div className="md:col-span-2">
-                    <Label htmlFor="mechanic_id">მექანიკი</Label>
-                    <Select value={formData.mechanic_id} onValueChange={(value) => setFormData({ ...formData, mechanic_id: value })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="აირჩიეთ მექანიკი" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mechanicUsers.map((mechanic) => (
-                          <SelectItem key={mechanic.id} value={mechanic.id}>
-                            {mechanic.first_name} {mechanic.last_name} ({mechanic.email})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                <div className="md:col-span-2">
-                  <Label htmlFor="name">სერვისის სახელი</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="მაგ. ზეთის შეცვლა"
-                    required
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <Label htmlFor="description">აღწერა</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="სერვისის დეტალური აღწერა"
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="category">კატეგორია</Label>
-                  <Select value={formData.category_id} onValueChange={(value) => setFormData({ ...formData, category_id: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="აირჩიეთ კატეგორია" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id.toString()}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="custom_category">საკუთარი კატეგორია</Label>
-                  <Input
-                    id="custom_category"
-                    value={formData.custom_category}
-                    onChange={(e) => setFormData({ ...formData, custom_category: e.target.value })}
-                    placeholder="ან მიუთითეთ საკუთარი"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="price_from">ფასი (დან)</Label>
-                  <Input
-                    id="price_from"
-                    type="number"
-                    value={formData.price_from}
-                    onChange={(e) => setFormData({ ...formData, price_from: e.target.value })}
-                    placeholder="მინ. ფასი"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="price_to">ფასი (მდე)</Label>
-                  <Input
-                    id="price_to"
-                    type="number"
-                    value={formData.price_to}
-                    onChange={(e) => setFormData({ ...formData, price_to: e.target.value })}
-                    placeholder="მაქს. ფასი"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="estimated_hours">სავარაუდო საათები</Label>
-                  <Input
-                    id="estimated_hours"
-                    type="number"
-                    value={formData.estimated_hours}
-                    onChange={(e) => setFormData({ ...formData, estimated_hours: e.target.value })}
-                    placeholder="მაგ. 2"
-                    min="1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="city">ქალაქი</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    placeholder="მაგ. თბილისი"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="district">რაიონი</Label>
-                  <Input
-                    id="district"
-                    value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    placeholder="მაგ. ვაკე"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <Label htmlFor="address">მისამართი</Label>
-                  <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    placeholder="ზუსტი მისამართი"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="is_active"
-                      checked={formData.is_active}
-                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                    />
-                    <Label htmlFor="is_active">აქტიური</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="on_site_service"
-                      checked={formData.on_site_service}
-                      onChange={(e) => setFormData({ ...formData, on_site_service: e.target.checked })}
-                    />
-                    <Label htmlFor="on_site_service">მობილური სერვისი</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="accepts_cash_payment"
-                      checked={formData.accepts_cash_payment}
-                      onChange={(e) => setFormData({ ...formData, accepts_cash_payment: e.target.checked })}
-                    />
-                    <Label htmlFor="accepts_cash_payment">ღებულობს ნაღდს</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="accepts_card_payment"
-                      checked={formData.accepts_card_payment}
-                      onChange={(e) => setFormData({ ...formData, accepts_card_payment: e.target.checked })}
-                    />
-                    <Label htmlFor="accepts_card_payment">ღებულობს ბარათს</Label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button type="submit">
-                  {editingService ? "განახლება" : "შექმნა"}
-                </Button>
-                <Button type="button" variant="outline" onClick={resetForm}>
-                  გაუქმება
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+          <Settings className="h-5 w-5 md:h-6 md:w-6" />
+          <span className="hidden sm:inline">სერვისის დეტალები</span>
+          <span className="sm:hidden">დეტალები</span>
+        </h2>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>ყველა სერვისი ({services.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {services.map((service) => (
-              <div key={service.id} className="flex flex-col lg:flex-row lg:items-center justify-between p-4 border rounded-lg">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-3">
-                    <h4 className="font-medium text-lg">{service.name}</h4>
-                    <div className="flex gap-2">
-                      <Badge variant={service.is_active ? 'default' : 'secondary'}>
-                        {service.is_active ? 'აქტიური' : 'არააქტიური'}
-                      </Badge>
-                      {service.on_site_service && (
-                        <Badge variant="outline">მობილური</Badge>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 h-auto">
+          <TabsTrigger value="categories" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+            <Tag className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">კატეგორიები</span>
+            <span className="sm:hidden">კატ.</span>
+          </TabsTrigger>
+          <TabsTrigger value="cities" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+            <MapPin className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">ქალაქები</span>
+            <span className="sm:hidden">ქალ.</span>
+          </TabsTrigger>
+          <TabsTrigger value="districts" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+            <Building className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">უბნები</span>
+            <span className="sm:hidden">უბნ.</span>
+          </TabsTrigger>
+          <TabsTrigger value="brands" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+            <Car className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">მარკები</span>
+            <span className="sm:hidden">მარკ.</span>
+          </TabsTrigger>
+          <TabsTrigger value="chats" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3 col-span-3 md:col-span-1">
+            <MessageCircle className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">ჩატები</span>
+            <span className="sm:hidden">ჩატ.</span>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="categories" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">სერვისის კატეგორიები</CardTitle>
+              <Dialog open={dialogOpen && activeTab === "categories"} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => openAddDialog("categories")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი კატეგორია</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-lg">
+                      {editingItem ? "კატეგორიის რედაქტირება" : "ახალი კატეგორია"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  {renderDialogContent()}
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
+                {categories.map(category => (
+                  <div key={category.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm md:text-base truncate">{category.name}</h4>
+                      {category.description && (
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-2">{category.description}</p>
+                      )}
+                      {category.icon && (
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {category.icon}
+                        </Badge>
                       )}
                     </div>
-                  </div>
-                  
-                  {service.description && (
-                    <p className="text-sm text-gray-600">{service.description}</p>
-                  )}
-                  
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                    {service.mechanic_profiles?.profiles && (
-                      <div className="flex items-center gap-1">
-                        <span>მექანიკი:</span>
-                        <span>{service.mechanic_profiles.profiles.first_name} {service.mechanic_profiles.profiles.last_name}</span>
-                      </div>
-                    )}
-                    
-                    {(service.price_from || service.price_to) && (
-                      <div className="flex items-center gap-1">
-                        <span>ფასი:</span>
-                        <span>
-                          {service.price_from && service.price_to 
-                            ? `${service.price_from} - ${service.price_to} ლარი`
-                            : service.price_from 
-                            ? `${service.price_from}+ ლარი`
-                            : `${service.price_to} ლარამდე`
-                          }
-                        </span>
-                      </div>
-                    )}
-                    
-                    {service.estimated_hours && (
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        <span>{service.estimated_hours} საათი</span>
-                      </div>
-                    )}
-                    
-                    {(service.city || service.district) && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        <span>{[service.city, service.district].filter(Boolean).join(', ')}</span>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-2">
-                      {service.accepts_cash_payment && (
-                        <div className="flex items-center gap-1">
-                          <Banknote className="h-4 w-4" />
-                          <span>ნაღდი</span>
-                        </div>
-                      )}
-                      {service.accepts_card_payment && (
-                        <div className="flex items-center gap-1">
-                          <CreditCard className="h-4 w-4" />
-                          <span>ბარათი</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {service.rating && (
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span>{service.rating.toFixed(1)} ({service.review_count})</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex gap-2 mt-4 lg:mt-0">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => toggleServiceStatus(service.id, service.is_active)}
-                  >
-                    {service.is_active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openEditDialog(service)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button size="sm" variant="destructive">
-                        <Trash2 className="h-4 w-4" />
+                    <div className="flex gap-1 md:gap-2 ml-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditDialog(category, "category")}
+                        className="p-2"
+                      >
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
                       </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>სერვისის წაშლა</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          დარწმუნებული ხართ, რომ გსურთ ამ სერვისის წაშლა? ეს მოქმედება შეუქცევადია.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>გაუქმება</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDeleteService(service.id)}>
-                          წაშლა
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-lg">კატეგორიის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
+                              დარწმუნებული ხართ, რომ გსურთ "{category.name}" კატეგორიის წაშლა?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(category.id, "category")} className="w-full sm:w-auto">
+                              წაშლა
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-            
-            {services.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                სერვისები არ მოიძებნა
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="cities" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">ქალაქები</CardTitle>
+              <Dialog open={dialogOpen && activeTab === "cities"} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => openAddDialog("cities")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი ქალაქი</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-lg">
+                      {editingItem ? "ქალაქის რედაქტირება" : "ახალი ქალაქი"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  {renderDialogContent()}
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
+                {cities.map(city => (
+                  <div key={city.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm md:text-base truncate">{city.name}</h4>
+                      <p className="text-xs md:text-sm text-muted-foreground">{city.country}</p>
+                    </div>
+                    <div className="flex gap-1 md:gap-2 ml-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditDialog(city, "city")}
+                        className="p-2"
+                      >
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-lg">ქალაქის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
+                              დარწმუნებული ხართ, რომ გსურთ "{city.name}" ქალაქის წაშლა?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(city.id, "city")} className="w-full sm:w-auto">
+                              წაშლა
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="districts" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">უბნები</CardTitle>
+              <Dialog open={dialogOpen && activeTab === "districts"} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => openAddDialog("districts")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი უბანი</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-lg">
+                      {editingItem ? "უბნის რედაქტირება" : "ახალი უბანი"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  {renderDialogContent()}
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
+                {districts.map(district => (
+                  <div key={district.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm md:text-base truncate">{district.name}</h4>
+                      <p className="text-xs md:text-sm text-muted-foreground">{district.city.name}</p>
+                    </div>
+                    <div className="flex gap-1 md:gap-2 ml-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditDialog(district, "district")}
+                        className="p-2"
+                      >
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-lg">უბნის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
+                              დარწმუნებული ხართ, რომ გსურთ "{district.name}" უბნის წაშლა?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(district.id, "district")} className="w-full sm:w-auto">
+                              წაშლა
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="brands" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="text-lg md:text-xl">ავტომობილის მარკები</CardTitle>
+              <Dialog open={dialogOpen && activeTab === "brands"} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => openAddDialog("brands")} size="sm" className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">ახალი მარკა</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-lg">
+                      {editingItem ? "მარკის რედაქტირება" : "ახალი მარკა"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  {renderDialogContent()}
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent className="p-3 md:p-6">
+              <div className="grid gap-3 md:gap-4">
+                {carBrands.map(brand => (
+                  <div key={brand.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                      {brand.logo_url && (
+                        <img src={brand.logo_url} alt={brand.name} className="h-6 w-6 md:h-8 md:w-8 object-contain flex-shrink-0" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-medium text-sm md:text-base truncate">{brand.name}</h4>
+                        {brand.is_popular && (
+                          <Badge variant="secondary" className="mt-1 text-xs">
+                            პოპულარული
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-1 md:gap-2 ml-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => openEditDialog(brand, "brand")}
+                        className="p-2"
+                      >
+                        <Edit className="h-3 w-3 md:h-4 md:w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size="sm" variant="outline" className="p-2">
+                            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="w-[95vw] max-w-md">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-lg">მარკის წაშლა</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm">
+                              დარწმუნებული ხართ, რომ გსურთ "{brand.name}" მარკის წაშლა?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                            <AlertDialogCancel className="w-full sm:w-auto">გაუქმება</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(brand.id, "brand")} className="w-full sm:w-auto">
+                              წაშლა
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="chats" className="space-y-4">
+          <ChatManagement />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
