@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -155,10 +154,16 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('💬 Loaded messages:', data);
 
     if (data) {
-      setMessages(data.map(msg => ({
+      const formattedMessages = data.map(msg => ({
         ...msg,
-        sender_name: `${msg.profiles?.first_name || ''} ${msg.profiles?.last_name || ''}`.trim() || 'Unknown'
-      })));
+        sender_name: `${msg.profiles?.first_name || ''} ${msg.profiles?.last_name || ''}`.trim() || 'Unknown',
+        // Ensure file_type is properly typed
+        file_type: msg.file_type && ['image', 'video', 'file'].includes(msg.file_type) 
+          ? msg.file_type as 'image' | 'video' | 'file'
+          : undefined
+      }));
+      
+      setMessages(formattedMessages);
     }
   };
 
@@ -339,10 +344,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .single();
 
             const newMessage: Message = {
-              ...payload.new as Message,
+              ...payload.new as any,
               sender_name: senderData 
                 ? `${senderData.first_name || ''} ${senderData.last_name || ''}`.trim() || 'Unknown'
-                : 'Unknown'
+                : 'Unknown',
+              // Ensure file_type is properly typed
+              file_type: payload.new.file_type && ['image', 'video', 'file'].includes(payload.new.file_type)
+                ? payload.new.file_type as 'image' | 'video' | 'file'
+                : undefined
             };
 
             setMessages(prev => [...prev, newMessage]);

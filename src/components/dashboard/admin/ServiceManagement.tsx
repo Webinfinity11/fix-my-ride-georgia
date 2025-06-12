@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -61,9 +59,17 @@ interface MechanicService {
   };
 }
 
+interface MechanicUser {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
 const ServiceManagement = () => {
   const [services, setServices] = useState<MechanicService[]>([]);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [mechanicUsers, setMechanicUsers] = useState<MechanicUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingService, setEditingService] = useState<MechanicService | null>(null);
@@ -86,13 +92,29 @@ const ServiceManagement = () => {
     address: "",
     working_days: ["monday", "tuesday", "wednesday", "thursday", "friday"] as string[],
     working_hours_start: "09:00",
-    working_hours_end: "18:00"
+    working_hours_end: "18:00",
+    mechanic_id: ""
   });
 
   useEffect(() => {
     fetchServices();
     fetchCategories();
+    fetchMechanicUsers();
   }, []);
+
+  const fetchMechanicUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email')
+        .eq('role', 'mechanic');
+
+      if (error) throw error;
+      setMechanicUsers(data || []);
+    } catch (error: any) {
+      console.error('Error fetching mechanic users:', error);
+    }
+  };
 
   const fetchServices = async () => {
     setLoading(true);
@@ -141,6 +163,11 @@ const ServiceManagement = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!formData.mechanic_id && !editingService) {
+      toast.error('გთხოვთ აირჩიოთ მექანიკი');
+      return;
+    }
+    
     try {
       const serviceData = {
         name: formData.name,
@@ -160,7 +187,8 @@ const ServiceManagement = () => {
         address: formData.address || null,
         working_days: formData.working_days,
         working_hours_start: formData.working_hours_start,
-        working_hours_end: formData.working_hours_end
+        working_hours_end: formData.working_hours_end,
+        mechanic_id: formData.mechanic_id || editingService?.mechanic_id
       };
 
       if (editingService) {
@@ -241,7 +269,8 @@ const ServiceManagement = () => {
       address: "",
       working_days: ["monday", "tuesday", "wednesday", "thursday", "friday"],
       working_hours_start: "09:00",
-      working_hours_end: "18:00"
+      working_hours_end: "18:00",
+      mechanic_id: ""
     });
     setEditingService(null);
     setDialogOpen(false);
@@ -267,7 +296,8 @@ const ServiceManagement = () => {
       address: service.address || "",
       working_days: service.working_days || ["monday", "tuesday", "wednesday", "thursday", "friday"],
       working_hours_start: service.working_hours_start || "09:00",
-      working_hours_end: service.working_hours_end || "18:00"
+      working_hours_end: service.working_hours_end || "18:00",
+      mechanic_id: service.mechanic_id
     });
     setDialogOpen(true);
   };
@@ -303,6 +333,24 @@ const ServiceManagement = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {!editingService && (
+                  <div className="md:col-span-2">
+                    <Label htmlFor="mechanic_id">მექანიკი</Label>
+                    <Select value={formData.mechanic_id} onValueChange={(value) => setFormData({ ...formData, mechanic_id: value })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="აირჩიეთ მექანიკი" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mechanicUsers.map((mechanic) => (
+                          <SelectItem key={mechanic.id} value={mechanic.id}>
+                            {mechanic.first_name} {mechanic.last_name} ({mechanic.email})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 <div className="md:col-span-2">
                   <Label htmlFor="name">სერვისის სახელი</Label>
                   <Input
