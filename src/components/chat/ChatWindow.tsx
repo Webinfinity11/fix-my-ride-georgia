@@ -35,18 +35,7 @@ export const ChatWindow = () => {
 
   const handleFileUploaded = async (fileUrl: string, fileType: 'image' | 'video' | 'file', fileName: string) => {
     // Send message with file attachment
-    let content = '';
-    if (fileType === 'image') {
-      content = '📷 ფოტო გაიგზავნა';
-    } else if (fileType === 'video') {
-      content = '🎥 ვიდეო გაიგზავნა';
-    } else {
-      content = `📎 ${fileName}`;
-    }
-    
-    // For now, we'll send a text message indicating a file was shared
-    // In a real implementation, you'd extend the messages table to store file metadata
-    await sendMessage(`${content} - ${fileUrl}`);
+    await sendMessage(``, fileUrl, fileType, fileName);
   };
 
   const getChatTitle = () => {
@@ -89,29 +78,29 @@ export const ChatWindow = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="border-b p-4 bg-white">
+      <div className="border-b p-3 md:p-4 bg-white">
         <div className="flex items-center gap-3">
           {activeRoom.type === 'channel' ? (
-            <Hash className="h-5 w-5 text-gray-500" />
+            <Hash className="h-5 w-5 text-gray-500 flex-shrink-0" />
           ) : (
-            <User className="h-5 w-5 text-gray-500" />
+            <User className="h-5 w-5 text-gray-500 flex-shrink-0" />
           )}
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-lg truncate">
+            <h2 className="font-semibold text-base md:text-lg truncate">
               {getChatTitle()}
             </h2>
             {activeRoom.description && (
-              <p className="text-sm text-gray-500 truncate">{activeRoom.description}</p>
+              <p className="text-xs md:text-sm text-gray-500 truncate">{activeRoom.description}</p>
             )}
             {activeRoom.type === 'direct' && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
                 <Circle className={`h-2 w-2 ${isOtherParticipantOnline() ? 'fill-green-500 text-green-500' : 'fill-gray-300 text-gray-300'}`} />
                 <span>{isOtherParticipantOnline() ? 'ონლაინ' : 'ოფლაინ'}</span>
               </div>
             )}
           </div>
           {activeRoom.type === 'channel' && (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-xs md:text-sm text-gray-500">
               <Circle className="h-3 w-3 fill-green-500 text-green-500" />
               <span className="hidden sm:inline">{onlineUsers.length} ონლაინ</span>
               <span className="sm:hidden">{onlineUsers.length}</span>
@@ -121,8 +110,8 @@ export const ChatWindow = () => {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-3 md:p-4">
+        <div className="space-y-2">
           {messages.map((message) => (
             <ChatMessage
               key={message.id}
@@ -136,7 +125,7 @@ export const ChatWindow = () => {
       </ScrollArea>
 
       {/* Message Input */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
+      <form onSubmit={handleSendMessage} className="p-3 md:p-4 border-t bg-white">
         <div className="flex gap-2">
           <ChatFileUpload onFileUploaded={handleFileUploaded} />
           <Input

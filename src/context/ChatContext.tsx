@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -24,6 +25,9 @@ interface Message {
   content: string;
   created_at: string;
   sender_name?: string;
+  file_url?: string;
+  file_type?: 'image' | 'video' | 'file';
+  file_name?: string;
 }
 
 interface ChatContextType {
@@ -32,7 +36,7 @@ interface ChatContextType {
   messages: Message[];
   onlineUsers: string[];
   setActiveRoom: (room: ChatRoom | null) => void;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => Promise<void>;
   createDirectChat: (userId: string) => Promise<ChatRoom | null>;
   joinChannel: (roomId: string) => Promise<void>;
   loadRooms: () => Promise<void>;
@@ -159,18 +163,27 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // მესიჯის გაგზავნა
-  const sendMessage = async (content: string) => {
-    if (!activeRoom || !user || !content.trim()) return;
+  const sendMessage = async (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => {
+    if (!activeRoom || !user) return;
+    if (!content.trim() && !fileUrl) return;
 
-    console.log('📤 Sending message:', { content, room: activeRoom.id, user: user.id });
+    console.log('📤 Sending message:', { content, fileUrl, fileType, fileName, room: activeRoom.id, user: user.id });
+
+    const messageData: any = {
+      room_id: activeRoom.id,
+      sender_id: user.id,
+      content: content.trim()
+    };
+
+    if (fileUrl) {
+      messageData.file_url = fileUrl;
+      messageData.file_type = fileType;
+      messageData.file_name = fileName;
+    }
 
     const { error } = await supabase
       .from('messages')
-      .insert({
-        room_id: activeRoom.id,
-        sender_id: user.id,
-        content: content.trim()
-      });
+      .insert(messageData);
 
     if (error) {
       console.error('❌ Error sending message:', error);

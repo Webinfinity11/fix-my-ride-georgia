@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Circle, Download, Play, File } from 'lucide-react';
+import { Circle, Download, File } from 'lucide-react';
 
 interface ChatMessageProps {
   message: {
@@ -48,7 +48,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             <img 
               src={message.file_url} 
               alt={message.file_name || 'Uploaded image'}
-              className="max-w-xs rounded-lg cursor-pointer"
+              className="max-w-xs rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => window.open(message.file_url, '_blank')}
             />
           </div>
@@ -70,9 +70,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       
       case 'file':
         return (
-          <div className="mt-2 p-3 border rounded-lg bg-gray-50 max-w-xs">
+          <div className="mt-2 p-3 border rounded-lg bg-gray-50 max-w-xs hover:bg-gray-100 transition-colors">
             <div className="flex items-center gap-2">
-              <File className="h-5 w-5 text-gray-500" />
+              <File className="h-5 w-5 text-gray-500 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
                   {message.file_name || 'Unknown file'}
@@ -91,8 +91,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   };
 
   return (
-    <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-      <Card className={`p-3 max-w-xs sm:max-w-sm ${
+    <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-4`}>
+      <Card className={`p-3 max-w-xs sm:max-w-sm md:max-w-md ${
         isOwnMessage 
           ? 'bg-primary text-primary-foreground' 
           : 'bg-white'
@@ -107,7 +107,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         )}
         
         {message.content && (
-          <div className="text-sm break-words">{message.content}</div>
+          <div className="text-sm break-words whitespace-pre-wrap">{message.content}</div>
         )}
         
         {renderFileContent()}
