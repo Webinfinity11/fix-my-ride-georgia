@@ -3,11 +3,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Send, Hash, User, Circle, Menu } from 'lucide-react';
+import { Send, Hash, User, Circle } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ChatFileUpload } from './ChatFileUpload';
+import { ChatMessage } from './ChatMessage';
 
 export const ChatWindow = () => {
   const { activeRoom, messages, sendMessage, onlineUsers } = useChat();
@@ -32,13 +33,28 @@ export const ChatWindow = () => {
     }
   };
 
+  const handleFileUploaded = async (fileUrl: string, fileType: 'image' | 'video' | 'file', fileName: string) => {
+    // Send message with file attachment
+    let content = '';
+    if (fileType === 'image') {
+      content = '📷 ფოტო გაიგზავნა';
+    } else if (fileType === 'video') {
+      content = '🎥 ვიდეო გაიგზავნა';
+    } else {
+      content = `📎 ${fileName}`;
+    }
+    
+    // For now, we'll send a text message indicating a file was shared
+    // In a real implementation, you'd extend the messages table to store file metadata
+    await sendMessage(`${content} - ${fileUrl}`);
+  };
+
   const getChatTitle = () => {
     if (!activeRoom) return '';
     
     if (activeRoom.type === 'channel') {
       return activeRoom.name || 'არხი';
     } else {
-      // For direct chats, show the other participant's name
       if (activeRoom.other_participant) {
         return `${activeRoom.other_participant.first_name} ${activeRoom.other_participant.last_name}`;
       }
@@ -94,7 +110,6 @@ export const ChatWindow = () => {
               </div>
             )}
           </div>
-          {/* Online indicator for channels */}
           {activeRoom.type === 'channel' && (
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Circle className="h-3 w-3 fill-green-500 text-green-500" />
@@ -109,36 +124,12 @@ export const ChatWindow = () => {
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
           {messages.map((message) => (
-            <div
+            <ChatMessage
               key={message.id}
-              className={`flex ${
-                message.sender_id === user?.id ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              <Card className={`p-3 max-w-xs sm:max-w-sm ${
-                message.sender_id === user?.id 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-white'
-              }`}>
-                {message.sender_id !== user?.id && (
-                  <div className="flex items-center gap-2 text-xs font-medium text-gray-600 mb-1">
-                    <span className="truncate">{message.sender_name}</span>
-                    {onlineUsers.includes(message.sender_id) && (
-                      <Circle className="h-2 w-2 fill-green-500 text-green-500 flex-shrink-0" />
-                    )}
-                  </div>
-                )}
-                <div className="text-sm break-words">{message.content}</div>
-                <div className={`text-xs mt-1 ${
-                  message.sender_id === user?.id ? 'text-primary-foreground/70' : 'text-gray-400'
-                }`}>
-                  {new Date(message.created_at).toLocaleTimeString('ka-GE', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              </Card>
-            </div>
+              message={message}
+              currentUserId={user?.id}
+              isOnline={onlineUsers.includes(message.sender_id)}
+            />
           ))}
           <div ref={messagesEndRef} />
         </div>
@@ -147,6 +138,7 @@ export const ChatWindow = () => {
       {/* Message Input */}
       <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
         <div className="flex gap-2">
+          <ChatFileUpload onFileUploaded={handleFileUploaded} />
           <Input
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}

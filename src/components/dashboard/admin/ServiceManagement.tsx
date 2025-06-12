@@ -12,7 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Settings, Tag, MapPin, Building, Car } from "lucide-react";
+import { Plus, Edit, Trash2, Settings, Tag, MapPin, Building, Car, MessageCircle } from "lucide-react";
+import ChatManagement from './ChatManagement';
 
 type ServiceCategory = {
   id: number;
@@ -446,7 +447,7 @@ const ServiceManagement = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 h-auto">
           <TabsTrigger value="categories" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
             <Tag className="h-3 w-3 md:h-4 md:w-4" />
             <span className="hidden sm:inline">კატეგორიები</span>
@@ -457,15 +458,20 @@ const ServiceManagement = () => {
             <span className="hidden sm:inline">ქალაქები</span>
             <span className="sm:hidden">ქალ.</span>
           </TabsTrigger>
-          <TabsTrigger value="districts" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3 col-span-2 md:col-span-1">
+          <TabsTrigger value="districts" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
             <Building className="h-3 w-3 md:h-4 md:w-4" />
             <span className="hidden sm:inline">უბნები</span>
             <span className="sm:hidden">უბნ.</span>
           </TabsTrigger>
-          <TabsTrigger value="brands" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3 col-span-2 md:col-span-1">
+          <TabsTrigger value="brands" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
             <Car className="h-3 w-3 md:h-4 md:w-4" />
             <span className="hidden sm:inline">მარკები</span>
             <span className="sm:hidden">მარკ.</span>
+          </TabsTrigger>
+          <TabsTrigger value="chats" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3 col-span-3 md:col-span-1">
+            <MessageCircle className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">ჩატები</span>
+            <span className="sm:hidden">ჩატ.</span>
           </TabsTrigger>
         </TabsList>
 
@@ -751,6 +757,10 @@ const ServiceManagement = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="chats" className="space-y-4">
+          <ChatManagement />
         </TabsContent>
       </Tabs>
     </div>
