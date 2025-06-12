@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -24,6 +25,9 @@ interface Message {
   content: string;
   created_at: string;
   sender_name?: string;
+  file_url?: string;
+  file_type?: 'image' | 'video' | 'file';
+  file_name?: string;
 }
 
 interface ChatContextType {
@@ -32,10 +36,11 @@ interface ChatContextType {
   messages: Message[];
   onlineUsers: string[];
   setActiveRoom: (room: ChatRoom | null) => void;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => Promise<void>;
   createDirectChat: (userId: string) => Promise<ChatRoom | null>;
   joinChannel: (roomId: string) => Promise<void>;
   loadRooms: () => Promise<void>;
+  createChannel: (name: string, description?: string, isPublic?: boolean) => Promise<ChatRoom | null>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -47,82 +52,113 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
-  // ჩატების ჩატვირთვა მონაწილეების ინფორმაციით
+  // ჩატების ჩატვირთვა
   const loadRooms = async () => {
     if (!user) return;
 
     console.log('🏠 Loading rooms for user:', user.id);
 
-    const { data, error } = await supabase
-      .from('chat_participants')
-      .select(`
-        chat_rooms (
-          id,
-          name,
-          type,
-          description,
-          is_public
-        )
-      `)
-      .eq('user_id', user.id);
+    try {
+      // Get rooms where user is a participant
+      const { data: participantRooms, error: participantError } = await supabase
+        .from('chat_participants')
+        .select(`
+          room_id,
+          chat_rooms (
+            id,
+            name,
+            type,
+            description,
+            is_public
+          )
+        `)
+        .eq('user_id', user.id);
 
-    if (error) {
-      console.error('❌ Error loading rooms:', error);
-      return;
-    }
+      if (participantError) {
+        console.error('❌ Error loading participant rooms:', participantError);
+        return;
+      }
 
-    console.log('📊 Raw rooms data:', data);
+      // Also get public rooms
+      const { data: publicRooms, error: publicError } = await supabase
+        .from('chat_rooms')
+        .select('id, name, type, description, is_public')
+        .eq('is_public', true)
+        .eq('type', 'channel');
 
-    if (data) {
+      if (publicError) {
+        console.error('❌ Error loading public rooms:', publicError);
+        return;
+      }
+
+      // Combine rooms
+      const userRoomIds = participantRooms?.map(p => p.chat_rooms?.id).filter(Boolean) || [];
+      const allRoomsMap = new Map();
+
+      // Add participant rooms
+      participantRooms?.forEach(p => {
+        if (p.chat_rooms) {
+          allRoomsMap.set(p.chat_rooms.id, p.chat_rooms);
+        }
+      });
+
+      // Add public rooms not already in participant rooms
+      publicRooms?.forEach(room => {
+        if (!allRoomsMap.has(room.id)) {
+          allRoomsMap.set(room.id, room);
+        }
+      });
+
+      const allRooms = Array.from(allRoomsMap.values());
+
+      // Process rooms to add participant info for direct chats
       const roomsWithParticipants = await Promise.all(
-        data
-          .map(p => p.chat_rooms)
-          .filter(Boolean)
-          .map(async (room) => {
-            let otherParticipant = null;
-            
-            // პირადი ჩატისთვის მოვძებნოთ მეორე მონაწილე
-            if (room.type === 'direct') {
-              const { data: participants, error: participantsError } = await supabase
-                .from('chat_participants')
-                .select(`
-                  user_id,
-                  profiles (
-                    id,
-                    first_name,
-                    last_name,
-                    avatar_url
-                  )
-                `)
-                .eq('room_id', room.id)
-                .neq('user_id', user.id);
+        allRooms.map(async (room) => {
+          let otherParticipant = null;
+          
+          if (room.type === 'direct') {
+            const { data: participants } = await supabase
+              .from('chat_participants')
+              .select(`
+                user_id,
+                profiles (
+                  id,
+                  first_name,
+                  last_name,
+                  avatar_url
+                )
+              `)
+              .eq('room_id', room.id)
+              .neq('user_id', user.id);
 
-              if (!participantsError && participants && participants.length > 0) {
-                const participant = participants[0];
-                if (participant.profiles) {
-                  otherParticipant = {
-                    id: participant.profiles.id,
-                    first_name: participant.profiles.first_name,
-                    last_name: participant.profiles.last_name,
-                    avatar_url: participant.profiles.avatar_url
-                  };
-                }
+            if (participants && participants.length > 0) {
+              const participant = participants[0];
+              if (participant.profiles) {
+                otherParticipant = {
+                  id: participant.profiles.id,
+                  first_name: participant.profiles.first_name,
+                  last_name: participant.profiles.last_name,
+                  avatar_url: participant.profiles.avatar_url
+                };
               }
             }
+          }
 
-            return {
-              id: room.id,
-              name: room.name,
-              type: room.type as 'direct' | 'channel',
-              description: room.description,
-              is_public: room.is_public,
-              other_participant: otherParticipant
-            };
-          })
+          return {
+            id: room.id,
+            name: room.name,
+            type: room.type as 'direct' | 'channel',
+            description: room.description,
+            is_public: room.is_public,
+            other_participant: otherParticipant
+          };
+        })
       );
       
-      console.log('🏠 Processed rooms with participants:', roomsWithParticipants);
+      console.log('🏠 Processed rooms:', roomsWithParticipants);
       setRooms(roomsWithParticipants);
+    } catch (error) {
+      console.error('❌ Error in loadRooms:', error);
     }
   };
 
@@ -130,129 +166,133 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loadMessages = async (roomId: string) => {
     console.log('💬 Loading messages for room:', roomId);
 
-    const { data, error } = await supabase
-      .from('messages')
-      .select(`
-        *,
-        profiles!sender_id (
-          first_name,
-          last_name
-        )
-      `)
-      .eq('room_id', roomId)
-      .order('created_at', { ascending: true })
-      .limit(100);
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select(`
+          *,
+          profiles!sender_id (
+            first_name,
+            last_name
+          )
+        `)
+        .eq('room_id', roomId)
+        .order('created_at', { ascending: true })
+        .limit(100);
 
-    if (error) {
-      console.error('❌ Error loading messages:', error);
-      return;
-    }
+      if (error) {
+        console.error('❌ Error loading messages:', error);
+        return;
+      }
 
-    console.log('💬 Loaded messages:', data);
+      console.log('💬 Loaded messages:', data);
 
-    if (data) {
-      setMessages(data.map(msg => ({
-        ...msg,
-        sender_name: `${msg.profiles?.first_name || ''} ${msg.profiles?.last_name || ''}`.trim() || 'Unknown'
-      })));
+      if (data) {
+        setMessages(data.map(msg => ({
+          id: msg.id,
+          room_id: msg.room_id,
+          sender_id: msg.sender_id,
+          content: msg.content,
+          created_at: msg.created_at,
+          file_url: msg.file_url,
+          file_type: msg.file_type as 'image' | 'video' | 'file' | undefined,
+          file_name: msg.file_name,
+          sender_name: `${msg.profiles?.first_name || ''} ${msg.profiles?.last_name || ''}`.trim() || 'Unknown'
+        })));
+      }
+    } catch (error) {
+      console.error('❌ Error in loadMessages:', error);
     }
   };
 
   // მესიჯის გაგზავნა
-  const sendMessage = async (content: string) => {
-    if (!activeRoom || !user || !content.trim()) return;
+  const sendMessage = async (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => {
+    if (!activeRoom || !user) return;
 
-    console.log('📤 Sending message:', { content, room: activeRoom.id, user: user.id });
+    console.log('📤 Sending message:', { content, room: activeRoom.id, user: user.id, fileUrl, fileType, fileName });
 
-    const { error } = await supabase
-      .from('messages')
-      .insert({
+    try {
+      const messageData: any = {
         room_id: activeRoom.id,
         sender_id: user.id,
         content: content.trim()
-      });
+      };
 
-    if (error) {
-      console.error('❌ Error sending message:', error);
-    } else {
-      console.log('✅ Message sent successfully');
+      if (fileUrl) {
+        messageData.file_url = fileUrl;
+        messageData.file_type = fileType;
+        messageData.file_name = fileName;
+      }
+
+      const { error } = await supabase
+        .from('messages')
+        .insert(messageData);
+
+      if (error) {
+        console.error('❌ Error sending message:', error);
+      } else {
+        console.log('✅ Message sent successfully');
+      }
+    } catch (error) {
+      console.error('❌ Error in sendMessage:', error);
     }
   };
 
   // პირადი ჩატის შექმნა
   const createDirectChat = async (userId: string): Promise<ChatRoom | null> => {
-    if (!user) {
-      console.log('❌ No user for createDirectChat');
-      return null;
-    }
+    if (!user) return null;
 
     console.log('🔄 Creating direct chat between:', user.id, 'and', userId);
 
-    // ჯერ ვამოწმებთ არსებობს თუ არა
-    console.log('🔍 Checking for existing direct chat...');
-    const { data: existing, error: checkError } = await supabase
-      .from('chat_participants')
-      .select('room_id, chat_rooms!inner(*)')
-      .eq('chat_rooms.type', 'direct')
-      .in('user_id', [user.id, userId]);
+    try {
+      // Check for existing direct chat
+      const { data: existingRooms } = await supabase
+        .from('chat_rooms')
+        .select(`
+          id,
+          name,
+          type,
+          description,
+          is_public,
+          chat_participants!inner(user_id)
+        `)
+        .eq('type', 'direct');
 
-    if (checkError) {
-      console.error('❌ Error checking existing chats:', checkError);
-    } else {
-      console.log('🔍 Existing chat data:', existing);
-    }
+      // Find room where both users are participants
+      const sharedRoom = existingRooms?.find(room => {
+        const participantIds = room.chat_participants.map((p: any) => p.user_id);
+        return participantIds.includes(user.id) && participantIds.includes(userId);
+      });
 
-    if (existing && existing.length > 0) {
-      // Check if both users are in the same room
-      const roomCounts = existing.reduce((acc, row) => {
-        acc[row.room_id] = (acc[row.room_id] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      console.log('📊 Room counts:', roomCounts);
-
-      const sharedRoom = Object.keys(roomCounts).find(roomId => roomCounts[roomId] === 2);
-      
       if (sharedRoom) {
-        console.log('✅ Found existing shared room:', sharedRoom);
-        const room = existing.find(row => row.room_id === sharedRoom)?.chat_rooms;
-        if (room) {
-          const chatRoom = {
-            id: room.id,
-            name: room.name,
-            type: room.type as 'direct' | 'channel',
-            description: room.description,
-            is_public: room.is_public,
-            other_participant: null
-          };
-          console.log('🎯 Returning existing chat room:', chatRoom);
-          return chatRoom;
-        }
+        console.log('✅ Found existing direct chat:', sharedRoom.id);
+        return {
+          id: sharedRoom.id,
+          name: sharedRoom.name,
+          type: 'direct',
+          description: sharedRoom.description,
+          is_public: sharedRoom.is_public,
+          other_participant: null
+        };
       }
-    }
 
-    // ახალი პირადი ჩატის შექმნა
-    console.log('🆕 Creating new direct chat room...');
-    const { data: newRoom, error: createError } = await supabase
-      .from('chat_rooms')
-      .insert({
-        type: 'direct',
-        is_public: false,
-        created_by: user.id
-      })
-      .select()
-      .single();
+      // Create new direct chat
+      const { data: newRoom, error: createError } = await supabase
+        .from('chat_rooms')
+        .insert({
+          type: 'direct',
+          is_public: false,
+          created_by: user.id
+        })
+        .select()
+        .single();
 
-    if (createError) {
-      console.error('❌ Error creating room:', createError);
-      return null;
-    }
+      if (createError || !newRoom) {
+        console.error('❌ Error creating room:', createError);
+        return null;
+      }
 
-    console.log('🎉 Created new room:', newRoom);
-
-    if (newRoom) {
-      // ორივე წევრის დამატება
-      console.log('👥 Adding participants to room...');
+      // Add participants
       const { error: participantsError } = await supabase
         .from('chat_participants')
         .insert([
@@ -265,38 +305,91 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return null;
       }
 
-      console.log('✅ Participants added successfully');
-
-      const chatRoom = {
+      await loadRooms();
+      return {
         id: newRoom.id,
         name: newRoom.name,
-        type: newRoom.type as 'direct' | 'channel',
+        type: 'direct',
         description: newRoom.description,
         is_public: newRoom.is_public,
         other_participant: null
       };
-
-      loadRooms();
-      console.log('🎯 Returning new chat room:', chatRoom);
-      return chatRoom;
+    } catch (error) {
+      console.error('❌ Error in createDirectChat:', error);
+      return null;
     }
+  };
 
-    return null;
+  // არხის შექმნა
+  const createChannel = async (name: string, description?: string, isPublic: boolean = true): Promise<ChatRoom | null> => {
+    if (!user) return null;
+
+    console.log('📺 Creating channel:', { name, description, isPublic });
+
+    try {
+      const { data: newRoom, error: createError } = await supabase
+        .from('chat_rooms')
+        .insert({
+          name,
+          description,
+          type: 'channel',
+          is_public: isPublic,
+          created_by: user.id
+        })
+        .select()
+        .single();
+
+      if (createError || !newRoom) {
+        console.error('❌ Error creating channel:', createError);
+        return null;
+      }
+
+      // Add creator as participant
+      const { error: participantError } = await supabase
+        .from('chat_participants')
+        .insert({
+          room_id: newRoom.id,
+          user_id: user.id
+        });
+
+      if (participantError) {
+        console.error('❌ Error adding creator as participant:', participantError);
+      }
+
+      await loadRooms();
+      return {
+        id: newRoom.id,
+        name: newRoom.name,
+        type: 'channel',
+        description: newRoom.description,
+        is_public: newRoom.is_public,
+        other_participant: null
+      };
+    } catch (error) {
+      console.error('❌ Error in createChannel:', error);
+      return null;
+    }
   };
 
   // არხში შესვლა
   const joinChannel = async (roomId: string) => {
     if (!user) return;
 
-    const { error } = await supabase
-      .from('chat_participants')
-      .insert({
-        room_id: roomId,
-        user_id: user.id
-      });
+    try {
+      const { error } = await supabase
+        .from('chat_participants')
+        .insert({
+          room_id: roomId,
+          user_id: user.id
+        });
 
-    if (!error) {
-      loadRooms();
+      if (!error) {
+        await loadRooms();
+      } else {
+        console.error('❌ Error joining channel:', error);
+      }
+    } catch (error) {
+      console.error('❌ Error in joinChannel:', error);
     }
   };
 
@@ -326,7 +419,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .single();
 
             const newMessage: Message = {
-              ...payload.new as Message,
+              id: payload.new.id,
+              room_id: payload.new.room_id,
+              sender_id: payload.new.sender_id,
+              content: payload.new.content,
+              created_at: payload.new.created_at,
+              file_url: payload.new.file_url,
+              file_type: payload.new.file_type,
+              file_name: payload.new.file_name,
               sender_name: senderData 
                 ? `${senderData.first_name || ''} ${senderData.last_name || ''}`.trim() || 'Unknown'
                 : 'Unknown'
@@ -347,8 +447,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           schema: 'public',
           table: 'user_presence'
         },
-        (payload) => {
-          console.log('User presence update:', payload);
+        () => {
           loadOnlineUsers();
         }
       )
@@ -417,7 +516,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       sendMessage,
       createDirectChat,
       joinChannel,
-      loadRooms
+      loadRooms,
+      createChannel
     }}>
       {children}
     </ChatContext.Provider>

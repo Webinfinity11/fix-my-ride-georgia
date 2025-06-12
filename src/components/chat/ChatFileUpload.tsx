@@ -55,7 +55,7 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
       const { file, type } = uploadingFile;
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `chat-files/${fileName}`;
+      const filePath = `${fileName}`;
 
       console.log('Uploading file:', file.name, 'to path:', filePath);
 

@@ -34,7 +34,6 @@ export const ChatWindow = () => {
   };
 
   const handleFileUploaded = async (fileUrl: string, fileType: 'image' | 'video' | 'file', fileName: string) => {
-    // Send message with file attachment
     let content = '';
     if (fileType === 'image') {
       content = '📷 ფოტო გაიგზავნა';
@@ -44,9 +43,7 @@ export const ChatWindow = () => {
       content = `📎 ${fileName}`;
     }
     
-    // For now, we'll send a text message indicating a file was shared
-    // In a real implementation, you'd extend the messages table to store file metadata
-    await sendMessage(`${content} - ${fileUrl}`);
+    await sendMessage(content, fileUrl, fileType, fileName);
   };
 
   const getChatTitle = () => {
