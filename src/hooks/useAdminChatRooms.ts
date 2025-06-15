@@ -27,7 +27,7 @@ export const useAdminChatRooms = () => {
         throw error;
       }
       
-      console.log('Fetched chat rooms:', data);
+      console.log('Successfully fetched chat rooms:', data?.length || 0, 'rooms');
       return data as AdminChatRoom[];
     },
   });

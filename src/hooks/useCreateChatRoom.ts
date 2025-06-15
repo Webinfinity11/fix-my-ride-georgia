@@ -34,7 +34,7 @@ export const useCreateChatRoom = () => {
         throw error;
       }
       
-      console.log('Created chat room:', newRoom);
+      console.log('Successfully created chat room:', newRoom);
       return newRoom;
     },
     onSuccess: () => {

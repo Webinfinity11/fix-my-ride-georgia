@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useAdminChatRooms, AdminChatRoom } from "@/hooks/useAdminChatRooms";
-import { Hash, User } from "lucide-react";
+import { Hash, User, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -11,15 +11,37 @@ type Props = {
 };
 
 export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => {
-  const { data: rooms, isLoading, error } = useAdminChatRooms();
+  const { data: rooms, isLoading, error, refetch } = useAdminChatRooms();
 
-  console.log('AdminChatList render:', { rooms, isLoading, error });
+  console.log('AdminChatList render:', { 
+    rooms: rooms?.length, 
+    isLoading, 
+    error: error?.message 
+  });
 
-  if (isLoading) return <div className="text-center py-4">ჩატვირთვა...</div>;
+  if (isLoading) {
+    return (
+      <Card className="p-3 flex flex-col gap-4 w-full h-full max-w-xs bg-background shadow-none">
+        <div className="flex items-center justify-center py-8">
+          <RefreshCw className="h-6 w-6 animate-spin" />
+          <span className="ml-2">ჩატვირთვა...</span>
+        </div>
+      </Card>
+    );
+  }
   
   if (error) {
     console.error('Error in AdminChatList:', error);
-    return <div className="text-red-600 text-center py-4">შეცდომა ჩატების წამოღებისას: {error.message}</div>;
+    return (
+      <Card className="p-3 flex flex-col gap-4 w-full h-full max-w-xs bg-background shadow-none">
+        <div className="text-red-600 text-center py-4">
+          <p className="text-sm mb-2">შეცდომა ჩატების წამოღებისას</p>
+          <Button onClick={() => refetch()} variant="outline" size="sm">
+            ხელახლა ცდა
+          </Button>
+        </div>
+      </Card>
+    );
   }
 
   // არხები პირველში, პირადი მეორეში
@@ -40,7 +62,7 @@ export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => 
                 onClick={() => onSelect?.(room)}
               >
                 <Hash className="h-4 w-4" />
-                <span className="truncate">{room.name || `არხი ${room.id.slice(0, 5)}`}</span>
+                <span className="truncate">{room.name || `არხი ${room.id.slice(0, 8)}`}</span>
               </Button>
             </li>
           ))}
@@ -58,7 +80,7 @@ export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => 
                 onClick={() => onSelect?.(room)}
               >
                 <User className="h-4 w-4" />
-                <span className="truncate">{room.name || `ჩატი ${room.id.slice(0, 5)}`}</span>
+                <span className="truncate">{room.name || `ჩატი ${room.id.slice(0, 8)}`}</span>
               </Button>
             </li>
           ))}
