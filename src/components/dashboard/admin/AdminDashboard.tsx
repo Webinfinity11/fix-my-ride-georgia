@@ -1,8 +1,7 @@
-import AdminStats from "./AdminStats";
-import ChatDashboard from "./chat/ChatDashboard";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, MessageCircle, Activity, Shield, Users } from "lucide-react";
+import { BarChart3, Shield, Users, Activity } from "lucide-react";
 
 const AdminDashboard = () => {
   return (
@@ -15,14 +14,10 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+        <TabsList className="grid grid-cols-3 w-full max-w-2xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             მიმოხილვა
-          </TabsTrigger>
-          <TabsTrigger value="chat" className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            ჩატები
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -35,8 +30,6 @@ const AdminDashboard = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <AdminStats />
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -44,11 +37,10 @@ const AdminDashboard = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  ბოლო აქტივობების სია მალე დაემატება...
+                  ბოლოAktივობების სია მალე დაემატება...
                 </p>
               </CardContent>
             </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle>სისტემის მდგომარეობა</CardTitle>
@@ -61,10 +53,6 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="chat">
-          <ChatDashboard />
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">
@@ -98,3 +86,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
