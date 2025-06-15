@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { AdminChatList } from "./AdminChatList";
+import { CreateChatDialog } from "./CreateChatDialog";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { AdminChatRoom } from "@/hooks/useAdminChatRooms";
 
@@ -11,10 +12,13 @@ const ChatManagement = () => {
     <div className="flex flex-col md:flex-row gap-4 h-full min-h-[360px]">
       {/* მარცხენა მხარე — სია */}
       <div className="w-full md:w-64">
-        <AdminChatList
-          onSelect={setSelectedRoom}
-          selectedRoomId={selectedRoom?.id}
-        />
+        <div className="space-y-3">
+          <CreateChatDialog />
+          <AdminChatList
+            onSelect={setSelectedRoom}
+            selectedRoomId={selectedRoom?.id}
+          />
+        </div>
       </div>
 
       {/* არჩეული ოთახის დეტალები */}
