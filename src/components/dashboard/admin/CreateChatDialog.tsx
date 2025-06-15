@@ -26,7 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { CreateChatRoomData } from "@/hooks/useCreateChatRoom";
 
@@ -71,9 +71,13 @@ export const CreateChatDialog = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>სახელი</FormLabel>
+                  <FormLabel>სახელი *</FormLabel>
                   <FormControl>
-                    <Input placeholder="ჩატის სახელი..." {...field} />
+                    <Input 
+                      placeholder="ჩატის სახელი..." 
+                      {...field} 
+                      required
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,7 +97,7 @@ export const CreateChatDialog = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="channel">არხი</SelectItem>
+                      <SelectItem value="channel">არხი (საჯარო)</SelectItem>
                       <SelectItem value="direct">პირადი ჩატი</SelectItem>
                     </SelectContent>
                   </Select>
@@ -112,6 +116,7 @@ export const CreateChatDialog = () => {
                     <Textarea 
                       placeholder="ჩატის აღწერა..." 
                       className="resize-none"
+                      rows={3}
                       {...field} 
                     />
                   </FormControl>
@@ -125,6 +130,7 @@ export const CreateChatDialog = () => {
                 type="button" 
                 variant="outline" 
                 onClick={() => setOpen(false)}
+                disabled={createChatRoom.isPending}
               >
                 გაუქმება
               </Button>
@@ -132,7 +138,14 @@ export const CreateChatDialog = () => {
                 type="submit" 
                 disabled={createChatRoom.isPending}
               >
-                {createChatRoom.isPending ? "შექმნა..." : "შექმნა"}
+                {createChatRoom.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    შექმნა...
+                  </>
+                ) : (
+                  "შექმნა"
+                )}
               </Button>
             </div>
           </form>

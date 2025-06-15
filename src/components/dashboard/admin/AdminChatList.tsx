@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useAdminChatRooms, AdminChatRoom } from "@/hooks/useAdminChatRooms";
-import { Hash, User, RefreshCw } from "lucide-react";
+import { Hash, User, RefreshCw, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -35,7 +35,9 @@ export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => 
     return (
       <Card className="p-3 flex flex-col gap-4 w-full h-full max-w-xs bg-background shadow-none">
         <div className="text-red-600 text-center py-4">
+          <AlertCircle className="h-6 w-6 mx-auto mb-2" />
           <p className="text-sm mb-2">შეცდომა ჩატების წამოღებისას</p>
+          <p className="text-xs text-gray-500 mb-3">{error.message}</p>
           <Button onClick={() => refetch()} variant="outline" size="sm">
             ხელახლა ცდა
           </Button>
