@@ -1,6 +1,5 @@
-
 import AdminStats from "./AdminStats";
-import ChatManagement from "./ChatManagement";
+import ChatDashboard from "./chat/ChatDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, MessageCircle, Activity, Shield, Users } from "lucide-react";
@@ -65,7 +64,7 @@ const AdminDashboard = () => {
         </TabsContent>
 
         <TabsContent value="chat">
-          <ChatManagement />
+          <ChatDashboard />
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">
