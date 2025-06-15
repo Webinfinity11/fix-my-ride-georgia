@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -92,7 +91,7 @@ const ChatManagement = () => {
           return {
             id: room.id,
             name: room.name,
-            type: (room.type === 'direct' || room.type === 'channel') ? room.type : 'channel',
+            type: (room.type === 'direct' || room.type === 'channel') ? room.type as 'direct' | 'channel' : 'channel' as 'direct' | 'channel',
             description: room.description,
             is_public: room.is_public ?? true,
             created_at: room.created_at,
