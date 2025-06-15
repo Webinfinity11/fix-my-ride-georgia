@@ -2,22 +2,29 @@
 import React, { useState } from "react";
 import { AdminChatList } from "./AdminChatList";
 import { CreateChatDialog } from "./CreateChatDialog";
+import { EditChatDialog } from "./EditChatDialog";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, Edit } from "lucide-react";
 import { AdminChatRoom } from "@/hooks/useAdminChatRooms";
+import { useDeleteChatRoom } from "@/hooks/useDeleteChatRoom";
 
 const ChatManagement = () => {
   const [selectedRoom, setSelectedRoom] = useState<AdminChatRoom | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const deleteChatRoom = useDeleteChatRoom();
 
   const handleEdit = () => {
-    // TODO: Implement edit functionality
-    console.log("Edit room:", selectedRoom);
+    if (selectedRoom) {
+      setEditDialogOpen(true);
+    }
   };
 
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    console.log("Delete room:", selectedRoom);
+  const handleDelete = async () => {
+    if (selectedRoom && window.confirm("დარწმუნებული ხართ, რომ გსურთ ამ ჩატის წაშლა?")) {
+      deleteChatRoom.mutate(selectedRoom.id);
+      setSelectedRoom(null);
+    }
   };
 
   return (
@@ -59,6 +66,7 @@ const ChatManagement = () => {
                     variant="destructive" 
                     size="sm" 
                     onClick={handleDelete}
+                    disabled={deleteChatRoom.isPending}
                     className="flex items-center gap-2"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -120,7 +128,7 @@ const ChatManagement = () => {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>არჩევა დაიწყეთ ჩატის არჩევით</CardTitle>
+              <CardTitle>აირჩიეთ ჩატი</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-muted-foreground">
@@ -130,6 +138,15 @@ const ChatManagement = () => {
           </Card>
         )}
       </div>
+
+      {/* რედაქტირების დიალოგი */}
+      {selectedRoom && (
+        <EditChatDialog
+          room={selectedRoom}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+        />
+      )}
     </div>
   );
 };
