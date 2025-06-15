@@ -1,9 +1,12 @@
 
 import React from "react";
-import { useAdminChatRooms, AdminChatRoom } from "@/hooks/useAdminChatRooms";
+// import { useAdminChatRooms, AdminChatRoom } from "@/hooks/useAdminChatRooms"; // დროებით გათიშულია
 import { Hash, User, RefreshCw, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+// დროებითი ტიპი, რადგან ჰუკი გათიშულია
+type AdminChatRoom = any;
 
 type Props = {
   onSelect?: (room: AdminChatRoom) => void;
@@ -11,9 +14,15 @@ type Props = {
 };
 
 export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => {
-  const { data: rooms, isLoading, error, refetch } = useAdminChatRooms();
+  // const { data: rooms, isLoading, error, refetch } = useAdminChatRooms(); // დროებით გათიშულია
+  
+  // დროებითი მონაცემები დიაგნოსტიკისთვის
+  const rooms = null;
+  const isLoading = false;
+  const error: Error | null = null; 
+  const refetch = () => alert("Refetch is temporarily disabled.");
 
-  console.log('AdminChatList render:', { 
+  console.log('AdminChatList render (diagnostics mode):', { 
     rooms: rooms?.length, 
     isLoading, 
     error: error?.message 
