@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, Hash, User, Circle } from 'lucide-react';
+import { Send, Hash, User, Circle, Loader2 } from 'lucide-react';
 import { useChat } from '@/context/ChatContext';
 import { useAuth } from '@/context/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -11,10 +11,11 @@ import { ChatFileUpload } from './ChatFileUpload';
 import { ChatMessage } from './ChatMessage';
 
 export const ChatWindow = () => {
-  const { activeRoom, messages, sendMessage, onlineUsers } = useChat();
+  const { activeRoom, messages, sendMessage, onlineUsers, loading } = useChat();
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [messageInput, setMessageInput] = useState('');
+  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -27,9 +28,16 @@ export const ChatWindow = () => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (messageInput.trim()) {
-      await sendMessage(messageInput);
-      setMessageInput('');
+    if (messageInput.trim() && !sending) {
+      setSending(true);
+      try {
+        await sendMessage(messageInput);
+        setMessageInput('');
+      } catch (error) {
+        console.error('Error sending message:', error);
+      } finally {
+        setSending(false);
+      }
     }
   };
 
@@ -43,7 +51,11 @@ export const ChatWindow = () => {
       content = `📎 ${fileName}`;
     }
     
-    await sendMessage(content, fileUrl, fileType, fileName);
+    try {
+      await sendMessage(content, fileUrl, fileType, fileName);
+    } catch (error) {
+      console.error('Error sending file message:', error);
+    }
   };
 
   const getChatTitle = () => {
@@ -119,17 +131,31 @@ export const ChatWindow = () => {
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              message={message}
-              currentUserId={user?.id}
-              isOnline={onlineUsers.includes(message.sender_id)}
-            />
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <span className="ml-2 text-sm text-gray-500">მესიჯების ჩატვირთვა...</span>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {messages.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 text-sm">ჯერ არ არის მესიჯები</p>
+                <p className="text-gray-400 text-xs mt-1">დაიწყეთ საუბარი!</p>
+              </div>
+            ) : (
+              messages.map((message) => (
+                <ChatMessage
+                  key={message.id}
+                  message={message}
+                  currentUserId={user?.id}
+                  isOnline={onlineUsers.includes(message.sender_id)}
+                />
+              ))
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </ScrollArea>
 
       {/* Message Input */}
@@ -142,9 +168,14 @@ export const ChatWindow = () => {
             placeholder="მესიჯის დაწერა..."
             className="flex-1"
             maxLength={1000}
+            disabled={sending}
           />
-          <Button type="submit" size="icon" disabled={!messageInput.trim()}>
-            <Send className="h-4 w-4" />
+          <Button type="submit" size="icon" disabled={!messageInput.trim() || sending}>
+            {sending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </form>

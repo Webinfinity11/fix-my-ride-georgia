@@ -5,15 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Users, Hash } from 'lucide-react';
+import { Plus, Users, Hash, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useChat } from '@/context/ChatContext';
 import { toast } from 'sonner';
 
 export const JoinChannelsButton = () => {
   const { user } = useAuth();
-  const { joinChannel, loadRooms, createChannel } = useChat();
+  const { createChannel, loadRooms } = useChat();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isCreatingDemo, setIsCreatingDemo] = useState(false);
   const [channelForm, setChannelForm] = useState({
     name: '',
     description: '',
@@ -25,6 +27,8 @@ export const JoinChannelsButton = () => {
       toast.error("ავტორიზაცია საჭიროა");
       return;
     }
+
+    setIsCreatingDemo(true);
 
     try {
       const demoChannels = [
@@ -52,22 +56,27 @@ export const JoinChannelsButton = () => {
 
       let createdCount = 0;
       for (const channel of demoChannels) {
-        const result = await createChannel(channel.name, channel.description, true);
-        if (result) {
-          createdCount++;
+        try {
+          const result = await createChannel(channel.name, channel.description, true);
+          if (result) {
+            createdCount++;
+          }
+        } catch (error) {
+          console.error(`Error creating channel ${channel.name}:`, error);
         }
       }
 
       if (createdCount > 0) {
         toast.success(`${createdCount} ახალი არხი შეიქმნა`);
-        await loadRooms();
       } else {
-        toast.info("ყველა დემო არხი უკვე შექმნილია");
+        toast.info("ყველა დემო არხი უკვე შექმნილია ან შექმნისას პრობლემა აღმოჩნდა");
       }
       
     } catch (error) {
       console.error('Error creating demo channels:', error);
       toast.error("არხების შექმნისას შეცდომა დაფიქსირდა");
+    } finally {
+      setIsCreatingDemo(false);
     }
   };
 
@@ -79,6 +88,8 @@ export const JoinChannelsButton = () => {
       return;
     }
 
+    setIsCreating(true);
+
     try {
       const result = await createChannel(
         channelForm.name.trim(),
@@ -87,16 +98,13 @@ export const JoinChannelsButton = () => {
       );
 
       if (result) {
-        toast.success("არხი წარმატებით შეიქმნა");
         setChannelForm({ name: '', description: '', isPublic: true });
         setIsCreateDialogOpen(false);
-        await loadRooms();
-      } else {
-        toast.error("არხის შექმნისას შეცდომა დაფიქსირდა");
       }
     } catch (error) {
       console.error('Error creating channel:', error);
-      toast.error("არხის შექმნისას შეცდომა დაფიქსირდა");
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -122,6 +130,7 @@ export const JoinChannelsButton = () => {
                 onChange={(e) => setChannelForm(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="მაგ. BMW Owners Georgia"
                 required
+                disabled={isCreating}
               />
             </div>
 
@@ -133,6 +142,7 @@ export const JoinChannelsButton = () => {
                 onChange={(e) => setChannelForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="არხის მოკლე აღწერა..."
                 rows={3}
+                disabled={isCreating}
               />
             </div>
 
@@ -142,19 +152,30 @@ export const JoinChannelsButton = () => {
                 id="channel-public"
                 checked={channelForm.isPublic}
                 onChange={(e) => setChannelForm(prev => ({ ...prev, isPublic: e.target.checked }))}
+                disabled={isCreating}
               />
               <Label htmlFor="channel-public">საჯარო არხი</Label>
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit" className="flex-1">
-                <Hash className="h-4 w-4 mr-2" />
-                შექმნა
+              <Button type="submit" className="flex-1" disabled={isCreating}>
+                {isCreating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    იქმნება...
+                  </>
+                ) : (
+                  <>
+                    <Hash className="h-4 w-4 mr-2" />
+                    შექმნა
+                  </>
+                )}
               </Button>
               <Button 
                 type="button" 
                 variant="outline" 
                 onClick={() => setIsCreateDialogOpen(false)}
+                disabled={isCreating}
               >
                 გაუქმება
               </Button>
@@ -168,9 +189,19 @@ export const JoinChannelsButton = () => {
         variant="outline" 
         size="sm" 
         className="w-full"
+        disabled={isCreatingDemo}
       >
-        <Users className="h-4 w-4 mr-2" />
-        დემო არხების შექმნა
+        {isCreatingDemo ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            იქმნება...
+          </>
+        ) : (
+          <>
+            <Users className="h-4 w-4 mr-2" />
+            დემო არხების შექმნა
+          </>
+        )}
       </Button>
     </div>
   );

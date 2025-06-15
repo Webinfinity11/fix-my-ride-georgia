@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
+import { toast } from 'sonner';
 
 interface ChatRoom {
   id: string;
@@ -35,6 +36,7 @@ interface ChatContextType {
   activeRoom: ChatRoom | null;
   messages: Message[];
   onlineUsers: string[];
+  loading: boolean;
   setActiveRoom: (room: ChatRoom | null) => void;
   sendMessage: (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => Promise<void>;
   createDirectChat: (userId: string) => Promise<ChatRoom | null>;
@@ -51,65 +53,42 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [activeRoom, setActiveRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // ჩატების ჩატვირთვა
+  // Load rooms function
   const loadRooms = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user found, skipping room loading');
+      return;
+    }
 
+    setLoading(true);
     console.log('🏠 Loading rooms for user:', user.id);
 
     try {
-      // Get rooms where user is a participant
-      const { data: participantRooms, error: participantError } = await supabase
-        .from('chat_participants')
-        .select(`
-          room_id,
-          chat_rooms (
-            id,
-            name,
-            type,
-            description,
-            is_public
-          )
-        `)
-        .eq('user_id', user.id);
-
-      if (participantError) {
-        console.error('❌ Error loading participant rooms:', participantError);
-        return;
-      }
-
-      // Also get public rooms
-      const { data: publicRooms, error: publicError } = await supabase
+      // Get all rooms the user has access to
+      const { data: allRooms, error } = await supabase
         .from('chat_rooms')
-        .select('id, name, type, description, is_public')
-        .eq('is_public', true)
-        .eq('type', 'channel');
+        .select(`
+          id,
+          name,
+          type,
+          description,
+          is_public,
+          created_by
+        `)
+        .order('created_at', { ascending: false });
 
-      if (publicError) {
-        console.error('❌ Error loading public rooms:', publicError);
+      if (error) {
+        console.error('❌ Error loading rooms:', error);
+        toast.error('ჩატების ჩატვირთვისას შეცდომა დაფიქსირდა');
         return;
       }
 
-      // Combine rooms
-      const userRoomIds = participantRooms?.map(p => p.chat_rooms?.id).filter(Boolean) || [];
-      const allRoomsMap = new Map();
-
-      // Add participant rooms
-      participantRooms?.forEach(p => {
-        if (p.chat_rooms) {
-          allRoomsMap.set(p.chat_rooms.id, p.chat_rooms);
-        }
-      });
-
-      // Add public rooms not already in participant rooms
-      publicRooms?.forEach(room => {
-        if (!allRoomsMap.has(room.id)) {
-          allRoomsMap.set(room.id, room);
-        }
-      });
-
-      const allRooms = Array.from(allRoomsMap.values());
+      if (!allRooms) {
+        setRooms([]);
+        return;
+      }
 
       // Process rooms to add participant info for direct chats
       const roomsWithParticipants = await Promise.all(
@@ -159,10 +138,13 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setRooms(roomsWithParticipants);
     } catch (error) {
       console.error('❌ Error in loadRooms:', error);
+      toast.error('ჩატების ჩატვირთვისას შეცდომა დაფიქსირდა');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // მესიჯების ჩატვირთვა
+  // Load messages function
   const loadMessages = async (roomId: string) => {
     console.log('💬 Loading messages for room:', roomId);
 
@@ -182,6 +164,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('❌ Error loading messages:', error);
+        toast.error('მესიჯების ჩატვირთვისას შეცდომა დაფიქსირდა');
         return;
       }
 
@@ -202,16 +185,44 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error('❌ Error in loadMessages:', error);
+      toast.error('მესიჯების ჩატვირთვისას შეცდომა დაფიქსირდა');
     }
   };
 
-  // მესიჯის გაგზავნა
+  // Send message function
   const sendMessage = async (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => {
-    if (!activeRoom || !user) return;
+    if (!activeRoom || !user) {
+      toast.error('მესიჯის გაგზავნა შეუძლებელია');
+      return;
+    }
 
     console.log('📤 Sending message:', { content, room: activeRoom.id, user: user.id, fileUrl, fileType, fileName });
 
     try {
+      // First ensure the user is a participant in the room
+      const { data: participation } = await supabase
+        .from('chat_participants')
+        .select('id')
+        .eq('room_id', activeRoom.id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (!participation) {
+        // Add user as participant if not already
+        const { error: participantError } = await supabase
+          .from('chat_participants')
+          .insert({
+            room_id: activeRoom.id,
+            user_id: user.id
+          });
+
+        if (participantError) {
+          console.error('❌ Error adding participant:', participantError);
+          toast.error('ჩატში შესვლისას შეცდომა დაფიქსირდა');
+          return;
+        }
+      }
+
       const messageData: any = {
         room_id: activeRoom.id,
         sender_id: user.id,
@@ -230,50 +241,49 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('❌ Error sending message:', error);
+        toast.error('მესიჯის გაგზავნისას შეცდომა დაფიქსირდა');
       } else {
         console.log('✅ Message sent successfully');
       }
     } catch (error) {
       console.error('❌ Error in sendMessage:', error);
+      toast.error('მესიჯის გაგზავნისას შეცდომა დაფიქსირდა');
     }
   };
 
-  // პირადი ჩატის შექმნა
+  // Create direct chat function
   const createDirectChat = async (userId: string): Promise<ChatRoom | null> => {
-    if (!user) return null;
+    if (!user) {
+      toast.error('ავტორიზაცია საჭიროა');
+      return null;
+    }
 
     console.log('🔄 Creating direct chat between:', user.id, 'and', userId);
 
     try {
       // Check for existing direct chat
-      const { data: existingRooms } = await supabase
-        .from('chat_rooms')
-        .select(`
-          id,
-          name,
-          type,
-          description,
-          is_public,
-          chat_participants!inner(user_id)
-        `)
-        .eq('type', 'direct');
+      const { data: existingParticipants } = await supabase
+        .from('chat_participants')
+        .select('room_id, chat_rooms!inner(type)')
+        .in('user_id', [user.id, userId]);
 
-      // Find room where both users are participants
-      const sharedRoom = existingRooms?.find(room => {
-        const participantIds = room.chat_participants.map((p: any) => p.user_id);
-        return participantIds.includes(user.id) && participantIds.includes(userId);
-      });
+      if (existingParticipants) {
+        // Find a room where both users are participants and it's a direct chat
+        const roomCounts: { [key: string]: number } = {};
+        existingParticipants.forEach(p => {
+          if (p.chat_rooms?.type === 'direct') {
+            roomCounts[p.room_id] = (roomCounts[p.room_id] || 0) + 1;
+          }
+        });
 
-      if (sharedRoom) {
-        console.log('✅ Found existing direct chat:', sharedRoom.id);
-        return {
-          id: sharedRoom.id,
-          name: sharedRoom.name,
-          type: 'direct',
-          description: sharedRoom.description,
-          is_public: sharedRoom.is_public,
-          other_participant: null
-        };
+        const sharedRoomId = Object.keys(roomCounts).find(roomId => roomCounts[roomId] === 2);
+        
+        if (sharedRoomId) {
+          console.log('✅ Found existing direct chat:', sharedRoomId);
+          await loadRooms();
+          const existingRoom = rooms.find(r => r.id === sharedRoomId);
+          return existingRoom || null;
+        }
       }
 
       // Create new direct chat
@@ -289,6 +299,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (createError || !newRoom) {
         console.error('❌ Error creating room:', createError);
+        toast.error('ჩატის შექმნისას შეცდომა დაფიქსირდა');
         return null;
       }
 
@@ -302,10 +313,13 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (participantsError) {
         console.error('❌ Error adding participants:', participantsError);
+        toast.error('მონაწილეების დამატებისას შეცდომა დაფიქსირდა');
         return null;
       }
 
       await loadRooms();
+      toast.success('პირადი ჩატი წარმატებით შეიქმნა');
+      
       return {
         id: newRoom.id,
         name: newRoom.name,
@@ -316,13 +330,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     } catch (error) {
       console.error('❌ Error in createDirectChat:', error);
+      toast.error('პირადი ჩატის შექმნისას შეცდომა დაფიქსირდა');
       return null;
     }
   };
 
-  // არხის შექმნა
+  // Create channel function
   const createChannel = async (name: string, description?: string, isPublic: boolean = true): Promise<ChatRoom | null> => {
-    if (!user) return null;
+    if (!user) {
+      toast.error('ავტორიზაცია საჭიროა');
+      return null;
+    }
 
     console.log('📺 Creating channel:', { name, description, isPublic });
 
@@ -341,6 +359,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (createError || !newRoom) {
         console.error('❌ Error creating channel:', createError);
+        toast.error('არხის შექმნისას შეცდომა დაფიქსირდა');
         return null;
       }
 
@@ -354,9 +373,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (participantError) {
         console.error('❌ Error adding creator as participant:', participantError);
+        toast.error('მონაწილის დამატებისას შეცდომა დაფიქსირდა');
       }
 
       await loadRooms();
+      toast.success('არხი წარმატებით შეიქმნა');
+      
       return {
         id: newRoom.id,
         name: newRoom.name,
@@ -367,13 +389,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
     } catch (error) {
       console.error('❌ Error in createChannel:', error);
+      toast.error('არხის შექმნისას შეცდომა დაფიქსირდა');
       return null;
     }
   };
 
-  // არხში შესვლა
+  // Join channel function
   const joinChannel = async (roomId: string) => {
-    if (!user) return;
+    if (!user) {
+      toast.error('ავტორიზაცია საჭიროა');
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -385,11 +411,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (!error) {
         await loadRooms();
+        toast.success('არხში წარმატებით შეგიტანდით');
       } else {
         console.error('❌ Error joining channel:', error);
+        toast.error('არხში შესვლისას შეცდომა დაფიქსირდა');
       }
     } catch (error) {
       console.error('❌ Error in joinChannel:', error);
+      toast.error('არხში შესვლისას შეცდომა დაფიქსირდა');
     }
   };
 
@@ -399,7 +428,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     console.log('Setting up real-time subscriptions for user:', user.id);
 
-    // მესიჯების real-time მოსმენა
+    // Message real-time listener
     const messageChannel = supabase
       .channel('messages_realtime')
       .on('postgres_changes', 
@@ -438,7 +467,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       )
       .subscribe();
 
-    // User presence real-time მოსმენა
+    // User presence real-time listener
     const presenceChannel = supabase
       .channel('user_presence_realtime')
       .on('postgres_changes',
@@ -453,7 +482,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       )
       .subscribe();
 
-    // ონლაინ სტატუსის აღნიშვნა
+    // Update presence
     const updatePresence = async () => {
       await supabase
         .from('user_presence')
@@ -503,6 +532,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     if (activeRoom) {
       loadMessages(activeRoom.id);
+    } else {
+      setMessages([]);
     }
   }, [activeRoom]);
 
@@ -512,6 +543,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       activeRoom,
       messages,
       onlineUsers,
+      loading,
       setActiveRoom,
       sendMessage,
       createDirectChat,
