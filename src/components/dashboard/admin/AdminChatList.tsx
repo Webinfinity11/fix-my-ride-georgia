@@ -13,8 +13,14 @@ type Props = {
 export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => {
   const { data: rooms, isLoading, error } = useAdminChatRooms();
 
+  console.log('AdminChatList render:', { rooms, isLoading, error });
+
   if (isLoading) return <div className="text-center py-4">ჩატვირთვა...</div>;
-  if (error) return <div className="text-red-600 text-center py-4">შეცდომა ჩატების წამოღებისას</div>;
+  
+  if (error) {
+    console.error('Error in AdminChatList:', error);
+    return <div className="text-red-600 text-center py-4">შეცდომა ჩატების წამოღებისას: {error.message}</div>;
+  }
 
   // არხები პირველში, პირადი მეორეში
   const channels = (rooms || []).filter((r) => r.type === "channel");
@@ -23,7 +29,7 @@ export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => 
   return (
     <Card className="p-3 flex flex-col gap-4 w-full h-full max-w-xs bg-background shadow-none">
       <div>
-        <h3 className="font-semibold text-sm mb-2">არხები</h3>
+        <h3 className="font-semibold text-sm mb-2">არხები ({channels.length})</h3>
         {channels.length === 0 && <div className="text-gray-500 text-xs">არხები არ არის</div>}
         <ul className="space-y-1">
           {channels.map((room) => (
@@ -41,7 +47,7 @@ export const AdminChatList: React.FC<Props> = ({ onSelect, selectedRoomId }) => 
         </ul>
       </div>
       <div>
-        <h3 className="font-semibold text-sm mb-2">პირადი ჩატები</h3>
+        <h3 className="font-semibold text-sm mb-2">პირადი ჩატები ({directs.length})</h3>
         {directs.length === 0 && <div className="text-gray-500 text-xs">პირადი ჩატები არ არის</div>}
         <ul className="space-y-1">
           {directs.map((room) => (

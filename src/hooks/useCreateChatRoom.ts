@@ -16,6 +16,8 @@ export const useCreateChatRoom = () => {
 
   return useMutation({
     mutationFn: async (data: CreateChatRoomData) => {
+      console.log('Creating chat room with data:', data);
+      
       const { data: newRoom, error } = await supabase
         .from("chat_rooms")
         .insert([{
@@ -27,7 +29,12 @@ export const useCreateChatRoom = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating chat room:', error);
+        throw error;
+      }
+      
+      console.log('Created chat room:', newRoom);
       return newRoom;
     },
     onSuccess: () => {
