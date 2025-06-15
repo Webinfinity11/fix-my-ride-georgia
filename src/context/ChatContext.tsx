@@ -55,7 +55,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load rooms function
+  // Load rooms function - simplified to avoid RLS issues
   const loadRooms = async () => {
     if (!user) {
       console.log('No user found, skipping room loading');
@@ -66,7 +66,21 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('🏠 Loading rooms for user:', user.id);
 
     try {
-      // Get all rooms the user has access to
+      // Get user's participations first
+      const { data: userParticipations, error: participationError } = await supabase
+        .from('chat_participants')
+        .select('room_id')
+        .eq('user_id', user.id);
+
+      if (participationError) {
+        console.error('❌ Error loading user participations:', participationError);
+        toast.error('მონაწილეობების ჩატვირთვისას შეცდომა დაფიქსირდა');
+        return;
+      }
+
+      const roomIds = userParticipations?.map(p => p.room_id) || [];
+
+      // Get public rooms and user's private rooms
       const { data: allRooms, error } = await supabase
         .from('chat_rooms')
         .select(`
@@ -77,6 +91,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           is_public,
           created_by
         `)
+        .or(`is_public.eq.true,id.in.(${roomIds.length > 0 ? roomIds.join(',') : 'null'})`)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -261,28 +276,35 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('🔄 Creating direct chat between:', user.id, 'and', userId);
 
     try {
-      // Check for existing direct chat
-      const { data: existingParticipants } = await supabase
-        .from('chat_participants')
-        .select('room_id, chat_rooms!inner(type)')
-        .in('user_id', [user.id, userId]);
+      // Check for existing direct chat between these users
+      const { data: existingChats } = await supabase
+        .from('chat_rooms')
+        .select(`
+          id,
+          name,
+          type,
+          description,
+          is_public,
+          chat_participants!inner(user_id)
+        `)
+        .eq('type', 'direct');
 
-      if (existingParticipants) {
-        // Find a room where both users are participants and it's a direct chat
-        const roomCounts: { [key: string]: number } = {};
-        existingParticipants.forEach(p => {
-          if (p.chat_rooms?.type === 'direct') {
-            roomCounts[p.room_id] = (roomCounts[p.room_id] || 0) + 1;
+      if (existingChats) {
+        // Find a direct chat where both users are participants
+        for (const chat of existingChats) {
+          const participantIds = chat.chat_participants.map((p: any) => p.user_id);
+          if (participantIds.includes(user.id) && participantIds.includes(userId) && participantIds.length === 2) {
+            console.log('✅ Found existing direct chat:', chat.id);
+            await loadRooms();
+            return {
+              id: chat.id,
+              name: chat.name,
+              type: 'direct',
+              description: chat.description,
+              is_public: chat.is_public,
+              other_participant: null
+            };
           }
-        });
-
-        const sharedRoomId = Object.keys(roomCounts).find(roomId => roomCounts[roomId] === 2);
-        
-        if (sharedRoomId) {
-          console.log('✅ Found existing direct chat:', sharedRoomId);
-          await loadRooms();
-          const existingRoom = rooms.find(r => r.id === sharedRoomId);
-          return existingRoom || null;
         }
       }
 
