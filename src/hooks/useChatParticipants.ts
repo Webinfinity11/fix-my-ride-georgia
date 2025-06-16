@@ -47,22 +47,22 @@ export const useChatParticipants = (roomId: string) => {
       }
 
       // Transform the data to match our interface
-      const transformedData = data?.map(participant => ({
+      const transformedData: ChatParticipant[] = data?.map(participant => ({
         id: participant.id,
         user_id: participant.user_id,
         room_id: participant.room_id,
         joined_at: participant.joined_at,
         last_read_at: participant.last_read_at,
-        profile: participant.profiles as {
-          first_name: string;
-          last_name: string;
-          email: string;
-          avatar_url: string | null;
+        profile: {
+          first_name: participant.profiles?.first_name || '',
+          last_name: participant.profiles?.last_name || '',
+          email: participant.profiles?.email || '',
+          avatar_url: participant.profiles?.avatar_url || null,
         }
       })) || [];
 
       console.log('Fetched participants:', transformedData.length);
-      return transformedData as ChatParticipant[];
+      return transformedData;
     },
     enabled: !!roomId,
     staleTime: 1000 * 60 * 5, // 5 minutes
