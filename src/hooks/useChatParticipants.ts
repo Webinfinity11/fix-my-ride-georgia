@@ -46,8 +46,23 @@ export const useChatParticipants = (roomId: string) => {
         throw error;
       }
 
-      console.log('Fetched participants:', data?.length || 0);
-      return data as ChatParticipant[];
+      // Transform the data to match our interface
+      const transformedData = data?.map(participant => ({
+        id: participant.id,
+        user_id: participant.user_id,
+        room_id: participant.room_id,
+        joined_at: participant.joined_at,
+        last_read_at: participant.last_read_at,
+        profile: participant.profiles as {
+          first_name: string;
+          last_name: string;
+          email: string;
+          avatar_url: string | null;
+        }
+      })) || [];
+
+      console.log('Fetched participants:', transformedData.length);
+      return transformedData as ChatParticipant[];
     },
     enabled: !!roomId,
     staleTime: 1000 * 60 * 5, // 5 minutes
