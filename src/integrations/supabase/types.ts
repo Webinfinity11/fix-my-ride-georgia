@@ -913,7 +913,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_user_role: {
+        Args: { user_id?: string }
+        Returns: string
+      }
       is_admin: {
+        Args: { user_id?: string }
+        Returns: boolean
+      }
+      is_user_admin: {
         Args: { user_id?: string }
         Returns: boolean
       }
@@ -927,6 +935,10 @@ export type Database = {
           p_user_id?: string
         }
         Returns: undefined
+      }
+      user_participates_in_room: {
+        Args: { user_id: string; room_id: string }
+        Returns: boolean
       }
     }
     Enums: {

@@ -44,9 +44,9 @@ export const useChatStatistics = (roomId: string) => {
         .eq("room_id", roomId)
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (lastActivityError && lastActivityError.code !== 'PGRST116') {
+      if (lastActivityError) {
         console.error('Error fetching last activity:', lastActivityError);
         throw lastActivityError;
       }
