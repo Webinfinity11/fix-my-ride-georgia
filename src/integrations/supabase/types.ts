@@ -897,6 +897,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_chat_participants: {
+        Args: { participant_user_id: string }
+        Returns: boolean
+      }
       current_user_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
