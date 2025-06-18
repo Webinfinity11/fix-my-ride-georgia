@@ -13,6 +13,10 @@ export const useChatStatistics = (roomId: string) => {
   return useQuery({
     queryKey: ["chat-statistics", roomId],
     queryFn: async () => {
+      if (!roomId) {
+        throw new Error('Room ID is required');
+      }
+
       console.log('Fetching chat statistics for room:', roomId);
       
       // Get participant count
@@ -58,10 +62,11 @@ export const useChatStatistics = (roomId: string) => {
         lastActivity: lastMessage?.created_at || null
       };
 
-      console.log('Chat statistics:', statistics);
+      console.log('Chat statistics fetched successfully:', statistics);
       return statistics;
     },
     enabled: !!roomId,
     staleTime: 1000 * 60 * 2, // 2 minutes
+    retry: 2,
   });
 };

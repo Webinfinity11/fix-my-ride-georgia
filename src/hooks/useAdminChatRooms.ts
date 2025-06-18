@@ -30,7 +30,7 @@ export const useAdminChatRooms = () => {
       console.log('Successfully fetched chat rooms:', data?.length || 0, 'rooms');
       return data as AdminChatRoom[];
     },
-    retry: 3,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+    staleTime: 1000 * 60 * 3, // 3 minutes
   });
 };

@@ -21,6 +21,10 @@ export const useChatParticipants = (roomId: string) => {
   return useQuery({
     queryKey: ["chat-participants", roomId],
     queryFn: async () => {
+      if (!roomId) {
+        throw new Error('Room ID is required');
+      }
+
       console.log('Fetching participants for room:', roomId);
       
       const { data, error } = await supabase
@@ -61,11 +65,12 @@ export const useChatParticipants = (roomId: string) => {
         }
       })) || [];
 
-      console.log('Fetched participants:', transformedData.length);
+      console.log('Fetched participants successfully:', transformedData.length);
       return transformedData;
     },
     enabled: !!roomId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 3, // 3 minutes
+    retry: 2,
   });
 };
 
@@ -124,7 +129,7 @@ export const useAddParticipant = () => {
           room_id: roomId
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error adding participant:', error);
@@ -135,8 +140,10 @@ export const useAddParticipant = () => {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["chat-participants", data.room_id] });
-      queryClient.invalidateQueries({ queryKey: ["chat-statistics", data.room_id] });
+      if (data?.room_id) {
+        queryClient.invalidateQueries({ queryKey: ["chat-participants", data.room_id] });
+        queryClient.invalidateQueries({ queryKey: ["chat-statistics", data.room_id] });
+      }
       toast({
         title: "წარმატება",
         description: "მონაწილე წარმატებით დაემატა",
