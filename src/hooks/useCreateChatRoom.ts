@@ -24,6 +24,7 @@ export const useCreateChatRoom = () => {
         throw new Error('ავტორიზაცია საჭიროა ჩატის შესაქმნელად');
       }
 
+      // შევქმნათ ჩატის ოთახი
       const { data: room, error } = await supabase
         .from("chat_rooms")
         .insert({
@@ -31,7 +32,7 @@ export const useCreateChatRoom = () => {
           type: data.type,
           description: data.description,
           is_public: data.is_public ?? true,
-          created_by: user.id, // დავამატოთ შემქმნელის ID
+          created_by: user.id,
         })
         .select()
         .single();
@@ -42,10 +43,26 @@ export const useCreateChatRoom = () => {
       }
 
       console.log('✅ Chat room created successfully:', room);
+
+      // დავამატოთ შემქმნელი, როგორც მონაწილე
+      const { error: participantError } = await supabase
+        .from("chat_participants")
+        .insert({
+          room_id: room.id,
+          user_id: user.id
+        });
+
+      if (participantError) {
+        console.error('❌ Error adding creator as participant:', participantError);
+        // არ გავაჩერებთ მთლიან პროცესს, მაგრამ ლოგავს შეცდომას
+      }
+
       return room;
     },
     onSuccess: () => {
+      // განაახლებს ყველა რელევანტურ query-ს
       queryClient.invalidateQueries({ queryKey: ["admin-chat-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["chat-rooms"] });
       toast.success("ჩატის ოთახი წარმატებით შეიქმნა");
     },
     onError: (error: Error) => {
