@@ -15,7 +15,7 @@ export const useAdminChatRooms = () => {
   return useQuery({
     queryKey: ["admin-chat-rooms"],
     queryFn: async () => {
-      console.log('Fetching admin chat rooms...');
+      console.log('🏠 Admin fetching chat rooms...');
       
       const { data, error } = await supabase
         .from("chat_rooms")
@@ -23,14 +23,15 @@ export const useAdminChatRooms = () => {
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('Error fetching chat rooms:', error);
-        throw error;
+        console.error('❌ Error fetching admin chat rooms:', error);
+        throw new Error(`Chat rooms fetch failed: ${error.message}`);
       }
       
-      console.log('Successfully fetched chat rooms:', data?.length || 0, 'rooms');
-      return data as AdminChatRoom[];
+      console.log('✅ Admin chat rooms fetched:', data?.length || 0, 'rooms');
+      return data as AdminChatRoom[] || [];
     },
-    retry: 2,
-    staleTime: 1000 * 60 * 3, // 3 minutes
+    retry: 1,
+    staleTime: 1000 * 60 * 2,
+    refetchOnWindowFocus: false,
   });
 };

@@ -4,8 +4,9 @@ import { useChatParticipants, useRemoveParticipant, ChatParticipant } from "@/ho
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Trash2, UserMinus, RefreshCw } from "lucide-react";
+import { Trash2, UserMinus, RefreshCw, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 type Props = {
   roomId: string;
@@ -18,10 +19,14 @@ export const ChatParticipantsManager: React.FC<Props> = ({ roomId, roomName }) =
 
   const handleRemoveParticipant = async (participant: ChatParticipant) => {
     if (window.confirm(`დარწმუნებული ხართ, რომ გსურთ ${participant.profile.first_name} ${participant.profile.last_name}-ის წაშლა ამ ჩატიდან?`)) {
-      removeParticipant.mutate({ 
-        participantId: participant.id, 
-        roomId: participant.room_id 
-      });
+      try {
+        await removeParticipant.mutateAsync({ 
+          participantId: participant.id, 
+          roomId: participant.room_id 
+        });
+      } catch (error) {
+        console.error('Remove participant failed:', error);
+      }
     }
   };
 
@@ -42,11 +47,20 @@ export const ChatParticipantsManager: React.FC<Props> = ({ roomId, roomName }) =
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-red-600">შეცდომა</CardTitle>
+          <CardTitle className="text-red-600 flex items-center gap-2">
+            <AlertCircle className="h-5 w-5" />
+            შეცდომა
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 mb-3">მონაწილეების ჩატვირთვისას მოხდა შეცდომა</p>
-          <Button onClick={() => refetch()} variant="outline" size="sm">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              მონაწილეების ჩატვირთვისას მოხდა შეცდომა: {error.message}
+            </AlertDescription>
+          </Alert>
+          <Button onClick={() => refetch()} variant="outline" size="sm" className="mt-3">
+            <RefreshCw className="h-4 w-4 mr-2" />
             ხელახლა ცდა
           </Button>
         </CardContent>

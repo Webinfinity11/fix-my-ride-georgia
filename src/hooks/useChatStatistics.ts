@@ -14,59 +14,66 @@ export const useChatStatistics = (roomId: string) => {
     queryKey: ["chat-statistics", roomId],
     queryFn: async () => {
       if (!roomId) {
-        throw new Error('Room ID is required');
+        console.log('❌ No room ID for statistics');
+        return null;
       }
 
-      console.log('Fetching chat statistics for room:', roomId);
+      console.log('📊 Fetching chat statistics for room:', roomId);
       
-      // Get participant count
-      const { count: participantCount, error: participantError } = await supabase
-        .from("chat_participants")
-        .select("*", { count: 'exact', head: true })
-        .eq("room_id", roomId);
+      try {
+        // Get participant count
+        const { count: participantCount, error: participantError } = await supabase
+          .from("chat_participants")
+          .select("*", { count: 'exact', head: true })
+          .eq("room_id", roomId);
 
-      if (participantError) {
-        console.error('Error fetching participant count:', participantError);
-        throw participantError;
+        if (participantError) {
+          console.error('❌ Error fetching participant count:', participantError);
+          throw new Error(`Participant count failed: ${participantError.message}`);
+        }
+
+        // Get message count
+        const { count: messageCount, error: messageError } = await supabase
+          .from("messages")
+          .select("*", { count: 'exact', head: true })
+          .eq("room_id", roomId);
+
+        if (messageError) {
+          console.error('❌ Error fetching message count:', messageError);
+          throw new Error(`Message count failed: ${messageError.message}`);
+        }
+
+        // Get last activity
+        const { data: lastMessage, error: lastActivityError } = await supabase
+          .from("messages")
+          .select("created_at")
+          .eq("room_id", roomId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (lastActivityError) {
+          console.error('❌ Error fetching last activity:', lastActivityError);
+          // Don't throw here, just log the error
+        }
+
+        const statistics: ChatStatistics = {
+          roomId,
+          participantCount: participantCount || 0,
+          messageCount: messageCount || 0,
+          lastActivity: lastMessage?.created_at || null
+        };
+
+        console.log('✅ Statistics fetched successfully:', statistics);
+        return statistics;
+      } catch (error) {
+        console.error('❌ Statistics fetch error:', error);
+        throw error;
       }
-
-      // Get message count
-      const { count: messageCount, error: messageError } = await supabase
-        .from("messages")
-        .select("*", { count: 'exact', head: true })
-        .eq("room_id", roomId);
-
-      if (messageError) {
-        console.error('Error fetching message count:', messageError);
-        throw messageError;
-      }
-
-      // Get last activity (most recent message)
-      const { data: lastMessage, error: lastActivityError } = await supabase
-        .from("messages")
-        .select("created_at")
-        .eq("room_id", roomId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (lastActivityError) {
-        console.error('Error fetching last activity:', lastActivityError);
-        throw lastActivityError;
-      }
-
-      const statistics: ChatStatistics = {
-        roomId,
-        participantCount: participantCount || 0,
-        messageCount: messageCount || 0,
-        lastActivity: lastMessage?.created_at || null
-      };
-
-      console.log('Chat statistics fetched successfully:', statistics);
-      return statistics;
     },
     enabled: !!roomId,
-    staleTime: 1000 * 60 * 2, // 2 minutes
-    retry: 2,
+    staleTime: 1000 * 60 * 1,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 };

@@ -1,9 +1,10 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
-export interface UpdateChatRoomData {
+interface UpdateChatRoomData {
+  id: string;
   name?: string;
   description?: string;
   is_public?: boolean;
@@ -11,41 +12,35 @@ export interface UpdateChatRoomData {
 
 export const useUpdateChatRoom = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ roomId, data }: { roomId: string; data: UpdateChatRoomData }) => {
-      console.log('Updating chat room:', roomId, 'with data:', data);
+    mutationFn: async (data: UpdateChatRoomData) => {
+      console.log('🔄 Updating chat room:', data);
+
+      const { id, ...updateData } = data;
       
-      const { data: updatedRoom, error } = await supabase
+      const { data: room, error } = await supabase
         .from("chat_rooms")
-        .update(data)
-        .eq("id", roomId)
+        .update(updateData)
+        .eq("id", id)
         .select()
         .single();
 
       if (error) {
-        console.error('Error updating chat room:', error);
-        throw error;
+        console.error('❌ Error updating chat room:', error);
+        throw new Error(`Room update failed: ${error.message}`);
       }
-      
-      console.log('Successfully updated chat room:', updatedRoom);
-      return updatedRoom;
+
+      console.log('✅ Chat room updated successfully:', room);
+      return room;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-chat-rooms"] });
-      toast({
-        title: "წარმატება",
-        description: "ჩატი წარმატებით განახლდა",
-      });
+      toast.success("ჩატის ოთახი წარმატებით განახლდა");
     },
-    onError: (error) => {
-      console.error("ჩატის განახლების შეცდომა:", error);
-      toast({
-        title: "შეცდომა",
-        description: "ჩატის განახლება ვერ მოხერხდა",
-        variant: "destructive",
-      });
+    onError: (error: Error) => {
+      console.error("❌ Update room error:", error);
+      toast.error(error.message || "ჩატის ოთახის განახლება ვერ მოხერხდა");
     },
   });
 };

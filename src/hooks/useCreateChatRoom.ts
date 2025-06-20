@@ -1,9 +1,9 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
-export interface CreateChatRoomData {
+interface CreateChatRoomData {
   name: string;
   type: "channel" | "direct";
   description?: string;
@@ -12,45 +12,37 @@ export interface CreateChatRoomData {
 
 export const useCreateChatRoom = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: async (data: CreateChatRoomData) => {
-      console.log('Creating chat room with data:', data);
-      
-      const { data: newRoom, error } = await supabase
+      console.log('🏗️ Creating chat room:', data);
+
+      const { data: room, error } = await supabase
         .from("chat_rooms")
-        .insert([{
+        .insert({
           name: data.name,
           type: data.type,
           description: data.description,
           is_public: data.is_public ?? true,
-        }])
+        })
         .select()
         .single();
 
       if (error) {
-        console.error('Error creating chat room:', error);
-        throw error;
+        console.error('❌ Error creating chat room:', error);
+        throw new Error(`Room creation failed: ${error.message}`);
       }
-      
-      console.log('Successfully created chat room:', newRoom);
-      return newRoom;
+
+      console.log('✅ Chat room created successfully:', room);
+      return room;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-chat-rooms"] });
-      toast({
-        title: "წარმატება",
-        description: "ახალი ჩატი წარმატებით შეიქმნა",
-      });
+      toast.success("ჩატის ოთახი წარმატებით შეიქმნა");
     },
-    onError: (error) => {
-      console.error("ჩატის შექმნის შეცდომა:", error);
-      toast({
-        title: "შეცდომა",
-        description: "ჩატის შექმნა ვერ მოხერხდა",
-        variant: "destructive",
-      });
+    onError: (error: Error) => {
+      console.error("❌ Create room error:", error);
+      toast.error(error.message || "ჩატის ოთახის შექმნა ვერ მოხერხდა");
     },
   });
 };

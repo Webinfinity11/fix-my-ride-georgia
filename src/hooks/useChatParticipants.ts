@@ -22,10 +22,11 @@ export const useChatParticipants = (roomId: string) => {
     queryKey: ["chat-participants", roomId],
     queryFn: async () => {
       if (!roomId) {
-        throw new Error('Room ID is required');
+        console.log('❌ No room ID provided');
+        return [];
       }
 
-      console.log('Fetching participants for room:', roomId);
+      console.log('👥 Fetching participants for room:', roomId);
       
       const { data, error } = await supabase
         .from("chat_participants")
@@ -46,31 +47,36 @@ export const useChatParticipants = (roomId: string) => {
         .order("joined_at", { ascending: false });
 
       if (error) {
-        console.error('Error fetching chat participants:', error);
-        throw error;
+        console.error('❌ Error fetching chat participants:', error);
+        throw new Error(`Participants fetch failed: ${error.message}`);
       }
 
-      // Transform the data to match our interface
-      const transformedData: ChatParticipant[] = data?.map(participant => ({
+      if (!data) {
+        console.log('📝 No participants found for room:', roomId);
+        return [];
+      }
+
+      const transformedData: ChatParticipant[] = data.map(participant => ({
         id: participant.id,
         user_id: participant.user_id,
         room_id: participant.room_id,
         joined_at: participant.joined_at,
         last_read_at: participant.last_read_at,
         profile: {
-          first_name: participant.profiles?.first_name || '',
-          last_name: participant.profiles?.last_name || '',
-          email: participant.profiles?.email || '',
+          first_name: participant.profiles?.first_name || 'უცნობი',
+          last_name: participant.profiles?.last_name || 'მომხმარებელი',
+          email: participant.profiles?.email || 'N/A',
           avatar_url: participant.profiles?.avatar_url || null,
         }
-      })) || [];
+      }));
 
-      console.log('Fetched participants successfully:', transformedData.length);
+      console.log('✅ Participants fetched successfully:', transformedData.length);
       return transformedData;
     },
     enabled: !!roomId,
-    staleTime: 1000 * 60 * 3, // 3 minutes
-    retry: 2,
+    staleTime: 1000 * 60 * 2,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -80,7 +86,7 @@ export const useRemoveParticipant = () => {
 
   return useMutation({
     mutationFn: async ({ participantId, roomId }: { participantId: string; roomId: string }) => {
-      console.log('Removing participant:', participantId, 'from room:', roomId);
+      console.log('🗑️ Removing participant:', participantId, 'from room:', roomId);
       
       const { error } = await supabase
         .from("chat_participants")
@@ -88,11 +94,11 @@ export const useRemoveParticipant = () => {
         .eq("id", participantId);
 
       if (error) {
-        console.error('Error removing participant:', error);
-        throw error;
+        console.error('❌ Error removing participant:', error);
+        throw new Error(`Failed to remove participant: ${error.message}`);
       }
       
-      console.log('Successfully removed participant');
+      console.log('✅ Participant removed successfully');
       return { participantId, roomId };
     },
     onSuccess: (data) => {
@@ -103,11 +109,11 @@ export const useRemoveParticipant = () => {
         description: "მონაწილე წარმატებით წაიშალა",
       });
     },
-    onError: (error) => {
-      console.error("მონაწილის წაშლის შეცდომა:", error);
+    onError: (error: Error) => {
+      console.error("❌ Remove participant error:", error);
       toast({
         title: "შეცდომა",
-        description: "მონაწილის წაშლა ვერ მოხერხდა",
+        description: error.message || "მონაწილის წაშლა ვერ მოხერხდა",
         variant: "destructive",
       });
     },
@@ -120,7 +126,7 @@ export const useAddParticipant = () => {
 
   return useMutation({
     mutationFn: async ({ userId, roomId }: { userId: string; roomId: string }) => {
-      console.log('Adding participant:', userId, 'to room:', roomId);
+      console.log('➕ Adding participant:', userId, 'to room:', roomId);
       
       const { data, error } = await supabase
         .from("chat_participants")
@@ -129,14 +135,14 @@ export const useAddParticipant = () => {
           room_id: roomId
         })
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) {
-        console.error('Error adding participant:', error);
-        throw error;
+        console.error('❌ Error adding participant:', error);
+        throw new Error(`Failed to add participant: ${error.message}`);
       }
       
-      console.log('Successfully added participant:', data);
+      console.log('✅ Participant added successfully:', data);
       return data;
     },
     onSuccess: (data) => {
@@ -149,11 +155,11 @@ export const useAddParticipant = () => {
         description: "მონაწილე წარმატებით დაემატა",
       });
     },
-    onError: (error) => {
-      console.error("მონაწილის დამატების შეცდომა:", error);
+    onError: (error: Error) => {
+      console.error("❌ Add participant error:", error);
       toast({
         title: "შეცდომა",
-        description: "მონაწილის დამატება ვერ მოხერხდა",
+        description: error.message || "მონაწილის დამატება ვერ მოხერხდა",
         variant: "destructive",
       });
     },
