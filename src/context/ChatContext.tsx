@@ -66,7 +66,21 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('🏠 Loading rooms for user:', user.id);
 
     try {
-      // Get all public rooms and rooms created by the user
+      // Get user's participations first
+      const { data: userParticipations, error: participationError } = await supabase
+        .from('chat_participants')
+        .select('room_id')
+        .eq('user_id', user.id);
+
+      if (participationError) {
+        console.error('❌ Error loading user participations:', participationError);
+        toast.error('მონაწილეობების ჩატვირთვისას შეცდომა დაფიქსირდა');
+        return;
+      }
+
+      const roomIds = userParticipations?.map(p => p.room_id) || [];
+
+      // Get public rooms, user's private rooms, and rooms created by user
       const { data: allRooms, error } = await supabase
         .from('chat_rooms')
         .select(`
@@ -77,7 +91,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           is_public,
           created_by
         `)
-        .or(`is_public.eq.true,created_by.eq.${user.id}`)
+        .or(`is_public.eq.true,id.in.(${roomIds.length > 0 ? roomIds.join(',') : 'null'}),created_by.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -91,24 +105,9 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // Check which rooms the user is participating in
-      const { data: userParticipations } = await supabase
-        .from('chat_participants')
-        .select('room_id')
-        .eq('user_id', user.id);
-
-      const participatingRoomIds = userParticipations?.map(p => p.room_id) || [];
-
-      // Filter rooms to include only public rooms or rooms where user is a participant
-      const accessibleRooms = allRooms.filter(room => 
-        room.is_public || 
-        room.created_by === user.id || 
-        participatingRoomIds.includes(room.id)
-      );
-
       // Process rooms to add participant info for direct chats
       const roomsWithParticipants = await Promise.all(
-        accessibleRooms.map(async (room) => {
+        allRooms.map(async (room) => {
           let otherParticipant = null;
           
           if (room.type === 'direct') {
@@ -268,7 +267,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Create direct chat function - updated to work for all users
+  // Create direct chat function
   const createDirectChat = async (userId: string): Promise<ChatRoom | null> => {
     if (!user) {
       toast.error('ავტორიზაცია საჭიროა');
@@ -362,7 +361,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Create channel function - updated to work for all users
+  // Create channel function
   const createChannel = async (name: string, description?: string, isPublic: boolean = true): Promise<ChatRoom | null> => {
     if (!user) {
       toast.error('ავტორიზაცია საჭიროა');
