@@ -17,6 +17,13 @@ export const useCreateChatRoom = () => {
     mutationFn: async (data: CreateChatRoomData) => {
       console.log('🏗️ Creating chat room:', data);
 
+      // მივიღოთ მიმდინარე მომხმარებლის ID
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('ავტორიზაცია საჭიროა ჩატის შესაქმნელად');
+      }
+
       const { data: room, error } = await supabase
         .from("chat_rooms")
         .insert({
@@ -24,6 +31,7 @@ export const useCreateChatRoom = () => {
           type: data.type,
           description: data.description,
           is_public: data.is_public ?? true,
+          created_by: user.id, // დავამატოთ შემქმნელის ID
         })
         .select()
         .single();
