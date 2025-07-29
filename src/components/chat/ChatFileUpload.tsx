@@ -55,22 +55,20 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
       const { file, type } = uploadingFile;
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `chat-files/${fileName}`;
+      const filePath = `${fileName}`;
 
       console.log('Uploading file:', file.name, 'to path:', filePath);
 
+      // Update progress to 50% when starting upload
+      setUploadingFiles(prev => 
+        prev.map(f => 
+          f.file === file ? { ...f, progress: 50 } : f
+        )
+      );
+
       const { data, error } = await supabase.storage
         .from('chat-files')
-        .upload(filePath, file, {
-          onUploadProgress: (progress) => {
-            const percent = (progress.loaded / progress.total) * 100;
-            setUploadingFiles(prev => 
-              prev.map(f => 
-                f.file === file ? { ...f, progress: percent } : f
-              )
-            );
-          }
-        });
+        .upload(filePath, file);
 
       if (error) {
         console.error('Upload error:', error);
@@ -79,6 +77,13 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
 
       console.log('Upload successful:', data);
 
+      // Update progress to 100%
+      setUploadingFiles(prev => 
+        prev.map(f => 
+          f.file === file ? { ...f, progress: 100 } : f
+        )
+      );
+
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('chat-files')
@@ -86,8 +91,10 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
 
       console.log('Public URL:', publicUrl);
 
-      // Remove from uploading files
-      setUploadingFiles(prev => prev.filter(f => f.file !== file));
+      // Remove from uploading files after a short delay
+      setTimeout(() => {
+        setUploadingFiles(prev => prev.filter(f => f.file !== file));
+      }, 1000);
       
       // Call callback with uploaded file info
       onFileUploaded(publicUrl, type, file.name);

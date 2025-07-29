@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -66,24 +65,44 @@ const ChatManagement = () => {
   const fetchRooms = async () => {
     setLoading(true);
     try {
-      const { data: roomsData, error } = await supabase
+      // Get all rooms first
+      const { data: roomsData, error: roomsError } = await supabase
         .from('chat_rooms')
-        .select(`
-          *,
-          chat_participants(count),
-          messages(count)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (roomsError) throw roomsError;
 
-      const processedRooms = roomsData?.map(room => ({
-        ...room,
-        participant_count: Array.isArray(room.chat_participants) ? room.chat_participants.length : 0,
-        message_count: Array.isArray(room.messages) ? room.messages.length : 0
-      })) || [];
+      // For each room, get participant and message counts separately
+      const roomsWithCounts = await Promise.all(
+        (roomsData || []).map(async (room) => {
+          // Get participant count
+          const { count: participantCount } = await supabase
+            .from('chat_participants')
+            .select('*', { count: 'exact', head: true })
+            .eq('room_id', room.id);
 
-      setRooms(processedRooms);
+          // Get message count
+          const { count: messageCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('room_id', room.id);
+
+          return {
+            id: room.id,
+            name: room.name,
+            type: (room.type === 'direct' || room.type === 'channel') ? room.type as 'direct' | 'channel' : 'channel' as 'direct' | 'channel',
+            description: room.description,
+            is_public: room.is_public ?? true,
+            created_at: room.created_at,
+            created_by: room.created_by,
+            participant_count: participantCount || 0,
+            message_count: messageCount || 0
+          };
+        })
+      );
+
+      setRooms(roomsWithCounts);
     } catch (error: any) {
       console.error('Error fetching rooms:', error);
       toast.error('ჩატების ჩატვირთვისას შეცდომა დაფიქსირდა');
