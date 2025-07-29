@@ -14,6 +14,7 @@ import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
 import AdminUsers from "@/components/dashboard/admin/AdminUsers";
 import ServiceManagement from "@/components/dashboard/admin/ServiceManagement";
+import ChatManagement from "@/components/dashboard/admin/ChatManagement";
 import { Header } from "@/components/layout/Header";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { toast } from "sonner";
@@ -163,6 +164,17 @@ const Dashboard = () => {
                   element={
                     user.role === "admin" ? (
                       <ServiceManagement />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                {/* --- New Chat Management admin route --- */}
+                <Route
+                  path="/admin/chat-management"
+                  element={
+                    user.role === "admin" ? (
+                      <ChatManagement />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

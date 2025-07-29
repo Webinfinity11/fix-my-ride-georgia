@@ -603,6 +603,9 @@ export type Database = {
         Row: {
           content: string
           created_at: string | null
+          file_name: string | null
+          file_type: string | null
+          file_url: string | null
           id: string
           room_id: string | null
           sender_id: string | null
@@ -610,6 +613,9 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string | null
+          file_name?: string | null
+          file_type?: string | null
+          file_url?: string | null
           id?: string
           room_id?: string | null
           sender_id?: string | null
@@ -617,6 +623,9 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string | null
+          file_name?: string | null
+          file_type?: string | null
+          file_url?: string | null
           id?: string
           room_id?: string | null
           sender_id?: string | null
@@ -888,6 +897,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       get_admin_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -906,6 +919,10 @@ export type Database = {
       }
       is_admin: {
         Args: { user_id?: string }
+        Returns: boolean
+      }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       submit_contact_message: {
