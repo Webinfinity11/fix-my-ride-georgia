@@ -265,12 +265,12 @@ const ServiceCategory = () => {
               </div>
               <div>
                 <Label htmlFor="city">ქალაქი</Label>
-                <Select value={filters.selectedCity || ""} onValueChange={(value) => setFilters(prev => ({ ...prev, selectedCity: value || null }))}>
+                <Select value={filters.selectedCity || "all"} onValueChange={(value) => setFilters(prev => ({ ...prev, selectedCity: value === "all" ? null : value }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="აირჩიეთ ქალაქი" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">ყველა ქალაქი</SelectItem>
+                    <SelectItem value="all">ყველა ქალაქი</SelectItem>
                     <SelectItem value="თბილისი">თბილისი</SelectItem>
                     <SelectItem value="ბათუმი">ბათუმი</SelectItem>
                   </SelectContent>
