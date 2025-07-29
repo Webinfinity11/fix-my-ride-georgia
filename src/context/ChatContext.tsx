@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
@@ -9,7 +10,6 @@ interface ChatRoom {
   type: 'direct' | 'channel';
   description?: string | null;
   is_public: boolean;
-  created_by?: string | null;
   unread_count?: number;
   other_participant?: {
     id: string;
@@ -55,7 +55,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load rooms function - განახლებული ყველა ავტორიზებული მომხმარებლისთვის
+  // Load rooms function - simplified to avoid RLS issues
   const loadRooms = async () => {
     if (!user) {
       console.log('No user found, skipping room loading');
@@ -80,7 +80,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const roomIds = userParticipations?.map(p => p.room_id) || [];
 
-      // Get public rooms, user's private rooms, and rooms created by user
+      // Get public rooms and user's private rooms
       const { data: allRooms, error } = await supabase
         .from('chat_rooms')
         .select(`
@@ -91,7 +91,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           is_public,
           created_by
         `)
-        .or(`is_public.eq.true,id.in.(${roomIds.length > 0 ? roomIds.join(',') : 'null'}),created_by.eq.${user.id}`)
+        .or(`is_public.eq.true,id.in.(${roomIds.length > 0 ? roomIds.join(',') : 'null'})`)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -144,7 +144,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
             type: room.type as 'direct' | 'channel',
             description: room.description,
             is_public: room.is_public,
-            created_by: room.created_by,
             other_participant: otherParticipant
           };
         })
@@ -286,7 +285,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           type,
           description,
           is_public,
-          created_by,
           chat_participants!inner(user_id)
         `)
         .eq('type', 'direct');
@@ -304,7 +302,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
               type: 'direct',
               description: chat.description,
               is_public: chat.is_public,
-              created_by: chat.created_by,
               other_participant: null
             };
           }
@@ -351,7 +348,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: 'direct',
         description: newRoom.description,
         is_public: newRoom.is_public,
-        created_by: newRoom.created_by,
         other_participant: null
       };
     } catch (error) {
@@ -411,7 +407,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: 'channel',
         description: newRoom.description,
         is_public: newRoom.is_public,
-        created_by: newRoom.created_by,
         other_participant: null
       };
     } catch (error) {

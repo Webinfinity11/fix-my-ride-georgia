@@ -897,10 +897,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      current_user_is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
       get_admin_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -919,10 +915,6 @@ export type Database = {
       }
       is_admin: {
         Args: { user_id?: string }
-        Returns: boolean
-      }
-      is_current_user_admin: {
-        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       submit_contact_message: {
