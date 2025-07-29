@@ -1,3 +1,4 @@
+
 import { NavLink } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -11,7 +12,6 @@ import {
   BarChart3,
   Users,
   Cog,
-  MessageCircle,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -78,18 +78,12 @@ const DashboardSidebar = () => {
             
             <NavLink to="/dashboard/admin" className={navLinkClasses}>
               <Shield size={18} />
-              <span className="text-sm md:text-base">ადმიн პანელი</span>
+              <span className="text-sm md:text-base">ადმინ პანელი</span>
             </NavLink>
 
             <NavLink to="/dashboard/admin/service-details" className={navLinkClasses}>
               <Cog size={18} />
               <span className="text-sm md:text-base">სერვისის დეტალები</span>
-            </NavLink>
-
-            {/* New Chat Management menu item */}
-            <NavLink to="/dashboard/admin/chat-management" className={navLinkClasses}>
-              <MessageCircle size={18} />
-              <span className="text-sm md:text-base">ჩატის მართვა</span>
             </NavLink>
 
             <NavLink to="/dashboard/admin/stats" className={navLinkClasses}>

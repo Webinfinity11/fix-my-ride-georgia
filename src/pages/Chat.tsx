@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { ChatSidebar } from '@/components/chat/ChatSidebar';
 import { ChatWindow } from '@/components/chat/ChatWindow';
-import { ChatProvider } from '@/context/ChatContext';
 import Layout from '@/components/layout/Layout';
 import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui/card';
@@ -35,45 +34,41 @@ const Chat = () => {
   if (isMobile) {
     return (
       <Layout>
-        <ChatProvider>
-          <div className="h-[calc(100vh-134px)] flex flex-col">
-            {/* Mobile Header with Menu Button */}
-            <div className="border-b bg-white p-4 flex items-center justify-between">
-              <h1 className="text-lg font-semibold">ჩატები</h1>
-              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Menu className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-80">
-                  <ChatSidebar />
-                </SheetContent>
-              </Sheet>
-            </div>
-            
-            {/* Chat Window */}
-            <div className="flex-1">
-              <ChatWindow />
-            </div>
+        <div className="h-[calc(100vh-134px)] flex flex-col">
+          {/* Mobile Header with Menu Button */}
+          <div className="border-b bg-white p-4 flex items-center justify-between">
+            <h1 className="text-lg font-semibold">ჩატები</h1>
+            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-80">
+                <ChatSidebar />
+              </SheetContent>
+            </Sheet>
           </div>
-        </ChatProvider>
+          
+          {/* Chat Window */}
+          <div className="flex-1">
+            <ChatWindow />
+          </div>
+        </div>
       </Layout>
     );
   }
 
   return (
     <Layout>
-      <ChatProvider>
-        <div className="h-[calc(100vh-64px)] flex">
-          <div className="hidden md:block">
-            <ChatSidebar />
-          </div>
-          <div className="flex-1">
-            <ChatWindow />
-          </div>
+      <div className="h-[calc(100vh-64px)] flex">
+        <div className="hidden md:block">
+          <ChatSidebar />
         </div>
-      </ChatProvider>
+        <div className="flex-1">
+          <ChatWindow />
+        </div>
+      </div>
     </Layout>
   );
 };
