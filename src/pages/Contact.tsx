@@ -6,6 +6,7 @@ import * as z from "zod";
 import { Mail, Phone, MapPin, MessageSquare, Send } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import SEOHead from "@/components/seo/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -142,6 +143,12 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title="კონტაქტი"
+        description="დაგვიკავშირდით ავტოხელოსნისთან. ჩვენი კონტაქტური ინფორმაცია, მისამართი და კომუნიკაციის არხები."
+        keywords="კონტაქტი, ავტოხელოსანი, ტელეფონი, მისამართი, დახმარება, მხარდაჭერა"
+        url="https://avtokhelosani.ge/contact"
+      />
       <Header />
       
       <main className="flex-grow bg-muted py-12">

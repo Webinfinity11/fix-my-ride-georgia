@@ -87,6 +87,12 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/sitemap" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
+                    <ArrowRight className="h-4 w-4 mr-2" />
+                    საიტის რუკა
+                  </Link>
+                </li>
+                <li>
                   <Link to="/faq" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     ხშირად დასმული კითხვები

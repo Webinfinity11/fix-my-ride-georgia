@@ -22,6 +22,8 @@ import MechanicProfile from "./pages/MechanicProfile";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
 import Mechanics from "./pages/Mechanics";
+import ServiceCategory from "./pages/ServiceCategory";
+import Sitemap from "./pages/Sitemap";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ function App() {
                 <Route path="/book" element={<Book />} />
                 <Route path="/book/:mechanicId" element={<Book />} />
                 <Route path="/mechanic/:id" element={<MechanicProfile />} />
+                <Route path="/category/:categoryId" element={<ServiceCategory />} />
+                <Route path="/sitemap" element={<Sitemap />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AuthProvider>

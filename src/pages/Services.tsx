@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
+import SEOHead from "@/components/seo/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { generateStructuredData } from "@/utils/seoUtils";
 
 type ServiceCategory = {
   id: number;
@@ -39,14 +41,36 @@ const Services = () => {
     fetchCategories();
   }, []);
 
+  const structuredData = generateStructuredData('Organization', {
+    name: 'ავტოხელოსანი - ავტოსერვისები',
+    description: 'მრავალფეროვანი ავტოსერვისები საქართველოში',
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'ავტოსერვისების კატეგორიები',
+      itemListElement: categories.map(category => ({
+        '@type': 'Offer',
+        name: category.name,
+        description: category.description,
+        url: `https://avtokhelosani.ge/category/${category.id}`
+      }))
+    }
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title="ავტოსერვისები - ყველა კატეგორია"
+        description="აღმოაჩინეთ ჩვენი მრავალფეროვანი ავტოსერვისები. მექანიკური რემონტიდან ელექტრო სისტემების მომსახურებამდე - ყველაფერი ერთ ადგილას."
+        keywords="ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, მომსახურება, საქართველო, თბილისი"
+        url="https://avtokhelosani.ge/services"
+        structuredData={structuredData}
+      />
       <Header />
       
       <main className="flex-grow">
-        <div className="bg-muted py-12">
+        <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
           <div className="container mx-auto px-4">
-            <h1 className="text-3xl font-bold mb-6 text-center">ჩვენი სერვისები</h1>
+            <h1 className="text-4xl font-bold mb-6 text-center">ჩვენი სერვისები</h1>
             <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-6">
               აღმოაჩინეთ ჩვენი მრავალფეროვანი სერვისები ავტომობილებისთვის. ჩვენ გთავაზობთ მაღალი ხარისხის მომსახურებას სხვადასხვა საჭიროებისთვის.
             </p>

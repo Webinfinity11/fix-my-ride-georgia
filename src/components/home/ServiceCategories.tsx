@@ -47,7 +47,7 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
   const servicesToShow = categories && categories.length > 0 ? categories : defaultCategories;
 
   const handleCategoryClick = (categoryId: number) => {
-    navigate(`/search?category=${categoryId}`);
+    navigate(`/category/${categoryId}`);
   };
 
   return (
