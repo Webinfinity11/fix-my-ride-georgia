@@ -41,6 +41,20 @@ export const useCreateChatRoom = () => {
         throw new Error(`Room creation failed: ${error.message}`);
       }
 
+      // ავტომატურად დავამატოთ შემქმნელი, როგორც მონაწილე
+      const { error: participantError } = await supabase
+        .from("chat_participants")
+        .insert({
+          room_id: room.id,
+          user_id: user.id,
+        });
+
+      if (participantError) {
+        console.error('❌ Error adding creator as participant:', participantError);
+        // არ ვაგდებთ error-ს, რომ ჩატი მაინც შეიქმნას
+        console.warn('Chat created but creator not added as participant');
+      }
+
       console.log('✅ Chat room created successfully:', room);
       return room;
     },
