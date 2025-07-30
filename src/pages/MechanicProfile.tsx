@@ -12,7 +12,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
-import { useChat } from "@/context/ChatContext";
 import MechanicReviews from "@/components/reviews/MechanicReviews";
 
 type MechanicType = {
@@ -82,7 +81,6 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { createDirectChat } = useChat();
   const [activeTab, setActiveTab] = useState("services");
   const [mechanic, setMechanic] = useState<MechanicType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
@@ -216,9 +214,72 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
 
     if (!id) return;
 
-    await createDirectChat(id);
-    navigate("/chat");
-    toast.success("ჩატი გახსნილია");
+    try {
+      // Check for existing direct chat
+      const { data: existingChats, error: chatError } = await supabase
+        .from('chat_rooms')
+        .select(`
+          id,
+          chat_participants!inner(user_id)
+        `)
+        .eq('type', 'direct');
+
+      let existingChatId = null;
+
+      if (existingChats) {
+        // Find a direct chat where both users are participants
+        for (const chat of existingChats) {
+          const participantIds = chat.chat_participants.map((p: any) => p.user_id);
+          if (participantIds.includes(user.id) && participantIds.includes(id) && participantIds.length === 2) {
+            existingChatId = chat.id;
+            break;
+          }
+        }
+      }
+
+      if (!existingChatId) {
+        // Create new direct chat
+        const { data: newRoom, error: createError } = await supabase
+          .from('chat_rooms')
+          .insert({
+            type: 'direct',
+            is_public: false,
+            created_by: user.id
+          })
+          .select()
+          .single();
+
+        if (createError || !newRoom) {
+          console.error('Error creating room:', createError);
+          toast.error('ჩატის შექმნისას შეცდომა დაფიქსირდა');
+          return;
+        }
+
+        // Add participants
+        const { error: participantsError } = await supabase
+          .from('chat_participants')
+          .insert([
+            { room_id: newRoom.id, user_id: user.id },
+            { room_id: newRoom.id, user_id: id }
+          ]);
+
+        if (participantsError) {
+          console.error('Error adding participants:', participantsError);
+          toast.error('მონაწილეების დამატებისას შეცდომა დაფიქსირდა');
+          return;
+        }
+
+        existingChatId = newRoom.id;
+      }
+      
+      // Navigate to chat page with the room ID as a query parameter
+      navigate(`/chat?room=${existingChatId}`);
+      toast.success(`${mechanic?.profile.first_name}-თან ჩატი გაიხსნა`);
+      
+    } catch (error) {
+      console.error('Error creating direct chat:', error);
+      toast.error("ჩატის გახსნისას შეცდომა დაფიქსირდა");
+    }
   };
 
   const handleReviewAdded = () => {
