@@ -22,7 +22,7 @@ const SEOHead = ({
   structuredData,
   canonical
 }: SEOHeadProps) => {
-  const baseUrl = 'https://avtokhelosani.ge';
+  const baseUrl = 'https://fixup.ge';
   const defaultImage = `${baseUrl}/placeholder.svg`;
   const fullTitle = `${title} | ავტოხელოსანი`;
   const imageUrl = image || defaultImage;

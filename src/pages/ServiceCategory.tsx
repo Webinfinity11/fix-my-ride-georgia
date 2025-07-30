@@ -207,7 +207,7 @@ const ServiceCategory = () => {
         title={`${category.name} - ავტოსერვისები`}
         description={`${category.description || `იპოვეთ საუკეთესო ${category.name} სერვისები საქართველოში. გამოცდილი მექანიკოსები, მაღალი ხარისხის მომსახურება.`}`}
         keywords={`${category.name}, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო`}
-        url={`https://avtokhelosani.ge/category/${categoryId}`}
+        url={`https://fixup.ge/category/${categoryId}`}
         structuredData={structuredData}
       />
       

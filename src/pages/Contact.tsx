@@ -147,7 +147,7 @@ const Contact = () => {
         title="კონტაქტი"
         description="დაგვიკავშირდით ავტოხელოსნისთან. ჩვენი კონტაქტური ინფორმაცია, მისამართი და კომუნიკაციის არხები."
         keywords="კონტაქტი, ავტოხელოსანი, ტელეფონი, მისამართი, დახმარება, მხარდაჭერა"
-        url="https://avtokhelosani.ge/contact"
+        url="https://fixup.ge/contact"
       />
       <Header />
       

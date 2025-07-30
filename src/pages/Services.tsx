@@ -51,7 +51,7 @@ const Services = () => {
         '@type': 'Offer',
         name: category.name,
         description: category.description,
-        url: `https://avtokhelosani.ge/category/${category.id}`
+        url: `https://fixup.ge/category/${category.id}`
       }))
     }
   });
@@ -62,7 +62,7 @@ const Services = () => {
         title="ავტოსერვისები - ყველა კატეგორია"
         description="აღმოაჩინეთ ჩვენი მრავალფეროვანი ავტოსერვისები. მექანიკური რემონტიდან ელექტრო სისტემების მომსახურებამდე - ყველაფერი ერთ ადგილას."
         keywords="ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, მომსახურება, საქართველო, თბილისი"
-        url="https://avtokhelosani.ge/services"
+        url="https://fixup.ge/services"
         structuredData={structuredData}
       />
       <Header />

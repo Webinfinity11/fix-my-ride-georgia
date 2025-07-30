@@ -48,7 +48,7 @@ const Sitemap = () => {
         title="საიტის რუკა (Sitemap)"
         description="ავტოხელოსნის საიტის რუკა - ყველა გვერდის სრული ჩამონათვალი"
         keywords="sitemap, საიტის რუკა, ავტოხელოსანი, ნავიგაცია"
-        url="https://avtokhelosani.ge/sitemap"
+        url="https://fixup.ge/sitemap"
       />
       
       <Header />

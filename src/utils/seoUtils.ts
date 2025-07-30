@@ -12,7 +12,7 @@ export const generateMetaTags = (
   url?: string,
   type?: 'website' | 'article' | 'profile'
 ) => {
-  const baseUrl = 'https://avtokhelosani.ge';
+  const baseUrl = 'https://fixup.ge';
   const fullTitle = `${title} | ავტოხელოსანი`;
   const imageUrl = image || `${baseUrl}/placeholder.svg`;
   const pageUrl = url || baseUrl;
@@ -39,8 +39,8 @@ export const generateStructuredData = (type: string, data: any) => {
       return {
         ...baseStructure,
         name: 'ავტოხელოსანი',
-        url: 'https://avtokhelosani.ge',
-        logo: 'https://avtokhelosani.ge/placeholder.svg',
+        url: 'https://fixup.ge',
+        logo: 'https://fixup.ge/placeholder.svg',
         description: 'პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს',
         contactPoint: {
           '@type': 'ContactPoint',
@@ -91,7 +91,7 @@ export const generateStructuredData = (type: string, data: any) => {
 
 // Generate sitemap XML
 export const generateSitemap = async (): Promise<string> => {
-  const baseUrl = 'https://avtokhelosani.ge';
+  const baseUrl = 'https://fixup.ge';
   
   // Static pages
   const staticPages = [
