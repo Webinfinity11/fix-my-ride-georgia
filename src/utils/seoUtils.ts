@@ -1,4 +1,6 @@
 
+import { ServiceType } from "@/hooks/useServices";
+import { createSlug } from "./slugUtils";
 import { supabase } from '@/integrations/supabase/client';
 
 // Generate meta tags for SEO
@@ -119,7 +121,7 @@ export const generateSitemap = async (): Promise<string> => {
     if (services) {
       const serviceUrls = services.map(service => 
         `  <url>
-    <loc>${baseUrl}/service/${service.id}</loc>
+    <loc>${baseUrl}/service/${createSlug(service.name)}</loc>
     <lastmod>${new Date(service.updated_at).toISOString().split('T')[0]}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

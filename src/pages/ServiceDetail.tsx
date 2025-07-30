@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
+import { createSlug, extractServiceId } from "@/utils/slugUtils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -87,55 +88,124 @@ const ServiceDetail = () => {
 
   useEffect(() => {
     if (id) {
-      fetchService(parseInt(id));
+      fetchServiceBySlugOrId(id);
     }
   }, [id]);
 
-  const fetchService = async (serviceId: number) => {
-    console.log("📋 Fetching service with ID:", serviceId);
+  const fetchServiceBySlugOrId = async (slugOrId: string) => {
+    console.log("📋 Fetching service with slug or ID:", slugOrId);
     setLoading(true);
     
     try {
-      // Fetch service details with mechanic profile
-      const { data: serviceData, error: serviceError } = await supabase
-        .from("mechanic_services")
-        .select(`
-          id,
-          name,
-          description,
-          price_from,
-          price_to,
-          estimated_hours,
-          city,
-          district,
-          address,
-          latitude,
-          longitude,
-          car_brands,
-          on_site_service,
-          accepts_card_payment,
-          accepts_cash_payment,
-          rating,
-          review_count,
-          photos,
-          videos,
-          category_id,
-          mechanic_id,
-          service_categories(id, name),
-          mechanic_profiles(
+      let serviceData;
+      let serviceError;
+
+      // First, try to find service by ID if it's a number
+      if (/^\d+$/.test(slugOrId)) {
+        const result = await supabase
+          .from("mechanic_services")
+          .select(`
             id,
+            name,
+            description,
+            price_from,
+            price_to,
+            estimated_hours,
+            city,
+            district,
+            address,
+            latitude,
+            longitude,
+            car_brands,
+            on_site_service,
+            accepts_card_payment,
+            accepts_cash_payment,
             rating,
-            profiles(
+            review_count,
+            photos,
+            videos,
+            category_id,
+            mechanic_id,
+            service_categories(id, name),
+            mechanic_profiles(
               id,
-              first_name,
-              last_name,
-              phone
+              rating,
+              profiles(
+                id,
+                first_name,
+                last_name,
+                phone
+              )
             )
-          )
-        `)
-        .eq("id", serviceId)
-        .eq("is_active", true)
-        .single();
+          `)
+          .eq("id", parseInt(slugOrId))
+          .eq("is_active", true)
+          .single();
+        
+        serviceData = result.data;
+        serviceError = result.error;
+      } else {
+        // Try to find service by slug (converted from name)
+        const result = await supabase
+          .from("mechanic_services")
+          .select(`
+            id,
+            name,
+            description,
+            price_from,
+            price_to,
+            estimated_hours,
+            city,
+            district,
+            address,
+            latitude,
+            longitude,
+            car_brands,
+            on_site_service,
+            accepts_card_payment,
+            accepts_cash_payment,
+            rating,
+            review_count,
+            photos,
+            videos,
+            category_id,
+            mechanic_id,
+            service_categories(id, name),
+            mechanic_profiles(
+              id,
+              rating,
+              profiles(
+                id,
+                first_name,
+                last_name,
+                phone
+              )
+            )
+          `)
+          .eq("is_active", true);
+        
+        if (result.data) {
+          // Find service by matching slug
+          const foundService = result.data.find(service => 
+            createSlug(service.name) === slugOrId
+          );
+          
+          if (foundService) {
+            serviceData = foundService;
+            serviceError = null;
+            
+            // Update URL to use slug instead of ID for better SEO
+            const newSlug = createSlug(foundService.name);
+            if (newSlug !== slugOrId) {
+              window.history.replaceState(null, '', `/service/${newSlug}`);
+            }
+          } else {
+            serviceError = { message: "Service not found" };
+          }
+        } else {
+          serviceError = result.error;
+        }
+      }
 
       if (serviceError) {
         console.error("❌ Service fetch error:", serviceError);
@@ -149,80 +219,8 @@ const ServiceDetail = () => {
         return;
       }
 
-      console.log("✅ Service data fetched:", serviceData);
-
-      // Extract nested data safely
-      const category = Array.isArray(serviceData.service_categories) 
-        ? serviceData.service_categories[0] 
-        : serviceData.service_categories;
-
-      const mechanicProfile = Array.isArray(serviceData.mechanic_profiles) 
-        ? serviceData.mechanic_profiles[0] 
-        : serviceData.mechanic_profiles;
-
-      console.log("🧑‍🔧 Mechanic profile data:", mechanicProfile);
-
-      // Handle case where mechanic profile might not exist
-      let mechanicData = {
-        id: serviceData.mechanic_id || "",
-        first_name: "უცნობი",
-        last_name: "ხელოსანი",
-        rating: null,
-        phone: null,
-      };
-
-      if (mechanicProfile?.profiles) {
-        const profile = Array.isArray(mechanicProfile.profiles) 
-          ? mechanicProfile.profiles[0] 
-          : mechanicProfile.profiles;
-        
-        mechanicData = {
-          id: profile?.id || serviceData.mechanic_id || "",
-          first_name: profile?.first_name || "უცნობი",
-          last_name: profile?.last_name || "ხელოსანი",
-          rating: mechanicProfile?.rating || null,
-          phone: profile?.phone || null,
-        };
-      }
-
-      console.log("🔍 Mechanic ID validation:", mechanicData.id, "Is valid UUID:", isValidUUID(mechanicData.id));
-
-      const transformedService: ServiceType = {
-        id: serviceData.id,
-        name: serviceData.name || "უცნობი სერვისი",
-        description: serviceData.description,
-        price_from: serviceData.price_from,
-        price_to: serviceData.price_to,
-        estimated_hours: serviceData.estimated_hours,
-        city: serviceData.city,
-        district: serviceData.district,
-        address: serviceData.address,
-        latitude: serviceData.latitude,
-        longitude: serviceData.longitude,
-        car_brands: serviceData.car_brands,
-        on_site_service: serviceData.on_site_service || false,
-        accepts_card_payment: serviceData.accepts_card_payment || false,
-        accepts_cash_payment: serviceData.accepts_cash_payment || true,
-        rating: serviceData.rating,
-        review_count: serviceData.review_count,
-        photos: serviceData.photos || [],
-        videos: serviceData.videos || [],
-        category: category ? {
-          id: category.id,
-          name: category.name
-        } : null,
-        mechanic: mechanicData
-      };
-
-      console.log("🗺️ Service location data:", {
-        latitude: transformedService.latitude,
-        longitude: transformedService.longitude,
-        address: transformedService.address
-      });
-
-      console.log("🧑‍🔧 Final mechanic data:", transformedService.mechanic);
-
-      setService(transformedService);
+      // Process the service data (same as before)
+      await processServiceData(serviceData);
       
     } catch (error: any) {
       console.error("❌ Error fetching service:", error);
@@ -233,10 +231,87 @@ const ServiceDetail = () => {
     }
   };
 
+  const processServiceData = async (serviceData: any) => {
+    console.log("✅ Processing service data:", serviceData);
+    
+    // Extract nested data safely
+    const category = Array.isArray(serviceData.service_categories) 
+      ? serviceData.service_categories[0] 
+      : serviceData.service_categories;
+
+    const mechanicProfile = Array.isArray(serviceData.mechanic_profiles) 
+      ? serviceData.mechanic_profiles[0] 
+      : serviceData.mechanic_profiles;
+
+    console.log("🧑‍🔧 Mechanic profile data:", mechanicProfile);
+
+    // Handle case where mechanic profile might not exist
+    let mechanicData = {
+      id: serviceData.mechanic_id || "",
+      first_name: "უცნობი",
+      last_name: "ხელოსანი",
+      rating: null,
+      phone: null,
+    };
+
+    if (mechanicProfile?.profiles) {
+      const profile = Array.isArray(mechanicProfile.profiles) 
+        ? mechanicProfile.profiles[0] 
+        : mechanicProfile.profiles;
+      
+      mechanicData = {
+        id: profile?.id || serviceData.mechanic_id || "",
+        first_name: profile?.first_name || "უცნობი",
+        last_name: profile?.last_name || "ხელოსანი",
+        rating: mechanicProfile?.rating || null,
+        phone: profile?.phone || null,
+      };
+    }
+
+    console.log("🔍 Mechanic ID validation:", mechanicData.id, "Is valid UUID:", isValidUUID(mechanicData.id));
+
+    const transformedService: ServiceType = {
+      id: serviceData.id,
+      name: serviceData.name || "უცნობი სერვისი",
+      description: serviceData.description,
+      price_from: serviceData.price_from,
+      price_to: serviceData.price_to,
+      estimated_hours: serviceData.estimated_hours,
+      city: serviceData.city,
+      district: serviceData.district,
+      address: serviceData.address,
+      latitude: serviceData.latitude,
+      longitude: serviceData.longitude,
+      car_brands: serviceData.car_brands,
+      on_site_service: serviceData.on_site_service || false,
+      accepts_card_payment: serviceData.accepts_card_payment || false,
+      accepts_cash_payment: serviceData.accepts_cash_payment || true,
+      rating: serviceData.rating,
+      review_count: serviceData.review_count,
+      photos: serviceData.photos || [],
+      videos: serviceData.videos || [],
+      category: category ? {
+        id: category.id,
+        name: category.name
+      } : null,
+      mechanic: mechanicData
+    };
+
+    console.log("🗺️ Service location data:", {
+      latitude: transformedService.latitude,
+      longitude: transformedService.longitude,
+      address: transformedService.address
+    });
+
+    console.log("🧑‍🔧 Final mechanic data:", transformedService.mechanic);
+
+    setService(transformedService);
+  };
+
   const handleReviewAdded = () => {
     // Refresh service data to get updated rating and review count
-    if (service) {
-      fetchService(service.id);
+    if (service && id) {
+      fetchServiceBySlugOrId(id);
     }
   };
 
@@ -380,7 +455,7 @@ const ServiceDetail = () => {
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${window.location.origin}/service/${service.id}`} />
+        <meta property="og:url" content={`${window.location.origin}/service/${createSlug(service.name)}`} />
         {service.photos && service.photos.length > 0 && (
           <meta property="og:image" content={service.photos[0]} />
         )}
@@ -407,7 +482,7 @@ const ServiceDetail = () => {
         )}
 
         {/* Canonical URL */}
-        <link rel="canonical" href={`${window.location.origin}/service/${service.id}`} />
+        <link rel="canonical" href={`${window.location.origin}/service/${createSlug(service.name)}`} />
 
         {/* Structured Data */}
         <script type="application/ld+json">

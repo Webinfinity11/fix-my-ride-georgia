@@ -6,6 +6,7 @@ import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, Im
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ServiceGallery from "./ServiceGallery";
+import { createSlug } from "@/utils/slugUtils";
 
 interface ServiceType {
   id: number;
@@ -46,7 +47,8 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const [showPhone, setShowPhone] = useState(false);
 
   const handleViewDetails = () => {
-    navigate(`/service/${service.id}`);
+    const slug = createSlug(service.name);
+    navigate(`/service/${slug}`);
   };
 
   const handleViewMechanic = (e: React.MouseEvent) => {

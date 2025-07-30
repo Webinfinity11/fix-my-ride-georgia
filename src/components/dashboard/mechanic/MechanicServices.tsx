@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { createSlug } from "@/utils/slugUtils";
 import { Plus, Edit, Trash2, Eye, Star, MapPin, Clock, CreditCard, Banknote, ChevronDown, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -425,7 +426,7 @@ const MechanicServices = () => {
                 )}
 
                 <div className="flex gap-2">
-                  <Link to={`/service/${service.id}`} className="flex-1">
+                  <Link to={`/service/${createSlug(service.name)}`} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full">
                       <Eye className="w-4 h-4 mr-1" />
                       ნახვა
