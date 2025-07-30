@@ -128,6 +128,31 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
 
     setLoading(true);
     try {
+      // ახალი სერვისისთვის - ჯერ ვამოწმებთ mechanic_profiles არსებობას
+      if (!service) {
+        const { data: mechProfile, error: mechError } = await supabase
+          .from("mechanic_profiles")
+          .select("id")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (mechError) {
+          console.error("Mechanic profile check error:", mechError);
+        }
+
+        // თუ mechanic_profiles არ არსებობს, ვქმნით
+        if (!mechProfile) {
+          const { error: createMechError } = await supabase
+            .from("mechanic_profiles")
+            .insert([{ id: user.id }]);
+
+          if (createMechError) {
+            console.error("Failed to create mechanic profile:", createMechError);
+            throw new Error("მექანიკოსის პროფილის შექმნა ვერ მოხერხდა");
+          }
+        }
+      }
+
       const serviceData = {
         mechanic_id: user.id,
         name: formData.name,
