@@ -55,33 +55,32 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load rooms function - განახლებული ყველა ავტორიზებული მომხმარებლისთვის
+  // Load rooms function - განახლებული ყველა ავტორიზებული და არაავტორიზებული მომხმარებლისთვის
   const loadRooms = async () => {
-    if (!user) {
-      console.log('No user found, skipping room loading');
-      return;
-    }
-
     setLoading(true);
-    console.log('🏠 Loading rooms for user:', user.id);
+    console.log('🏠 Loading rooms for user:', user?.id || 'anonymous');
 
     try {
-      // Get user's participations first
-      const { data: userParticipations, error: participationError } = await supabase
-        .from('chat_participants')
-        .select('room_id')
-        .eq('user_id', user.id);
+      let userRoomIds: string[] = [];
+      
+      // Get user's participations if authenticated
+      if (user) {
+        const { data: userParticipations, error: participationError } = await supabase
+          .from('chat_participants')
+          .select('room_id')
+          .eq('user_id', user.id);
 
-      if (participationError) {
-        console.error('❌ Error loading user participations:', participationError);
-        toast.error('მონაწილეობების ჩატვირთვისას შეცდომა დაფიქსირდა');
-        return;
+        if (participationError) {
+          console.error('❌ Error loading user participations:', participationError);
+          toast.error('მონაწილეობების ჩატვირთვისას შეცდომა დაფიქსირდა');
+          return;
+        }
+
+        userRoomIds = userParticipations?.map(p => p.room_id) || [];
       }
 
-      const roomIds = userParticipations?.map(p => p.room_id) || [];
-
-      // Get public rooms, user's private rooms, and rooms created by user
-      const { data: allRooms, error } = await supabase
+      // Get rooms based on authentication status
+      let query = supabase
         .from('chat_rooms')
         .select(`
           id,
@@ -90,9 +89,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           description,
           is_public,
           created_by
-        `)
-        .or(`is_public.eq.true,id.in.(${roomIds.length > 0 ? roomIds.join(',') : 'null'}),created_by.eq.${user.id}`)
-        .order('created_at', { ascending: false });
+        `);
+
+      if (user) {
+        // Authenticated users see public rooms + their private rooms
+        query = query.or(`is_public.eq.true,id.in.(${userRoomIds.length > 0 ? userRoomIds.join(',') : 'null'}),created_by.eq.${user.id}`);
+      } else {
+        // Non-authenticated users only see public channels
+        query = query.eq('type', 'channel').eq('is_public', true);
+      }
+
+      const { data: allRooms, error } = await query.order('created_at', { ascending: false });
 
       if (error) {
         console.error('❌ Error loading rooms:', error);
@@ -105,12 +112,24 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // Process rooms to add participant info for direct chats
+      // Process rooms to add participant info for direct chats and filter direct chats with messages
       const roomsWithParticipants = await Promise.all(
         allRooms.map(async (room) => {
           let otherParticipant = null;
           
-          if (room.type === 'direct') {
+          if (room.type === 'direct' && user) {
+            // Check if direct chat has messages before including it
+            const { data: messages } = await supabase
+              .from('messages')
+              .select('id')
+              .eq('room_id', room.id)
+              .limit(1);
+
+            // Skip direct chats without messages
+            if (!messages || messages.length === 0) {
+              return null;
+            }
+
             const { data: participants } = await supabase
               .from('chat_participants')
               .select(`
@@ -150,8 +169,11 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         })
       );
       
-      console.log('🏠 Processed rooms:', roomsWithParticipants);
-      setRooms(roomsWithParticipants);
+      // Filter out null values (direct chats without messages)
+      const filteredRooms = roomsWithParticipants.filter(room => room !== null);
+      
+      console.log('🏠 Processed rooms:', filteredRooms);
+      setRooms(filteredRooms);
     } catch (error) {
       console.error('❌ Error in loadRooms:', error);
       toast.error('ჩატების ჩატვირთვისას შეცდომა დაფიქსირდა');
@@ -208,7 +230,13 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Send message function
   const sendMessage = async (content: string, fileUrl?: string, fileType?: 'image' | 'video' | 'file', fileName?: string) => {
     if (!activeRoom || !user) {
-      toast.error('მესიჯის გაგზავნა შეუძლებელია');
+      toast.error('მესიჯის გაგზავნისთვის ავტორიზაცია საჭიროა');
+      return;
+    }
+
+    // Check if it's a public channel and prevent non-authenticated users from sending messages
+    if (activeRoom.type === 'channel' && activeRoom.is_public && !user) {
+      toast.error('საჯარო არხში მესიჯის გაგზავნისთვის ავტორიზაცია საჭიროა');
       return;
     }
 

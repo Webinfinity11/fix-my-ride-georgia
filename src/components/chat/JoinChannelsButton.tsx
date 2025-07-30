@@ -184,25 +184,6 @@ export const JoinChannelsButton = () => {
         </DialogContent>
       </Dialog>
       
-      <Button 
-        onClick={createDemoChannels}
-        variant="outline" 
-        size="sm" 
-        className="w-full"
-        disabled={isCreatingDemo}
-      >
-        {isCreatingDemo ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            იქმნება...
-          </>
-        ) : (
-          <>
-            <Users className="h-4 w-4 mr-2" />
-            დემო არხების შექმნა
-          </>
-        )}
-      </Button>
     </div>
   );
 };

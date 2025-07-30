@@ -33,24 +33,24 @@ const ChatContent = () => {
 
   if (isMobile) {
     return (
-      <div className="h-[calc(100vh-134px)] flex flex-col">
+      <div className="h-[calc(100vh-134px)] flex flex-col bg-gray-50">
         {/* Mobile Header with Menu Button */}
-        <div className="border-b bg-white p-4 flex items-center justify-between">
-          <h1 className="text-lg font-semibold">ჩატები</h1>
+        <div className="border-b bg-white shadow-sm p-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold text-gray-900">ჩატები</h1>
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" className="hover:bg-gray-100">
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-80">
+            <SheetContent side="left" className="p-0 w-80 bg-gray-50">
               <ChatSidebar />
             </SheetContent>
           </Sheet>
         </div>
         
         {/* Chat Window */}
-        <div className="flex-1">
+        <div className="flex-1 min-h-0">
           <ChatWindow />
         </div>
       </div>
@@ -58,11 +58,11 @@ const ChatContent = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] flex">
-      <div className="hidden md:block">
+    <div className="h-[calc(100vh-64px)] flex bg-gray-50">
+      <div className="hidden md:block w-80 border-r border-gray-200 bg-white shadow-sm">
         <ChatSidebar />
       </div>
-      <div className="flex-1">
+      <div className="flex-1 min-w-0 bg-white">
         <ChatWindow />
       </div>
     </div>
@@ -72,21 +72,7 @@ const ChatContent = () => {
 const Chat = () => {
   const { user } = useAuth();
 
-  if (!user) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <Card className="max-w-md mx-auto p-8 text-center">
-            <MessageCircle className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">ჩატისთვის საჭიროა ავტორიზაცია</h2>
-            <p className="text-gray-600">
-              ჩატის სისტემის გამოსაყენებლად გთხოვთ, გაიაროთ ავტორიზაცია.
-            </p>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
+  // Allow non-authenticated users to view public channels
 
   return (
     <Layout>

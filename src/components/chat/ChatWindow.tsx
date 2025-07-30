@@ -158,27 +158,35 @@ export const ChatWindow = () => {
         )}
       </ScrollArea>
 
-      {/* Message Input */}
-      <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
-        <div className="flex gap-2">
-          <ChatFileUpload onFileUploaded={handleFileUploaded} />
-          <Input
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            placeholder="მესიჯის დაწერა..."
-            className="flex-1"
-            maxLength={1000}
-            disabled={sending}
-          />
-          <Button type="submit" size="icon" disabled={!messageInput.trim() || sending}>
-            {sending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
+      {/* Message Input - Only show for authenticated users */}
+      {user ? (
+        <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
+          <div className="flex gap-2">
+            <ChatFileUpload onFileUploaded={handleFileUploaded} />
+            <Input
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              placeholder="მესიჯის დაწერა..."
+              className="flex-1"
+              maxLength={1000}
+              disabled={sending}
+            />
+            <Button type="submit" size="icon" disabled={!messageInput.trim() || sending}>
+              {sending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <div className="p-4 border-t bg-gray-50 text-center">
+          <p className="text-sm text-gray-600">
+            მესიჯის გაგზავნისთვის საჭიროა ავტორიზაცია
+          </p>
         </div>
-      </form>
+      )}
     </div>
   );
 };
