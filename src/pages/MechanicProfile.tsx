@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
+// Fixed: removed useChat dependency
 import MechanicReviews from "@/components/reviews/MechanicReviews";
 
 type MechanicType = {
