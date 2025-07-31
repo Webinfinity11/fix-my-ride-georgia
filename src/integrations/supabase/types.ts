@@ -941,6 +941,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      user_can_access_room: {
+        Args: { user_id: string; room_id: string }
+        Returns: boolean
+      }
+      user_can_create_participant: {
+        Args: { user_id: string; room_id: string; target_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       user_role: "customer" | "mechanic" | "admin"
