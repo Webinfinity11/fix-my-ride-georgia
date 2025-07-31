@@ -32,6 +32,7 @@ import ServiceGallery from "@/components/services/ServiceGallery";
 import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
 import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
+import { useSEOData } from "@/hooks/useSEOData";
 
 interface ServiceType {
   id: number;
@@ -74,6 +75,9 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
+  
+  // Fetch SEO data for this service
+  const { seoData } = useSEOData('service', service?.id.toString() || '');
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -439,17 +443,17 @@ const ServiceDetail = () => {
     } : undefined
   };
 
-  const pageTitle = `${service.name} - ${service.mechanic.first_name} ${service.mechanic.last_name} | AutoMechanico`;
-  const pageDescription = service.description 
+  const pageTitle = seoData?.meta_title || `${service.name} - ${service.mechanic.first_name} ${service.mechanic.last_name} | FixUp.ge`;
+  const pageDescription = seoData?.meta_description || (service.description 
     ? `${service.description.substring(0, 150)}...`
-    : `${service.name} ავტოსერვისი ${service.city}-ში. ხელოსანი: ${service.mechanic.first_name} ${service.mechanic.last_name}. ${service.rating ? `შეფასება: ${service.rating}/5` : ''}`;
+    : `${service.name} ავტოსერვისი ${service.city}-ში. ხელოსანი: ${service.mechanic.first_name} ${service.mechanic.last_name}. ${service.rating ? `შეფასება: ${service.rating}/5` : ''}`);
 
   return (
     <Layout>
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        <meta name="keywords" content={`ავტოსერვისი, ${service.name}, ${service.city}, ხელოსანი, ${service.category?.name || ''}, ავტო სერვისი`} />
+        <meta name="keywords" content={seoData?.meta_keywords || `ავტოსერვისი, ${service.name}, ${service.city}, ხელოსანი, ${service.category?.name || ''}, ავტო სერვისი`} />
         
         {/* Open Graph tags */}
         <meta property="og:title" content={pageTitle} />
@@ -520,7 +524,14 @@ const ServiceDetail = () => {
             უკან
           </Button>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{service.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              {seoData?.h1_title || service.name}
+            </h1>
+            {seoData?.h2_description && (
+              <h2 className="text-lg text-gray-600 mt-2 mb-3">
+                {seoData.h2_description}
+              </h2>
+            )}
             {service.category && (
               <Badge variant="secondary" className="mt-2">
                 {service.category.name}
