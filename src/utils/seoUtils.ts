@@ -94,26 +94,25 @@ export const generateSitemap = async (): Promise<string> => {
   const baseUrl = 'https://fixup.ge';
   const currentDate = new Date().toISOString().split('T')[0];
   
-  // Static pages with proper lastmod
+  // Static pages with priorities matching the example
   const staticPages = [
-    { url: '', changefreq: 'daily', priority: '1.0', lastmod: currentDate },
-    { url: '/services', changefreq: 'daily', priority: '0.9', lastmod: currentDate },
-    { url: '/mechanics', changefreq: 'daily', priority: '0.9', lastmod: currentDate },
-    { url: '/search', changefreq: 'weekly', priority: '0.8', lastmod: currentDate },
-    { url: '/about', changefreq: 'monthly', priority: '0.7', lastmod: currentDate },
-    { url: '/contact', changefreq: 'monthly', priority: '0.7', lastmod: currentDate },
-    { url: '/register', changefreq: 'monthly', priority: '0.6', lastmod: currentDate },
-    { url: '/login', changefreq: 'monthly', priority: '0.5', lastmod: currentDate },
-    { url: '/sitemap', changefreq: 'weekly', priority: '0.4', lastmod: currentDate }
+    { url: '', changefreq: 'always', priority: '0.80' },
+    { url: '/services', changefreq: 'always', priority: '1.00' },
+    { url: '/mechanics', changefreq: 'always', priority: '1.00' },
+    { url: '/search', changefreq: 'always', priority: '0.60' },
+    { url: '/about', changefreq: 'always', priority: '0.70' },
+    { url: '/contact', changefreq: 'always', priority: '0.50' },
+    { url: '/register', changefreq: 'always', priority: '0.60' },
+    { url: '/login', changefreq: 'always', priority: '0.50' },
+    { url: '/sitemap', changefreq: 'always', priority: '0.60' }
   ];
 
   let urls = staticPages.map(page => 
-    `  <url>
-    <loc>${baseUrl}${page.url}</loc>
-    <lastmod>${page.lastmod}</lastmod>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
-  </url>`
+    `<url>
+<loc>${baseUrl}${page.url}</loc>
+<changefreq>${page.changefreq}</changefreq>
+<priority>${page.priority}</priority>
+</url>`
   );
 
   try {
@@ -133,23 +132,21 @@ export const generateSitemap = async (): Promise<string> => {
     if (services && services.length > 0) {
       // Individual service pages
       const serviceUrls = services.map(service => 
-        `  <url>
-    <loc>${baseUrl}/service/${service.id}/${createSlug(service.name)}</loc>
-    <lastmod>${new Date(service.updated_at).toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/service/${service.id}/${createSlug(service.name)}</loc>
+<changefreq>always</changefreq>
+<priority>1.00</priority>
+</url>`
       );
       urls = urls.concat(serviceUrls);
 
       // Alternative service URL formats for compatibility
       const altServiceUrls = services.map(service => 
-        `  <url>
-    <loc>${baseUrl}/service/${createSlug(service.name)}</loc>
-    <lastmod>${new Date(service.updated_at).toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/service/${createSlug(service.name)}</loc>
+<changefreq>always</changefreq>
+<priority>0.80</priority>
+</url>`
       );
       urls = urls.concat(altServiceUrls);
     }
@@ -172,23 +169,21 @@ export const generateSitemap = async (): Promise<string> => {
     if (mechanics && mechanics.length > 0) {
       // Individual mechanic profile pages
       const mechanicUrls = mechanics.map(mechanic => 
-        `  <url>
-    <loc>${baseUrl}/mechanic/${mechanic.id}</loc>
-    <lastmod>${new Date(mechanic.updated_at).toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/mechanic/${mechanic.id}</loc>
+<changefreq>always</changefreq>
+<priority>0.80</priority>
+</url>`
       );
       urls = urls.concat(mechanicUrls);
 
       // Mechanic booking pages
       const bookingUrls = mechanics.map(mechanic => 
-        `  <url>
-    <loc>${baseUrl}/book?mechanic=${mechanic.id}</loc>
-    <lastmod>${new Date(mechanic.updated_at).toISOString().split('T')[0]}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/book?mechanic=${mechanic.id}</loc>
+<changefreq>always</changefreq>
+<priority>0.70</priority>
+</url>`
       );
       urls = urls.concat(bookingUrls);
     }
@@ -202,23 +197,21 @@ export const generateSitemap = async (): Promise<string> => {
     if (categories && categories.length > 0) {
       // Category pages with different URL formats
       const categoryUrls = categories.map(category => 
-        `  <url>
-    <loc>${baseUrl}/services?category=${category.id}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/services?category=${category.id}</loc>
+<changefreq>always</changefreq>
+<priority>0.80</priority>
+</url>`
       );
       urls = urls.concat(categoryUrls);
 
       // Service category detail pages
       const categoryDetailUrls = categories.map(category => 
-        `  <url>
-    <loc>${baseUrl}/services/${createSlug(category.name)}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/services/${createSlug(category.name)}</loc>
+<changefreq>always</changefreq>
+<priority>0.80</priority>
+</url>`
       );
       urls = urls.concat(categoryDetailUrls);
     }
@@ -235,23 +228,21 @@ export const generateSitemap = async (): Promise<string> => {
       
       // City-based service pages
       const cityServiceUrls = uniqueCities.map(city => 
-        `  <url>
-    <loc>${baseUrl}/services?city=${encodeURIComponent(city)}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/services?city=${encodeURIComponent(city)}</loc>
+<changefreq>always</changefreq>
+<priority>0.70</priority>
+</url>`
       );
       urls = urls.concat(cityServiceUrls);
 
       // City-based mechanic pages
       const cityMechanicUrls = uniqueCities.map(city => 
-        `  <url>
-    <loc>${baseUrl}/mechanics?city=${encodeURIComponent(city)}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/mechanics?city=${encodeURIComponent(city)}</loc>
+<changefreq>always</changefreq>
+<priority>0.70</priority>
+</url>`
       );
       urls = urls.concat(cityMechanicUrls);
     }
@@ -263,12 +254,11 @@ export const generateSitemap = async (): Promise<string> => {
 
     if (serviceCategories && serviceCategories.length > 0) {
       const specializedServiceUrls = serviceCategories.map(category => 
-        `  <url>
-    <loc>${baseUrl}/mechanics?service=${encodeURIComponent(category.name)}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>`
+        `<url>
+<loc>${baseUrl}/mechanics?service=${encodeURIComponent(category.name)}</loc>
+<changefreq>always</changefreq>
+<priority>0.60</priority>
+</url>`
       );
       urls = urls.concat(specializedServiceUrls);
     }
@@ -286,12 +276,11 @@ export const generateSitemap = async (): Promise<string> => {
     ];
 
     const searchUrls = popularSearches.map(search => 
-      `  <url>
-    <loc>${baseUrl}/search?q=${encodeURIComponent(search)}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>`
+      `<url>
+<loc>${baseUrl}/search?q=${encodeURIComponent(search)}</loc>
+<changefreq>always</changefreq>
+<priority>0.50</priority>
+</url>`
     );
     urls = urls.concat(searchUrls);
 
@@ -306,7 +295,7 @@ export const generateSitemap = async (): Promise<string> => {
   }
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 ${urls.join('\n')}
 </urlset>`;
 };
