@@ -799,45 +799,6 @@ export type Database = {
           },
         ]
       }
-      seo_metadata: {
-        Row: {
-          created_at: string
-          h1_title: string | null
-          h2_description: string | null
-          id: string
-          meta_description: string | null
-          meta_keywords: string | null
-          meta_title: string | null
-          page_id: string | null
-          page_type: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          h1_title?: string | null
-          h2_description?: string | null
-          id?: string
-          meta_description?: string | null
-          meta_keywords?: string | null
-          meta_title?: string | null
-          page_id?: string | null
-          page_type: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          h1_title?: string | null
-          h2_description?: string | null
-          id?: string
-          meta_description?: string | null
-          meta_keywords?: string | null
-          meta_title?: string | null
-          page_id?: string | null
-          page_type?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       service_categories: {
         Row: {
           description: string | null
