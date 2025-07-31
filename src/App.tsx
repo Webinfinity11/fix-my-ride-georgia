@@ -56,6 +56,7 @@ function App() {
                 <Route path="/book/:mechanicId" element={<Book />} />
                 <Route path="/mechanic/:id" element={<MechanicProfile />} />
                 <Route path="/category/:categoryId" element={<ServiceCategory />} />
+                <Route path="/services/:categorySlug" element={<ServiceCategory />} />
         <Route path="/sitemap" element={<Sitemap />} />
         <Route path="/sitemap.xml" element={<SitemapXML />} />
                 <Route path="*" element={<NotFound />} />

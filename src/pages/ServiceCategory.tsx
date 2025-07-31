@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { generateStructuredData } from "@/utils/seoUtils";
+import { getCategoryFromSlug, createCategorySlug } from "@/utils/slugUtils";
 import { ServiceType } from "@/hooks/useServices";
 
 type CategoryType = {
@@ -23,7 +24,7 @@ type CategoryType = {
 };
 
 const ServiceCategory = () => {
-  const { categoryId } = useParams<{ categoryId: string }>();
+  const { categoryId, categorySlug } = useParams<{ categoryId?: string; categorySlug?: string }>();
   const [category, setCategory] = useState<CategoryType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,10 +38,11 @@ const ServiceCategory = () => {
   });
 
   useEffect(() => {
-    if (categoryId) {
+    const param = categoryId || categorySlug;
+    if (param) {
       fetchCategoryAndServices();
     }
-  }, [categoryId]);
+  }, [categoryId, categorySlug]);
 
   useEffect(() => {
     if (category) {
@@ -49,19 +51,19 @@ const ServiceCategory = () => {
   }, [filters, category]);
 
   const fetchCategoryAndServices = async () => {
-    if (!categoryId) return;
+    const param = categoryId || categorySlug;
+    if (!param) return;
 
     try {
       setLoading(true);
       
-      // Fetch category details
-      const { data: categoryData, error: categoryError } = await supabase
-        .from("service_categories")
-        .select("*")
-        .eq("id", parseInt(categoryId))
-        .single();
-
-      if (categoryError) throw categoryError;
+      // Use slug utility to get category (supports both ID and slug)
+      const categoryData = await getCategoryFromSlug(param);
+      
+      if (!categoryData) {
+        throw new Error('Category not found');
+      }
+      
       setCategory(categoryData);
 
       // Fetch services for this category
@@ -75,7 +77,7 @@ const ServiceCategory = () => {
   };
 
   const fetchServicesWithFilters = async () => {
-    if (!categoryId) return;
+    if (!category) return;
 
     try {
       let query = supabase
@@ -90,7 +92,7 @@ const ServiceCategory = () => {
             phone
           )
         `)
-        .eq("category_id", parseInt(categoryId))
+        .eq("category_id", category.id)
         .eq("is_active", true);
 
       if (filters.selectedCity) {
@@ -120,7 +122,7 @@ const ServiceCategory = () => {
           ...(Array.isArray(service.mechanic) ? service.mechanic[0] : service.mechanic),
           rating: service.rating || 0
         },
-        category: service.category || { id: parseInt(categoryId), name: category?.name || '' }
+        category: service.category || { id: category.id, name: category.name }
       }));
 
       // Client-side filtering for search term
@@ -207,7 +209,7 @@ const ServiceCategory = () => {
         title={`${category.name} - ავტოსერვისები`}
         description={`${category.description || `იპოვეთ საუკეთესო ${category.name} სერვისები საქართველოში. გამოცდილი მექანიკოსები, მაღალი ხარისხის მომსახურება.`}`}
         keywords={`${category.name}, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო`}
-        url={`https://fixup.ge/category/${categoryId}`}
+        url={`https://fixup.ge/category/${createCategorySlug(category.name)}`}
         structuredData={structuredData}
       />
       

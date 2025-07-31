@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wrench, Car, Zap, Settings, Gauge, Paintbrush } from "lucide-react";
+import { createCategorySlug } from "@/utils/slugUtils";
 
 type ServiceCategory = {
   id: number;
@@ -46,8 +47,9 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
   const navigate = useNavigate();
   const servicesToShow = categories && categories.length > 0 ? categories : defaultCategories;
 
-  const handleCategoryClick = (categoryId: number) => {
-    navigate(`/category/${categoryId}`);
+  const handleCategoryClick = (category: ServiceCategory) => {
+    const slug = createCategorySlug(category.name);
+    navigate(`/services/${slug}`);
   };
 
   return (
@@ -65,7 +67,7 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
             <Card 
               key={category.id} 
               className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105 bg-white border-2 hover:border-primary/30"
-              onClick={() => handleCategoryClick(category.id)}
+              onClick={() => handleCategoryClick(category)}
             >
               <CardContent className="p-6 text-center">
                 <div className="mb-4 flex justify-center">
@@ -82,7 +84,7 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
                   className="w-full hover:bg-primary hover:text-white transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleCategoryClick(category.id);
+                    handleCategoryClick(category);
                   }}
                 >
                   ხელოსნების ნახვა

@@ -1,3 +1,5 @@
+import { supabase } from '@/integrations/supabase/client';
+
 // Georgian to Latin transliteration mapping
 const georgianToLatin: { [key: string]: string } = {
   'ა': 'a',
@@ -72,4 +74,44 @@ export function extractServiceId(slugOrId: string): string {
 export function createServiceSlug(id: number, name: string): string {
   const slug = createSlug(name);
   return slug || id.toString();
+}
+
+/**
+ * Create category slug from name
+ */
+export function createCategorySlug(categoryName: string): string {
+  return createSlug(categoryName);
+}
+
+/**
+ * Get category by slug or ID (for backward compatibility)
+ */
+export async function getCategoryFromSlug(slug: string) {
+  // First try to get by ID (for backward compatibility)
+  const numericId = parseInt(slug);
+  if (!isNaN(numericId)) {
+    const { data, error } = await supabase
+      .from('service_categories')
+      .select('*')
+      .eq('id', numericId)
+      .single();
+    
+    if (!error && data) {
+      return data;
+    }
+  }
+  
+  // If not found by ID, try to find by matching slug
+  const { data: categories } = await supabase
+    .from('service_categories')
+    .select('*');
+  
+  if (categories) {
+    const category = categories.find(cat => 
+      createCategorySlug(cat.name) === slug
+    );
+    return category || null;
+  }
+  
+  return null;
 }

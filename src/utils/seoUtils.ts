@@ -1,7 +1,7 @@
 
 import { ServiceType } from "@/hooks/useServices";
-import { createSlug } from "./slugUtils";
 import { supabase } from '@/integrations/supabase/client';
+import { createSlug, createCategorySlug } from './slugUtils';
 
 // Generate meta tags for SEO
 export const generateMetaTags = (
@@ -208,7 +208,7 @@ export const generateSitemap = async (): Promise<string> => {
       // Service category detail pages
       const categoryDetailUrls = categories.map(category => 
         `<url>
-<loc>${baseUrl}/services/${createSlug(category.name)}</loc>
+<loc>${baseUrl}/services/${createCategorySlug(category.name)}</loc>
 <changefreq>always</changefreq>
 <priority>0.80</priority>
 </url>`
