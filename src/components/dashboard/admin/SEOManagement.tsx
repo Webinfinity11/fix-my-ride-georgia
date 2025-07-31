@@ -36,10 +36,24 @@ interface Category {
   name: string;
 }
 
+interface Page {
+  id: string;
+  name: string;
+}
+
 const SEOManagement = () => {
   const [seoItems, setSeoItems] = useState<SEOMetadata[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [pages] = useState<Page[]>([
+    { id: 'home', name: 'მთავარი გვერდი' },
+    { id: 'about', name: 'ჩვენს შესახებ' },
+    { id: 'contact', name: 'კონტაქტი' },
+    { id: 'services', name: 'სერვისები' },
+    { id: 'mechanics', name: 'ხელოსნები' },
+    { id: 'search', name: 'ძებნა' },
+    { id: 'sitemap', name: 'საიტმაპი' }
+  ]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<SEOMetadata | null>(null);
@@ -177,12 +191,23 @@ const SEOManagement = () => {
     } else if (item.page_type === 'category') {
       const category = categories.find(c => c.id.toString() === item.page_id);
       return category?.name || item.page_id;
+    } else if (item.page_type === 'page') {
+      const page = pages.find(p => p.id === item.page_id);
+      return page?.name || item.page_id;
     }
     return item.page_id;
   };
 
   const filteredItems = seoItems.filter(item => {
-    const matchesTab = item.page_type === activeTab.slice(0, -1); // Remove 's' from 'services'/'categories'
+    let matchesTab = false;
+    if (activeTab === 'services') {
+      matchesTab = item.page_type === 'service';
+    } else if (activeTab === 'categories') {
+      matchesTab = item.page_type === 'category';
+    } else if (activeTab === 'pages') {
+      matchesTab = item.page_type === 'page';
+    }
+    
     const matchesSearch = getItemName(item).toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.meta_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.h1_title?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -389,18 +414,18 @@ const SEOManagement = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {seoItems.filter(item => item.page_type === 'page').length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    SEO მონაცემები ვერ მოიძებნა
-                  </p>
-                ) : (
-                  seoItems.filter(item => item.page_type === 'page').map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-medium">{item.page_id}</h3>
-                          <Badge variant="secondary">{item.page_type}</Badge>
-                        </div>
+                 {filteredItems.length === 0 ? (
+                   <p className="text-center text-muted-foreground py-8">
+                     SEO მონაცემები ვერ მოიძებნა
+                   </p>
+                 ) : (
+                   filteredItems.map((item) => (
+                     <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
+                       <div className="flex-1">
+                         <div className="flex items-center space-x-2 mb-2">
+                           <h3 className="font-medium">{getItemName(item)}</h3>
+                           <Badge variant="secondary">{item.page_type}</Badge>
+                         </div>
                         <div className="text-sm text-muted-foreground space-y-1">
                           <p><strong>Meta Title:</strong> {item.meta_title || 'არ არის მითითებული'}</p>
                           <p><strong>H1:</strong> {item.h1_title || 'არ არის მითითებული'}</p>
@@ -515,13 +540,22 @@ const SEOManagement = () => {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Input
-                    value={formData.page_id}
-                    onChange={(e) => setFormData({ ...formData, page_id: e.target.value })}
-                    placeholder="მაგ: home, about, contact"
+                  <Select 
+                    value={formData.page_id} 
+                    onValueChange={(value) => setFormData({ ...formData, page_id: value })}
                     disabled={!!editingItem}
-                    required
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="აირჩიეთ გვერდი" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pages.map((page) => (
+                        <SelectItem key={page.id} value={page.id}>
+                          {page.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
               </div>
             </div>

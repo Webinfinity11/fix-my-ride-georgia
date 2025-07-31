@@ -33,6 +33,7 @@ import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
 import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 import { useSEOData } from "@/hooks/useSEOData";
+import SEOHead from "@/components/seo/SEOHead";
 
 interface ServiceType {
   id: number;
@@ -450,49 +451,15 @@ const ServiceDetail = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <meta name="keywords" content={seoData?.meta_keywords || `ავტოსერვისი, ${service.name}, ${service.city}, ხელოსანი, ${service.category?.name || ''}, ავტო სერვისი`} />
-        
-        {/* Open Graph tags */}
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${window.location.origin}/service/${createSlug(service.name)}`} />
-        {service.photos && service.photos.length > 0 && (
-          <meta property="og:image" content={service.photos[0]} />
-        )}
-        <meta property="og:locale" content="ka_GE" />
-        <meta property="og:site_name" content="AutoMechanico" />
-
-        {/* Twitter Card tags */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        {service.photos && service.photos.length > 0 && (
-          <meta name="twitter:image" content={service.photos[0]} />
-        )}
-
-        {/* Additional SEO meta tags */}
-        <meta name="author" content={`${service.mechanic.first_name} ${service.mechanic.last_name}`} />
-        <meta name="geo.region" content="GE" />
-        <meta name="geo.placename" content={service.city} />
-        {service.latitude && service.longitude && (
-          <>
-            <meta name="geo.position" content={`${service.latitude};${service.longitude}`} />
-            <meta name="ICBM" content={`${service.latitude}, ${service.longitude}`} />
-          </>
-        )}
-
-        {/* Canonical URL */}
-        <link rel="canonical" href={`${window.location.origin}/service/${createSlug(service.name)}`} />
-
-        {/* Structured Data */}
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-      </Helmet>
+      <SEOHead
+        title={pageTitle}
+        description={pageDescription}
+        keywords={seoData?.meta_keywords}
+        image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
+        url={`${window.location.origin}/service/${createSlug(service.name)}`}
+        type="article"
+        structuredData={structuredData}
+      />
 
       <div className="container mx-auto px-4 py-8">
         {/* Breadcrumbs */}
