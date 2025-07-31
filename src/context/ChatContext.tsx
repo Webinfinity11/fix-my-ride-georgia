@@ -118,17 +118,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           let otherParticipant = null;
           
           if (room.type === 'direct' && user) {
-            // Check if direct chat has messages before including it
-            const { data: messages } = await supabase
-              .from('messages')
-              .select('id')
-              .eq('room_id', room.id)
-              .limit(1);
-
-            // Skip direct chats without messages
-            if (!messages || messages.length === 0) {
-              return null;
-            }
+            // Always show direct chats for authenticated users, even without messages
 
             const { data: participants } = await supabase
               .from('chat_participants')
