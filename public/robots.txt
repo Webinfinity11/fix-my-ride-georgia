@@ -20,7 +20,8 @@ Allow: /service/*
 Allow: /mechanic/*
 
 # Sitemap location
-Sitemap: https://avtokhelosani.ge/sitemap.xml
+Sitemap: https://fixup.ge/sitemap.xml
+Sitemap: https://fixup.ge/sitemap-index.xml
 
 # Crawl-delay for better server performance
 Crawl-delay: 1
