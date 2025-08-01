@@ -92,9 +92,8 @@ export const generateStructuredData = (type: string, data: any) => {
 // Generate comprehensive sitemap XML that discovers all pages automatically
 export const generateSitemap = async (): Promise<string> => {
   const baseUrl = 'https://fixup.ge';
-  const currentDate = new Date().toISOString().split('T')[0];
   
-  // Static pages with priorities matching the example
+  // Static pages with exact format from user
   const staticPages = [
     { url: '', changefreq: 'always', priority: '0.80' },
     { url: '/services', changefreq: 'always', priority: '1.00' },
@@ -116,86 +115,14 @@ export const generateSitemap = async (): Promise<string> => {
   );
 
   try {
-    // Get all active services with detailed information
-    const { data: services } = await supabase
-      .from('mechanic_services')
-      .select(`
-        id, 
-        name, 
-        updated_at,
-        category:service_categories(id, name),
-        mechanic:profiles!mechanic_services_mechanic_id_fkey(id, city, district)
-      `)
-      .eq('is_active', true)
-      .order('updated_at', { ascending: false });
-
-    if (services && services.length > 0) {
-      // Individual service pages
-      const serviceUrls = services.map(service => 
-        `<url>
-<loc>${baseUrl}/service/${service.id}/${createSlug(service.name)}</loc>
-<changefreq>always</changefreq>
-<priority>1.00</priority>
-</url>`
-      );
-      urls = urls.concat(serviceUrls);
-
-      // Alternative service URL formats for compatibility
-      const altServiceUrls = services.map(service => 
-        `<url>
-<loc>${baseUrl}/service/${createSlug(service.name)}</loc>
-<changefreq>always</changefreq>
-<priority>0.80</priority>
-</url>`
-      );
-      urls = urls.concat(altServiceUrls);
-    }
-
-    // Get all mechanics with profiles
-    const { data: mechanics } = await supabase
-      .from('profiles')
-      .select(`
-        id,
-        first_name,
-        last_name,
-        updated_at,
-        city,
-        district,
-        mechanic_profiles!inner(id, created_at)
-      `)
-      .eq('role', 'mechanic')
-      .order('updated_at', { ascending: false });
-
-    if (mechanics && mechanics.length > 0) {
-      // Individual mechanic profile pages
-      const mechanicUrls = mechanics.map(mechanic => 
-        `<url>
-<loc>${baseUrl}/mechanic/${mechanic.id}</loc>
-<changefreq>always</changefreq>
-<priority>0.80</priority>
-</url>`
-      );
-      urls = urls.concat(mechanicUrls);
-
-      // Mechanic booking pages
-      const bookingUrls = mechanics.map(mechanic => 
-        `<url>
-<loc>${baseUrl}/book?mechanic=${mechanic.id}</loc>
-<changefreq>always</changefreq>
-<priority>0.70</priority>
-</url>`
-      );
-      urls = urls.concat(bookingUrls);
-    }
-
     // Get all service categories
     const { data: categories } = await supabase
       .from('service_categories')
       .select('id, name')
-      .order('name');
+      .order('id');
 
     if (categories && categories.length > 0) {
-      // Category pages with different URL formats
+      // Category pages
       const categoryUrls = categories.map(category => 
         `<url>
 <loc>${baseUrl}/services?category=${category.id}</loc>
@@ -205,7 +132,7 @@ export const generateSitemap = async (): Promise<string> => {
       );
       urls = urls.concat(categoryUrls);
 
-      // Service category detail pages
+      // Service category detail pages with slugs
       const categoryDetailUrls = categories.map(category => 
         `<url>
 <loc>${baseUrl}/services/${createCategorySlug(category.name)}</loc>
@@ -247,7 +174,7 @@ export const generateSitemap = async (): Promise<string> => {
       urls = urls.concat(cityMechanicUrls);
     }
 
-    // Get unique service categories for specialized pages
+    // Get unique service categories for mechanic specialization pages
     const { data: serviceCategories } = await supabase
       .from('service_categories')
       .select('id, name');
@@ -285,13 +212,7 @@ export const generateSitemap = async (): Promise<string> => {
     urls = urls.concat(searchUrls);
 
   } catch (error) {
-    console.error('Error fetching data for comprehensive sitemap:', error);
-  }
-
-  // Ensure we don't exceed 50,000 URLs (Google limit)
-  if (urls.length > 50000) {
-    console.warn(`Sitemap has ${urls.length} URLs, truncating to 50,000`);
-    urls = urls.slice(0, 50000);
+    console.error('Error fetching data for sitemap:', error);
   }
 
   return `<?xml version="1.0" encoding="UTF-8"?>
