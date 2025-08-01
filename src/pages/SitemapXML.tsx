@@ -7,38 +7,40 @@ const SitemapXML = () => {
       try {
         const xml = await generateSitemap();
         
-        // Set content type and replace page with XML
-        document.open();
-        document.write(xml);
-        document.close();
+        // Clear everything and set as pure XML
+        document.documentElement.innerHTML = '';
+        document.head.innerHTML = '';
+        document.body.innerHTML = '';
         
-        // Set content type header
-        if (document.head) {
-          const meta = document.createElement('meta');
-          meta.httpEquiv = 'Content-Type';
-          meta.content = 'application/xml; charset=utf-8';
-          document.head.appendChild(meta);
-        }
+        // Create a new response to serve XML
+        const blob = new Blob([xml], { type: 'application/xml' });
+        const url = URL.createObjectURL(blob);
+        
+        // Redirect to the blob URL to serve pure XML
+        window.location.replace(url);
+        
       } catch (error) {
         console.error('Error loading sitemap:', error);
-        document.open();
-        document.write(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://fixup.ge/</loc>
-    <changefreq>always</changefreq>
-    <priority>0.80</priority>
-  </url>
-</urlset>`);
-        document.close();
+        // Fallback XML
+        const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<url>
+<loc>https://fixup.ge/</loc>
+<changefreq>always</changefreq>
+<priority>0.80</priority>
+</url>
+</urlset>`;
+        
+        const blob = new Blob([fallbackXml], { type: 'application/xml' });
+        const url = URL.createObjectURL(blob);
+        window.location.replace(url);
       }
     };
 
     loadSitemap();
   }, []);
 
-  // Return null since we're replacing the document content
-  return null;
+  return <div>Loading sitemap...</div>;
 };
 
 export default SitemapXML;
