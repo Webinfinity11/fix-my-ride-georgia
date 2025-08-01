@@ -7,17 +7,11 @@ const SitemapXML = () => {
       try {
         const xml = await generateSitemap();
         
-        // Clear everything and set as pure XML
-        document.documentElement.innerHTML = '';
-        document.head.innerHTML = '';
-        document.body.innerHTML = '';
+        // Replace document content with XML
+        document.open();
+        document.write(xml);
+        document.close();
         
-        // Create a new response to serve XML
-        const blob = new Blob([xml], { type: 'application/xml' });
-        const url = URL.createObjectURL(blob);
-        
-        // Redirect to the blob URL to serve pure XML
-        window.location.replace(url);
         
       } catch (error) {
         console.error('Error loading sitemap:', error);
@@ -31,9 +25,10 @@ const SitemapXML = () => {
 </url>
 </urlset>`;
         
-        const blob = new Blob([fallbackXml], { type: 'application/xml' });
-        const url = URL.createObjectURL(blob);
-        window.location.replace(url);
+        document.open();
+        document.write(fallbackXml);
+        document.close();
+        
       }
     };
 
