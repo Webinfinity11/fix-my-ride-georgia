@@ -579,14 +579,16 @@ const ServiceDetail = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Image className="h-5 w-5" />
-                    სურათები
+                    სურათები ({service.photos.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ServiceGallery 
-                    photos={service.photos} 
-                    serviceName={service.name} 
-                  />
+                <CardContent className="p-4">
+                  <div className="max-w-4xl">
+                    <ServiceGallery 
+                      photos={service.photos} 
+                      serviceName={service.name} 
+                    />
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -597,14 +599,16 @@ const ServiceDetail = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Video className="h-5 w-5" />
-                    ვიდეოები
+                    ვიდეოები ({service.videos.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ServiceVideoGallery 
-                    videos={service.videos} 
-                    serviceName={service.name} 
-                  />
+                <CardContent className="p-4">
+                  <div className="max-w-4xl">
+                    <ServiceVideoGallery 
+                      videos={service.videos} 
+                      serviceName={service.name} 
+                    />
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -703,32 +707,7 @@ const ServiceDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Location Map */}
-            {service.latitude && service.longitude && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    ადგილმდებარეობა
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {service.address && (
-                    <p className="text-sm text-gray-600 mb-4 p-3 bg-gray-50 rounded-lg">
-                      📍 {service.address}
-                    </p>
-                  )}
-                  <div className="rounded-lg overflow-hidden">
-                    <LocationMapPicker
-                      latitude={service.latitude}
-                      longitude={service.longitude}
-                      onLocationChange={handleLocationChange}
-                      interactive={false}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+
 
             {/* Service Reviews */}
             <ServiceReviews 
@@ -771,6 +750,28 @@ const ServiceDetail = () => {
                         <span className="font-medium text-sm">{service.address}</span>
                       </div>
                     )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Location Map */}
+            {service.latitude && service.longitude && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    ადგილმდებარეობა
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="rounded-lg overflow-hidden border">
+                    <LocationMapPicker
+                      latitude={service.latitude}
+                      longitude={service.longitude}
+                      onLocationChange={handleLocationChange}
+                      interactive={false}
+                    />
                   </div>
                 </CardContent>
               </Card>
