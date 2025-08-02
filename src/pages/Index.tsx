@@ -640,72 +640,106 @@ const ServiceDetail = () => {
 
             {/* Service Photos */}
             {service.photos && service.photos.length > 0 && (
-              <div className="relative">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {service.photos.slice(0, 5).map((photo, index) => (
-                    <div
-                      key={index}
-                      className={`relative group cursor-pointer overflow-hidden rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
-                        index === 0 ? 'md:col-span-2 md:row-span-2' : ''
-                      }`}
-                    >
-                      <div className={`relative ${index === 0 ? 'aspect-[4/3]' : 'aspect-square'}`}>
+              <div className="space-y-4">
+                {/* Main Image Container */}
+                <div className="relative group">
+                  <div className="relative aspect-[4/3] w-full max-h-[500px] bg-gray-100 rounded-lg overflow-hidden">
+                    <img
+                      src={service.photos[0]}
+                      alt={`${service.name} - მთავარი სურათი`}
+                      className="w-full h-full object-cover cursor-zoom-in transition-transform duration-300 group-hover:scale-105"
+                      onClick={() => {
+                        // Open lightbox/modal
+                        console.log('Open main image in lightbox');
+                      }}
+                    />
+                    
+                    {/* Image counter */}
+                    <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                      1 / {service.photos.length}
+                    </div>
+                    
+                    {/* Zoom indicator */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/10">
+                      <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
+                        <Eye className="h-6 w-6 text-gray-800" />
+                      </div>
+                    </div>
+                    
+                    {/* Navigation arrows */}
+                    {service.photos.length > 1 && (
+                      <>
+                        <button className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <button className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Thumbnail Grid */}
+                {service.photos.length > 1 && (
+                  <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                    {service.photos.slice(0, 16).map((photo, index) => (
+                      <div
+                        key={index}
+                        className={`relative aspect-[4/3] rounded-md overflow-hidden cursor-pointer transition-all duration-200 hover:opacity-80 ${
+                          index === 0 
+                            ? 'ring-2 ring-blue-500 ring-offset-2' 
+                            : 'hover:ring-2 hover:ring-gray-300 hover:ring-offset-1'
+                        }`}
+                        onClick={() => {
+                          // Switch main image
+                          console.log(`Switch to image ${index}`);
+                        }}
+                      >
                         <img
                           src={photo}
                           alt={`${service.name} - სურათი ${index + 1}`}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                         
-                        {/* Overlay */}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                        
-                        {/* View indicator */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
-                            <Eye className="h-5 w-5 text-gray-800" />
-                          </div>
-                        </div>
-                        
-                        {/* Photo counter for main image */}
-                        {index === 0 && service.photos.length > 1 && (
-                          <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-                            1 / {service.photos.length}
-                          </div>
-                        )}
-                        
                         {/* More photos indicator */}
-                        {index === 4 && service.photos.length > 5 && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        {index === 15 && service.photos.length > 16 && (
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                             <div className="text-white text-center">
-                              <div className="text-2xl font-bold">+{service.photos.length - 5}</div>
-                              <div className="text-sm">მეტი სურათი</div>
+                              <div className="text-lg font-semibold">+{service.photos.length - 16}</div>
+                              <div className="text-xs">მეტი</div>
                             </div>
                           </div>
                         )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* View all photos button */}
-                {service.photos.length > 5 && (
-                  <div className="mt-4 text-center">
+                    ))}
+                  </div>
+                )}
+
+                {/* View All Photos Button */}
+                {service.photos.length > 16 && (
+                  <div className="text-center pt-2">
                     <Button 
                       variant="outline" 
                       size="sm"
+                      className="gap-2"
                       onClick={() => {
-                        // This would trigger the ServiceGallery component
-                        // For now, just a placeholder
-                        console.log('View all photos');
+                        // Open full gallery
+                        console.log('Open full gallery');
                       }}
                     >
-                      <Image className="h-4 w-4 mr-2" />
+                      <Image className="h-4 w-4" />
                       ყველა სურათის ნახვა ({service.photos.length})
                     </Button>
                   </div>
                 )}
-                
-                {/* Hidden ServiceGallery component - this will be triggered by clicks */}
+
+                {/* Hidden original ServiceGallery for modal functionality */}
                 <div className="hidden">
                   <ServiceGallery 
                     photos={service.photos} 
