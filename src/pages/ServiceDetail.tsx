@@ -16,14 +16,12 @@ import {
   CreditCard, 
   Banknote, 
   Car, 
-  Calendar,
   ArrowLeft,
   Phone,
   Eye,
   EyeOff,
   Image,
   Video,
-  Shield,
   Award,
   CheckCircle
 } from "lucide-react";
@@ -248,7 +246,7 @@ const ServiceDetail = () => {
   };
 
   const formatPrice = (priceFrom: number | null, priceTo: number | null) => {
-    if (!priceFrom && !priceTo) return "ფასი შეთანხმებით";
+    if (!priceFrom && !priceTo) return null; // Return null instead of "ფასი შეთანხმებით"
     
     if (priceFrom && priceFrom > 0 && priceTo && priceTo > 0 && priceFrom !== priceTo) {
       return `₾${priceFrom} - ₾${priceTo}`;
@@ -257,7 +255,12 @@ const ServiceDetail = () => {
     if (priceFrom && priceFrom > 0) return `₾${priceFrom}`;
     if (priceTo && priceTo > 0) return `₾${priceTo}`;
     
-    return "ფასი შეთანხმებით";
+    return null; // Return null instead of "ფასი შეთანხმებით"
+  };
+
+  // Check if price should be displayed
+  const shouldShowPrice = (priceFrom: number | null, priceTo: number | null) => {
+    return formatPrice(priceFrom, priceTo) !== null;
   };
 
   const handleLocationChange = () => {
@@ -452,52 +455,105 @@ const ServiceDetail = () => {
     </Card>
   );
 
-  // Price Card Component
-  const PriceCard = ({ className = "" }: { className?: string }) => (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle className="text-2xl text-primary font-bold">
-          {formatPrice(service.price_from, service.price_to)}
-        </CardTitle>
-        {service.rating && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="font-semibold">{service.rating}</span>
+  // Price Card Component - Only show if price is available
+  const PriceCard = ({ className = "" }: { className?: string }) => {
+    const priceDisplay = formatPrice(service.price_from, service.price_to);
+    
+    if (!priceDisplay) {
+      return null; // Don't render the card if no price
+    }
+
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="text-2xl text-primary font-bold">
+            {priceDisplay}
+          </CardTitle>
+          {service.rating && (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <span className="font-semibold">{service.rating}</span>
+              </div>
+              <span className="text-sm text-gray-500">
+                ({service.review_count || 0} შეფასება)
+              </span>
             </div>
-            <span className="text-sm text-gray-500">
-              ({service.review_count || 0} შეფასება)
-            </span>
+          )}
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button 
+            className="w-full" 
+            size="lg"
+            onClick={() => navigate(`/book?service=${service.id}`)}
+          >
+            დაჯავშვნა
+          </Button>
+          
+          <div className="grid grid-cols-3 gap-2 pt-2">
+            <div className="text-center">
+              <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <span className="text-xs text-gray-600">დაცული</span>
+            </div>
+            <div className="text-center">
+              <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <span className="text-xs text-gray-600">გარანტია</span>
+            </div>
+            <div className="text-center">
+              <Award className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <span className="text-xs text-gray-600">ხარისხი</span>
+            </div>
           </div>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Button 
-          className="w-full" 
-          size="lg"
-          onClick={() => navigate(`/book?service=${service.id}`)}
-        >
-          <Calendar className="mr-2 h-5 w-5" />
-          დაჯავშვნა
-        </Button>
-        
-        <div className="grid grid-cols-3 gap-2 pt-2">
-          <div className="text-center">
-            <Shield className="h-5 w-5 text-green-600 mx-auto mb-1" />
-            <span className="text-xs text-gray-600">დაცული</span>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Rating Card Component - Show only rating when no price
+  const RatingCard = ({ className = "" }: { className?: string }) => {
+    if (!service.rating && !service.review_count) {
+      return null; // Don't show if no rating data
+    }
+
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Star className="h-5 w-5 text-yellow-400" />
+            შეფასება
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {service.rating && (
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-1">
+                <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
+                <span className="text-2xl font-bold text-primary">{service.rating}</span>
+              </div>
+              <span className="text-gray-500">
+                ({service.review_count || 0} შეფასება)
+              </span>
+            </div>
+          )}
+          
+          <div className="grid grid-cols-3 gap-2">
+            <div className="text-center">
+              <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <span className="text-xs text-gray-600">დაცული</span>
+            </div>
+            <div className="text-center">
+              <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <span className="text-xs text-gray-600">გარანტია</span>
+            </div>
+            <div className="text-center">
+              <Award className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <span className="text-xs text-gray-600">ხარისხი</span>
+            </div>
           </div>
-          <div className="text-center">
-            <CheckCircle className="h-5 w-5 text-green-600 mx-auto mb-1" />
-            <span className="text-xs text-gray-600">გარანტია</span>
-          </div>
-          <div className="text-center">
-            <Award className="h-5 w-5 text-green-600 mx-auto mb-1" />
-            <span className="text-xs text-gray-600">ხარისხი</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <Layout>
@@ -560,6 +616,11 @@ const ServiceDetail = () => {
                   ადგილზე მომსახურება
                 </Badge>
               )}
+              {!shouldShowPrice(service.price_from, service.price_to) && (
+                <Badge variant="outline" className="text-orange-600 border-orange-600">
+                  ფასი შეთანხმებით
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -567,9 +628,13 @@ const ServiceDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Mobile Contact & Price - Only visible on mobile */}
+            {/* Mobile Contact & Price/Rating - Only visible on mobile */}
             <div className="lg:hidden space-y-4">
-              <PriceCard />
+              {shouldShowPrice(service.price_from, service.price_to) ? (
+                <PriceCard />
+              ) : (
+                <RatingCard />
+              )}
               <ContactCard />
             </div>
 
@@ -707,8 +772,6 @@ const ServiceDetail = () => {
               </CardContent>
             </Card>
 
-
-
             {/* Service Reviews */}
             <ServiceReviews 
               serviceId={service.id} 
@@ -718,7 +781,13 @@ const ServiceDetail = () => {
 
           {/* Desktop Sidebar - Hidden on mobile */}
           <div className="space-y-6 hidden lg:block">
-            <PriceCard />
+            {/* Show Price Card if available, otherwise show Rating Card */}
+            {shouldShowPrice(service.price_from, service.price_to) ? (
+              <PriceCard />
+            ) : (
+              <RatingCard />
+            )}
+            
             <ContactCard />
             
             {/* Location Info */}
