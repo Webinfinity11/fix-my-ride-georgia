@@ -604,10 +604,12 @@ const ServiceDetail = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 lg:p-6">
-                  <ServiceGallery 
-                    photos={service.photos} 
-                    serviceName={service.name} 
-                  />
+                  <div className="max-w-2xl">
+                    <ServiceGallery 
+                      photos={service.photos} 
+                      serviceName={service.name} 
+                    />
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -641,6 +643,31 @@ const ServiceDetail = () => {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Location Map - Moved here between description and service details */}
+            {service.latitude && service.longitude && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    ადგილმდებარეობა
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {service.address && (
+                    <p className="text-sm text-gray-600 mb-4">
+                      📍 {service.address}
+                    </p>
+                  )}
+                  <LocationMapPicker
+                    latitude={service.latitude}
+                    longitude={service.longitude}
+                    onLocationChange={handleLocationChange}
+                    interactive={false}
+                  />
+                </CardContent>
+              </Card>
+            )}
 
             {/* Mobile Location Info - Only visible on mobile */}
             {(service.city || service.district) && (
@@ -703,30 +730,6 @@ const ServiceDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Location Map */}
-            {service.latitude && service.longitude && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    ადგილმდებარეობა
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {service.address && (
-                    <p className="text-sm text-gray-600 mb-4">
-                      📍 {service.address}
-                    </p>
-                  )}
-                  <LocationMapPicker
-                    latitude={service.latitude}
-                    longitude={service.longitude}
-                    onLocationChange={handleLocationChange}
-                    interactive={false}
-                  />
-                </CardContent>
-              </Card>
-            )}
 
             {/* Service Details */}
             <Card>
@@ -780,13 +783,21 @@ const ServiceDetail = () => {
                         <Car className="h-4 w-4" />
                         მანქანის მარკები
                       </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {service.car_brands.map((brand, index) => (
-                          <Badge key={index} variant="secondary">
-                            {brand}
-                          </Badge>
-                        ))}
-                      </div>
+                      {service.car_brands.length >= 15 ? (
+                        <div className="p-3 bg-green-50 rounded-lg">
+                          <p className="text-sm text-green-700 font-medium">
+                            🚗 სერვისი მოქმედებს ყველა მარკის ავტომობილზე
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {service.car_brands.map((brand, index) => (
+                            <Badge key={index} variant="secondary">
+                              {brand}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
