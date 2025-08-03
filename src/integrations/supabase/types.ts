@@ -52,6 +52,42 @@ export type Database = {
           },
         ]
       }
+      booking_settings: {
+        Row: {
+          auto_confirm_bookings: boolean
+          booking_enabled: boolean
+          booking_fee_percentage: number
+          created_at: string
+          id: string
+          maintenance_message: string | null
+          max_advance_days: number
+          min_advance_hours: number
+          updated_at: string
+        }
+        Insert: {
+          auto_confirm_bookings?: boolean
+          booking_enabled?: boolean
+          booking_fee_percentage?: number
+          created_at?: string
+          id?: string
+          maintenance_message?: string | null
+          max_advance_days?: number
+          min_advance_hours?: number
+          updated_at?: string
+        }
+        Update: {
+          auto_confirm_bookings?: boolean
+          booking_enabled?: boolean
+          booking_fee_percentage?: number
+          created_at?: string
+          id?: string
+          maintenance_message?: string | null
+          max_advance_days?: number
+          min_advance_hours?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           address: string | null

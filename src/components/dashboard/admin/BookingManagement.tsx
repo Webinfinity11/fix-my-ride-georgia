@@ -37,7 +37,7 @@ const BookingManagement = () => {
   const loadSettings = async () => {
     try {
       const { data, error } = await supabase
-        .from('booking_settings')
+        .from('booking_settings' as any)
         .select('*')
         .limit(1)
         .single();
@@ -49,7 +49,7 @@ const BookingManagement = () => {
       }
 
       if (data) {
-        setSettings(data);
+        setSettings(data as unknown as BookingSettings);
       }
     } catch (error) {
       console.error('Error loading booking settings:', error);
@@ -63,7 +63,7 @@ const BookingManagement = () => {
     setSaving(true);
     try {
       const { error } = await supabase
-        .from('booking_settings')
+        .from('booking_settings' as any)
         .upsert({
           ...settings,
           id: settings.id || '1', // Use fixed ID for singleton
