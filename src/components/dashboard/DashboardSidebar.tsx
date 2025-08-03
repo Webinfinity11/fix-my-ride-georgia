@@ -12,6 +12,7 @@ import {
   Users,
   Cog,
   MessageCircle,
+  CalendarCog,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -86,10 +87,14 @@ const DashboardSidebar = () => {
               <span className="text-sm md:text-base">სერვისის დეტალები</span>
             </NavLink>
 
-            {/* New Chat Management menu item */}
             <NavLink to="/dashboard/admin/chat-management" className={navLinkClasses}>
               <MessageCircle size={18} />
               <span className="text-sm md:text-base">ჩატის მართვა</span>
+            </NavLink>
+
+            <NavLink to="/dashboard/admin/booking-management" className={navLinkClasses}>
+              <CalendarCog size={18} />
+              <span className="text-sm md:text-base">ჯავშნების მართვა</span>
             </NavLink>
 
             <NavLink to="/dashboard/admin/stats" className={navLinkClasses}>
