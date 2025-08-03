@@ -92,124 +92,236 @@ export const generateStructuredData = (type: string, data: any) => {
 // Generate comprehensive sitemap XML that discovers all pages automatically
 export const generateSitemap = async (): Promise<string> => {
   const baseUrl = 'https://fixup.ge';
+  const currentDate = new Date().toISOString().split('T')[0];
   
-  // Static pages with exact format from user
+  // Static pages with updated priorities and change frequencies
   const staticPages = [
-    { url: '', changefreq: 'always', priority: '0.80' },
-    { url: '/services', changefreq: 'always', priority: '1.00' },
-    { url: '/mechanics', changefreq: 'always', priority: '1.00' },
-    { url: '/search', changefreq: 'always', priority: '0.60' },
-    { url: '/about', changefreq: 'always', priority: '0.70' },
-    { url: '/contact', changefreq: 'always', priority: '0.50' },
-    { url: '/register', changefreq: 'always', priority: '0.60' },
-    { url: '/login', changefreq: 'always', priority: '0.50' },
-    { url: '/sitemap', changefreq: 'always', priority: '0.60' }
+    { url: '', changefreq: 'daily', priority: '1.0' },
+    { url: '/services', changefreq: 'daily', priority: '0.9' },
+    { url: '/mechanics', changefreq: 'daily', priority: '0.9' },
+    { url: '/search', changefreq: 'weekly', priority: '0.8' },
+    { url: '/about', changefreq: 'monthly', priority: '0.7' },
+    { url: '/contact', changefreq: 'monthly', priority: '0.7' },
+    { url: '/register', changefreq: 'monthly', priority: '0.6' },
+    { url: '/login', changefreq: 'monthly', priority: '0.5' },
+    { url: '/sitemap', changefreq: 'weekly', priority: '0.4' },
+    { url: '/book', changefreq: 'weekly', priority: '0.8' },
+    { url: '/chat', changefreq: 'weekly', priority: '0.7' },
+    { url: '/dashboard', changefreq: 'weekly', priority: '0.6' }
   ];
 
   let urls = staticPages.map(page => 
-    `<url>
-<loc>${baseUrl}${page.url}</loc>
-<changefreq>${page.changefreq}</changefreq>
-<priority>${page.priority}</priority>
-</url>`
+    `  <url>
+    <loc>${baseUrl}${page.url}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`
   );
 
   try {
-    // Get all service categories
+    // 1. ALL ACTIVE SERVICES - Individual service detail pages
+    const { data: services } = await supabase
+      .from('mechanic_services')
+      .select('id, name, updated_at, mechanic_id')
+      .eq('is_active', true)
+      .limit(2000);
+
+    if (services && services.length > 0) {
+      const serviceUrls = services.map(service => {
+        const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;
+        const slug = createSlug(service.name);
+        return `  <url>
+    <loc>${baseUrl}/service/${slug || service.id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+      });
+      urls = urls.concat(serviceUrls);
+    }
+
+    // 2. ALL MECHANIC PROFILES - Individual mechanic pages
+    const { data: mechanics } = await supabase
+      .from('profiles')
+      .select('id, first_name, last_name, updated_at')
+      .eq('role', 'mechanic')
+      .limit(1000);
+
+    if (mechanics && mechanics.length > 0) {
+      const mechanicUrls = mechanics.map(mechanic => {
+        const lastmod = mechanic.updated_at ? new Date(mechanic.updated_at).toISOString().split('T')[0] : currentDate;
+        return `  <url>
+    <loc>${baseUrl}/mechanic/${mechanic.id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+      });
+      urls = urls.concat(mechanicUrls);
+    }
+
+    // 3. SERVICE CATEGORIES - Category pages and filtered views
     const { data: categories } = await supabase
       .from('service_categories')
       .select('id, name')
       .order('id');
 
     if (categories && categories.length > 0) {
-      // Category pages
-      const categoryUrls = categories.map(category => 
-        `<url>
-<loc>${baseUrl}/services?category=${category.id}</loc>
-<changefreq>always</changefreq>
-<priority>0.80</priority>
-</url>`
+      // Category filter pages
+      const categoryFilterUrls = categories.map(category => 
+        `  <url>
+    <loc>${baseUrl}/services?category=${category.id}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`
       );
-      urls = urls.concat(categoryUrls);
+      urls = urls.concat(categoryFilterUrls);
 
-      // Service category detail pages with slugs
-      const categoryDetailUrls = categories.map(category => 
-        `<url>
-<loc>${baseUrl}/services/${createCategorySlug(category.name)}</loc>
-<changefreq>always</changefreq>
-<priority>0.80</priority>
-</url>`
+      // Category slug pages
+      const categorySlugUrls = categories.map(category => {
+        const slug = createCategorySlug(category.name);
+        return `  <url>
+    <loc>${baseUrl}/category/${slug || category.id}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+      });
+      urls = urls.concat(categorySlugUrls);
+
+      // Mechanic specialization pages
+      const mechanicSpecializationUrls = categories.map(category => 
+        `  <url>
+    <loc>${baseUrl}/mechanics?category=${category.id}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`
       );
-      urls = urls.concat(categoryDetailUrls);
+      urls = urls.concat(mechanicSpecializationUrls);
     }
 
-    // Get unique cities for location-based pages
-    const { data: cities } = await supabase
-      .from('profiles')
-      .select('city')
-      .eq('role', 'mechanic')
-      .not('city', 'is', null);
+    // 4. CITIES AND LOCATIONS - All city-based pages
+    const { data: allCities } = await supabase
+      .from('cities')
+      .select('name, updated_at')
+      .limit(100);
 
-    if (cities && cities.length > 0) {
-      const uniqueCities = [...new Set(cities.map(c => c.city).filter(Boolean))];
-      
-      // City-based service pages
-      const cityServiceUrls = uniqueCities.map(city => 
-        `<url>
-<loc>${baseUrl}/services?city=${encodeURIComponent(city)}</loc>
-<changefreq>always</changefreq>
-<priority>0.70</priority>
-</url>`
-      );
+    if (allCities && allCities.length > 0) {
+      // City service pages
+      const cityServiceUrls = allCities.map(city => {
+        const lastmod = city.updated_at ? new Date(city.updated_at).toISOString().split('T')[0] : currentDate;
+        return `  <url>
+    <loc>${baseUrl}/services?city=${encodeURIComponent(city.name)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+      });
       urls = urls.concat(cityServiceUrls);
 
-      // City-based mechanic pages
-      const cityMechanicUrls = uniqueCities.map(city => 
-        `<url>
-<loc>${baseUrl}/mechanics?city=${encodeURIComponent(city)}</loc>
-<changefreq>always</changefreq>
-<priority>0.70</priority>
-</url>`
-      );
+      // City mechanic pages
+      const cityMechanicUrls = allCities.map(city => {
+        const lastmod = city.updated_at ? new Date(city.updated_at).toISOString().split('T')[0] : currentDate;
+        return `  <url>
+    <loc>${baseUrl}/mechanics?city=${encodeURIComponent(city.name)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+      });
       urls = urls.concat(cityMechanicUrls);
     }
 
-    // Get unique service categories for mechanic specialization pages
-    const { data: serviceCategories } = await supabase
-      .from('service_categories')
-      .select('id, name');
+    // 5. COMBINED CATEGORY + CITY PAGES (for popular combinations)
+    if (categories && allCities && categories.length > 0 && allCities.length > 0) {
+      // Take top 5 categories and top 10 cities for combinations
+      const topCategories = categories.slice(0, 5);
+      const topCities = allCities.slice(0, 10);
+      
+      topCategories.forEach(category => {
+        topCities.forEach(city => {
+          urls.push(`  <url>
+    <loc>${baseUrl}/services?category=${category.id}&city=${encodeURIComponent(city.name)}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`);
 
-    if (serviceCategories && serviceCategories.length > 0) {
-      const specializedServiceUrls = serviceCategories.map(category => 
-        `<url>
-<loc>${baseUrl}/mechanics?service=${encodeURIComponent(category.name)}</loc>
-<changefreq>always</changefreq>
-<priority>0.60</priority>
-</url>`
-      );
-      urls = urls.concat(specializedServiceUrls);
+          urls.push(`  <url>
+    <loc>${baseUrl}/mechanics?category=${category.id}&city=${encodeURIComponent(city.name)}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`);
+        });
+      });
     }
 
-    // Add search combinations for popular queries
-    const popularSearches = [
-      'ავტო+რემონტი',
+    // 6. SEARCH PAGES - Popular search combinations
+    const popularSearchTerms = [
+      'ავტო რემონტი',
       'მექანიკოსი',
-      'საბურავი+შეცვლა',
-      'ძრავის+რემონტი',
-      'ელექტრო+სისტემა',
+      'საბურავი შეცვლა',
+      'ძრავის რემონტი',
+      'ელექტრო სისტემა',
       'კონდიციონერი',
       'ბრეიკები',
-      'ტრანსმისია'
+      'ტრანსმისია',
+      'ზეთის შეცვლა',
+      'გადაცემათა კოლოფი',
+      'ამორტიზატორები',
+      'ბატარეა',
+      'საწყისი',
+      'გენერატორი',
+      'თერმოსტატი'
     ];
 
-    const searchUrls = popularSearches.map(search => 
-      `<url>
-<loc>${baseUrl}/search?q=${encodeURIComponent(search)}</loc>
-<changefreq>always</changefreq>
-<priority>0.50</priority>
-</url>`
+    const searchUrls = popularSearchTerms.map(term => 
+      `  <url>
+    <loc>${baseUrl}/search?q=${encodeURIComponent(term)}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>`
     );
     urls = urls.concat(searchUrls);
+
+    // 7. CAR BRANDS - If mechanics specialize in specific brands
+    const { data: carBrands } = await supabase
+      .from('car_brands')
+      .select('name')
+      .eq('is_popular', true)
+      .limit(20);
+
+    if (carBrands && carBrands.length > 0) {
+      const brandUrls = carBrands.map(brand => 
+        `  <url>
+    <loc>${baseUrl}/search?brand=${encodeURIComponent(brand.name)}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>`
+      );
+      urls = urls.concat(brandUrls);
+    }
+
+    // 8. SERVICE DETAIL PAGES - Alternative URLs
+    if (services && services.length > 0) {
+      // Alternative service detail URLs
+      const serviceDetailUrls = services.slice(0, 100).map(service => {
+        const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;
+        return `  <url>
+    <loc>${baseUrl}/services/${service.id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+      });
+      urls = urls.concat(serviceDetailUrls);
+    }
 
   } catch (error) {
     console.error('Error fetching data for sitemap:', error);
