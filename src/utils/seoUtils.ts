@@ -333,16 +333,74 @@ ${urls.join('\n')}
 </urlset>`;
 };
 
-// Generate sitemap index for multiple sitemaps if needed
+// Generate search queries sitemap XML
+export const generateSearchSitemap = async (): Promise<string> => {
+  const baseUrl = 'https://fixup.ge';
+  const currentDate = new Date().toISOString().split('T')[0];
+  
+  try {
+    // Get popular search queries (limit to prevent too large sitemap)
+    const { data: searchQueries } = await supabase
+      .from('search_queries')
+      .select('query, search_count, last_searched_at')
+      .gte('search_count', 2) // Only include queries searched at least twice
+      .order('search_count', { ascending: false })
+      .limit(500); // Limit to most popular 500 searches
+
+    let urls: string[] = [];
+
+    if (searchQueries && searchQueries.length > 0) {
+      urls = searchQueries.map(searchQuery => {
+        const encodedQuery = encodeURIComponent(searchQuery.query);
+        const lastmod = searchQuery.last_searched_at 
+          ? new Date(searchQuery.last_searched_at).toISOString().split('T')[0] 
+          : currentDate;
+        
+        // Higher priority for more popular searches
+        const priority = searchQuery.search_count >= 10 ? '0.7' : 
+                        searchQuery.search_count >= 5 ? '0.6' : '0.5';
+        
+        return `  <url>
+    <loc>${baseUrl}/search?q=${encodedQuery}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${priority}</priority>
+  </url>`;
+      });
+    }
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join('\n')}
+</urlset>`;
+  } catch (error) {
+    console.error('Error generating search sitemap:', error);
+    // Return minimal search sitemap on error
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/search</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>`;
+  }
+};
+
+// Generate sitemap index for multiple sitemaps
 export const generateSitemapIndex = async (): Promise<string> => {
   const baseUrl = 'https://fixup.ge';
   const currentDate = new Date().toISOString().split('T')[0];
   
-  // For now, we'll use a single sitemap, but this can be expanded
-  // if we need to split into multiple sitemaps
+  // Include both main sitemap and search sitemap
   const sitemaps = [
     {
       loc: `${baseUrl}/sitemap.xml`,
+      lastmod: currentDate
+    },
+    {
+      loc: `${baseUrl}/sitemap-search.xml`,
       lastmod: currentDate
     }
   ];

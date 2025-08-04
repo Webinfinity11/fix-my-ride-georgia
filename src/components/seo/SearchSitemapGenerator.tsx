@@ -1,12 +1,11 @@
-
 import { useEffect, useState } from 'react';
-import { generateSitemap, generateSearchSitemap } from '@/utils/seoUtils';
+import { generateSearchSitemap } from '@/utils/seoUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
-const SitemapGenerator = () => {
+const SearchSitemapGenerator = () => {
   const [sitemap, setSitemap] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [lastGenerated, setLastGenerated] = useState<Date | null>(null);
@@ -14,13 +13,13 @@ const SitemapGenerator = () => {
   const generateSitemapXML = async () => {
     setLoading(true);
     try {
-      const xml = await generateSitemap();
+      const xml = await generateSearchSitemap();
       setSitemap(xml);
       setLastGenerated(new Date());
-      toast.success('Sitemap წარმატებით გენერირდა');
+      toast.success('Search Sitemap წარმატებით გენერირდა');
     } catch (error) {
-      console.error('Error generating sitemap:', error);
-      toast.error('Sitemap-ის გენერაცია ვერ მოხერხდა');
+      console.error('Error generating search sitemap:', error);
+      toast.error('Search Sitemap-ის გენერაცია ვერ მოხერხდა');
     } finally {
       setLoading(false);
     }
@@ -33,7 +32,7 @@ const SitemapGenerator = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'sitemap.xml';
+    a.download = 'sitemap-search.xml';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -48,8 +47,8 @@ const SitemapGenerator = () => {
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <RefreshCw className="h-5 w-5" />
-          Sitemap Generator
+          <Search className="h-5 w-5" />
+          Search Sitemap Generator
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -82,8 +81,11 @@ const SitemapGenerator = () => {
         {sitemap && (
           <div className="bg-muted p-4 rounded-lg">
             <p className="text-sm mb-2">
-              URLs რაოდენობა: {(sitemap.match(/<url>/g) || []).length}
+              Search URLs რაოდენობა: {(sitemap.match(/<url>/g) || []).length}
             </p>
+            <div className="text-xs text-muted-foreground mb-2">
+              მხოლოდ ის search queries არის შეტანილი რომლებიც მინიმუმ 2-ჯერ მოიძებნა
+            </div>
             <pre className="text-xs bg-background p-2 rounded max-h-40 overflow-y-auto">
               {sitemap.substring(0, 500)}...
             </pre>
@@ -94,4 +96,4 @@ const SitemapGenerator = () => {
   );
 };
 
-export default SitemapGenerator;
+export default SearchSitemapGenerator;

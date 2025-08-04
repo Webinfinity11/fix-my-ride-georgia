@@ -835,6 +835,36 @@ export type Database = {
           },
         ]
       }
+      search_queries: {
+        Row: {
+          created_at: string | null
+          first_searched_at: string | null
+          id: number
+          last_searched_at: string | null
+          query: string
+          search_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          first_searched_at?: string | null
+          id?: number
+          last_searched_at?: string | null
+          query: string
+          search_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          first_searched_at?: string | null
+          id?: number
+          last_searched_at?: string | null
+          query?: string
+          search_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       seo_metadata: {
         Row: {
           created_at: string

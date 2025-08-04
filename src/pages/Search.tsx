@@ -25,6 +25,7 @@ import {
   Target
 } from "lucide-react";
 import { toast } from "sonner";
+import { useSearchTracking } from "@/hooks/useSearchTracking";
 
 type MechanicType = {
   id: string;
@@ -42,6 +43,7 @@ type MechanicType = {
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { trackSearch } = useSearchTracking();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [activeTab, setActiveTab] = useState<"services" | "mechanics">("services");
   const [mechanics, setMechanics] = useState<MechanicType[]>([]);
@@ -110,6 +112,8 @@ const Search = () => {
     
     if (searchTerm.trim()) {
       saveRecentSearch(searchTerm.trim());
+      // Track search for sitemap generation
+      trackSearch(searchTerm.trim());
     }
 
     if (activeTab === "services") {
