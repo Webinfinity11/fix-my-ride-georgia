@@ -640,22 +640,33 @@ const ServiceDetail = () => {
 
             {/* Service Photos */}
             {service.photos && service.photos.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Image className="h-5 w-5" />
-                    სურათები ({service.photos.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="max-w-4xl">
-                    <ServiceGallery 
-                      photos={service.photos} 
-                      serviceName={service.name} 
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="lg:bg-card/30 lg:backdrop-blur-sm lg:rounded-xl lg:border lg:border-border/40 lg:overflow-hidden">
+                {/* Mobile version - keep as card */}
+                <div className="lg:hidden">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Image className="h-5 w-5" />
+                        სურათები ({service.photos.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <ServiceGallery 
+                        photos={service.photos} 
+                        serviceName={service.name} 
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+                
+                {/* Desktop version - modern design without title */}
+                <div className="hidden lg:block lg:p-6">
+                  <ServiceGallery 
+                    photos={service.photos} 
+                    serviceName={service.name} 
+                  />
+                </div>
+              </div>
             )}
 
             {/* Service Videos */}
