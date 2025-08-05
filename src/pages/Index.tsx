@@ -333,7 +333,7 @@ const Index = () => {
                     <div className="p-3 lg:p-4 bg-green-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
                       <MapPin className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
                     </div>
-                    <h3 className="text-lg lg:text-xl font-bold text-green-900 mb-2">ადგილზე მოსვლის სერვისი</h3>
+                    <h3 className="text-lg lg:text-xl font-bold text-green-900 mb-2">მისვლითი სერვისი</h3>
                     <p className="text-sm lg:text-base text-green-700">ხელოსანი თქვენთან მოვა</p>
                   </CardContent>
                 </Card>
@@ -354,7 +354,7 @@ const Index = () => {
                       <Zap className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
                     </div>
                     <h3 className="text-lg lg:text-xl font-bold text-purple-900 mb-2">ყველა სერვისი</h3>
-                    <p className="text-sm lg:text-base text-purple-700">ერთ სივრცეში</p>
+                    <p className="text-sm lg:text-base text-purple-700">სრული კატალოგი</p>
                   </CardContent>
                 </Card>
               </div>
@@ -393,11 +393,11 @@ const Index = () => {
             <div className="max-w-4xl mx-auto text-center">
               <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
                 <UserPlus className="h-4 w-4 mr-2" />
-                რეგისტრაცია
+                გაწევრება
               </Badge>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">დაიწყეთ ახლავე</h2>
               <p className="text-lg lg:text-xl text-gray-600 mb-8 lg:mb-12 max-w-2xl mx-auto">
-                შემოუერთდით ჩვენს პლატფორმას და მიიღეთ ხარისხიანი ავტო სერვისი
+                შეუერთდით ჩვენს პლატფორმას და იღებდეთ ან გაწვდოდეთ ხარისხიანი ავტო-სერვისი
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
@@ -407,7 +407,7 @@ const Index = () => {
                     <div className="p-4 lg:p-6 bg-blue-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <Car className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
                     </div>
-                    <h3 className="text-xl lg:text-2xl font-bold text-blue-900 mb-3 lg:mb-4">მომხმარებელი</h3>
+                    <h3 className="text-xl lg:text-2xl font-bold text-blue-900 mb-3 lg:mb-4">მომხმარებლად</h3>
                     <p className="text-sm lg:text-base text-blue-700 mb-4 lg:mb-6">
                       იპოვეთ და დაჯავშნეთ საუკეთესო ხელოსნები თქვენი ავტომობილისთვის
                     </p>
@@ -432,7 +432,7 @@ const Index = () => {
                     <div className="p-4 lg:p-6 bg-orange-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <Wrench className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
                     </div>
-                    <h3 className="text-xl lg:text-2xl font-bold text-orange-900 mb-3 lg:mb-4">ხელოსანი</h3>
+                    <h3 className="text-xl lg:text-2xl font-bold text-orange-900 mb-3 lg:mb-4">ხელოსნად</h3>
                     <p className="text-sm lg:text-base text-orange-700 mb-4 lg:mb-6">
                       გაიზარდეთ თქვენი ბიზნესი და მოიძიეთ ახალი კლიენტები ჩვენს პლატფორმაზე
                     </p>
@@ -464,7 +464,7 @@ const Index = () => {
                 ჩვენი სერვისები
               </Badge>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                სრული სპექტრის ავტო სერვისში
+                სრული სპექტრის ავტო-სერვისი
               </h2>
               <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
                 პროფესიონალური მომსახურება ყველა ტიპის ავტომობილისთვის
@@ -545,7 +545,7 @@ const Index = () => {
                 რეკომენდირებული ხელოსნები
               </Badge>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                მომხმარებლის რჩეული ხელოსნები
+                ჩვენი საუკეთესო ხელოსნები
               </h2>
               <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
                 გაეცანით ხელოსნებს, რომლებმაც მოიპოვეს კლიენტების უმაღლესი შეფასება
@@ -599,7 +599,7 @@ const Index = () => {
             )}
             
             <div className="text-center">
-              <Link to="/search?tab=mechanics">
+              <Link to="/mechanic">
                 <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                   ყველა ხელოსნის ნახვა
                   <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
