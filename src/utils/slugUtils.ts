@@ -69,11 +69,14 @@ export function extractServiceId(slugOrId: string): string {
 }
 
 /**
- * Create full slug with ID for backwards compatibility
+ * Create deterministic service slug with fallback to ID for uniqueness
  */
 export function createServiceSlug(id: number, name: string): string {
-  const slug = createSlug(name);
-  return slug || id.toString();
+  const baseSlug = createSlug(name);
+  if (!baseSlug) return id.toString();
+  
+  // Include ID in slug for guaranteed uniqueness
+  return `${baseSlug}-${id}`;
 }
 
 /**

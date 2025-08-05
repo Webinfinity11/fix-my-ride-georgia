@@ -46,10 +46,10 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const navigate = useNavigate();
   const [showPhone, setShowPhone] = useState(false);
 
-  const handleViewDetails = async () => {
-    const { createUniqueServiceSlug } = await import("@/utils/slugUtils");
-    const slug = await createUniqueServiceSlug(service.name, service.id);
-    navigate(`/service/${slug}`);
+  const handleViewDetails = () => {
+    const slug = createSlug(service.name);
+    const finalSlug = slug ? `${slug}-${service.id}` : service.id.toString();
+    navigate(`/service/${finalSlug}`);
   };
 
   const handleViewMechanic = (e: React.MouseEvent) => {
