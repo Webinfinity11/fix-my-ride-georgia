@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { createSlug, createUniqueServiceSlug } from "@/utils/slugUtils";
+import { createSlug } from "@/utils/slugUtils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,7 +74,6 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
-  const [serviceUrl, setServiceUrl] = useState('');
   
   const { seoData } = useSEOData('service', service?.id.toString() || '');
 
@@ -133,21 +132,15 @@ const ServiceDetail = () => {
           .eq("is_active", true);
         
         if (result.data) {
-          // Check all services to find one with matching slug
-          let foundService = null;
-          for (const service of result.data) {
-            const uniqueSlug = await createUniqueServiceSlug(service.name, service.id);
-            if (uniqueSlug === slugOrId || createSlug(service.name) === slugOrId) {
-              foundService = service;
-              break;
-            }
-          }
+          const foundService = result.data.find(service => 
+            createSlug(service.name) === slugOrId
+          );
           
           if (foundService) {
             serviceData = foundService;
             serviceError = null;
             
-            const newSlug = await createUniqueServiceSlug(foundService.name, foundService.id);
+            const newSlug = createSlug(foundService.name);
             if (newSlug !== slugOrId) {
               window.history.replaceState(null, '', `/service/${newSlug}`);
             }
@@ -233,10 +226,6 @@ const ServiceDetail = () => {
     };
 
     setService(transformedService);
-    
-    // Generate unique URL for SEO
-    const uniqueSlug = await createUniqueServiceSlug(transformedService.name, transformedService.id);
-    setServiceUrl(`${window.location.origin}/service/${uniqueSlug}`);
   };
 
   const handleReviewAdded = () => {
@@ -573,7 +562,7 @@ const ServiceDetail = () => {
         description={pageDescription}
         keywords={seoData?.meta_keywords}
         image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
-        url={serviceUrl || `${window.location.origin}/service/${createSlug(service.name)}`}
+        url={`${window.location.origin}/service/${createSlug(service.name)}`}
         type="article"
         structuredData={structuredData}
       />

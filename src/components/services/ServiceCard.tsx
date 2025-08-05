@@ -48,8 +48,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
 
   const handleViewDetails = () => {
     const slug = createSlug(service.name);
-    const finalSlug = slug ? `${slug}-${service.id}` : service.id.toString();
-    navigate(`/service/${finalSlug}`);
+    navigate(`/service/${slug}`);
   };
 
   const handleViewMechanic = (e: React.MouseEvent) => {

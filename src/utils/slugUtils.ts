@@ -69,51 +69,11 @@ export function extractServiceId(slugOrId: string): string {
 }
 
 /**
- * Create deterministic service slug with fallback to ID for uniqueness
+ * Create full slug with ID for backwards compatibility
  */
 export function createServiceSlug(id: number, name: string): string {
-  const baseSlug = createSlug(name);
-  if (!baseSlug) return id.toString();
-  
-  // Include ID in slug for guaranteed uniqueness
-  return `${baseSlug}-${id}`;
-}
-
-/**
- * Create unique service slug by checking for duplicates and adding numbering
- */
-export async function createUniqueServiceSlug(name: string, excludeId?: number): Promise<string> {
-  const baseSlug = createSlug(name);
-  if (!baseSlug) return '';
-  
-  // Fetch all services to check for slug conflicts
-  const { data: services } = await supabase
-    .from('mechanic_services')
-    .select('id, name');
-  
-  if (!services) return baseSlug;
-  
-  // Get all existing slugs
-  const existingSlugs = services
-    .filter(service => excludeId ? service.id !== excludeId : true)
-    .map(service => createSlug(service.name))
-    .filter(slug => slug.startsWith(baseSlug));
-  
-  // If base slug doesn't exist, use it
-  if (!existingSlugs.includes(baseSlug)) {
-    return baseSlug;
-  }
-  
-  // Find the next available numbered slug
-  let counter = 1;
-  let uniqueSlug = `${baseSlug}-${counter}`;
-  
-  while (existingSlugs.includes(uniqueSlug)) {
-    counter++;
-    uniqueSlug = `${baseSlug}-${counter}`;
-  }
-  
-  return uniqueSlug;
+  const slug = createSlug(name);
+  return slug || id.toString();
 }
 
 /**

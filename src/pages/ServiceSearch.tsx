@@ -444,16 +444,12 @@ const ServiceSearch = () => {
                     <Card key={service.id} className="hover:shadow-md transition-shadow">
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start mb-3">
-                          <button 
-                            onClick={async () => {
-                              const { createUniqueServiceSlug } = await import("@/utils/slugUtils");
-                              const slug = await createUniqueServiceSlug(service.name, service.id);
-                              window.location.href = `/service/${slug}`;
-                            }}
-                            className="text-lg font-semibold hover:text-primary transition-colors cursor-pointer text-left"
+                          <Link 
+                            to={`/service/${createSlug(service.name)}`}
+                            className="text-lg font-semibold hover:text-primary transition-colors"
                           >
                             {service.name}
-                          </button>
+                          </Link>
                           {service.rating && (
                             <div className="flex items-center gap-1">
                               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -527,16 +523,9 @@ const ServiceSearch = () => {
                           </Link>
                         </div>
 
-                        <Button 
-                          className="w-full mt-4"
-                          onClick={async () => {
-                            const { createUniqueServiceSlug } = await import("@/utils/slugUtils");
-                            const slug = await createUniqueServiceSlug(service.name, service.id);
-                            window.location.href = `/service/${slug}`;
-                          }}
-                        >
-                          დეტალები
-                        </Button>
+                        <Link to={`/service/${createSlug(service.name)}`}>
+                          <Button className="w-full mt-4">დეტალები</Button>
+                        </Link>
                       </CardContent>
                     </Card>
                   ))}
