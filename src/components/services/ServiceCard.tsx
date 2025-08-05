@@ -46,8 +46,9 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const navigate = useNavigate();
   const [showPhone, setShowPhone] = useState(false);
 
-  const handleViewDetails = () => {
-    const slug = createSlug(service.name);
+  const handleViewDetails = async () => {
+    const { createUniqueServiceSlug } = await import("@/utils/slugUtils");
+    const slug = await createUniqueServiceSlug(service.name, service.id);
     navigate(`/service/${slug}`);
   };
 

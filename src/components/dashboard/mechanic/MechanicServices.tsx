@@ -426,12 +426,19 @@ const MechanicServices = () => {
                 )}
 
                 <div className="flex gap-2">
-                  <Link to={`/service/${createSlug(service.name)}`} className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Eye className="w-4 h-4 mr-1" />
-                      ნახვა
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={async () => {
+                      const { createUniqueServiceSlug } = await import("@/utils/slugUtils");
+                      const slug = await createUniqueServiceSlug(service.name, service.id);
+                      window.open(`/service/${slug}`, '_blank');
+                    }}
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    ნახვა
+                  </Button>
                   <Button 
                     variant="outline" 
                     size="sm"

@@ -1,7 +1,7 @@
 
 import { ServiceType } from "@/hooks/useServices";
 import { supabase } from '@/integrations/supabase/client';
-import { createSlug, createCategorySlug } from './slugUtils';
+import { createSlug, createCategorySlug, createUniqueServiceSlug } from './slugUtils';
 
 // Generate meta tags for SEO
 export const generateMetaTags = (
@@ -128,16 +128,16 @@ export const generateSitemap = async (): Promise<string> => {
       .limit(2000);
 
     if (services && services.length > 0) {
-      const serviceUrls = services.map(service => {
+      const serviceUrls = await Promise.all(services.map(async service => {
         const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;
-        const slug = createSlug(service.name);
+        const slug = await createUniqueServiceSlug(service.name, service.id);
         return `  <url>
     <loc>${baseUrl}/service/${slug || service.id}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
-      });
+      }));
       urls = urls.concat(serviceUrls);
     }
 
