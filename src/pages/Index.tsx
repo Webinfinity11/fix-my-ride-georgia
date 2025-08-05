@@ -263,11 +263,7 @@ const Index = () => {
                     ხელოსანი
                   </span>
                 </h1>
-                
-                <p className="text-lg lg:text-xl text-gray-600 mb-4 max-w-3xl mx-auto leading-relaxed">
-                  ათასობით ვერიფიცირებული ხელოსანი და სერვისი ერთ ადგილას
-                </p>
-                
+
                 <p className="text-base lg:text-lg text-gray-500 mb-10 max-w-2xl mx-auto">
                   სწრაფი, საიმედო და ხარისხიანი ავტო-სერვისი თქვენი მანქანისთვის
                 </p>
