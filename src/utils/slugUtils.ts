@@ -49,7 +49,7 @@ export function createSlug(text: string): string {
     .map(char => georgianToLatin[char] || char)
     .join('')
     .replace(/[^\w\s-]/g, '') // Remove special characters except words, spaces, and hyphens
-    .replace(/[\s_]+/g, '') // Remove spaces and underscores
+    .replace(/[\s_]+/g, '-') // Replace spaces and underscores with hyphens
     .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
     .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 }
