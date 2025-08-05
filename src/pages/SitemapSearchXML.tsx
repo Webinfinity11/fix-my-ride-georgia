@@ -7,17 +7,23 @@ const SitemapSearchXML = () => {
       try {
         const xml = await generateSearchSitemap();
         
-        // Clear all HTML content and serve pure XML
-        document.documentElement.innerHTML = '';
+        // Set content type headers for XML
+        const response = new Response(xml, {
+          headers: {
+            'Content-Type': 'application/xml; charset=utf-8',
+          },
+        });
+
+        // Replace entire page content with XML
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
         
-        // Create new document as XML
-        document.open('text/xml', 'replace');
-        document.write(xml);
-        document.close();
+        // Navigate to blob URL to serve as XML
+        window.location.replace(url);
         
       } catch (error) {
         console.error('Error loading search sitemap:', error);
-        // Fallback XML
+        // Fallback XML with proper headers
         const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
@@ -27,17 +33,22 @@ const SitemapSearchXML = () => {
 </url>
 </urlset>`;
         
-        document.documentElement.innerHTML = '';
-        document.open('text/xml', 'replace');
-        document.write(fallbackXml);
-        document.close();
+        const response = new Response(fallbackXml, {
+          headers: {
+            'Content-Type': 'application/xml; charset=utf-8',
+          },
+        });
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        window.location.replace(url);
       }
     };
 
     loadSearchSitemap();
   }, []);
 
-  return null; // No need to render anything since we're replacing the document
+  return null;
 };
 
 export default SitemapSearchXML;
