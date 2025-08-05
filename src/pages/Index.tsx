@@ -393,7 +393,7 @@ const Index = () => {
             <div className="max-w-4xl mx-auto text-center">
               <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
                 <UserPlus className="h-4 w-4 mr-2" />
-                გაწევრება
+                რეგისტრაცია
               </Badge>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">დაიწყეთ ახლავე</h2>
               <p className="text-lg lg:text-xl text-gray-600 mb-8 lg:mb-12 max-w-2xl mx-auto">
@@ -599,7 +599,7 @@ const Index = () => {
             )}
             
             <div className="text-center">
-              <Link to="/mechanic">
+              <Link to="/search?tab=mechanics">
                 <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                   ყველა ხელოსნის ნახვა
                   <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
