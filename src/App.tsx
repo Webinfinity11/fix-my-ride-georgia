@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
 import Mechanics from "./pages/Mechanics";
 import ServiceCategory from "./pages/ServiceCategory";
+import CategoryList from "./pages/CategoryList";
 import Sitemap from "./pages/Sitemap";
 import SitemapXML from "./pages/SitemapXML";
 import SitemapSearchXML from "./pages/SitemapSearchXML";
@@ -56,7 +57,8 @@ function App() {
                 <Route path="/book" element={<Book />} />
                 <Route path="/book/:mechanicId" element={<Book />} />
                 <Route path="/mechanic/:id" element={<MechanicProfile />} />
-                <Route path="/category/:categoryId" element={<ServiceCategory />} />
+                <Route path="/category" element={<CategoryList />} />
+                <Route path="/category/:categorySlug" element={<ServiceCategory />} />
                 <Route path="/services/:categorySlug" element={<ServiceCategory />} />
         <Route path="/sitemap" element={<Sitemap />} />
         <Route path="/sitemap.xml" element={<SitemapXML />} />

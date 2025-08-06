@@ -226,7 +226,7 @@ const ServiceCategory = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/services">სერვისები</BreadcrumbLink>
+                  <BreadcrumbLink href="/category">კატეგორიები</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>

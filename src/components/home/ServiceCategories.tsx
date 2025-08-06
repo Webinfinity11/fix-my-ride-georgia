@@ -49,7 +49,7 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
 
   const handleCategoryClick = (category: ServiceCategory) => {
     const slug = createCategorySlug(category.name);
-    navigate(`/services/${slug}`);
+    navigate(`/category/${slug}`);
   };
 
   return (
@@ -98,10 +98,10 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
           <Button 
             variant="outline" 
             size="lg"
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/category')}
             className="hover:bg-primary hover:text-white transition-colors"
           >
-            ყველა სერვისის ნახვა
+            ყველა კატეგორიის ნახვა
           </Button>
         </div>
       </div>
