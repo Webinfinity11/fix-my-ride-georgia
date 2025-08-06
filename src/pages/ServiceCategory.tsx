@@ -46,6 +46,7 @@ const ServiceCategory = () => {
 
   useEffect(() => {
     if (category) {
+      console.log("Category loaded, fetching services for:", category.name);
       fetchServicesWithFilters();
     }
   }, [filters, category]);
@@ -56,18 +57,19 @@ const ServiceCategory = () => {
 
     try {
       setLoading(true);
+      console.log("🔍 Looking for category with param:", param);
       
       // Use slug utility to get category (supports both ID and slug)
       const categoryData = await getCategoryFromSlug(param);
       
       if (!categoryData) {
+        console.error("❌ Category not found for param:", param);
         throw new Error('Category not found');
       }
       
+      console.log("✅ Category found:", categoryData);
       setCategory(categoryData);
 
-      // Fetch services for this category
-      await fetchServicesWithFilters();
     } catch (error: any) {
       console.error("Error fetching category:", error);
       toast.error("კატეგორიის ჩატვირთვისას შეცდომა დაფიქსირდა");
@@ -80,17 +82,30 @@ const ServiceCategory = () => {
     if (!category) return;
 
     try {
+      console.log("🔍 Fetching services for category:", category.name);
+      
       let query = supabase
         .from("mechanic_services")
         .select(`
-          *,
-          category:service_categories(id, name),
-          mechanic:profiles(
-            id,
-            first_name,
-            last_name,
-            phone
-          )
+          id,
+          name,
+          description,
+          price_from,
+          price_to,
+          estimated_hours,
+          city,
+          district,
+          address,
+          car_brands,
+          on_site_service,
+          accepts_card_payment,
+          accepts_cash_payment,
+          rating,
+          review_count,
+          photos,
+          category_id,
+          mechanic_id,
+          service_categories(id, name)
         `)
         .eq("category_id", category.id)
         .eq("is_active", true);
@@ -111,25 +126,93 @@ const ServiceCategory = () => {
         query = query.gte("rating", filters.minRating);
       }
 
-      const { data, error } = await query;
+      const { data: servicesData, error: servicesError } = await query.order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (servicesError) {
+        console.error("❌ Services query failed:", servicesError);
+        throw servicesError;
+      }
+
+      console.log("✅ Raw services data:", servicesData);
+
+      if (!servicesData) {
+        console.log("⚠️ No services data returned");
+        setServices([]);
+        return;
+      }
+
+      // Now fetch mechanic profiles separately
+      console.log("👨‍🔧 Fetching mechanic profiles...");
+      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))];
+      
+      const { data: mechanicsData, error: mechanicsError } = await supabase
+        .from("profiles")
+        .select(`
+          id,
+          first_name,
+          last_name,
+          phone,
+          mechanic_profiles(rating)
+        `)
+        .in("id", mechanicIds);
+
+      if (mechanicsError) {
+        console.error("❌ Mechanics query failed:", mechanicsError);
+      }
+
+      console.log("✅ Mechanics data:", mechanicsData);
 
       // Transform data to match ServiceType
-      let filteredServices = (data || []).map(service => ({
-        ...service,
-        mechanic: {
-          ...(Array.isArray(service.mechanic) ? service.mechanic[0] : service.mechanic),
-          rating: service.rating || 0
-        },
-        category: service.category || { id: category.id, name: category.name }
-      }));
+      let filteredServices = servicesData.map(service => {
+        const mechanic = mechanicsData?.find(m => m.id === service.mechanic_id);
+        const mechanicProfile = Array.isArray(mechanic?.mechanic_profiles) 
+          ? mechanic.mechanic_profiles[0] 
+          : mechanic?.mechanic_profiles;
+
+        const categoryData = Array.isArray(service.service_categories) 
+          ? service.service_categories[0] 
+          : service.service_categories;
+
+        return {
+          id: service.id,
+          name: service.name || "უცნობი სერვისი",
+          description: service.description,
+          price_from: service.price_from,
+          price_to: service.price_to,
+          estimated_hours: service.estimated_hours,
+          city: service.city,
+          district: service.district,
+          address: service.address,
+          car_brands: service.car_brands,
+          on_site_service: service.on_site_service || false,
+          accepts_card_payment: service.accepts_card_payment || false,
+          accepts_cash_payment: service.accepts_cash_payment || true,
+          rating: service.rating,
+          review_count: service.review_count,
+          photos: service.photos || [],
+          category: categoryData ? {
+            id: categoryData.id,
+            name: categoryData.name
+          } : { id: category.id, name: category.name },
+          mechanic: {
+            id: mechanic?.id || "",
+            first_name: mechanic?.first_name || "",
+            last_name: mechanic?.last_name || "",
+            rating: mechanicProfile?.rating || null,
+            phone: mechanic?.phone || null,
+          }
+        };
+      });
 
       // Client-side filtering for search term
       if (filters.searchTerm) {
+        const searchLower = filters.searchTerm.toLowerCase().trim();
         filteredServices = filteredServices.filter(service =>
-          service.name.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-          service.description?.toLowerCase().includes(filters.searchTerm.toLowerCase())
+          service.name.toLowerCase().includes(searchLower) ||
+          service.description?.toLowerCase().includes(searchLower) ||
+          service.category?.name?.toLowerCase().includes(searchLower) ||
+          service.mechanic.first_name?.toLowerCase().includes(searchLower) ||
+          service.mechanic.last_name?.toLowerCase().includes(searchLower)
         );
       }
 
@@ -142,9 +225,10 @@ const ServiceCategory = () => {
         );
       }
 
+      console.log("✅ Final filtered services:", filteredServices);
       setServices(filteredServices);
     } catch (error: any) {
-      console.error("Error fetching services:", error);
+      console.error("❌ Error fetching services:", error);
       toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
     }
   };
