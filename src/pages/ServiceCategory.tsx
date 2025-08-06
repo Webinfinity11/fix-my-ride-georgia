@@ -85,7 +85,7 @@ const ServiceCategory = () => {
         .select(`
           *,
           category:service_categories(id, name),
-          mechanic:profiles!mechanic_services_mechanic_id_fkey(
+          mechanic:profiles(
             id,
             first_name,
             last_name,
