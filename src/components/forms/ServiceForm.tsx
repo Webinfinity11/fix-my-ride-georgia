@@ -21,6 +21,7 @@ import PhotoUpload from "@/components/forms/PhotoUpload";
 import VideoUpload from "@/components/forms/VideoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
+import { generateUniqueServiceSlug } from "@/utils/slugUtils";
 
 type ServiceType = {
   id: number;
@@ -45,6 +46,7 @@ type ServiceType = {
   address?: string;
   latitude?: number;
   longitude?: number;
+  slug?: string;
 };
 
 type ServiceCategoryType = {
@@ -153,6 +155,9 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         }
       }
 
+      // Generate unique slug
+      const uniqueSlug = await generateUniqueServiceSlug(formData.name, service?.id);
+
       const serviceData = {
         mechanic_id: user.id,
         name: formData.name,
@@ -174,7 +179,8 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         district: formData.district || null,
         address: formData.address || null,
         latitude: formData.latitude,
-        longitude: formData.longitude
+        longitude: formData.longitude,
+        slug: uniqueSlug
       };
 
       if (service) {

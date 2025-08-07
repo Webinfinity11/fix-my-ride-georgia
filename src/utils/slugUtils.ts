@@ -77,6 +77,46 @@ export function createServiceSlug(id: number, name: string): string {
 }
 
 /**
+ * Generate unique service slug by checking database for conflicts
+ */
+export async function generateUniqueServiceSlug(name: string, serviceId?: number): Promise<string> {
+  const baseSlug = createSlug(name);
+  if (!baseSlug) return '';
+
+  // Check if this exact slug exists (excluding current service if editing)
+  const { data: services, error } = await supabase
+    .from('mechanic_services')
+    .select('id, name')
+    .neq('id', serviceId || 0); // Exclude current service when editing
+
+  if (error) {
+    console.error('Error checking slug conflicts:', error);
+    return baseSlug;
+  }
+
+  if (!services) return baseSlug;
+
+  // Get all existing slugs
+  const existingSlugs = services.map(service => createSlug(service.name));
+  
+  // If base slug doesn't exist, return it
+  if (!existingSlugs.includes(baseSlug)) {
+    return baseSlug;
+  }
+
+  // Find next available number
+  let counter = 1;
+  let newSlug = `${baseSlug}-${counter}`;
+  
+  while (existingSlugs.includes(newSlug)) {
+    counter++;
+    newSlug = `${baseSlug}-${counter}`;
+  }
+
+  return newSlug;
+}
+
+/**
  * Create category slug from name
  */
 export function createCategorySlug(categoryName: string): string {
