@@ -44,7 +44,6 @@ function App() {
                 <Route path="/services" element={<ServicesDetail />} />
                 <Route path="/mechanic" element={<Mechanics />} />
                 <Route path="/service-search" element={<ServiceSearch />} />
-                <Route path="/service/:id" element={<ServiceDetail />} />
                 <Route path="/service/:slug" element={<ServiceDetail />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/about" element={<About />} />
