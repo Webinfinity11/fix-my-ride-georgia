@@ -21,7 +21,7 @@ import PhotoUpload from "@/components/forms/PhotoUpload";
 import VideoUpload from "@/components/forms/VideoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
-import { generateUniqueServiceSlug } from "@/utils/slugUtils";
+
 
 type ServiceType = {
   id: number;
@@ -156,7 +156,57 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
       }
 
       // Generate unique slug
-      const uniqueSlug = await generateUniqueServiceSlug(formData.name, service?.id);
+      console.log('🔍 Generating unique slug for service:', formData.name);
+
+      // Simple slug creation function
+      const createSlug = (text: string): string => {
+        return text
+          .toLowerCase()
+          .replace(/[ა-ჰ]/g, (char) => {
+            const georgianToLatin: { [key: string]: string } = {
+              'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 
+              'თ': 't', 'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o', 
+              'პ': 'p', 'ჟ': 'zh', 'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'p', 
+              'ქ': 'q', 'ღ': 'gh', 'ყ': 'q', 'შ': 'sh', 'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 
+              'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh', 'ჯ': 'j', 'ჰ': 'h'
+            };
+            return georgianToLatin[char] || char;
+          })
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      };
+
+      // Generate unique slug
+      let baseSlug = createSlug(formData.name);
+      let uniqueSlug = baseSlug;
+      let counter = 1;
+
+      console.log('📝 Base slug generated:', baseSlug);
+
+      // Check for existing slugs
+      while (true) {
+        const { data: existingService, error: slugError } = await supabase
+          .from('mechanic_services')
+          .select('id')
+          .eq('slug', uniqueSlug)
+          .neq('id', service?.id || 0)
+          .maybeSingle();
+
+        if (slugError) {
+          console.error('Slug check error:', slugError);
+          break;
+        }
+
+        if (!existingService) {
+          console.log('✅ Unique slug found:', uniqueSlug);
+          break;
+        }
+
+        uniqueSlug = `${baseSlug}-${counter}`;
+        counter++;
+        console.log('🔄 Trying new slug:', uniqueSlug);
+      }
 
       const serviceData = {
         mechanic_id: user.id,
