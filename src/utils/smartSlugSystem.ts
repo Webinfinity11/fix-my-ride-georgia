@@ -314,5 +314,76 @@ export class SmartSlugManager {
     return { valid: true };
   }
 }
+// ...შენი სხვა იმპორტები
+
+  /**
+   * Generate a clean base slug from text
+   */
+  static generateBaseSlug(text: string): string {
+    if (!text || typeof text !== 'string') return '';
+    
+    return text
+      .toLowerCase()
+      .trim()
+      // Replace Georgian characters (შენი არსებული GEORGIAN_TO_LATIN გამოიყენე)
+      .replace(/[ა-ჰ]/g, (char) => GEORGIAN_TO_LATIN[char] || char)
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .substring(0, 50);
+  }
+
+  /**
+   * Check if a slug exists in the database
+   */
+  static async slugExists(slug: string, excludeId?: number): Promise<boolean> {
+    const query = supabase
+      .from('mechanic_services')
+      .select('id')
+      .eq('slug', slug);
+
+    if (excludeId) query.neq('id', excludeId);
+
+    const { data, error } = await query.maybeSingle();
+    if (error) return false;
+    return !!data;
+  }
+
+  /**
+   * Generate a unique slug by adding numbers if needed
+   */
+  static async generateUniqueSlug(text: string, excludeId?: number): Promise<string> {
+    const baseSlug = this.generateBaseSlug(text);
+
+    if (!baseSlug) return this.generateUniqueSlug('service', excludeId);
+
+    // Check if base slug exists
+    const baseExists = await this.slugExists(baseSlug, excludeId);
+    if (!baseExists) return baseSlug;
+
+    // Try with numbers
+    let counter = 1;
+    let uniqueSlug = `${baseSlug}-${counter}`;
+
+    while (counter <= 1000) { // safety limit
+      const exists = await this.slugExists(uniqueSlug, excludeId);
+      if (!exists) return uniqueSlug;
+      counter++;
+      uniqueSlug = `${baseSlug}-${counter}`;
+    }
+
+    // fallback
+    const timestamp = Date.now().toString().slice(-6);
+    return `${baseSlug}-${timestamp}`;
+  }
+
+  /**
+   * When inserting/updating mechanic_service, always call generateUniqueSlug
+   * Example usage:
+   * const slug = await SlugSystem.generateUniqueSlug(name);
+   * await supabase.from('mechanic_services').insert({ name, slug, ... });
+   */
+
 
 export default SmartSlugManager;
