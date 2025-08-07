@@ -131,7 +131,7 @@ const ServiceDetail = () => {
           `)
           .eq("slug", slugOrId)
           .eq("is_active", true)
-          .single();
+           .maybeSingle();
         
         if (directSlugResult.data && !directSlugResult.error) {
           serviceData = directSlugResult.data;
