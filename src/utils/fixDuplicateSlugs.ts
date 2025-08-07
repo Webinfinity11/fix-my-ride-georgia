@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 
-// Improved Georgian to Latin slug creation
+// Improved slug creation function
 function createSlug(text: string): string {
   return text
     .toLowerCase()
@@ -22,28 +22,29 @@ function createSlug(text: string): string {
     .substring(0, 100); // Limit length
 }
 
-// Generate unique slug by checking database
+// Generate truly unique slug by checking database
 async function generateUniqueSlug(baseSlug: string, excludeId?: number): Promise<string> {
-  if (!baseSlug) return 'service';
+  if (!baseSlug) return `service-${Date.now()}`;
   
   let counter = 0;
   let finalSlug = baseSlug;
   
   while (true) {
-    // Check if slug exists
+    // Check if this exact slug exists
     const { data: existing, error } = await supabase
       .from('mechanic_services')
       .select('id')
-      .eq('slug', finalSlug)
-      .neq('id', excludeId || 0); // Exclude current service if updating
+      .eq('slug', finalSlug);
     
     if (error) {
       console.error('Error checking slug existence:', error);
-      // Fallback: add random number
+      // Fallback: add timestamp to ensure uniqueness
       return `${baseSlug}-${Date.now()}`;
     }
     
-    if (!existing || existing.length === 0) {
+    // If no existing records, or only our own record (when updating)
+    const conflicts = existing?.filter(record => record.id !== excludeId) || [];
+    if (conflicts.length === 0) {
       return finalSlug;
     }
     
@@ -52,69 +53,50 @@ async function generateUniqueSlug(baseSlug: string, excludeId?: number): Promise
     finalSlug = `${baseSlug}-${counter}`;
     
     // Safety check to prevent infinite loop
-    if (counter > 1000) {
+    if (counter > 999) {
       return `${baseSlug}-${Date.now()}`;
     }
   }
 }
 
 /**
- * Enhanced function to fix all duplicate slugs with numbered suffixes
- * - Keeps the oldest service with original slug
- * - Adds -1, -2, -3 etc. to newer duplicates  
- * - Preserves all services, just makes slugs unique
+ * Enhanced function to fix all duplicate slugs
+ * This version ensures NO new duplicates are created
  */
-export async function fixDuplicateSlugs(): Promise<boolean> {
-  console.log('🔍 Starting comprehensive slug cleanup...');
+export async function fixDuplicateSlugs() {
+  console.log('🔍 Starting comprehensive duplicate slug fix...');
   
   try {
-    // Step 1: Get all services ordered by creation date
-    const { data: allServices, error: fetchError } = await supabase
+    // Step 1: Get all services ordered by creation date (oldest first)
+    const { data: allServices, error: allServicesError } = await supabase
       .from('mechanic_services')
       .select('id, name, slug, created_at')
       .order('created_at', { ascending: true });
 
-    if (fetchError) {
-      console.error('❌ Error fetching services:', fetchError);
+    if (allServicesError) {
+      console.error('❌ Error getting all services:', allServicesError);
       return false;
     }
 
     if (!allServices || allServices.length === 0) {
-      console.log('✅ No services found in database');
+      console.log('✅ No services found in database!');
       return true;
     }
 
-    console.log(`📊 Found ${allServices.length} total services`);
+    console.log(`📊 Processing ${allServices.length} total services...`);
 
-    // Step 2: Identify services that need slug fixes
-    const servicesToFix = allServices.filter(service => 
+    // Step 2: Handle services with missing/invalid slugs first
+    const servicesWithBadSlugs = allServices.filter(service => 
       !service.slug || 
       service.slug.trim() === '' ||
       service.slug === 'undefined' ||
       service.slug === 'null'
     );
 
-    // Step 3: Find duplicate slugs among valid ones
-    const slugCounts: { [key: string]: any[] } = {};
-    allServices
-      .filter(service => service.slug && service.slug.trim() && service.slug !== 'undefined' && service.slug !== 'null')
-      .forEach(service => {
-        const slug = service.slug!;
-        if (!slugCounts[slug]) {
-          slugCounts[slug] = [];
-        }
-        slugCounts[slug].push(service);
-      });
+    console.log(`🛠️ Found ${servicesWithBadSlugs.length} services with missing/invalid slugs`);
 
-    const duplicateGroups = Object.entries(slugCounts)
-      .filter(([_, services]) => services.length > 1);
-
-    console.log(`🔧 Services needing slug generation: ${servicesToFix.length}`);
-    console.log(`🔄 Duplicate slug groups: ${duplicateGroups.length}`);
-
-    // Step 4: Fix services with missing/invalid slugs
-    for (const service of servicesToFix) {
-      console.log(`🛠️ Generating slug for: "${service.name}"`);
+    for (const service of servicesWithBadSlugs) {
+      console.log(`🔧 Generating slug for: "${service.name}" (ID: ${service.id})`);
       
       const baseSlug = createSlug(service.name);
       const uniqueSlug = await generateUniqueSlug(baseSlug, service.id);
@@ -130,50 +112,69 @@ export async function fixDuplicateSlugs(): Promise<boolean> {
         console.log(`✅ Updated "${service.name}" → "${uniqueSlug}"`);
       }
       
-      // Small delay to avoid rate limiting
+      // Small delay to avoid overwhelming the database
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    // Step 5: Fix duplicate slugs (keep oldest, add numbers to newer ones)
+    // Step 3: Re-fetch all services after fixing empty slugs
+    const { data: updatedServices, error: refetchError } = await supabase
+      .from('mechanic_services')
+      .select('id, name, slug, created_at')
+      .not('slug', 'is', null)
+      .order('created_at', { ascending: true });
+
+    if (refetchError || !updatedServices) {
+      console.error('❌ Error re-fetching services:', refetchError);
+      return false;
+    }
+
+    // Step 4: Group by slug and identify duplicates
+    const slugGroups: { [key: string]: any[] } = {};
+    updatedServices.forEach(service => {
+      const slug = service.slug!.trim();
+      if (slug && slug !== 'undefined' && slug !== 'null') {
+        if (!slugGroups[slug]) {
+          slugGroups[slug] = [];
+        }
+        slugGroups[slug].push(service);
+      }
+    });
+
+    const duplicateGroups = Object.entries(slugGroups)
+      .filter(([_, services]) => services.length > 1);
+
+    console.log(`🔄 Found ${duplicateGroups.length} duplicate slug groups`);
+
+    if (duplicateGroups.length === 0) {
+      console.log('🎉 No duplicates found! All slugs are unique.');
+      return true;
+    }
+
+    // Step 5: Fix duplicates (keep oldest, number the rest)
     for (const [duplicateSlug, services] of duplicateGroups) {
-      console.log(`🔄 Fixing duplicate slug: "${duplicateSlug}" (${services.length} services)`);
+      console.log(`🔧 Fixing duplicate slug: "${duplicateSlug}" (${services.length} services)`);
       
-      // Sort by creation date, keep the oldest unchanged
+      // Sort by creation date - oldest first
       services.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
       
-      console.log(`📅 Oldest service keeps original slug: "${services[0].name}" (${services[0].created_at})`);
+      console.log(`👑 Keeping original slug for oldest: "${services[0].name}" (${services[0].created_at})`);
       
-      // Add numbered suffixes to all newer duplicates
+      // Process duplicates (skip the first/oldest one)
       for (let i = 1; i < services.length; i++) {
         const service = services[i];
-        const numberedSlug = `${duplicateSlug}-${i}`;
         
-        // Make sure this numbered slug doesn't already exist
-        let finalSlug = numberedSlug;
-        let extraCounter = 1;
-        
-        while (true) {
-          const { data: existing } = await supabase
-            .from('mechanic_services')
-            .select('id')
-            .eq('slug', finalSlug)
-            .neq('id', service.id);
-          
-          if (!existing || existing.length === 0) break;
-          
-          finalSlug = `${duplicateSlug}-${i}-${extraCounter}`;
-          extraCounter++;
-        }
+        // Generate a unique slug for this duplicate
+        const uniqueSlug = await generateUniqueSlug(duplicateSlug, service.id);
         
         const { error: updateError } = await supabase
           .from('mechanic_services')
-          .update({ slug: finalSlug })
+          .update({ slug: uniqueSlug })
           .eq('id', service.id);
 
         if (updateError) {
           console.error(`❌ Failed to fix duplicate for service ${service.id}:`, updateError);
         } else {
-          console.log(`✅ Fixed duplicate: "${service.name}" → "${finalSlug}"`);
+          console.log(`✅ Fixed duplicate #${i}: "${service.name}" → "${uniqueSlug}"`);
         }
         
         // Small delay
@@ -181,7 +182,9 @@ export async function fixDuplicateSlugs(): Promise<boolean> {
       }
     }
 
-    // Step 6: Final verification
+    // Step 6: Final verification - check for any remaining duplicates
+    console.log('🔍 Running final verification...');
+    
     const { data: finalCheck, error: finalError } = await supabase
       .from('mechanic_services')
       .select('slug')
@@ -192,17 +195,30 @@ export async function fixDuplicateSlugs(): Promise<boolean> {
       return false;
     }
 
-    const finalSlugs = finalCheck?.map(s => s.slug) || [];
-    const uniqueFinalSlugs = new Set(finalSlugs);
+    const allFinalSlugs = finalCheck?.map(s => s.slug) || [];
+    const uniqueFinalSlugs = new Set(allFinalSlugs);
     
-    if (finalSlugs.length !== uniqueFinalSlugs.size) {
-      console.warn('⚠️ Some duplicates may still exist after cleanup');
+    if (allFinalSlugs.length !== uniqueFinalSlugs.size) {
+      console.error('⚠️ Warning: Some duplicates may still exist after cleanup!');
+      
+      // Show remaining duplicates
+      const slugCounts: { [key: string]: number } = {};
+      allFinalSlugs.forEach(slug => {
+        slugCounts[slug!] = (slugCounts[slug!] || 0) + 1;
+      });
+      
+      const stillDuplicates = Object.entries(slugCounts)
+        .filter(([_, count]) => count > 1)
+        .map(([slug, count]) => `${slug} (${count})`);
+      
+      console.error('Remaining duplicates:', stillDuplicates.join(', '));
       return false;
     }
 
-    console.log('🎉 Slug cleanup completed successfully!');
-    console.log(`📊 Final stats: ${uniqueFinalSlugs.size} unique slugs`);
-    console.log(`✅ All services preserved with unique slugs`);
+    console.log('🎉 SUCCESS! All slugs are now unique!');
+    console.log(`📊 Final stats: ${uniqueFinalSlugs.size} unique slugs across ${allFinalSlugs.length} services`);
+    console.log('✅ No services were deleted - all preserved with unique identifiers');
+    
     return true;
 
   } catch (error) {
@@ -212,187 +228,72 @@ export async function fixDuplicateSlugs(): Promise<boolean> {
 }
 
 /**
- * Function to prevent future duplicates when creating new services
+ * Quick check function to see current duplicate status
  */
-export async function createServiceWithUniqueSlug(serviceData: {
-  name: string;
-  [key: string]: any;
-}): Promise<{ data: any; error: any }> {
+export async function checkDuplicateStatus() {
   try {
-    const baseSlug = createSlug(serviceData.name);
-    const uniqueSlug = await generateUniqueSlug(baseSlug);
-    
-    const { data, error } = await supabase
+    const { data: allSlugs } = await supabase
       .from('mechanic_services')
-      .insert({
-        ...serviceData,
-        slug: uniqueSlug
-      } as any)
-      .select()
-      .single();
-
-    return { data, error };
-  } catch (error) {
-    return { data: null, error };
-  }
-}
-
-/**
- * Function to update service name and regenerate slug if needed
- */
-export async function updateServiceWithSlugCheck(
-  serviceId: number, 
-  updates: { name?: string; [key: string]: any }
-): Promise<{ data: any; error: any }> {
-  try {
-    let finalUpdates = { ...updates };
-    
-    // If name is being updated, regenerate slug
-    if (updates.name) {
-      const baseSlug = createSlug(updates.name);
-      const uniqueSlug = await generateUniqueSlug(baseSlug, serviceId);
-      finalUpdates.slug = uniqueSlug;
-    }
-    
-    const { data, error } = await supabase
-      .from('mechanic_services')
-      .update(finalUpdates)
-      .eq('id', serviceId)
-      .select()
-      .single();
-
-    return { data, error };
-  } catch (error) {
-    return { data: null, error };
-  }
-}
-
-/**
- * Get preview of what will be changed without actually changing
- */
-export async function previewSlugChanges(): Promise<{
-  duplicateGroups: Array<{
-    originalSlug: string;
-    services: Array<{
-      id: number;
-      name: string;
-      currentSlug: string;
-      newSlug: string;
-      willChange: boolean;
-      isOldest: boolean;
-    }>;
-  }>;
-  emptySlugServices: Array<{
-    id: number;
-    name: string;
-    newSlug: string;
-  }>;
-}> {
-  try {
-    const { data: allServices } = await supabase
-      .from('mechanic_services')
-      .select('id, name, slug, created_at')
-      .order('created_at', { ascending: true });
-
-    if (!allServices) return { duplicateGroups: [], emptySlugServices: [] };
-
-    // Find services with empty slugs
-    const emptySlugServices = allServices
-      .filter(service => 
-        !service.slug || 
-        service.slug.trim() === '' ||
-        service.slug === 'undefined' ||
-        service.slug === 'null'
-      )
-      .map(service => ({
-        id: service.id,
-        name: service.name,
-        newSlug: createSlug(service.name)
-      }));
-
-    // Find duplicate groups
-    const slugCounts: { [key: string]: any[] } = {};
-    allServices
-      .filter(service => service.slug && service.slug.trim() && service.slug !== 'undefined' && service.slug !== 'null')
-      .forEach(service => {
-        const slug = service.slug!;
-        if (!slugCounts[slug]) {
-          slugCounts[slug] = [];
-        }
-        slugCounts[slug].push(service);
-      });
-
-    const duplicateGroups = Object.entries(slugCounts)
-      .filter(([_, services]) => services.length > 1)
-      .map(([slug, services]) => {
-        // Sort by creation date
-        services.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-        
-        return {
-          originalSlug: slug,
-          services: services.map((service, index) => ({
-            id: service.id,
-            name: service.name,
-            currentSlug: service.slug,
-            newSlug: index === 0 ? slug : `${slug}-${index}`,
-            willChange: index !== 0,
-            isOldest: index === 0
-          }))
-        };
-      });
-
-    return { duplicateGroups, emptySlugServices };
-
-  } catch (error) {
-    console.error('Error previewing changes:', error);
-    return { duplicateGroups: [], emptySlugServices: [] };
-  }
-}
-export async function checkForDuplicateSlugs(): Promise<string[]> {
-  try {
-    const { data: allSlugs, error } = await supabase
-      .from('mechanic_services')
-      .select('slug')
+      .select('slug, name, id')
       .not('slug', 'is', null);
 
-    if (error || !allSlugs) return [];
+    if (!allSlugs) return;
 
-    const slugCounts: { [key: string]: number } = {};
-    allSlugs.forEach(item => {
-      const slug = item.slug!;
-      slugCounts[slug] = (slugCounts[slug] || 0) + 1;
+    const slugCounts: { [key: string]: any[] } = {};
+    allSlugs.forEach(service => {
+      const slug = service.slug!;
+      if (!slugCounts[slug]) {
+        slugCounts[slug] = [];
+      }
+      slugCounts[slug].push(service);
     });
 
-    return Object.keys(slugCounts).filter(slug => slugCounts[slug] > 1);
-  } catch {
-    return [];
+    const duplicates = Object.entries(slugCounts)
+      .filter(([_, services]) => services.length > 1);
+
+    if (duplicates.length === 0) {
+      console.log('✅ No duplicates found!');
+    } else {
+      console.log(`⚠️ Found ${duplicates.length} duplicate slugs:`);
+      duplicates.forEach(([slug, services]) => {
+        console.log(`  "${slug}": ${services.length} services`);
+        services.forEach(service => {
+          console.log(`    - ${service.name} (ID: ${service.id})`);
+        });
+      });
+    }
+
+    return duplicates;
+  } catch (error) {
+    console.error('Error checking duplicates:', error);
+    return null;
   }
 }
 
-// Export utilities for browser console
+/**
+ * Browser console utilities
+ */
 if (typeof window !== 'undefined') {
   (window as any).fixDuplicateSlugs = fixDuplicateSlugs;
-  (window as any).checkForDuplicateSlugs = checkForDuplicateSlugs;
-  (window as any).previewSlugChanges = previewSlugChanges;
+  (window as any).checkDuplicateStatus = checkDuplicateStatus;
   
   console.log(`
-🔧 Enhanced Slug Management Utilities:
+🔧 Enhanced Slug Management Utilities Loaded!
 
-📋 Preview changes (see what will change before fixing):
-await previewSlugChanges()
+📋 Commands:
+  await checkDuplicateStatus()  - See current duplicate status
+  await fixDuplicateSlugs()     - Fix all duplicates (safe, no deletions)
 
-🔍 Check for duplicates:
-await checkForDuplicateSlugs()
+🎯 What this does:
+  1. Keeps oldest service with original slug unchanged
+  2. Adds unique numbers to newer duplicates (-1, -2, etc.)
+  3. Handles NULL/empty slugs
+  4. Verifies no new duplicates are created
+  5. 100% safe - no data loss
 
-🔍 Check for any remaining duplicates:
-await checkForDuplicateSlugs()
-
-🛠️ Fix all duplicates (preserves oldest, numbers newer):
-await fixDuplicateSlugs()
-
-💡 Example:
-- Original: "minebis-damuqeba" (oldest service keeps this)
-- Duplicate 1: "minebis-damuqeba-1"  
-- Duplicate 2: "minebis-damuqeba-2"
+Example output:
+  "minebis-damuqeba" (oldest) → stays "minebis-damuqeba"
+  "minebis-damuqeba" (newer)  → becomes "minebis-damuqeba-1"  
+  "minebis-damuqeba" (newest) → becomes "minebis-damuqeba-2"
   `);
 }
