@@ -558,6 +558,7 @@ export type Database = {
           rating: number | null
           review_count: number | null
           slug: string | null
+          slug_is_manual: boolean | null
           updated_at: string
           videos: string[] | null
           working_days: string[] | null
@@ -589,6 +590,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           slug?: string | null
+          slug_is_manual?: boolean | null
           updated_at?: string
           videos?: string[] | null
           working_days?: string[] | null
@@ -620,6 +622,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           slug?: string | null
+          slug_is_manual?: boolean | null
           updated_at?: string
           videos?: string[] | null
           working_days?: string[] | null
@@ -1013,6 +1016,22 @@ export type Database = {
       current_user_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      generate_unique_slug: {
+        Args: { base_name: string; exclude_id?: number }
+        Returns: string
+      }
+      generate_unique_slug_enhanced: {
+        Args: { base_name: string; exclude_id?: number }
+        Returns: string
+      }
+      georgian_to_latin: {
+        Args: { input_text: string }
+        Returns: string
+      }
+      georgian_to_latin_enhanced: {
+        Args: { input_text: string }
+        Returns: string
       }
       get_admin_stats: {
         Args: Record<PropertyKey, never>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { useSlugManagement } from '@/hooks/useSlugManagement';
+import { useEnhancedSlugManagement } from '@/hooks/useEnhancedSlugManagement';
 import { useQuery } from '@tanstack/react-query';
 import ServiceDetail from '@/pages/ServiceDetail';
 
@@ -10,7 +10,7 @@ import ServiceDetail from '@/pages/ServiceDetail';
  */
 export const ServiceRouter: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { findServiceBySlug } = useSlugManagement();
+  const { findServiceBySlug } = useEnhancedSlugManagement();
 
   const { data: serviceResult, isLoading, error } = useQuery({
     queryKey: ['service-by-slug', slug],

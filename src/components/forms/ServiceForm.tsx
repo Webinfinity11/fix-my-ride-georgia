@@ -21,7 +21,7 @@ import PhotoUpload from "@/components/forms/PhotoUpload";
 import VideoUpload from "@/components/forms/VideoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
-import { useSlugManagement } from "@/hooks/useSlugManagement";
+import { useEnhancedSlugManagement } from "@/hooks/useEnhancedSlugManagement";
 
 
 type ServiceType = {
@@ -87,7 +87,7 @@ const commonCarBrands = [
 const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const { generateSlug } = useSlugManagement();
+  const { generateSlug } = useEnhancedSlugManagement();
   const [formData, setFormData] = useState({
     name: service?.name || "",
     description: service?.description || "",
