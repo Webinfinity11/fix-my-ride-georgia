@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { useEnhancedSlugManagement } from '@/hooks/useEnhancedSlugManagement';
+import { useSlugManagement } from '@/hooks/useSlugManagement';
 import { useQuery } from '@tanstack/react-query';
 import ServiceDetail from '@/pages/ServiceDetail';
 
@@ -10,7 +10,7 @@ import ServiceDetail from '@/pages/ServiceDetail';
  */
 export const ServiceRouter: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { findServiceBySlug } = useEnhancedSlugManagement();
+  const { findServiceBySlug } = useSlugManagement();
 
   const { data: serviceResult, isLoading, error } = useQuery({
     queryKey: ['service-by-slug', slug],
@@ -30,7 +30,7 @@ export const ServiceRouter: React.FC = () => {
     return <ServiceDetail />;
   }
 
-  // If slug looks like an ID, redirect to ID format
+  // If slug looks like an ID, try to render ServiceDetail anyway (it will handle ID lookup)
   if (slug && /^\d+$/.test(slug)) {
     return <ServiceDetail />;
   }

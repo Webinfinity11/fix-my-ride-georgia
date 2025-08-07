@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { useEnhancedSlugManagement } from "@/hooks/useEnhancedSlugManagement";
+import { useSlugManagement } from "@/hooks/useSlugManagement";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,8 +74,7 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
-  console.log('ServiceDetail: useEnhancedSlugManagement imported successfully');
-  const { findServiceBySlug } = useEnhancedSlugManagement();
+  const { findServiceBySlug } = useSlugManagement();
   
   const { seoData } = useSEOData('service', service?.id.toString() || '');
 
@@ -118,7 +117,7 @@ const ServiceDetail = () => {
         serviceData = result.data;
         serviceError = result.error;
       } else {
-        // Fetch by slug using the new slug system
+        // Fetch by slug using the hook that uses SmartSlugManager
         console.log(`🔍 Fetching service by slug: ${slugOrId}`);
         const result = await findServiceBySlug(slugOrId);
         serviceData = result.data;

@@ -1021,15 +1021,7 @@ export type Database = {
         Args: { base_name: string; exclude_id?: number }
         Returns: string
       }
-      generate_unique_slug_enhanced: {
-        Args: { base_name: string; exclude_id?: number }
-        Returns: string
-      }
       georgian_to_latin: {
-        Args: { input_text: string }
-        Returns: string
-      }
-      georgian_to_latin_enhanced: {
         Args: { input_text: string }
         Returns: string
       }
