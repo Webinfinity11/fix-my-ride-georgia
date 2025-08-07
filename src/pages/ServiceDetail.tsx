@@ -115,40 +115,58 @@ const ServiceDetail = () => {
         serviceData = result.data;
         serviceError = result.error;
       } else {
-        // Fetch by slug
-        const result = await supabase
+        // Fetch by slug - directly from slug column first
+        const directSlugResult = await supabase
           .from("mechanic_services")
           .select(`
             id, name, description, price_from, price_to, estimated_hours,
             city, district, address, latitude, longitude, car_brands,
             on_site_service, accepts_card_payment, accepts_cash_payment,
-            rating, review_count, photos, videos, category_id, mechanic_id,
+            rating, review_count, photos, videos, category_id, mechanic_id, slug,
             service_categories(id, name),
             mechanic_profiles(
               id, rating,
               profiles(id, first_name, last_name, phone)
             )
           `)
-          .eq("is_active", true);
+          .eq("slug", slugOrId)
+          .eq("is_active", true)
+          .single();
         
-        if (result.data) {
-          const foundService = result.data.find(service => 
-            createSlug(service.name) === slugOrId
-          );
+        if (directSlugResult.data && !directSlugResult.error) {
+          serviceData = directSlugResult.data;
+          serviceError = null;
+        } else {
+          // Fallback: search by generated slug from name
+          const allServicesResult = await supabase
+            .from("mechanic_services")
+            .select(`
+              id, name, description, price_from, price_to, estimated_hours,
+              city, district, address, latitude, longitude, car_brands,
+              on_site_service, accepts_card_payment, accepts_cash_payment,
+              rating, review_count, photos, videos, category_id, mechanic_id, slug,
+              service_categories(id, name),
+              mechanic_profiles(
+                id, rating,
+                profiles(id, first_name, last_name, phone)
+              )
+            `)
+            .eq("is_active", true);
           
-          if (foundService) {
-            serviceData = foundService;
-            serviceError = null;
+          if (allServicesResult.data) {
+            const foundService = allServicesResult.data.find(service => 
+              createSlug(service.name) === slugOrId
+            );
             
-            const newSlug = createSlug(foundService.name);
-            if (newSlug !== slugOrId) {
-              window.history.replaceState(null, '', `/service/${newSlug}`);
+            if (foundService) {
+              serviceData = foundService;
+              serviceError = null;
+            } else {
+              serviceError = { message: "Service not found" };
             }
           } else {
-            serviceError = { message: "Service not found" };
+            serviceError = allServicesResult.error;
           }
-        } else {
-          serviceError = result.error;
         }
       }
 
