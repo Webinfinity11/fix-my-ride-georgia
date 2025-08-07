@@ -1,7 +1,7 @@
 /**
- * Smart Slug Management System
- * Works with database triggers for automatic Georgian transliteration,
- * uniqueness validation, and manual override detection
+ * Enhanced Smart Slug Management System
+ * Complete rewrite with database triggers, Georgian transliteration,
+ * and manual override protection
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -92,7 +92,6 @@ export class SmartSlugManager {
 
   /**
    * Generate unique slug using database function (preferred method)
-   * This leverages the database trigger for automatic generation
    */
   static async generateUniqueSlug(text: string, excludeId?: number): Promise<string> {
     try {
@@ -103,14 +102,13 @@ export class SmartSlugManager {
       });
 
       if (error) {
-        console.error('Database slug generation failed:', error);
-        // Fallback to client-side generation
+        console.warn('Database slug generation failed, using client fallback:', error);
         return this.generateClientSideSlug(text, excludeId);
       }
 
       return data || this.generateClientSideSlug(text, excludeId);
     } catch (error) {
-      console.error('Error in generateUniqueSlug:', error);
+      console.warn('Error in generateUniqueSlug, using client fallback:', error);
       return this.generateClientSideSlug(text, excludeId);
     }
   }
@@ -207,17 +205,31 @@ export class SmartSlugManager {
   }
 
   /**
-   * Find service by slug with enhanced lookup
+   * Find service by slug - enhanced and simplified
    */
   static async findServiceBySlug(slug: string) {
     try {
-      // First try direct slug match
-      const { data: directMatch, error: directError } = await supabase
+      if (!slug) {
+        return { data: null, error: 'No slug provided' };
+      }
+
+      // Try to find by slug first
+      let query = supabase
         .from('mechanic_services')
         .select(`
           *,
           mechanic:mechanic_profiles!mechanic_id (
-            *,
+            id,
+            rating,
+            review_count,
+            is_mobile,
+            description,
+            hourly_rate,
+            verified_at,
+            working_hours,
+            specialization,
+            experience_years,
+            accepts_card_payment,
             profile:profiles!id (
               first_name,
               last_name,
@@ -229,69 +241,35 @@ export class SmartSlugManager {
             id,
             name,
             description
-          ),
-          reviews:service_reviews (
-            id,
-            rating,
-            comment,
-            user_id,
-            created_at,
-            images
           )
         `)
+        .eq('is_active', true);
+
+      // Try slug match first
+      const { data: slugMatch, error: slugError } = await query
         .eq('slug', slug)
-        .eq('is_active', true)
         .maybeSingle();
 
-      if (directError) {
-        console.error('Error finding service by exact slug:', directError);
-        return { data: null, error: directError.message };
+      if (slugError && slugError.code !== 'PGRST116') {
+        console.error('Error finding service by slug:', slugError);
       }
 
-      if (directMatch) {
-        return { data: directMatch, error: null };
+      if (slugMatch) {
+        return { data: slugMatch, error: null };
       }
 
-      // If no exact match and slug looks like an ID, try legacy lookup
+      // If no slug match and slug looks like a number, try ID lookup
       if (/^\d+$/.test(slug)) {
-        const { data: legacyMatch, error: legacyError } = await supabase
-          .from('mechanic_services')
-          .select(`
-            *,
-            mechanic:mechanic_profiles!mechanic_id (
-              *,
-              profile:profiles!id (
-                first_name,
-                last_name,
-                avatar_url,
-                phone
-              )
-            ),
-            category:service_categories!category_id (
-              id,
-              name,
-              description
-            ),
-            reviews:service_reviews (
-              id,
-              rating,
-              comment,
-              user_id,
-              created_at,
-              images
-            )
-          `)
+        const { data: idMatch, error: idError } = await query
           .eq('id', parseInt(slug))
-          .eq('is_active', true)
           .maybeSingle();
 
-        if (legacyError) {
-          console.error('Error in legacy ID lookup:', legacyError);
-          return { data: null, error: legacyError.message };
+        if (idError && idError.code !== 'PGRST116') {
+          console.error('Error finding service by ID:', idError);
         }
 
-        if (legacyMatch) {
-          return { data: legacyMatch, error: null };
+        if (idMatch) {
+          return { data: idMatch, error: null };
         }
       }
 
