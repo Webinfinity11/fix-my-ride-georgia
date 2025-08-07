@@ -236,12 +236,7 @@ export class SmartSlugManager {
             comment,
             user_id,
             created_at,
-            images,
-            user:profiles!user_id (
-              first_name,
-              last_name,
-              avatar_url
-            )
+            images
           )
         `)
         .eq('slug', slug)
@@ -283,12 +278,7 @@ export class SmartSlugManager {
               comment,
               user_id,
               created_at,
-              images,
-              user:profiles!user_id (
-                first_name,
-                last_name,
-                avatar_url
-              )
+              images
             )
           `)
           .eq('id', parseInt(slug))
