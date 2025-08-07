@@ -25,6 +25,7 @@ interface ServiceType {
   rating: number | null;
   review_count: number | null;
   photos: string[] | null;
+  slug?: string | null;
   category: {
     id: number;
     name: string;
@@ -47,7 +48,8 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const [showPhone, setShowPhone] = useState(false);
 
   const handleViewDetails = () => {
-    const slug = createSlug(service.name);
+    // Use the service's slug if available, otherwise fallback to generated slug
+    const slug = service.slug || createSlug(service.name);
     navigate(`/service/${slug}`);
   };
 

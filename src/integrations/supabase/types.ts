@@ -557,6 +557,7 @@ export type Database = {
           price_to: number | null
           rating: number | null
           review_count: number | null
+          slug: string | null
           updated_at: string
           videos: string[] | null
           working_days: string[] | null
@@ -587,6 +588,7 @@ export type Database = {
           price_to?: number | null
           rating?: number | null
           review_count?: number | null
+          slug?: string | null
           updated_at?: string
           videos?: string[] | null
           working_days?: string[] | null
@@ -617,6 +619,7 @@ export type Database = {
           price_to?: number | null
           rating?: number | null
           review_count?: number | null
+          slug?: string | null
           updated_at?: string
           videos?: string[] | null
           working_days?: string[] | null

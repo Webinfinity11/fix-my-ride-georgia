@@ -38,6 +38,7 @@ interface Service {
   is_active: boolean;
   rating: number | null;
   review_count: number | null;
+  slug?: string | null;
   category: {
     id: number;
     name: string;
@@ -81,6 +82,7 @@ const MechanicServices = () => {
         is_active,
         rating,
         review_count,
+        slug,
         service_categories (
           id,
           name
@@ -426,7 +428,7 @@ const MechanicServices = () => {
                 )}
 
                 <div className="flex gap-2">
-                  <Link to={`/service/${createSlug(service.name)}`} className="flex-1">
+                  <Link to={`/service/${service.slug || createSlug(service.name)}`} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full">
                       <Eye className="w-4 h-4 mr-1" />
                       ნახვა
