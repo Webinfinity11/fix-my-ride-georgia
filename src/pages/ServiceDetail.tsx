@@ -74,6 +74,7 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
+  console.log('ServiceDetail: useEnhancedSlugManagement imported successfully');
   const { findServiceBySlug } = useEnhancedSlugManagement();
   
   const { seoData } = useSEOData('service', service?.id.toString() || '');
