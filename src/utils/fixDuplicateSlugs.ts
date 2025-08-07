@@ -227,7 +227,7 @@ export async function createServiceWithUniqueSlug(serviceData: {
       .insert({
         ...serviceData,
         slug: uniqueSlug
-      })
+      } as any)
       .select()
       .single();
 
@@ -374,7 +374,6 @@ if (typeof window !== 'undefined') {
   (window as any).fixDuplicateSlugs = fixDuplicateSlugs;
   (window as any).checkForDuplicateSlugs = checkForDuplicateSlugs;
   (window as any).previewSlugChanges = previewSlugChanges;
-  (window as any).getDuplicateSlugDetails = getDuplicateSlugDetails;
   
   console.log(`
 🔧 Enhanced Slug Management Utilities:
@@ -385,8 +384,8 @@ await previewSlugChanges()
 🔍 Check for duplicates:
 await checkForDuplicateSlugs()
 
-📊 Get detailed duplicate info:
-await getDuplicateSlugDetails()
+🔍 Check for any remaining duplicates:
+await checkForDuplicateSlugs()
 
 🛠️ Fix all duplicates (preserves oldest, numbers newer):
 await fixDuplicateSlugs()
