@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
+import { SlugManager } from "@/utils/slugSystem";
 import { useSlugManagement } from "@/hooks/useSlugManagement";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -117,7 +118,7 @@ const ServiceDetail = () => {
         serviceData = result.data;
         serviceError = result.error;
       } else {
-        // Fetch by slug using the hook that uses SmartSlugManager
+        // Fetch by slug using the new slug system
         console.log(`🔍 Fetching service by slug: ${slugOrId}`);
         const result = await findServiceBySlug(slugOrId);
         serviceData = result.data;

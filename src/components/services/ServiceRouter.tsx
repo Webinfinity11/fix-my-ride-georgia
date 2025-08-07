@@ -30,7 +30,7 @@ export const ServiceRouter: React.FC = () => {
     return <ServiceDetail />;
   }
 
-  // If slug looks like an ID, try to render ServiceDetail anyway (it will handle ID lookup)
+  // If slug looks like an ID, redirect to ID format
   if (slug && /^\d+$/.test(slug)) {
     return <ServiceDetail />;
   }
