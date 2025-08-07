@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { createSlug } from "@/utils/slugUtils";
+import { SlugManager } from "@/utils/slugSystem";
 import { 
   Select,
   SelectContent,
@@ -448,7 +448,7 @@ const ServiceSearch = () => {
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start mb-3">
                           <Link 
-                             to={`/service/${service.slug || createSlug(service.name)}`}
+                             to={`/service/${service.slug || SlugManager.generateBaseSlug(service.name)}`}
                             className="text-lg font-semibold hover:text-primary transition-colors"
                           >
                             {service.name}
@@ -526,7 +526,7 @@ const ServiceSearch = () => {
                           </Link>
                         </div>
 
-                        <Link to={`/service/${service.slug || createSlug(service.name)}`}>
+                        <Link to={`/service/${service.slug || SlugManager.generateBaseSlug(service.name)}`}>
                           <Button className="w-full mt-4">დეტალები</Button>
                         </Link>
                       </CardContent>

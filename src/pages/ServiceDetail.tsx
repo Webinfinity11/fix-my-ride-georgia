@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { createSlug } from "@/utils/slugUtils";
+import { SlugManager } from "@/utils/slugSystem";
+import { useSlugManagement } from "@/hooks/useSlugManagement";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,11 +70,12 @@ interface ServiceType {
 }
 
 const ServiceDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug: id } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
+  const { findServiceBySlug } = useSlugManagement();
   
   const { seoData } = useSEOData('service', service?.id.toString() || '');
 
@@ -94,7 +96,8 @@ const ServiceDetail = () => {
       let serviceData, serviceError;
 
       if (/^\d+$/.test(slugOrId)) {
-        // Fetch by ID
+        // Fetch by ID (numeric)
+        console.log(`🔍 Fetching service by ID: ${slugOrId}`);
         const result = await supabase
           .from("mechanic_services")
           .select(`
@@ -110,70 +113,24 @@ const ServiceDetail = () => {
           `)
           .eq("id", parseInt(slugOrId))
           .eq("is_active", true)
-          .single();
+          .maybeSingle();
         
         serviceData = result.data;
         serviceError = result.error;
       } else {
-        // Fetch by slug - directly from slug column first
-        const directSlugResult = await supabase
-          .from("mechanic_services")
-          .select(`
-            id, name, description, price_from, price_to, estimated_hours,
-            city, district, address, latitude, longitude, car_brands,
-            on_site_service, accepts_card_payment, accepts_cash_payment,
-            rating, review_count, photos, videos, category_id, mechanic_id, slug,
-            service_categories(id, name),
-            mechanic_profiles(
-              id, rating,
-              profiles(id, first_name, last_name, phone)
-            )
-          `)
-          .eq("slug", slugOrId)
-          .eq("is_active", true)
-           .maybeSingle();
-        
-        if (directSlugResult.data && !directSlugResult.error) {
-          serviceData = directSlugResult.data;
-          serviceError = null;
-        } else {
-          // Fallback: search by generated slug from name
-          const allServicesResult = await supabase
-            .from("mechanic_services")
-            .select(`
-              id, name, description, price_from, price_to, estimated_hours,
-              city, district, address, latitude, longitude, car_brands,
-              on_site_service, accepts_card_payment, accepts_cash_payment,
-              rating, review_count, photos, videos, category_id, mechanic_id, slug,
-              service_categories(id, name),
-              mechanic_profiles(
-                id, rating,
-                profiles(id, first_name, last_name, phone)
-              )
-            `)
-            .eq("is_active", true);
-          
-          if (allServicesResult.data) {
-            const foundService = allServicesResult.data.find(service => 
-              createSlug(service.name) === slugOrId
-            );
-            
-            if (foundService) {
-              serviceData = foundService;
-              serviceError = null;
-            } else {
-              serviceError = { message: "Service not found" };
-            }
-          } else {
-            serviceError = allServicesResult.error;
-          }
-        }
+        // Fetch by slug using the new slug system
+        console.log(`🔍 Fetching service by slug: ${slugOrId}`);
+        const result = await findServiceBySlug(slugOrId);
+        serviceData = result.data;
+        serviceError = result.error;
       }
 
       if (serviceError || !serviceData) {
+        console.error("Service not found:", serviceError);
         throw new Error("Service not found");
       }
 
+      console.log(`✅ Service found:`, serviceData);
       await processServiceData(serviceData);
       
     } catch (error) {
@@ -580,7 +537,7 @@ const ServiceDetail = () => {
         description={pageDescription}
         keywords={seoData?.meta_keywords}
         image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
-        url={`${window.location.origin}/service/${createSlug(service.name)}`}
+        url={`${window.location.origin}/service/${service.id}`}
         type="article"
         structuredData={structuredData}
       />

@@ -21,6 +21,7 @@ import PhotoUpload from "@/components/forms/PhotoUpload";
 import VideoUpload from "@/components/forms/VideoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
+import { useSlugManagement } from "@/hooks/useSlugManagement";
 
 
 type ServiceType = {
@@ -86,6 +87,7 @@ const commonCarBrands = [
 const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const { generateSlug } = useSlugManagement();
   const [formData, setFormData] = useState({
     name: service?.name || "",
     description: service?.description || "",
@@ -155,9 +157,9 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         }
       }
 
-      // Generate unique slug using debug utility
-      const { debugSlugs } = await import('@/utils/debugSlugUtils');
-      const uniqueSlug = await debugSlugs.generateUniqueSlug(formData.name, service?.id);
+      // Generate unique slug using the new system
+      console.log('🔍 Generating unique slug for service:', formData.name);
+      const uniqueSlug = await generateSlug(formData.name, service?.id);
 
       const serviceData = {
         mechanic_id: user.id,
