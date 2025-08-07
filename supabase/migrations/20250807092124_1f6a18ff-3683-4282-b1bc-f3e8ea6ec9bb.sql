@@ -113,3 +113,72 @@ BEGIN
   END LOOP;
 END;
 $$;
+-- Add slug_is_manual column (if not exists, skip if უკვე გაქვს)
+ALTER TABLE mechanic_services ADD COLUMN IF NOT EXISTS slug_is_manual BOOLEAN DEFAULT false;
+
+-- Create functions for transliteration and slug generation
+CREATE OR REPLACE FUNCTION georgian_to_latin(text) RETURNS text AS $$
+DECLARE
+    georgian text := 'აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ';
+    latin text := 'abgdevztiklmnopjrstufqgysshchcdzwtchxjh';
+    result text := $1;
+BEGIN
+    FOR i IN 1..length(georgian) LOOP
+        result := replace(result, substr(georgian, i, 1), substr(latin, i, 1));
+    END LOOP;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION generate_base_slug(name text) RETURNS text AS $$
+BEGIN
+    RETURN regexp_replace(
+        regexp_replace(
+            regexp_replace(
+                lower(georgian_to_latin(name)),
+                '[^\w\s-]', '', 'g'
+            ),
+            '[\s_]+', '-', 'g'
+        ),
+        '^-+|-+$', '', 'g'
+    );
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION generate_unique_slug_enhanced(
+    base_name text,
+    exclude_id integer DEFAULT NULL
+) RETURNS text AS $$
+DECLARE
+    base_slug text;
+    new_slug text;
+    counter integer := 0;
+BEGIN
+    base_slug := generate_base_slug(base_name);
+    new_slug := base_slug;
+    WHILE EXISTS (
+        SELECT 1 FROM mechanic_services WHERE slug = new_slug AND id != COALESCE(exclude_id, -1)
+    ) LOOP
+        counter := counter + 1;
+        new_slug := base_slug || '-' || counter;
+    END LOOP;
+    RETURN new_slug;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION auto_generate_slug_mechanic_services() RETURNS trigger AS $$
+BEGIN
+    IF (NEW.slug IS NULL) OR 
+       (NEW.name != OLD.name AND NOT COALESCE(OLD.slug_is_manual, false)) THEN
+        NEW.slug := generate_unique_slug_enhanced(NEW.name, NEW.id);
+        NEW.slug_is_manual := false;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_auto_generate_slug_mechanic_services ON mechanic_services;
+CREATE TRIGGER trg_auto_generate_slug_mechanic_services
+    BEFORE INSERT OR UPDATE ON mechanic_services
+    FOR EACH ROW
+    EXECUTE FUNCTION auto_generate_slug_mechanic_services();
