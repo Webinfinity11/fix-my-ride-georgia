@@ -241,7 +241,7 @@ const Search = () => {
               <div className="max-w-4xl mx-auto">
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                   იპოვეთ საუკეთესო 
-                  <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"> ხელოსანი</span>
+                  <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"> სერვისი</span>
                 </h1>
                 <p className="text-xl text-gray-600 mb-8">
                   ათასობით ხელოსანი და სერვისი ერთ ადგილას
