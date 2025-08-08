@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { useSlugManagement } from "@/hooks/useSlugManagement";
+import { createSlug } from "@/utils/slugUtils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,12 +69,11 @@ interface ServiceType {
 }
 
 const ServiceDetail = () => {
-  const { slug: id } = useParams<{ slug: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
-  const { findServiceBySlug } = useSlugManagement();
   
   const { seoData } = useSEOData('service', service?.id.toString() || '');
 
@@ -95,8 +94,7 @@ const ServiceDetail = () => {
       let serviceData, serviceError;
 
       if (/^\d+$/.test(slugOrId)) {
-        // Fetch by ID (numeric)
-        console.log(`🔍 Fetching service by ID: ${slugOrId}`);
+        // Fetch by ID
         const result = await supabase
           .from("mechanic_services")
           .select(`
@@ -112,24 +110,52 @@ const ServiceDetail = () => {
           `)
           .eq("id", parseInt(slugOrId))
           .eq("is_active", true)
-          .maybeSingle();
+          .single();
         
         serviceData = result.data;
         serviceError = result.error;
       } else {
-        // Fetch by slug using the hook that uses SmartSlugManager
-        console.log(`🔍 Fetching service by slug: ${slugOrId}`);
-        const result = await findServiceBySlug(slugOrId);
-        serviceData = result.data;
-        serviceError = result.error;
+        // Fetch by slug
+        const result = await supabase
+          .from("mechanic_services")
+          .select(`
+            id, name, description, price_from, price_to, estimated_hours,
+            city, district, address, latitude, longitude, car_brands,
+            on_site_service, accepts_card_payment, accepts_cash_payment,
+            rating, review_count, photos, videos, category_id, mechanic_id,
+            service_categories(id, name),
+            mechanic_profiles(
+              id, rating,
+              profiles(id, first_name, last_name, phone)
+            )
+          `)
+          .eq("is_active", true);
+        
+        if (result.data) {
+          const foundService = result.data.find(service => 
+            createSlug(service.name) === slugOrId
+          );
+          
+          if (foundService) {
+            serviceData = foundService;
+            serviceError = null;
+            
+            const newSlug = createSlug(foundService.name);
+            if (newSlug !== slugOrId) {
+              window.history.replaceState(null, '', `/service/${newSlug}`);
+            }
+          } else {
+            serviceError = { message: "Service not found" };
+          }
+        } else {
+          serviceError = result.error;
+        }
       }
 
       if (serviceError || !serviceData) {
-        console.error("Service not found:", serviceError);
         throw new Error("Service not found");
       }
 
-      console.log(`✅ Service found:`, serviceData);
       await processServiceData(serviceData);
       
     } catch (error) {
@@ -536,7 +562,7 @@ const ServiceDetail = () => {
         description={pageDescription}
         keywords={seoData?.meta_keywords}
         image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
-        url={`${window.location.origin}/service/${service.id}`}
+        url={`${window.location.origin}/service/${createSlug(service.name)}`}
         type="article"
         structuredData={structuredData}
       />

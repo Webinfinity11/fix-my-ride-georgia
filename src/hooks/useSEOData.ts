@@ -29,15 +29,15 @@ export const useSEOData = (pageType: string, pageId: string) => {
           .select('*')
           .eq('page_type', pageType)
           .eq('page_id', pageId)
-          .maybeSingle();
+          .single();
 
         if (error && error.code !== 'PGRST116') {
-          console.warn('Error fetching SEO data:', error);
+          throw error;
         }
 
-        setSeoData(data || null);
+        setSeoData(data);
       } catch (error) {
-        console.warn('Error fetching SEO data:', error);
+        console.error('Error fetching SEO data:', error);
         setSeoData(null);
       } finally {
         setLoading(false);

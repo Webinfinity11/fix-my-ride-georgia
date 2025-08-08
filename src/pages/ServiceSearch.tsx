@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { SmartSlugManager } from "@/utils/smartSlugSystem";
+import { createSlug } from "@/utils/slugUtils";
 import { 
   Select,
   SelectContent,
@@ -37,7 +37,6 @@ type ServiceType = {
   accepts_cash_payment: boolean;
   rating: number | null;
   review_count: number | null;
-  slug?: string | null;
   category: {
     id: number;
     name: string;
@@ -173,7 +172,6 @@ const ServiceSearch = () => {
           accepts_cash_payment,
           rating,
           review_count,
-          slug,
           service_categories(id, name),
           profiles!mechanic_services_mechanic_id_fkey(
             id,
@@ -231,7 +229,6 @@ const ServiceSearch = () => {
           accepts_cash_payment: service.accepts_cash_payment,
           rating: service.rating,
           review_count: service.review_count,
-          slug: service.slug,
           category: service.service_categories,
           mechanic: {
             id: profile?.id || "",
@@ -448,7 +445,7 @@ const ServiceSearch = () => {
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start mb-3">
                           <Link 
-                             to={`/service/${service.slug || SmartSlugManager.generateBaseSlug(service.name)}`}
+                            to={`/service/${createSlug(service.name)}`}
                             className="text-lg font-semibold hover:text-primary transition-colors"
                           >
                             {service.name}
@@ -526,7 +523,7 @@ const ServiceSearch = () => {
                           </Link>
                         </div>
 
-                        <Link to={`/service/${service.slug || SmartSlugManager.generateBaseSlug(service.name)}`}>
+                        <Link to={`/service/${createSlug(service.name)}`}>
                           <Button className="w-full mt-4">დეტალები</Button>
                         </Link>
                       </CardContent>

@@ -10,7 +10,6 @@ import Index from "./pages/Index";
 import ServicesDetail from "./pages/ServicesDetail";
 import ServiceSearch from "./pages/ServiceSearch";
 import ServiceDetail from "./pages/ServiceDetail";
-import { ServiceRouter } from "./components/services/ServiceRouter";
 import Search from "./pages/Search";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -45,7 +44,8 @@ function App() {
                 <Route path="/services" element={<ServicesDetail />} />
                 <Route path="/mechanic" element={<Mechanics />} />
                 <Route path="/service-search" element={<ServiceSearch />} />
-                <Route path="/service/:slug" element={<ServiceRouter />} />
+                <Route path="/service/:id" element={<ServiceDetail />} />
+                <Route path="/service/:slug" element={<ServiceDetail />} />
                 <Route path="/search" element={<Search />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />

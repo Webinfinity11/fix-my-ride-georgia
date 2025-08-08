@@ -1,7 +1,7 @@
 
 import { ServiceType } from "@/hooks/useServices";
 import { supabase } from '@/integrations/supabase/client';
-import { SmartSlugManager } from './smartSlugSystem';
+import { createSlug, createCategorySlug } from './slugUtils';
 
 // Generate meta tags for SEO
 export const generateMetaTags = (
@@ -123,14 +123,14 @@ export const generateSitemap = async (): Promise<string> => {
     // 1. ALL ACTIVE SERVICES - Individual service detail pages
     const { data: services } = await supabase
       .from('mechanic_services')
-      .select('id, name, updated_at, mechanic_id, slug')
+      .select('id, name, updated_at, mechanic_id')
       .eq('is_active', true)
       .limit(2000);
 
     if (services && services.length > 0) {
       const serviceUrls = services.map(service => {
         const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;
-        const slug = service.slug || SmartSlugManager.generateBaseSlug(service.name);
+        const slug = createSlug(service.name);
         return `  <url>
     <loc>${baseUrl}/service/${slug || service.id}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -181,7 +181,7 @@ export const generateSitemap = async (): Promise<string> => {
 
       // Category slug pages
       const categorySlugUrls = categories.map(category => {
-        const slug = SmartSlugManager.generateBaseSlug(category.name);
+        const slug = createCategorySlug(category.name);
         return `  <url>
     <loc>${baseUrl}/category/${slug || category.id}</loc>
     <lastmod>${currentDate}</lastmod>

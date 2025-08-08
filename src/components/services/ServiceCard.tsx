@@ -6,7 +6,7 @@ import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, Im
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ServiceGallery from "./ServiceGallery";
-import { SmartSlugManager } from "@/utils/smartSlugSystem";
+import { createSlug } from "@/utils/slugUtils";
 
 interface ServiceType {
   id: number;
@@ -25,7 +25,6 @@ interface ServiceType {
   rating: number | null;
   review_count: number | null;
   photos: string[] | null;
-  slug?: string | null;
   category: {
     id: number;
     name: string;
@@ -48,8 +47,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const [showPhone, setShowPhone] = useState(false);
 
   const handleViewDetails = () => {
-    // Use the service's slug if available, otherwise fallback to generated slug
-    const slug = service.slug || SmartSlugManager.generateBaseSlug(service.name);
+    const slug = createSlug(service.name);
     navigate(`/service/${slug}`);
   };
 
