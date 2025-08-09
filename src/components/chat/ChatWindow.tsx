@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send, Hash, User, Circle, Loader2 } from 'lucide-react';
@@ -15,6 +16,15 @@ export const ChatWindow = () => {
   const isMobile = useIsMobile();
   const [messageInput, setMessageInput] = useState('');
   const [sending, setSending] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +83,7 @@ export const ChatWindow = () => {
       <div className="flex items-center justify-center h-full bg-gray-50">
         <div className="text-center px-4">
           <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">ჩატის არჩევა</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">ჩატების სანახავად გაიაროთ რეგისტრაცია</h3>
           <p className="text-gray-500 text-sm">
             {isMobile 
               ? 'მენიუდან აირჩიეთ ჩატი საუბრის დასაწყებად' 
@@ -120,39 +130,35 @@ export const ChatWindow = () => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+      <ScrollArea className="flex-1 p-4">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span className="ml-2 text-sm text-gray-600">მესიჯების ჩატვირთვა...</span>
+            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <span className="ml-2 text-sm text-gray-500">მესიჯების ჩატვირთვა...</span>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {messages.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="bg-white rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-sm">
-                  <Hash className="h-6 w-6 text-primary" />
-                </div>
-                <p className="text-gray-600 text-sm font-medium">ჯერ არ არის მესიჯები</p>
+              <div className="text-center py-8">
+                <p className="text-gray-500 text-sm">ჯერ არ არის მესიჯები</p>
                 <p className="text-gray-400 text-xs mt-1">დაიწყეთ საუბარი!</p>
               </div>
             ) : (
-              <>
-                {messages.map((message) => (
-                  <ChatMessage
-                    key={message.id}
-                    message={message}
-                    currentUserId={user?.id}
-                    isOnline={onlineUsers.includes(message.sender_id)}
-                  />
-                ))}
-              </>
+              messages.map((message) => (
+                <ChatMessage
+                  key={message.id}
+                  message={message}
+                  currentUserId={user?.id}
+                  isOnline={onlineUsers.includes(message.sender_id)}
+                />
+              ))
             )}
+            <div ref={messagesEndRef} />
           </div>
         )}
-      </div>
+      </ScrollArea>
 
-      {/* Message Input - Show different UI based on authentication */}
+      {/* Message Input - Only show for authenticated users */}
       {user ? (
         <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
           <div className="flex gap-2">
@@ -175,33 +181,10 @@ export const ChatWindow = () => {
           </div>
         </form>
       ) : (
-        <div className="p-4 border-t bg-gradient-to-r from-primary/10 to-primary/5 text-center">
-          <div className="max-w-md mx-auto">
-            <h4 className="font-semibold text-gray-900 mb-2">
-              🚀 შეუერთდი საუბარს!
-            </h4>
-            <p className="text-sm text-gray-600 mb-4">
-              მესიჯის გასაგზავნად გაიარე რეგისტრაცია და შეუერთდი ათასობით სხვა იუზერს
-            </p>
-            <div className="flex gap-2 justify-center">
-              <Button 
-                variant="default" 
-                size="sm"
-                onClick={() => window.location.href = '/register'}
-                className="flex-1 max-w-32"
-              >
-                რეგისტრაცია
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => window.location.href = '/login'}
-                className="flex-1 max-w-32"
-              >
-                შესვლა
-              </Button>
-            </div>
-          </div>
+        <div className="p-4 border-t bg-gray-50 text-center">
+          <p className="text-sm text-gray-600">
+            მესიჯის გაგზავნისთვის საჭიროა ავტორიზაცია
+          </p>
         </div>
       )}
     </div>
