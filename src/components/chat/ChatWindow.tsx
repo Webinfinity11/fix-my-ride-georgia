@@ -152,7 +152,7 @@ export const ChatWindow = () => {
         )}
       </div>
 
-      {/* Message Input - Only show for authenticated users */}
+      {/* Message Input - Show different UI based on authentication */}
       {user ? (
         <form onSubmit={handleSendMessage} className="p-4 border-t bg-white">
           <div className="flex gap-2">
@@ -175,10 +175,33 @@ export const ChatWindow = () => {
           </div>
         </form>
       ) : (
-        <div className="p-4 border-t bg-gray-50 text-center">
-          <p className="text-sm text-gray-600">
-            მესიჯის გაგზავნისთვის საჭიროა ავტორიზაცია
-          </p>
+        <div className="p-4 border-t bg-gradient-to-r from-primary/10 to-primary/5 text-center">
+          <div className="max-w-md mx-auto">
+            <h4 className="font-semibold text-gray-900 mb-2">
+              🚀 შეუერთდი საუბარს!
+            </h4>
+            <p className="text-sm text-gray-600 mb-4">
+              მესიჯის გასაგზავნად გაიარე რეგისტრაცია და შეუერთდი ათასობით სხვა იუზერს
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => window.location.href = '/register'}
+                className="flex-1 max-w-32"
+              >
+                რეგისტრაცია
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.href = '/login'}
+                className="flex-1 max-w-32"
+              >
+                შესვლა
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
