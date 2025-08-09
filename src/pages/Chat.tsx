@@ -33,25 +33,9 @@ const ChatContent = () => {
 
   if (isMobile) {
     return (
-      <div className="h-[calc(100vh-134px)] flex flex-col bg-gray-50">
-        {/* Mobile Header with Menu Button */}
-        <div className="border-b bg-white shadow-sm p-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">ჩატები</h1>
-          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="hover:bg-gray-100">
-                <Menu className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-80 bg-gray-50">
-              <ChatSidebar />
-            </SheetContent>
-          </Sheet>
-        </div>
-        
-        {/* Chat Window */}
-        <div className="flex-1 min-h-0">
-          <ChatWindow />
+      <div className="h-[calc(100vh-134px)] flex bg-gray-50">
+        <div className="w-full bg-white">
+          <ChatSidebar />
         </div>
       </div>
     );
