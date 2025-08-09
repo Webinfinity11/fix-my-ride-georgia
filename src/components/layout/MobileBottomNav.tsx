@@ -2,7 +2,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Home, Search, Plus, MessageCircle, User, Car } from 'lucide-react';
+import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3 } from 'lucide-react';
 
 const MobileBottomNav = () => {
   const location = useLocation();
@@ -17,7 +17,9 @@ const MobileBottomNav = () => {
   };
 
   const handleAddClick = () => {
-    if (user?.role === 'mechanic') {
+    if (!user) {
+      navigate('/category');
+    } else if (user.role === 'mechanic') {
       navigate('/add-service');
     } else {
       navigate('/dashboard/cars');
@@ -38,8 +40,8 @@ const MobileBottomNav = () => {
       onClick: () => navigate('/services')
     },
     {
-      icon: user?.role === 'mechanic' ? Plus : Car,
-      label: 'Add',
+      icon: !user ? Grid3x3 : (user.role === 'mechanic' ? Plus : Car),
+      label: !user ? 'Categories' : 'Add',
       path: '',
       onClick: handleAddClick,
       isCenter: true
