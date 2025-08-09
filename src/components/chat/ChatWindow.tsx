@@ -83,11 +83,11 @@ export const ChatWindow = () => {
       <div className="flex items-center justify-center h-full bg-gray-50">
         <div className="text-center px-4">
           <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">ჩატის არჩევა</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">გაიარეთ რეგისტრაცია</h3>
           <p className="text-gray-500 text-sm">
             {isMobile 
               ? 'მენიუდან აირჩიეთ ჩატი საუბრის დასაწყებად' 
-              : 'გაიარეთ რეგისტრაცია'
+              : 'შემდეგ აირჩიეთ ჩატი საუბრის დასაწყებად'
             }
           </p>
         </div>
