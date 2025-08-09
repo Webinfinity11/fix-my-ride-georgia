@@ -1,6 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send, Hash, User, Circle, Loader2 } from 'lucide-react';
@@ -16,15 +15,6 @@ export const ChatWindow = () => {
   const isMobile = useIsMobile();
   const [messageInput, setMessageInput] = useState('');
   const [sending, setSending] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,33 +120,37 @@ export const ChatWindow = () => {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-            <span className="ml-2 text-sm text-gray-500">მესიჯების ჩატვირთვა...</span>
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <span className="ml-2 text-sm text-gray-600">მესიჯების ჩატვირთვა...</span>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {messages.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500 text-sm">ჯერ არ არის მესიჯები</p>
+              <div className="text-center py-12">
+                <div className="bg-white rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center shadow-sm">
+                  <Hash className="h-6 w-6 text-primary" />
+                </div>
+                <p className="text-gray-600 text-sm font-medium">ჯერ არ არის მესიჯები</p>
                 <p className="text-gray-400 text-xs mt-1">დაიწყეთ საუბარი!</p>
               </div>
             ) : (
-              messages.map((message) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  currentUserId={user?.id}
-                  isOnline={onlineUsers.includes(message.sender_id)}
-                />
-              ))
+              <>
+                {messages.map((message) => (
+                  <ChatMessage
+                    key={message.id}
+                    message={message}
+                    currentUserId={user?.id}
+                    isOnline={onlineUsers.includes(message.sender_id)}
+                  />
+                ))}
+              </>
             )}
-            <div ref={messagesEndRef} />
           </div>
         )}
-      </ScrollArea>
+      </div>
 
       {/* Message Input - Only show for authenticated users */}
       {user ? (
