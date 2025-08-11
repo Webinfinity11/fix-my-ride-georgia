@@ -123,14 +123,14 @@ export const generateSitemap = async (): Promise<string> => {
     // 1. ALL ACTIVE SERVICES - Individual service detail pages
     const { data: services } = await supabase
       .from('mechanic_services')
-      .select('id, name, updated_at, mechanic_id')
+      .select('id, name, slug, updated_at, mechanic_id')
       .eq('is_active', true)
       .limit(2000);
 
     if (services && services.length > 0) {
       const serviceUrls = services.map(service => {
         const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;
-        const slug = createSlug(service.name);
+        const slug = service.slug || createSlug(service.name);
         return `  <url>
     <loc>${baseUrl}/service/${slug || service.id}</loc>
     <lastmod>${lastmod}</lastmod>
