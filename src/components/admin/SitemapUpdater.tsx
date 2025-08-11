@@ -2,32 +2,28 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { generateSitemapWithAllServices, updateSitemapFile } from '@/utils/generateSitemapWithAllServices';
+import { Loader2, CheckCircle, AlertCircle, Download, RefreshCw } from 'lucide-react';
+import { sitemapManager, SitemapStats } from '@/utils/sitemapManager';
 import { useSitemapSync } from '@/hooks/useSitemapSync';
 
 export const SitemapUpdater = () => {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
-  const [serviceCount, setServiceCount] = useState<number | null>(null);
+  const [stats, setStats] = useState<SitemapStats | null>(null);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   
   // Use the automatic sync hook
   useSitemapSync();
 
   useEffect(() => {
-    // Check localStorage for last update info
-    const lastUpdated = localStorage.getItem('sitemap-last-updated');
-    const storedContent = localStorage.getItem('updated-sitemap-content');
+    // Load current stats
+    const currentStats = sitemapManager.getCurrentStats();
+    setStats(currentStats);
     
-    if (lastUpdated) {
-      setLastUpdate(lastUpdated);
-    }
-    
-    if (storedContent) {
-      // Count service URLs in the stored content
-      const serviceUrlMatches = storedContent.match(/<loc>https:\/\/fixup\.ge\/service\//g);
-      setServiceCount(serviceUrlMatches ? serviceUrlMatches.length : 0);
+    // Check if update is needed
+    if (sitemapManager.needsUpdate()) {
+      setStatus('idle');
+    } else if (currentStats) {
+      setStatus('success');
     }
   }, []);
 
@@ -36,22 +32,13 @@ export const SitemapUpdater = () => {
     setStatus('idle');
     
     try {
-      const success = await updateSitemapFile();
+      const success = await sitemapManager.updateLocalSitemap();
       
       if (success) {
-        const sitemapContent = localStorage.getItem('complete-sitemap-xml');
-        
-        if (sitemapContent) {
-          // Count services in the generated sitemap
-          const serviceUrlMatches = sitemapContent.match(/<loc>https:\/\/fixup\.ge\/service\//g);
-          const count = serviceUrlMatches ? serviceUrlMatches.length : 0;
-          
-          setServiceCount(count);
-          setLastUpdate(new Date().toISOString().split('T')[0]);
-          setStatus('success');
-          
-          console.log(`Complete sitemap generated with ALL ${count} services`);
-        }
+        const newStats = sitemapManager.getCurrentStats();
+        setStats(newStats);
+        setStatus('success');
+        console.log('Sitemap update completed successfully');
       } else {
         setStatus('error');
       }
@@ -63,59 +50,89 @@ export const SitemapUpdater = () => {
     }
   };
 
+  const handleDownload = () => {
+    sitemapManager.downloadSitemap();
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
+          <RefreshCw className="h-5 w-5" />
           Sitemap Management
           {status === 'success' && <CheckCircle className="h-5 w-5 text-green-500" />}
           {status === 'error' && <AlertCircle className="h-5 w-5 text-red-500" />}
         </CardTitle>
         <CardDescription>
-          Manage and update the static sitemap with all active services
+          Generate and manage XML sitemaps for search engine optimization
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <p className="text-sm font-medium">Service Count</p>
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary">
-                {serviceCount !== null ? `${serviceCount} services` : 'Unknown'}
-              </Badge>
-              {serviceCount === 334 && (
-                <Badge variant="default" className="bg-green-100 text-green-800">
-                  All services synced ✓
-                </Badge>
-              )}
-            </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Services</p>
+            <Badge variant="secondary" className="w-full justify-center">
+              {stats?.services || 0} pages
+            </Badge>
           </div>
-          
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Categories</p>
+            <Badge variant="secondary" className="w-full justify-center">
+              {stats?.categories || 0} pages
+            </Badge>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Total URLs</p>
+          <Badge variant="outline" className="w-full justify-center">
+            {stats?.totalUrls || 0} URLs
+          </Badge>
+        </div>
+        
+        <div className="flex gap-2">
           <Button 
             onClick={handleManualUpdate}
             disabled={isUpdating}
-            size="sm"
+            variant="default"
+            className="flex-1"
           >
             {isUpdating ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Updating...
+                Generating...
               </>
             ) : (
-              'Update Sitemap'
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Update Sitemap
+              </>
             )}
+          </Button>
+          
+          <Button 
+            onClick={handleDownload}
+            disabled={!stats}
+            variant="outline"
+            size="default"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download
           </Button>
         </div>
         
-        {lastUpdate && (
+        {stats?.lastGenerated && (
           <div className="text-sm text-muted-foreground">
-            Last updated: {lastUpdate}
+            Last generated: {stats.lastGenerated}
           </div>
         )}
         
-        <div className="text-xs text-muted-foreground">
-          Note: Changes are automatically synced when services are added/modified.
-          The sitemap content is generated and stored for deployment.
+        <div className="p-3 bg-muted rounded-lg">
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p>• Automatic sync when services/categories change</p>
+            <p>• Generated via Supabase Edge Function</p>
+            <p>• Available at /sitemap.xml for search engines</p>
+          </div>
         </div>
       </CardContent>
     </Card>

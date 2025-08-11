@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { updateSitemapFiles } from '@/utils/generateSimpleSitemap';
+import { sitemapManager } from '@/utils/sitemapManager';
 
 // Hook to sync sitemap when services change
 export const useSitemapSync = () => {
@@ -19,7 +19,7 @@ export const useSitemapSync = () => {
           console.log('Service changed, updating sitemap:', payload);
           
           try {
-            await updateSitemapFiles();
+            await sitemapManager.updateLocalSitemap();
             console.log('Sitemap auto-updated after service change');
           } catch (error) {
             console.error('Error updating sitemap after service change:', error);
@@ -37,7 +37,7 @@ export const useSitemapSync = () => {
           console.log('Category changed, updating sitemap:', payload);
           
           try {
-            await updateSitemapFiles();
+            await sitemapManager.updateLocalSitemap();
             console.log('Sitemap auto-updated after category change');
           } catch (error) {
             console.error('Error updating sitemap after category change:', error);
@@ -54,7 +54,7 @@ export const useSitemapSync = () => {
 
   // Manual update function
   const updateSitemap = async () => {
-    await updateSitemapFiles();
+    await sitemapManager.updateLocalSitemap();
   };
 
   return { updateSitemap };
