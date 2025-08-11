@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { generateSitemap } from '@/utils/seoUtils';
+import { generateSimpleSitemap } from '@/utils/generateSimpleSitemap';
 
 const SitemapXML = () => {
   useEffect(() => {
     const loadSitemap = async () => {
       try {
-        const xml = await generateSitemap();
+        const xml = await generateSimpleSitemap();
         
         // Clear all HTML content and serve pure XML
         document.documentElement.innerHTML = '';
@@ -17,13 +17,12 @@ const SitemapXML = () => {
         
       } catch (error) {
         console.error('Error loading sitemap:', error);
-        // Fallback XML with exact formatting
+        // Fallback XML
         const fallbackXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://fixup.ge</loc>
-<changefreq>always</changefreq>
-<priority>0.80</priority>
+<priority>1.0</priority>
 </url>
 </urlset>`;
         
@@ -37,7 +36,7 @@ const SitemapXML = () => {
     loadSitemap();
   }, []);
 
-  return null; // No need to render anything since we're replacing the document
+  return null;
 };
 
 export default SitemapXML;

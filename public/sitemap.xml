@@ -36,56 +36,9 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://fixup.ge/register</loc>
-    <lastmod>2025-08-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://fixup.ge/login</loc>
-    <lastmod>2025-08-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://fixup.ge/sitemap</loc>
-    <lastmod>2025-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://fixup.ge/book</loc>
-    <lastmod>2025-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://fixup.ge/chat</loc>
-    <lastmod>2025-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fixup.ge/dashboard</loc>
-    <lastmod>2025-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-    <url>
-    <loc>https://fixup.ge/service/247-akumulatoris-adgilze-mitanis-shedzenis-servisi</loc>
-    <lastmod>2025-08-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
 
-  <!-- AUTO-GENERATED SERVICE LINKS - ALL SERVICES WILL BE LOADED HERE -->
-  <!-- Note: This section will be automatically populated with all 333+ services -->
-  <!-- The complete sitemap is generated via the admin panel or automatically -->
-  
-  <!-- To see all 333+ service links, the sitemap must be generated from the database -->
-  <!-- Use the admin dashboard SitemapUpdater component to generate the complete sitemap -->
-  
-  <!-- AUTO-GENERATED SERVICE LINKS END -->
+  <!-- AUTO-GENERATED: This file will be dynamically updated -->
+  <!-- For real-time sitemap with all 333 services and 39 categories, visit /sitemap.xml -->
+  <!-- Static version shows main pages only -->
   
 </urlset>
