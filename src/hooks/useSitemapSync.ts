@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { updateStaticSitemap } from '@/utils/seoUtils';
+import { updateSitemapFile } from '@/utils/generateSitemapWithAllServices';
 import { createSlug } from '@/utils/slugUtils';
 
 // Hook to sync sitemap when services change
@@ -20,8 +20,9 @@ export const useSitemapSync = () => {
           console.log('Service changed, updating sitemap:', payload);
           
           try {
-            // Update static sitemap file
-            await handleSitemapUpdate();
+            // Update complete sitemap with all services
+            await updateSitemapFile();
+            console.log('Sitemap auto-updated after service change');
           } catch (error) {
             console.error('Error updating sitemap after service change:', error);
           }
@@ -169,7 +170,7 @@ ${serviceUrls.join('\n')}
 
   // Manual update function
   const updateSitemap = async () => {
-    await handleSitemapUpdate();
+    await updateSitemapFile();
   };
 
   return { updateSitemap };

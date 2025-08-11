@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
-import { updateStaticSitemap } from '@/utils/updateSitemap';
+import { generateSitemapWithAllServices, updateSitemapFile } from '@/utils/generateSitemapWithAllServices';
 import { useSitemapSync } from '@/hooks/useSitemapSync';
 
 export const SitemapUpdater = () => {
@@ -36,22 +36,22 @@ export const SitemapUpdater = () => {
     setStatus('idle');
     
     try {
-      const sitemapContent = await updateStaticSitemap();
+      const success = await updateSitemapFile();
       
-      if (sitemapContent) {
-        // Store in localStorage
-        localStorage.setItem('updated-sitemap-content', sitemapContent);
-        localStorage.setItem('sitemap-last-updated', new Date().toISOString().split('T')[0]);
+      if (success) {
+        const sitemapContent = localStorage.getItem('complete-sitemap-xml');
         
-        // Count services
-        const serviceUrlMatches = sitemapContent.match(/<loc>https:\/\/fixup\.ge\/service\//g);
-        const count = serviceUrlMatches ? serviceUrlMatches.length : 0;
-        
-        setServiceCount(count);
-        setLastUpdate(new Date().toISOString().split('T')[0]);
-        setStatus('success');
-        
-        console.log(`Sitemap updated with ${count} services`);
+        if (sitemapContent) {
+          // Count services in the generated sitemap
+          const serviceUrlMatches = sitemapContent.match(/<loc>https:\/\/fixup\.ge\/service\//g);
+          const count = serviceUrlMatches ? serviceUrlMatches.length : 0;
+          
+          setServiceCount(count);
+          setLastUpdate(new Date().toISOString().split('T')[0]);
+          setStatus('success');
+          
+          console.log(`Complete sitemap generated with ALL ${count} services`);
+        }
       } else {
         setStatus('error');
       }
