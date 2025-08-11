@@ -36,15 +36,29 @@ Deno.serve(async (req) => {
     )
 
     // Get all active services
-    const { data: services, error } = await supabaseClient
+    const { data: services, error: svcError } = await supabaseClient
       .from('mechanic_services')
       .select('id, name, slug, updated_at')
       .eq('is_active', true)
       .order('updated_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching services:', error);
+    if (svcError) {
+      console.error('Error fetching services:', svcError);
       return new Response(JSON.stringify({ error: 'Failed to fetch services' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Get all categories
+    const { data: categories, error: catError } = await supabaseClient
+      .from('service_categories')
+      .select('id, name')
+      .order('name');
+
+    if (catError) {
+      console.error('Error fetching categories:', catError);
+      return new Response(JSON.stringify({ error: 'Failed to fetch categories' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -63,12 +77,23 @@ Deno.serve(async (req) => {
     // Generate service URLs
     const serviceUrls = services.map(service => {
       const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;
-      const slug = service.slug || createSlug(service.name);
+      const slug = service.slug || createSlug(service.name) || String(service.id);
       return `  <url>
-    <loc>${baseUrl}/service/${slug || service.id}</loc>
+    <loc>${baseUrl}/service/${slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>`;
+    });
+
+    // Generate category URLs
+    const categoryUrls = (categories || []).map(cat => {
+      const slug = createSlug(cat.name) || String(cat.id);
+      return `  <url>
+    <loc>${baseUrl}/category/${slug}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>`;
     });
 
@@ -148,11 +173,14 @@ Deno.serve(async (req) => {
     <priority>0.6</priority>
   </url>
 
-  <!-- AUTO-GENERATED SERVICE LINKS - UPDATED ${currentDate} -->
+  <!-- AUTO-GENERATED LINKS - UPDATED ${currentDate} -->
   <!-- ALL ${services.length} ACTIVE SERVICES -->
 ${serviceUrls.join('\n')}
+
+  <!-- ALL ${(categories || []).length} CATEGORIES -->
+${categoryUrls.join('\n')}
   
-  <!-- Service links auto-updated: ${currentDate} -->
+  <!-- Links auto-updated: ${currentDate} -->
   
 </urlset>`;
 

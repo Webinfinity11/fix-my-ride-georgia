@@ -1,1 +1,4 @@
 project_id = "kwozniwtygkdoagjegom"
+
+[functions.update-sitemap]
+verify_jwt = false
