@@ -568,10 +568,9 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [user, activeRoom?.id]);
 
+  // Load rooms when auth state changes (both for authenticated and anonymous users)
   useEffect(() => {
-    if (user) {
-      loadRooms();
-    }
+    loadRooms();
   }, [user]);
 
   useEffect(() => {
