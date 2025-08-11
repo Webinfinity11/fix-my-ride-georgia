@@ -196,25 +196,6 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             )}
           </div>
 
-          {/* Car Brands */}
-          {service.car_brands && service.car_brands.length > 0 && (
-            <div className="space-y-1">
-              <p className="text-xs text-gray-500">მანქანის მარკები:</p>
-              <div className="flex flex-wrap gap-1">
-                {service.car_brands.slice(0, 3).map((brand, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {brand}
-                  </Badge>
-                ))}
-                {service.car_brands.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{service.car_brands.length - 3} სხვა
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Action Buttons */}
           <div className="space-y-2">
             {/* Phone Button */}
