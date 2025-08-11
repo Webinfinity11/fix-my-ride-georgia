@@ -73,8 +73,9 @@
     <priority>0.6</priority>
   </url>
 
-  <!-- AUTO-GENERATED SERVICE LINKS - THESE WILL BE UPDATED AUTOMATICALLY -->
-  <!-- Note: This static file serves as fallback. The real-time sitemap is available at /sitemap.xml route -->
+  <!-- AUTO-GENERATED SERVICE LINKS - READY FOR ALL 333 SERVICES -->
+  <!-- Note: This will be automatically populated with all active services -->
+  <!-- Real-time sitemap generation available at /sitemap.xml route -->
   
   <!-- EXISTING SERVICES -->
   <url>
@@ -138,7 +139,6 @@
     <priority>0.8</priority>
   </url>
   
-  <!-- AUTO-GENERATED SERVICE LINKS WILL BE APPENDED HERE BY THE SYSTEM -->
-  <!-- For the most up-to-date sitemap including all services, visit /sitemap.xml -->
+  <!-- Services will be automatically added here when the sync system is activated -->
   
 </urlset>
