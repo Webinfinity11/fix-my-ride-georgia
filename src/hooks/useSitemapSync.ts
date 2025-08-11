@@ -51,6 +51,8 @@ export const useSitemapSync = () => {
         return;
       }
 
+      console.log(`Processing ${services.length} services for sitemap`);
+
       // Generate service URLs
       const serviceUrls = services.map(service => {
         const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;

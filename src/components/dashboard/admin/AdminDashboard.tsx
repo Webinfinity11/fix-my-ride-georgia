@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Shield, Users, Activity, Search } from "lucide-react";
 import SEOManagement from './SEOManagement';
+import { SitemapUpdater } from '@/components/admin/SitemapUpdater';
 
 const AdminDashboard = () => {
   return (
@@ -88,6 +89,7 @@ const AdminDashboard = () => {
 
         <TabsContent value="seo" className="space-y-6">
           <SEOManagement />
+          <SitemapUpdater />
         </TabsContent>
       </Tabs>
     </div>
