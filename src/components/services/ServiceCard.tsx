@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,8 +11,6 @@ interface ServiceType {
   id: number;
   name: string;
   description: string | null;
-  price_from: number | null;
-  price_to: number | null;
   estimated_hours: number | null;
   city: string | null;
   district: string | null;
@@ -70,30 +67,6 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
       // Second click - make the call
       window.location.href = `tel:${service.mechanic.phone_number}`;
     }
-  };
-
-  const formatPrice = () => {
-    // If no valid prices are provided, return default text
-    if (!service.price_from && !service.price_to) {
-      return "ფასი შეთანხმებით";
-    }
-    
-    // If both prices exist and are greater than 0, show range
-    if (service.price_from && service.price_from > 0 && service.price_to && service.price_to > 0 && service.price_from !== service.price_to) {
-      return `₾${service.price_from} - ₾${service.price_to}`;
-    }
-    
-    // If only one price exists and is greater than 0, show that price
-    if (service.price_from && service.price_from > 0) {
-      return `₾${service.price_from}`;
-    }
-    
-    if (service.price_to && service.price_to > 0) {
-      return `₾${service.price_to}`;
-    }
-    
-    // If prices are 0 or invalid, return default text
-    return "ფასი შეთანხმებით";
   };
 
   const formatLocation = () => {
@@ -167,17 +140,10 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             )}
           </div>
 
-          {/* Price and Duration */}
-          <div className="flex items-center justify-between">
-            <div className="font-semibold text-lg text-primary">
-              {formatPrice()}
-            </div>
-            {service.estimated_hours && (
-              <div className="flex items-center text-sm text-gray-500">
-                <Clock className="w-4 h-4 mr-1" />
-                {service.estimated_hours} საათი
-              </div>
-            )}
+          {/* Duration */}
+          <div className="flex items-center text-sm text-gray-500">
+            <Clock className="w-4 h-4 mr-1" />
+            {service.estimated_hours} საათი
           </div>
 
           {/* Location */}
@@ -210,7 +176,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
               className="text-primary hover:bg-primary/5"
             >
               <ExternalLink className="w-3 h-3 mr-1" />
-              პროფილი
+               პროფილი
             </Button>
           </div>
 
