@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MapPin, Star, Phone, Clock, DollarSign } from "lucide-react";
+import { MapPin, Star, Clock, DollarSign } from "lucide-react";
 import { SendMessageButton } from "./SendMessageButton";
 
 interface MechanicCardProps {
@@ -14,7 +14,6 @@ interface MechanicCardProps {
     profiles: {
       first_name: string;
       last_name: string;
-      phone?: string;
       city?: string;
       district?: string;
       avatar_url?: string;
@@ -110,14 +109,6 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
               size="default"
               className="flex-1"
             />
-            
-            {mechanic.profiles.phone && (
-              <Button variant="ghost" size="icon" asChild>
-                <a href={`tel:${mechanic.profiles.phone}`}>
-                  <Phone className="h-4 w-4" />
-                </a>
-              </Button>
-            )}
           </>
         ) : (
           <div className="flex-1 text-center text-sm text-muted-foreground">

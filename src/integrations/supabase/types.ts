@@ -1049,8 +1049,40 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_public_mechanic_info: {
+        Args: { mechanic_id: string }
+        Returns: {
+          id: string
+          first_name: string
+          last_name: string
+          city: string
+          district: string
+          avatar_url: string
+          is_verified: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          created_at: string
+        }[]
+      }
+      get_safe_mechanic_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          first_name: string
+          last_name: string
+          city: string
+          district: string
+          avatar_url: string
+          is_verified: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          created_at: string
+        }[]
+      }
       is_admin: {
         Args: { user_id?: string }
+        Returns: boolean
+      }
+      is_admin_or_self_or_public_mechanic: {
+        Args: { profile_id: string }
         Returns: boolean
       }
       is_current_user_admin: {
