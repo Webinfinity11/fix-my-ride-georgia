@@ -111,13 +111,15 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
             id,
             first_name, 
             last_name, 
+            phone,
             city, 
             district, 
+            avatar_url,
             is_verified,
             mechanic_profiles!inner(
               description, 
               specialization, 
-              experience_years, 
+              experience_years,
               rating, 
               review_count, 
               is_mobile,
@@ -132,14 +134,14 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         
         if (mechanicError) throw mechanicError;
 
-        // Format the data to match MechanicType (only public fields)
+        // Format the data to match MechanicType (now with phone available for verified mechanics)
         const formattedMechanic: MechanicType = {
           id: mechanicData.id,
           profile: {
             first_name: mechanicData.first_name,
             last_name: mechanicData.last_name,
             email: '', // Not available publicly for security
-            phone: '', // Not available publicly for security
+            phone: mechanicData.phone || '', // Now available for verified mechanics
             city: mechanicData.city,
             district: mechanicData.district,
             street: '', // Not available publicly for security
@@ -290,8 +292,10 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
             id,
             first_name, 
             last_name, 
+            phone,
             city, 
             district, 
+            avatar_url,
             is_verified,
             mechanic_profiles!inner(
               description, 
@@ -316,7 +320,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
               first_name: mechanicData.first_name,
               last_name: mechanicData.last_name,
               email: '', // Not available publicly for security
-              phone: '', // Not available publicly for security
+              phone: mechanicData.phone || '', // Now available for verified mechanics
               city: mechanicData.city,
               district: mechanicData.district,
               street: '', // Not available publicly for security
