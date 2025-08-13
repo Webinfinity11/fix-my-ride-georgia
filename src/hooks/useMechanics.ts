@@ -113,6 +113,7 @@ export const useMechanics = () => {
           profiles!inner(
             first_name,
             last_name,
+            phone,
             city,
             district,
             avatar_url,
