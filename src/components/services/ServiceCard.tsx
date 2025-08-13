@@ -31,7 +31,7 @@ interface ServiceType {
     first_name: string;
     last_name: string;
     rating: number | null;
-    phone_number?: string | null;
+    phone?: string | null;
   };
 }
 
@@ -56,7 +56,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const handlePhoneClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!service.mechanic.phone_number) {
+    if (!service.mechanic.phone) {
       return;
     }
 
@@ -65,7 +65,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
       setShowPhone(true);
     } else {
       // Second click - make the call
-      window.location.href = `tel:${service.mechanic.phone_number}`;
+      window.location.href = `tel:${service.mechanic.phone}`;
     }
   };
 
@@ -199,14 +199,14 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
           {/* Action Buttons */}
           <div className="space-y-2">
             {/* Phone Button */}
-            {service.mechanic.phone_number && (
+            {service.mechanic.phone && (
               <Button 
                 onClick={handlePhoneClick}
                 variant="outline"
                 className="w-full border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
               >
                 <Phone className="w-4 h-4 mr-2" />
-                {showPhone ? formatPhoneNumber(service.mechanic.phone_number) : "დარეკვა"}
+                {showPhone ? formatPhoneNumber(service.mechanic.phone) : "დარეკვა"}
               </Button>
             )}
             
