@@ -1,10 +1,9 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Mail, Phone, MapPin, MessageSquare, Send, Lock } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Mail, Phone, MapPin, MessageSquare, Send } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SEOHead from "@/components/seo/SEOHead";
@@ -95,7 +94,6 @@ const faqItems = [
 
 const Contact = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   
@@ -170,119 +168,92 @@ const Contact = () => {
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-2xl font-semibold mb-6">მოგვწერეთ</h2>
-                  
-                  {!user ? (
-                    <div className="text-center py-8">
-                      <Lock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">ავტორიზაცია საჭიროა</h3>
-                      <p className="text-muted-foreground mb-6">
-                        შეტყობინების გასაგზავნად, საჭიროა სისტემაში შესვლა. 
-                        ეს უზრუნველყოფს ყოველგვარი სპამისა და მავნე შეტყობინებების თავიდან აცილებას.
-                      </p>
-                      <div className="space-y-3">
-                        <Button 
-                          onClick={() => navigate('/login')} 
-                          className="w-full"
-                        >
-                          შესვლა
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => navigate('/register')} 
-                          className="w-full"
-                        >
-                          რეგისტრაცია
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>სახელი და გვარი</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="თქვენი სახელი და გვარი" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>ელ-ფოსტა</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="თქვენი ელ-ფოსტა" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <FormField
-                            control={form.control}
-                            name="topic"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>შეტყობინების ტიპი</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="აირჩიეთ ტიპი" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {contactTopics.map((topic) => (
-                                      <SelectItem key={topic.value} value={topic.value}>{topic.label}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="subject"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>თემა</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="შეტყობინების თემა" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField
                           control={form.control}
-                          name="message"
+                          name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>შეტყობინება</FormLabel>
+                              <FormLabel>სახელი და გვარი</FormLabel>
                               <FormControl>
-                                <Textarea placeholder="დაწერეთ თქვენი შეტყობინება..." className="min-h-32" {...field} />
+                                <Input placeholder="თქვენი სახელი და გვარი" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                        <Button type="submit" className="w-full" disabled={formSubmitting}>
-                          {formSubmitting ? 'იგზავნება...' : 'გაგზავნა'}
-                          <Send className="ml-2 h-4 w-4" />
-                        </Button>
-                      </form>
-                    </Form>
-                  )}
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>ელ-ფოსტა</FormLabel>
+                              <FormControl>
+                                <Input placeholder="თქვენი ელ-ფოსტა" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="topic"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>შეტყობინების ტიპი</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="აირჩიეთ ტიპი" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {contactTopics.map((topic) => (
+                                    <SelectItem key={topic.value} value={topic.value}>{topic.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="subject"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>თემა</FormLabel>
+                              <FormControl>
+                                <Input placeholder="შეტყობინების თემა" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name="message"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>შეტყობინება</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder="დაწერეთ თქვენი შეტყობინება..." className="min-h-32" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" className="w-full" disabled={formSubmitting}>
+                        {formSubmitting ? 'იგზავნება...' : 'გაგზავნა'}
+                        <Send className="ml-2 h-4 w-4" />
+                      </Button>
+                    </form>
+                  </Form>
                 </CardContent>
               </Card>
             </div>

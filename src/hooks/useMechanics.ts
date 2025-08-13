@@ -8,6 +8,7 @@ export type MechanicType = {
   profiles: {
     first_name: string;
     last_name: string;
+    phone?: string;
     city?: string;
     district?: string;
     avatar_url?: string;
@@ -201,7 +202,10 @@ export const useMechanics = () => {
           // Search in description
           const descriptionMatch = mechanic.description?.toLowerCase().includes(searchLower);
           
-          return firstNameMatch || lastNameMatch || specializationMatch || descriptionMatch;
+          // Search in phone (remove spaces and special characters for phone search)
+          const phoneMatch = mechanic.profiles.phone?.replace(/[\s\-\(\)]/g, '').includes(searchLower.replace(/[\s\-\(\)]/g, ''));
+          
+          return firstNameMatch || lastNameMatch || specializationMatch || descriptionMatch || phoneMatch;
         });
         
         console.log("✅ Enhanced search results:", transformedMechanics.length);
