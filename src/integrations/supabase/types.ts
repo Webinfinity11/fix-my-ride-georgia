@@ -50,6 +50,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "admin_logs_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "public_mechanic_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       booking_settings: {
@@ -169,6 +176,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_mechanic_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       car_brands: {
@@ -241,6 +255,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_mechanic_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -320,6 +341,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "chat_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_mechanic_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       chat_rooms: {
@@ -356,6 +384,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "public_mechanic_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -530,6 +565,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "mechanic_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "public_mechanic_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       mechanic_services: {
@@ -692,6 +734,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "public_mechanic_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       portfolio_items: {
@@ -837,6 +886,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_mechanic_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1006,11 +1062,53 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "public_mechanic_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      public_mechanic_profiles: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          created_at: string | null
+          district: string | null
+          first_name: string | null
+          id: string | null
+          is_verified: boolean | null
+          last_name: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string | null
+          district?: string | null
+          first_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          last_name?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string | null
+          district?: string | null
+          first_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          last_name?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       current_user_is_admin: {
