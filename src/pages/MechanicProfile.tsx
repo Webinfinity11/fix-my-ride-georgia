@@ -104,15 +104,18 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     const fetchMechanicData = async () => {
       setLoading(true);
       try {
-        // Fetch mechanic profile data (only public fields for verified mechanics)
+        // Fetch mechanic profile data
         const { data: mechanicData, error: mechanicError } = await supabase
           .from("profiles")
           .select(`
             id,
             first_name, 
             last_name, 
+            email, 
+            phone, 
             city, 
             district, 
+            street,
             is_verified,
             mechanic_profiles!inner(
               description, 
@@ -132,17 +135,17 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         
         if (mechanicError) throw mechanicError;
 
-        // Format the data to match MechanicType (only public fields)
+        // Format the data to match MechanicType
         const formattedMechanic: MechanicType = {
           id: mechanicData.id,
           profile: {
             first_name: mechanicData.first_name,
             last_name: mechanicData.last_name,
-            email: '', // Not available publicly for security
-            phone: '', // Not available publicly for security
+            email: mechanicData.email,
+            phone: mechanicData.phone,
             city: mechanicData.city,
             district: mechanicData.district,
-            street: '', // Not available publicly for security
+            street: mechanicData.street,
             is_verified: mechanicData.is_verified
           },
           mechanic_profile: mechanicData.mechanic_profiles
@@ -284,14 +287,17 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     // Refresh mechanic data to update rating
     if (id) {
       const fetchUpdatedMechanic = async () => {
-          const { data: mechanicData, error } = await supabase
+        const { data: mechanicData, error } = await supabase
           .from("profiles")
           .select(`
             id,
             first_name, 
             last_name, 
+            email, 
+            phone, 
             city, 
             district, 
+            street,
             is_verified,
             mechanic_profiles!inner(
               description, 
@@ -315,11 +321,11 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
             profile: {
               first_name: mechanicData.first_name,
               last_name: mechanicData.last_name,
-              email: '', // Not available publicly for security
-              phone: '', // Not available publicly for security
+              email: mechanicData.email,
+              phone: mechanicData.phone,
               city: mechanicData.city,
               district: mechanicData.district,
-              street: '', // Not available publicly for security
+              street: mechanicData.street,
               is_verified: mechanicData.is_verified
             },
             mechanic_profile: mechanicData.mechanic_profiles
