@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, ImageOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import ServiceGallery from "./ServiceGallery";
 import { createSlug } from "@/utils/slugUtils";
 
 interface ServiceType {
@@ -88,19 +87,45 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
     return phone;
   };
 
-  // Check if service has photos
-  const hasPhotos = service.photos && service.photos.length > 0;
+  // Get the main photo (first photo in array)
+  const mainPhoto = service.photos && service.photos.length > 0 ? service.photos[0] : null;
 
   return (
     <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
       <CardContent className="p-0">
-        {/* Service Gallery or Placeholder */}
+        {/* Main Photo or Placeholder */}
         <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
-          {hasPhotos ? (
-            <ServiceGallery 
-              photos={service.photos || []} 
-              serviceName={service.name}
-            />
+          {mainPhoto ? (
+            <div className="aspect-[4/3] relative">
+              <img 
+                src={mainPhoto} 
+                alt={service.name}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                onError={(e) => {
+                  // If image fails to load, show placeholder
+                  e.currentTarget.style.display = 'none';
+                  const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (placeholder) {
+                    placeholder.style.display = 'flex';
+                  }
+                }}
+              />
+              {/* Fallback placeholder (hidden by default) */}
+              <div 
+                className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 flex-col items-center justify-center border-b border-primary/10" 
+                style={{ display: 'none' }}
+              >
+                <div className="text-primary/30 mb-2">
+                  <ImageOff size={48} />
+                </div>
+                <div className="text-primary/60 text-sm font-medium">
+                  Fixup.ge
+                </div>
+                <div className="text-primary/40 text-xs mt-1">
+                  სერვისის ფოტო
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="aspect-[4/3] bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col items-center justify-center border-b border-primary/10">
               <div className="text-primary/30 mb-2">
