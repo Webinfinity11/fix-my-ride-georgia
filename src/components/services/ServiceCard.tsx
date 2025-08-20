@@ -1,180 +1,252 @@
-// src/components/ServiceGallery.tsx
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
-import clsx from "clsx";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, ImageOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { createSlug } from "@/utils/slugUtils";
 
-interface ServiceGalleryProps {
-  photos: string[];
-  serviceName?: string;
-  autoPlay?: boolean;
-  interval?: number; // ms
-  className?: string;
+interface ServiceType {
+  id: number;
+  name: string;
+  description: string | null;
+  estimated_hours: number | null;
+  city: string | null;
+  district: string | null;
+  address: string | null;
+  car_brands: string[] | null;
+  on_site_service: boolean;
+  accepts_card_payment: boolean;
+  accepts_cash_payment: boolean;
+  rating: number | null;
+  review_count: number | null;
+  photos: string[] | null;
+  category: {
+    id: number;
+    name: string;
+  } | null;
+  mechanic: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    rating: number | null;
+    phone_number?: string | null;
+  };
 }
 
-export default function ServiceGallery({
-  photos,
-  serviceName,
-  autoPlay = true,
-  interval = 4000,
-  className,
-}: ServiceGalleryProps) {
-  const cleaned = useMemo(
-    () => (Array.isArray(photos) ? photos.filter(Boolean) : []),
-    [photos]
-  );
+interface ServiceCardProps {
+  service: ServiceType;
+}
 
-  const [index, setIndex] = useState(0);
-  const [loaded, setLoaded] = useState<Record<number, boolean>>({});
-  const [error, setError] = useState<Record<number, boolean>>({});
-  const timerRef = useRef<number | null>(null);
-  const touchStartX = useRef<number | null>(null);
+const ServiceCard = ({ service }: ServiceCardProps) => {
+  const navigate = useNavigate();
+  const [showPhone, setShowPhone] = useState(false);
 
-  // Auto-play
-  useEffect(() => {
-    if (!autoPlay || cleaned.length <= 1) return;
-    timerRef.current = window.setInterval(() => {
-      setIndex((prev) => (prev + 1) % cleaned.length);
-    }, interval);
-    return () => {
-      if (timerRef.current) window.clearInterval(timerRef.current);
-    };
-  }, [autoPlay, interval, cleaned.length]);
-
-  // Preload next image for smoothness
-  useEffect(() => {
-    if (cleaned.length <= 1) return;
-    const next = (index + 1) % cleaned.length;
-    const img = new Image();
-    img.src = cleaned[next];
-  }, [index, cleaned]);
-
-  const goPrev = () => setIndex((prev) => (prev - 1 + cleaned.length) % cleaned.length);
-  const goNext = () => setIndex((prev) => (prev + 1) % cleaned.length);
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+  const handleViewDetails = () => {
+    const slug = createSlug(service.name);
+    navigate(`/service/${slug}`);
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(delta) > 40) {
-      delta > 0 ? goPrev() : goNext();
+
+  const handleViewMechanic = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/mechanic/${service.mechanic.id}`);
+  };
+
+  const handlePhoneClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!service.mechanic.phone_number) {
+      return;
     }
-    touchStartX.current = null;
+
+    if (!showPhone) {
+      // First click - show phone number
+      setShowPhone(true);
+    } else {
+      // Second click - make the call
+      window.location.href = `tel:${service.mechanic.phone_number}`;
+    }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") goPrev();
-    if (e.key === "ArrowRight") goNext();
+  const formatLocation = () => {
+    if (service.address) {
+      return service.address;
+    } else if (service.city && service.district) {
+      return `${service.city}, ${service.district}`;
+    } else if (service.city) {
+      return service.city;
+    }
+    return "მდებარეობა მითითებული არ არის";
   };
 
-  const currentSrc = cleaned[index];
+  const formatPhoneNumber = (phone: string) => {
+    // Format Georgian phone numbers nicely
+    if (phone.startsWith('+995')) {
+      return phone.replace('+995', '+995 ').replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    }
+    return phone;
+  };
+
+  // Get the main photo (first photo in array)
+  const mainPhoto = service.photos && service.photos.length > 0 ? service.photos[0] : null;
 
   return (
-    <div
-      className={clsx(
-        "relative group select-none",
-        "bg-gradient-to-br from-primary/5 to-primary/10",
-        "border-b border-primary/10",
-        className
-      )}
-      role="region"
-      aria-label={serviceName ? `${serviceName} gallery` : "Service gallery"}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-    >
-      {/* Main area (4:3) */}
-      <div className="aspect-[4/3] w-full overflow-hidden">
-        {/* Skeleton while loading */}
-        {!loaded[index] && !error[index] && (
-          <div className="absolute inset-0 animate-pulse bg-gray-200/60" />
-        )}
-
-        {/* Error fallback */}
-        {error[index] && (
-          <div className="absolute inset-0 flex items-center justify-center text-primary/40">
-            <div className="flex flex-col items-center">
-              <ImageOff className="w-10 h-10 mb-2" />
-              <span className="text-xs">ვერ ჩაიტვირთა ფოტო</span>
+    <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
+      <CardContent className="p-0">
+        {/* Main Photo or Placeholder */}
+        <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
+          {mainPhoto ? (
+            <div className="aspect-[4/3] relative">
+              <img 
+                src={mainPhoto} 
+                alt={service.name}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                onError={(e) => {
+                  // If image fails to load, show placeholder
+                  e.currentTarget.style.display = 'none';
+                  const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (placeholder) {
+                    placeholder.style.display = 'flex';
+                  }
+                }}
+              />
+              {/* Fallback placeholder (hidden by default) */}
+              <div 
+                className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 flex-col items-center justify-center border-b border-primary/10" 
+                style={{ display: 'none' }}
+              >
+                <div className="text-primary/30 mb-2">
+                  <ImageOff size={48} />
+                </div>
+                <div className="text-primary/60 text-sm font-medium">
+                  Fixup.ge
+                </div>
+                <div className="text-primary/40 text-xs mt-1">
+                  სერვისის ფოტო
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-
-        {/* Image */}
-        {currentSrc && !error[index] && (
-          <img
-            src={currentSrc}
-            alt={serviceName ? `${serviceName} photo ${index + 1}` : `photo ${index + 1}`}
-            className={clsx(
-              "h-full w-full object-cover transition-opacity duration-300",
-              loaded[index] ? "opacity-100" : "opacity-0"
-            )}
-            loading="lazy"
-            decoding="async"
-            onLoad={() => setLoaded((s) => ({ ...s, [index]: true }))}
-            onError={() => setError((s) => ({ ...s, [index]: true }))}
-            draggable={false}
-          />
-        )}
-      </div>
-
-      {/* Arrows (shown if >1 image) */}
-      {cleaned.length > 1 && (
-        <>
-          <button
-            type="button"
-            aria-label="Previous image"
-            onClick={(e) => {
-              e.stopPropagation();
-              goPrev();
-            }}
-            className={clsx(
-              "absolute left-2 top-1/2 -translate-y-1/2 z-10",
-              "rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow-sm",
-              "opacity-0 group-hover:opacity-100 transition-opacity"
-            )}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            type="button"
-            aria-label="Next image"
-            onClick={(e) => {
-              e.stopPropagation();
-              goNext();
-            }}
-            className={clsx(
-              "absolute right-2 top-1/2 -translate-y-1/2 z-10",
-              "rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow-sm",
-              "opacity-0 group-hover:opacity-100 transition-opacity"
-            )}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </>
-      )}
-
-      {/* Dots (no thumbnails) */}
-      {cleaned.length > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-          {cleaned.map((_, i) => (
-            <button
-              key={i}
-              aria-label={`Go to image ${i + 1}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIndex(i);
-              }}
-              className={clsx(
-                "h-1.5 rounded-full transition-all",
-                i === index ? "w-4 bg-white shadow" : "w-2 bg-white/60 hover:bg-white"
-              )}
-            />
-          ))}
+          ) : (
+            <div className="aspect-[4/3] bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col items-center justify-center border-b border-primary/10">
+              <div className="text-primary/30 mb-2">
+                <ImageOff size={48} />
+              </div>
+              <div className="text-primary/60 text-sm font-medium">
+                Fixup.ge
+              </div>
+              <div className="text-primary/40 text-xs mt-1">
+                სერვისის ფოტო
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+
+        <div className="p-4 space-y-3">
+          {/* Header - Title is now clickable */}
+          <div className="space-y-2">
+            <div className="flex items-start justify-between">
+              <h3 
+                className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
+                onClick={handleViewDetails}
+              >
+                {service.name}
+              </h3>
+              {service.category && (
+                <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
+                  {service.category.name}
+                </Badge>
+              )}
+            </div>
+
+            {service.description && (
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {service.description}
+              </p>
+            )}
+          </div>
+          
+          {/* Location */}
+          <div className="flex items-start text-sm text-gray-600">
+            <MapPin className="w-4 h-4 mr-1 text-primary flex-shrink-0 mt-0.5" />
+            <span className="line-clamp-2">{formatLocation()}</span>
+          </div>
+
+          {/* Mechanic Info */}
+          <div className="flex items-center justify-between py-2 border-t border-gray-100">
+            <div className="flex items-center space-x-2">
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  {service.mechanic.first_name} {service.mechanic.last_name}
+                </p>
+                {service.mechanic.rating && (
+                  <div className="flex items-center space-x-1">
+                    <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                    <span className="text-xs text-gray-600">
+                      {service.mechanic.rating.toFixed(1)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleViewMechanic}
+              className="text-primary hover:bg-primary/5"
+            >
+              <ExternalLink className="w-3 h-3 mr-1" />
+               პროფილი
+            </Button>
+          </div>
+
+          {/* Features */}
+          <div className="flex flex-wrap gap-2">
+            {service.on_site_service && (
+              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                <Car className="w-3 h-3 mr-1" />
+                ადგილზე მისვლა
+              </Badge>
+            )}
+            {service.accepts_card_payment && (
+              <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                <CreditCard className="w-3 h-3 mr-1" />
+                ბარათი
+              </Badge>
+            )}
+            {service.accepts_cash_payment && (
+              <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-800">
+                <Banknote className="w-3 h-3 mr-1" />
+                ნაღდი
+              </Badge>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-2">
+            {/* Phone Button */}
+            {service.mechanic.phone_number && (
+              <Button 
+                onClick={handlePhoneClick}
+                variant="outline"
+                className="w-full border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                {showPhone ? formatPhoneNumber(service.mechanic.phone_number) : "დარეკვა"}
+              </Button>
+            )}
+            
+            {/* Details Button */}
+            <Button 
+              onClick={handleViewDetails} 
+              className="w-full bg-primary hover:bg-primary-light transition-colors"
+            >
+              დეტალების ნახვა
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
-}
+};
+
+export default ServiceCard;
