@@ -97,10 +97,6 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         {/* Service Gallery or Placeholder */}
         <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
           {hasPhotos ? (
-            <ServiceGallery 
-              photos={service.photos || []} 
-              serviceName={service.name}
-            />
           ) : (
             <div className="aspect-[4/3] bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col items-center justify-center border-b border-primary/10">
               <div className="text-primary/30 mb-2">
