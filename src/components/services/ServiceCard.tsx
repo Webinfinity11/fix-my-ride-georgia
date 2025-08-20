@@ -91,12 +91,12 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const mainPhoto = service.photos && service.photos.length > 0 ? service.photos[0] : null;
 
   return (
-    <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
+    <Card className="group border border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-lg">
       <CardContent className="p-0">
         {/* Main Photo or Placeholder */}
         <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
           {mainPhoto ? (
-            <div className="aspect-[4/3] relative border-b border-primary/10">
+            <div className="aspect-[4/3] relative border-b border-gray-200">
               <img 
                 src={mainPhoto} 
                 alt={service.name}
@@ -112,29 +112,29 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
               />
               {/* Fallback placeholder (hidden by default) */}
               <div 
-                className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 flex-col items-center justify-center" 
+                className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 flex-col items-center justify-center" 
                 style={{ display: 'none' }}
               >
-                <div className="text-primary/30 mb-2">
+                <div className="text-gray-400 mb-2">
                   <ImageOff size={48} />
                 </div>
-                <div className="text-primary/60 text-sm font-medium">
+                <div className="text-gray-600 text-sm font-medium">
                   Fixup.ge
                 </div>
-                <div className="text-primary/40 text-xs mt-1">
+                <div className="text-gray-500 text-xs mt-1">
                   სერვისის ფოტო
                 </div>
               </div>
             </div>
           ) : (
-            <div className="aspect-[4/3] bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col items-center justify-center border-b border-primary/10">
-              <div className="text-primary/30 mb-2">
+            <div className="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col items-center justify-center border-b border-gray-200">
+              <div className="text-gray-400 mb-2">
                 <ImageOff size={48} />
               </div>
-              <div className="text-primary/60 text-sm font-medium">
+              <div className="text-gray-600 text-sm font-medium">
                 Fixup.ge
               </div>
-              <div className="text-primary/40 text-xs mt-1">
+              <div className="text-gray-500 text-xs mt-1">
                 სერვისის ფოტო
               </div>
             </div>
