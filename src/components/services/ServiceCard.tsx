@@ -96,7 +96,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
         {/* Main Photo or Placeholder */}
         <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
           {mainPhoto ? (
-            <div className="aspect-[4/3] relative">
+            <div className="aspect-[4/3] relative border-b border-primary/10">
               <img 
                 src={mainPhoto} 
                 alt={service.name}
@@ -112,7 +112,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
               />
               {/* Fallback placeholder (hidden by default) */}
               <div 
-                className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 flex-col items-center justify-center border-b border-primary/10" 
+                className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 flex-col items-center justify-center" 
                 style={{ display: 'none' }}
               >
                 <div className="text-primary/30 mb-2">
