@@ -596,41 +596,91 @@ const ServiceDetail = () => {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="flex items-start gap-4 mb-8">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/services")}
-            className="shrink-0 mt-1"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            უკან
-          </Button>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              {seoData?.h1_title || service.name}
-            </h1>
-            {seoData?.h2_description && (
-              <h2 className="text-lg text-gray-600 mb-3">
-                {seoData.h2_description}
-              </h2>
-            )}
-            <div className="flex flex-wrap gap-2">
-              {service.category && (
-                <Badge variant="secondary" className="bg-primary/10 text-primary">
-                  {service.category.name}
-                </Badge>
-              )}
-              {service.on_site_service && (
-                <Badge variant="outline">
-                  ადგილზე მომსახურება
-                </Badge>
-              )}
-              {!shouldShowPrice(service.price_from, service.price_to) && (
-                <Badge variant="outline">
-                  ფასი შეთანხმებით
-                </Badge>
-              )}
+        <div className="bg-gradient-to-r from-background via-background/95 to-primary/5 rounded-xl border border-border/40 p-6 mb-8 backdrop-blur-sm">
+          <div className="flex items-start gap-6">
+            <div className="flex flex-col items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/services")}
+                className="shrink-0 hover:shadow-md transition-all duration-200"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                უკან
+              </Button>
+              
+              {/* Additional space utilization - Quick actions */}
+              <div className="hidden md:flex flex-col gap-2 min-w-[80px]">
+                <div className="text-xs text-muted-foreground text-center">
+                  სწრაფი
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate(`/book?service=${service.id}`)}
+                    className="text-xs px-2 py-1 h-auto hover:bg-primary/10"
+                  >
+                    დაჯავშვნა
+                  </Button>
+                  <SendMessageButton 
+                    mechanicId={service.mechanic.id}
+                    mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs px-2 py-1 h-auto hover:bg-primary/10"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="min-w-0 flex-1">
+              <div className="mb-4">
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
+                  {seoData?.h1_title || service.name}
+                </h1>
+                {seoData?.h2_description && (
+                  <h2 className="text-lg text-muted-foreground leading-relaxed">
+                    {seoData.h2_description}
+                  </h2>
+                )}
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mb-3">
+                {service.category && (
+                  <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                    {service.category.name}
+                  </Badge>
+                )}
+                {service.on_site_service && (
+                  <Badge variant="outline" className="hover:bg-accent transition-colors">
+                    ადგილზე მომსახურება
+                  </Badge>
+                )}
+                {!shouldShowPrice(service.price_from, service.price_to) && (
+                  <Badge variant="outline" className="hover:bg-accent transition-colors">
+                    ფასი შეთანხმებით
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Location info in header for better space utilization */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>
+                  {service.city && service.district ? `${service.city}, ${service.district}` : service.city}
+                </span>
+                {service.rating && (
+                  <>
+                    <span className="text-muted-foreground/50">•</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <span className="font-medium">{service.rating}</span>
+                      <span className="text-xs">({service.review_count || 0})</span>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
