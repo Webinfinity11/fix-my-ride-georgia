@@ -457,7 +457,7 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
             setSelectedService(service);
             
             // Move clicked service to top of the list by scrolling to top of sidebar
-            setTimeout(() => {
+            requestAnimationFrame(() => {
               const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
               if (sidebarScrollContainer) {
                 sidebarScrollContainer.scrollTo({
@@ -465,7 +465,7 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
                   behavior: 'smooth'
                 });
               }
-            }, 100);
+            });
           });
 
           // Auto-open popup for selected service

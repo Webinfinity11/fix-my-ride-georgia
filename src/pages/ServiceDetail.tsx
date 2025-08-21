@@ -79,7 +79,9 @@ const ServiceDetail = () => {
   const { seoData } = useSEOData('service', service?.id.toString() || '');
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
     if (id) fetchServiceBySlugOrId(id);
   }, [id]);
 
