@@ -166,7 +166,10 @@ const ModernServiceFilters = ({
                   value={selectedCategory.toString()}
                   onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}
                 >
-                  <SelectTrigger className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full">
+                  <SelectTrigger 
+                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
+                    aria-label="კატეგორიის არჩევა"
+                  >
                     <SelectValue placeholder="კატეგორია" />
                   </SelectTrigger>
                   <SelectContent className="z-50">
@@ -190,7 +193,10 @@ const ModernServiceFilters = ({
                   value={selectedCity || "all"}
                   onValueChange={handleCityChange}
                 >
-                  <SelectTrigger className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full">
+                  <SelectTrigger 
+                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
+                    aria-label="ქალაქის არჩევა"
+                  >
                     <SelectValue placeholder="ქალაქი" />
                   </SelectTrigger>
                   <SelectContent className="z-50">
@@ -240,7 +246,10 @@ const ModernServiceFilters = ({
                   value={minRating?.toString() || "all"}
                   onValueChange={(value) => setMinRating(value === "all" ? null : parseInt(value))}
                 >
-                  <SelectTrigger className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full">
+                  <SelectTrigger 
+                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
+                    aria-label="რეიტინგის არჩევა"
+                  >
                     <SelectValue placeholder="რეიტინგი" />
                   </SelectTrigger>
                   <SelectContent className="z-50">
