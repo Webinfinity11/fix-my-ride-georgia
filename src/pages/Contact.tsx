@@ -268,7 +268,7 @@ const Contact = () => {
                       <Phone className="h-5 w-5 text-primary mr-3 mt-0.5" />
                       <div>
                         <h3 className="font-medium">ტელეფონი</h3>
-                        <p className="text-muted-foreground">+995 32 222 22 22</p>
+                        <p className="text-muted-foreground">+995 574 04 79 94</p>
                         <p className="text-sm text-muted-foreground">ორშ - პარ: 10:00 - 18:00</p>
                       </div>
                     </div>
