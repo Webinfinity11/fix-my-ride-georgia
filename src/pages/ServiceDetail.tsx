@@ -480,7 +480,7 @@ const ServiceDetail = () => {
             <BreadcrumbItem>
               <BreadcrumbLink href="/">მთავარი</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            
             <BreadcrumbItem>
               <BreadcrumbLink href="/services">სერვისები</BreadcrumbLink>
             </BreadcrumbItem>
@@ -492,60 +492,28 @@ const ServiceDetail = () => {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="mb-8">
-          {/* Mobile Layout */}
-          <div className="md:hidden">
-            <div className="mb-4">
-              <Button variant="outline" size="sm" onClick={() => navigate("/services")}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                უკან
-              </Button>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                {seoData?.h1_title || service.name}
-              </h1>
-              {seoData?.h2_description && <h2 className="text-lg text-gray-600 mb-3">
-                  {seoData.h2_description}
-                </h2>}
-              <div className="flex flex-wrap gap-2">
-                {service.category && <Badge variant="secondary" className="bg-primary/10 text-primary">
-                    {service.category.name}
-                  </Badge>}
-                {service.on_site_service && <Badge variant="outline">
-                    ადგილზე მომსახურება
-                  </Badge>}
-                {!shouldShowPrice(service.price_from, service.price_to) && <Badge variant="outline">
-                    ფასი შეთანხმებით
-                  </Badge>}
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop Layout */}
-          <div className="hidden md:flex items-start gap-4">
-            <Button variant="outline" size="sm" onClick={() => navigate("/services")} className="shrink-0 mt-1">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              უკან
-            </Button>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {seoData?.h1_title || service.name}
-              </h1>
-              {seoData?.h2_description && <h2 className="text-lg text-gray-600 mb-3">
-                  {seoData.h2_description}
-                </h2>}
-              <div className="flex flex-wrap gap-2">
-                {service.category && <Badge variant="secondary" className="bg-primary/10 text-primary">
-                    {service.category.name}
-                  </Badge>}
-                {service.on_site_service && <Badge variant="outline">
-                    ადგილზე მომსახურება
-                  </Badge>}
-                {!shouldShowPrice(service.price_from, service.price_to) && <Badge variant="outline">
-                    ფასი შეთანხმებით
-                  </Badge>}
-              </div>
+        <div className="flex items-start gap-4 mb-8">
+          <Button variant="outline" size="sm" onClick={() => navigate("/services")} className="shrink-0 mt-1">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            უკან
+          </Button>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              {seoData?.h1_title || service.name}
+            </h1>
+            {seoData?.h2_description && <h2 className="text-lg text-gray-600 mb-3">
+                {seoData.h2_description}
+              </h2>}
+            <div className="flex flex-wrap gap-2">
+              {service.category && <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  {service.category.name}
+                </Badge>}
+              {service.on_site_service && <Badge variant="outline">
+                  ადგილზე მომსახურება
+                </Badge>}
+              {!shouldShowPrice(service.price_from, service.price_to) && <Badge variant="outline">
+                  ფასი შეთანხმებით
+                </Badge>}
             </div>
           </div>
         </div>
