@@ -110,7 +110,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
     <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
       <CardContent className="p-0" onClick={handleCardClick}>
         {/* Main Photo or Placeholder */}
-        <div className="relative overflow-hidden cursor-pointer" onClick={() => onMapFocus?.()}>
+        <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
               <img
@@ -140,7 +140,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
             <div className="flex items-start justify-between">
               <h3 
                 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
-                onClick={() => onMapFocus?.()}
+                onClick={handleViewDetails}
               >
                 {service.name}
               </h3>
@@ -215,13 +215,13 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-2">
-            {/* Phone Button */}
+          <div className="flex gap-2">
+            {/* Call Button */}
             {service.mechanic.phone_number && (
               <Button 
                 onClick={handlePhoneClick}
                 variant="outline"
-                className="w-full border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
+                className="flex-1 border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
               >
                 <Phone className="w-4 h-4 mr-2" />
                 {showPhone ? formatPhoneNumber(service.mechanic.phone_number) : "დარეკვა"}
@@ -231,7 +231,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
             {/* Details Button */}
             <Button 
               onClick={handleViewDetails} 
-              className="w-full bg-primary hover:bg-primary-light transition-colors"
+              className="flex-1 bg-primary hover:bg-primary-light transition-colors"
             >
               დეტალების ნახვა
             </Button>
