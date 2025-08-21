@@ -118,7 +118,7 @@ export const ChatSidebar = () => {
                       {/* Avatar */}
                       <div className="relative">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src="" />
+                          <AvatarImage src="" alt={name || 'Chat room'} />
                           <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-medium">
                             {room.type === 'channel' ? '#' : getInitials(name)}
                           </AvatarFallback>
