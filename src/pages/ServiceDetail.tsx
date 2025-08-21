@@ -23,7 +23,8 @@ import {
   Image,
   Video,
   Award,
-  CheckCircle
+  CheckCircle,
+  Navigation
 } from "lucide-react";
 import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
@@ -265,6 +266,13 @@ const ServiceDetail = () => {
 
   const handleLocationChange = () => {
     // Read-only map display
+  };
+
+  const handleGetDirections = () => {
+    if (service && service.latitude && service.longitude) {
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${service.latitude},${service.longitude}`;
+      window.open(googleMapsUrl, '_blank');
+    }
   };
 
   // Loading State
@@ -804,7 +812,7 @@ const ServiceDetail = () => {
                       📍 {service.address}
                     </p>
                   )}
-                  <div className="rounded-lg overflow-hidden border">
+                  <div className="rounded-lg overflow-hidden border mb-4">
                     <LocationMapPicker
                       latitude={service.latitude}
                       longitude={service.longitude}
@@ -812,6 +820,14 @@ const ServiceDetail = () => {
                       interactive={false}
                     />
                   </div>
+                  <Button 
+                    onClick={handleGetDirections}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <Navigation className="h-4 w-4 mr-2" />
+                    მარშრუტის ნახვა
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -872,7 +888,7 @@ const ServiceDetail = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="rounded-lg overflow-hidden border">
+                  <div className="rounded-lg overflow-hidden border mb-4">
                     <LocationMapPicker
                       latitude={service.latitude}
                       longitude={service.longitude}
@@ -880,6 +896,14 @@ const ServiceDetail = () => {
                       interactive={false}
                     />
                   </div>
+                  <Button 
+                    onClick={handleGetDirections}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <Navigation className="h-4 w-4 mr-2" />
+                    მარშრუტის ნახვა
+                  </Button>
                 </CardContent>
               </Card>
             )}
