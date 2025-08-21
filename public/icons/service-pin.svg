@@ -1,0 +1,25 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- Professional automotive service icon with car and tools -->
+  
+  <!-- Car silhouette -->
+  <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.28 5.42 5.08 6.01L4 9.5V19C4 19.55 4.45 20 5 20H6C6.55 20 7 19.55 7 19V18H17V19C17 19.55 17.45 20 18 20H19C19.55 20 20 19.55 20 19V9.5L18.92 6.01Z"/>
+  
+  <!-- Car windows -->
+  <path d="M6.85 7H17.15L17.77 9H6.23L6.85 7Z" fill="white" fill-opacity="0.3"/>
+  
+  <!-- Wheels -->
+  <circle cx="7.5" cy="15.5" r="1.5"/>
+  <circle cx="16.5" cy="15.5" r="1.5"/>
+  
+  <!-- Wheel inner circles -->
+  <circle cx="7.5" cy="15.5" r="0.75" fill="white" fill-opacity="0.4"/>
+  <circle cx="16.5" cy="15.5" r="0.75" fill="white" fill-opacity="0.4"/>
+  
+  <!-- Wrench tool crossing the car -->
+  <rect x="11.5" y="2" width="1" height="10" rx="0.5" transform="rotate(45 12 7)"/>
+  <rect x="11.5" y="2" width="1" height="10" rx="0.5" transform="rotate(-45 12 7)"/>
+  
+  <!-- Tool heads -->
+  <circle cx="8.5" cy="3.5" r="1" fill="currentColor"/>
+  <circle cx="15.5" cy="3.5" r="1" fill="currentColor"/>
+</svg>

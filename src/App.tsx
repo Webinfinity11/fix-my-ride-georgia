@@ -27,6 +27,7 @@ import CategoryList from "./pages/CategoryList";
 import Sitemap from "./pages/Sitemap";
 import SitemapXML from "./pages/SitemapXML";
 import SitemapSearchXML from "./pages/SitemapSearchXML";
+import Map from "./pages/Map";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/search" element={<Search />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/map" element={<Map />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

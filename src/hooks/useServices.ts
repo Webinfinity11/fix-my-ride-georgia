@@ -13,6 +13,8 @@ export type ServiceType = {
   city: string | null;
   district: string | null;
   address: string | null;
+  latitude: number | null;
+  longitude: number | null;
   car_brands: string[] | null;
   on_site_service: boolean;
   accepts_card_payment: boolean;
@@ -139,6 +141,8 @@ export const useServices = () => {
           city,
           district,
           address,
+          latitude,
+          longitude,
           car_brands,
           on_site_service,
           accepts_card_payment,
@@ -241,6 +245,8 @@ export const useServices = () => {
           city: service.city,
           district: service.district,
           address: service.address,
+          latitude: service.latitude,
+          longitude: service.longitude,
           car_brands: service.car_brands,
           on_site_service: service.on_site_service || false,
           accepts_card_payment: service.accepts_card_payment || false,

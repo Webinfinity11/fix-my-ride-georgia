@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Menu, User, Plus, Settings, LogOut, MessageCircle, Home, Wrench, Info, Phone } from 'lucide-react';
+import { Menu, User, Plus, Settings, LogOut, MessageCircle, Home, Wrench, Info, Phone, Map } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export const MobileMenu = () => {
@@ -62,6 +62,14 @@ export const MobileMenu = () => {
             >
               <Wrench className="h-5 w-5" />
               <span>სერვისები</span>
+            </Link>
+            
+            <Link 
+              to="/map" 
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
+            >
+              <Map className="h-5 w-5" />
+              <span>რუკა</span>
             </Link>
             
             <Link 

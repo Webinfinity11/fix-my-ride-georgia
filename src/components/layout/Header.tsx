@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Settings, Plus, MessageCircle } from "lucide-react";
+import { LogOut, User, Settings, Plus, MessageCircle, Map } from "lucide-react";
 import { toast } from "sonner";
 import { MobileMenu } from "./MobileMenu";
 
@@ -54,6 +54,10 @@ const Header = () => {
           </Link>
           <Link to="/contact" className="text-gray-700 hover:text-primary transition-colors font-medium">
             კონტაქტი
+          </Link>
+          <Link to="/map" className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium">
+            <Map className="h-4 w-4" />
+            <span>რუკა</span>
           </Link>
           <Link to="/chat" className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium">
             <MessageCircle className="h-4 w-4" />

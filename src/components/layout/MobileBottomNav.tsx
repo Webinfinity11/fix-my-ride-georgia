@@ -2,7 +2,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3 } from 'lucide-react';
+import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map } from 'lucide-react';
 
 const MobileBottomNav = () => {
   const location = useLocation();
@@ -34,10 +34,10 @@ const MobileBottomNav = () => {
       onClick: () => navigate('/')
     },
     {
-      icon: Search,
-      label: 'Services',
-      path: '/services',
-      onClick: () => navigate('/services')
+      icon: Map,
+      label: 'Map',
+      path: '/map',
+      onClick: () => navigate('/map')
     },
     {
       icon: !user ? Grid3x3 : (user.role === 'mechanic' ? Plus : Car),

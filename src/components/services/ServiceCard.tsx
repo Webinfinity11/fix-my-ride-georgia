@@ -36,9 +36,10 @@ interface ServiceType {
 
 interface ServiceCardProps {
   service: ServiceType;
+  onMapFocus?: () => void;
 }
 
-const ServiceCard = ({ service }: ServiceCardProps) => {
+const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
   const navigate = useNavigate();
   const [showPhone, setShowPhone] = useState(false);
 
@@ -91,11 +92,25 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   const hasPhotos = service.photos && service.photos.length > 0;
   const mainPhoto = hasPhotos ? service.photos[0] : null;
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only trigger map focus if clicking on the card background (not on interactive elements)
+    const target = e.target as HTMLElement;
+    if (
+      !target.closest('button') && 
+      !target.closest('h3') && 
+      !target.closest('[role="button"]') &&
+      !target.closest('img') &&
+      onMapFocus
+    ) {
+      onMapFocus();
+    }
+  };
+
   return (
     <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
-      <CardContent className="p-0">
+      <CardContent className="p-0" onClick={handleCardClick}>
         {/* Main Photo or Placeholder */}
-        <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
+        <div className="relative overflow-hidden cursor-pointer" onClick={() => onMapFocus?.()}>
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
               <img
@@ -125,7 +140,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             <div className="flex items-start justify-between">
               <h3 
                 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
-                onClick={handleViewDetails}
+                onClick={() => onMapFocus?.()}
               >
                 {service.name}
               </h3>
