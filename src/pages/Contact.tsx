@@ -55,15 +55,15 @@ const officeLocations = [
   {
     city: "თბილისი",
     address: "ვაჟა-ფშაველას გამზ. 76",
-    phone: "+995 32 222 33 44",
-    email: "tbilisi@avtokhelo.ge",
+    phone: "+995 574 04 79 94",
+    email: "tbilisi@fixup.ge",
     hours: "ორშ - პარ: 10:00 - 18:00",
   },
   {
     city: "ბათუმი",
     address: "ჭავჭავაძის ქ. 78",
-    phone: "+995 32 222 55 66",
-    email: "batumi@avtokhelo.ge",
+    phone: "+995 574 04 79 94",
+    email: "batumi@fixup.ge",
     hours: "ორშ - პარ: 10:00 - 18:00",
   },
 ];
