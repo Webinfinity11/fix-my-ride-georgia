@@ -18,7 +18,7 @@ const MobileBottomNav = () => {
 
   const handleAddClick = () => {
     if (!user) {
-      navigate('/category');
+      navigate('/services');
     } else if (user.role === 'mechanic') {
       navigate('/add-service');
     } else {
