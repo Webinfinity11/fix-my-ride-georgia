@@ -298,7 +298,7 @@ const Index = () => {
                       <div className="p-2 bg-gradient-to-r from-primary to-blue-600 rounded-full">
                         <Search className="h-5 w-5 text-white" />
                       </div>
-                      <h3 className="text-xl lg:text-2xl font-bold text-gray-900">დეტალური ძიება</h3>
+                      <h2 className="text-xl lg:text-2xl font-bold text-gray-900">დეტალური ძიება</h2>
                     </div>
                     
                     <ModernServiceFilters
