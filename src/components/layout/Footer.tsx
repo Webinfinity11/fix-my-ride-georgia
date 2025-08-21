@@ -43,13 +43,13 @@ const Footer = () => {
                 იპოვეთ საუკეთესო ხელოსანი თქვენი ავტომობილისთვის.
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors">
+                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors" aria-label="Facebook-ის გვერდი">
                   <Facebook size={20} />
                 </a>
-                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors">
+                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors" aria-label="Instagram-ის გვერდი">
                   <Instagram size={20} />
                 </a>
-                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors">
+                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors" aria-label="Twitter-ის გვერდი">
                   <Twitter size={20} />
                 </a>
               </div>
