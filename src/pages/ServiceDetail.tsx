@@ -9,23 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { 
-  Clock, 
-  MapPin, 
-  Star, 
-  CreditCard, 
-  Banknote, 
-  Car, 
-  ArrowLeft,
-  Phone,
-  Eye,
-  EyeOff,
-  Image,
-  Video,
-  Award,
-  CheckCircle,
-  Navigation
-} from "lucide-react";
+import { Clock, MapPin, Star, CreditCard, Banknote, Car, ArrowLeft, Phone, Eye, EyeOff, Image, Video, Award, CheckCircle, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
 import ServiceReviews from "@/components/reviews/ServiceReviews";
@@ -35,7 +19,6 @@ import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
-
 interface ServiceType {
   id: number;
   name: string;
@@ -68,39 +51,36 @@ interface ServiceType {
     phone: string | null;
   };
 }
-
 const ServiceDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
   const navigate = useNavigate();
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
-  
-  const { seoData } = useSEOData('service', service?.id.toString() || '');
-
+  const {
+    seoData
+  } = useSEOData('service', service?.id.toString() || '');
   useEffect(() => {
     requestAnimationFrame(() => {
       window.scrollTo(0, 0);
     });
     if (id) fetchServiceBySlugOrId(id);
   }, [id]);
-
   const isValidUUID = (uuid: string) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(uuid);
   };
-
   const fetchServiceBySlugOrId = async (slugOrId: string) => {
     setLoading(true);
-    
     try {
       let serviceData, serviceError;
-
       if (/^\d+$/.test(slugOrId)) {
         // Fetch by ID
-        const result = await supabase
-          .from("mechanic_services")
-          .select(`
+        const result = await supabase.from("mechanic_services").select(`
             id, name, description, price_from, price_to, estimated_hours,
             city, district, address, latitude, longitude, car_brands,
             on_site_service, accepts_card_payment, accepts_cash_payment,
@@ -110,18 +90,12 @@ const ServiceDetail = () => {
               id, rating,
               profiles(id, first_name, last_name, phone)
             )
-          `)
-          .eq("id", parseInt(slugOrId))
-          .eq("is_active", true)
-          .single();
-        
+          `).eq("id", parseInt(slugOrId)).eq("is_active", true).single();
         serviceData = result.data;
         serviceError = result.error;
       } else {
         // Fetch by slug
-        const result = await supabase
-          .from("mechanic_services")
-          .select(`
+        const result = await supabase.from("mechanic_services").select(`
             id, name, description, price_from, price_to, estimated_hours,
             city, district, address, latitude, longitude, car_brands,
             on_site_service, accepts_card_payment, accepts_cash_payment,
@@ -131,36 +105,29 @@ const ServiceDetail = () => {
               id, rating,
               profiles(id, first_name, last_name, phone)
             )
-          `)
-          .eq("is_active", true);
-        
+          `).eq("is_active", true);
         if (result.data) {
-          const foundService = result.data.find(service => 
-            createSlug(service.name) === slugOrId
-          );
-          
+          const foundService = result.data.find(service => createSlug(service.name) === slugOrId);
           if (foundService) {
             serviceData = foundService;
             serviceError = null;
-            
             const newSlug = createSlug(foundService.name);
             if (newSlug !== slugOrId) {
               window.history.replaceState(null, '', `/service/${newSlug}`);
             }
           } else {
-            serviceError = { message: "Service not found" };
+            serviceError = {
+              message: "Service not found"
+            };
           }
         } else {
           serviceError = result.error;
         }
       }
-
       if (serviceError || !serviceData) {
         throw new Error("Service not found");
       }
-
       await processServiceData(serviceData);
-      
     } catch (error) {
       console.error("Error fetching service:", error);
       toast.error("სერვისის ჩატვირთვისას შეცდომა დაფიქსირდა");
@@ -169,38 +136,26 @@ const ServiceDetail = () => {
       setLoading(false);
     }
   };
-
   const processServiceData = async (serviceData: any) => {
-    const category = Array.isArray(serviceData.service_categories) 
-      ? serviceData.service_categories[0] 
-      : serviceData.service_categories;
-
-    const mechanicProfile = Array.isArray(serviceData.mechanic_profiles) 
-      ? serviceData.mechanic_profiles[0] 
-      : serviceData.mechanic_profiles;
-
+    const category = Array.isArray(serviceData.service_categories) ? serviceData.service_categories[0] : serviceData.service_categories;
+    const mechanicProfile = Array.isArray(serviceData.mechanic_profiles) ? serviceData.mechanic_profiles[0] : serviceData.mechanic_profiles;
     let mechanicData = {
       id: serviceData.mechanic_id || "",
       first_name: "უცნობი",
       last_name: "ხელოსანი",
       rating: null,
-      phone: null,
+      phone: null
     };
-
     if (mechanicProfile?.profiles) {
-      const profile = Array.isArray(mechanicProfile.profiles) 
-        ? mechanicProfile.profiles[0] 
-        : mechanicProfile.profiles;
-      
+      const profile = Array.isArray(mechanicProfile.profiles) ? mechanicProfile.profiles[0] : mechanicProfile.profiles;
       mechanicData = {
         id: profile?.id || serviceData.mechanic_id || "",
         first_name: profile?.first_name || "უცნობი",
         last_name: profile?.last_name || "ხელოსანი",
         rating: mechanicProfile?.rating || null,
-        phone: profile?.phone || null,
+        phone: profile?.phone || null
       };
     }
-
     const transformedService: ServiceType = {
       id: serviceData.id,
       name: serviceData.name || "უცნობი სერვისი",
@@ -227,37 +182,30 @@ const ServiceDetail = () => {
       } : null,
       mechanic: mechanicData
     };
-
     setService(transformedService);
   };
-
   const handleReviewAdded = () => {
     if (service && id) {
       fetchServiceBySlugOrId(id);
     }
   };
-
   const maskPhoneNumber = (phone: string) => {
     if (!phone || phone.length < 3) return phone;
     const maskedPart = phone.slice(0, -3).replace(/\d/g, '*');
     const visiblePart = phone.slice(-3);
     return maskedPart + visiblePart;
   };
-
   const togglePhoneVisibility = () => {
     setShowFullPhone(!showFullPhone);
   };
-
   const formatPrice = (priceFrom: number | null, priceTo: number | null) => {
     if (!priceFrom && !priceTo) return null; // Return null instead of "ფასი შეთანხმებით"
-    
+
     if (priceFrom && priceFrom > 0 && priceTo && priceTo > 0 && priceFrom !== priceTo) {
       return `₾${priceFrom} - ₾${priceTo}`;
     }
-    
     if (priceFrom && priceFrom > 0) return `₾${priceFrom}`;
     if (priceTo && priceTo > 0) return `₾${priceTo}`;
-    
     return null; // Return null instead of "ფასი შეთანხმებით"
   };
 
@@ -265,11 +213,9 @@ const ServiceDetail = () => {
   const shouldShowPrice = (priceFrom: number | null, priceTo: number | null) => {
     return formatPrice(priceFrom, priceTo) !== null;
   };
-
   const handleLocationChange = () => {
     // Read-only map display
   };
-
   const handleGetDirections = () => {
     if (service && service.latitude && service.longitude) {
       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${service.latitude},${service.longitude}`;
@@ -279,8 +225,7 @@ const ServiceDetail = () => {
 
   // Loading State
   if (loading) {
-    return (
-      <Layout>
+    return <Layout>
         <Helmet>
           <title>იტვირთება... | AutoMechanico</title>
           <meta name="description" content="ავტოსერვისის ინფორმაცია იტვირთება..." />
@@ -301,14 +246,12 @@ const ServiceDetail = () => {
             </div>
           </div>
         </div>
-      </Layout>
-    );
+      </Layout>;
   }
 
   // Not Found State
   if (!service) {
-    return (
-      <Layout>
+    return <Layout>
         <Helmet>
           <title>სერვისი ვერ მოიძებნა | AutoMechanico</title>
           <meta name="description" content="მოთხოვნილი ავტოსერვისი ვერ მოიძებნა ან აღარ არსებობს." />
@@ -323,8 +266,7 @@ const ServiceDetail = () => {
             </Button>
           </div>
         </div>
-      </Layout>
-    );
+      </Layout>;
   }
 
   // Generate structured data for SEO
@@ -362,15 +304,15 @@ const ServiceDetail = () => {
       "worstRating": 1
     } : undefined
   };
-
   const pageTitle = seoData?.meta_title || `${service.name} - ${service.mechanic.first_name} ${service.mechanic.last_name} | FixUp.ge`;
-  const pageDescription = seoData?.meta_description || (service.description 
-    ? `${service.description.substring(0, 150)}...`
-    : `${service.name} ავტოსერვისი ${service.city}-ში. ხელოსანი: ${service.mechanic.first_name} ${service.mechanic.last_name}. ${service.rating ? `შეფასება: ${service.rating}/5` : ''}`);
+  const pageDescription = seoData?.meta_description || (service.description ? `${service.description.substring(0, 150)}...` : `${service.name} ავტოსერვისი ${service.city}-ში. ხელოსანი: ${service.mechanic.first_name} ${service.mechanic.last_name}. ${service.rating ? `შეფასება: ${service.rating}/5` : ''}`);
 
   // Contact Card Component
-  const ContactCard = ({ className = "" }: { className?: string }) => (
-    <Card className={className}>
+  const ContactCard = ({
+    className = ""
+  }: {
+    className?: string;
+  }) => <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Award className="h-5 w-5 text-primary" />
@@ -390,18 +332,15 @@ const ServiceDetail = () => {
             <h4 className="font-semibold text-gray-900">
               {service.mechanic.first_name} {service.mechanic.last_name}
             </h4>
-            {service.mechanic.rating && (
-              <div className="flex items-center gap-1">
+            {service.mechanic.rating && <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm font-medium">{service.mechanic.rating}</span>
                 <span className="text-xs text-gray-500">შეფასება</span>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
 
-        {service.mechanic.phone && (
-          <div className="bg-gray-50 rounded-lg p-3">
+        {service.mechanic.phone && <div className="bg-gray-50 rounded-lg p-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-primary" />
@@ -409,78 +348,52 @@ const ServiceDetail = () => {
                   {showFullPhone ? service.mechanic.phone : maskPhoneNumber(service.mechanic.phone)}
                 </span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={togglePhoneVisibility}
-                className="h-8 px-2 text-xs"
-              >
-                {showFullPhone ? (
-                  <>
+              <Button variant="ghost" size="sm" onClick={togglePhoneVisibility} className="h-8 px-2 text-xs">
+                {showFullPhone ? <>
                     <EyeOff className="h-3 w-3 mr-1" />
                     დამალვა
-                  </>
-                ) : (
-                  <>
+                  </> : <>
                     <Eye className="h-3 w-3 mr-1" />
                     ნახვა
-                  </>
-                )}
+                  </>}
               </Button>
             </div>
-          </div>
-        )}
+          </div>}
 
         <div className="grid grid-cols-2 gap-2">
-          {service.mechanic.phone && (
-            <Button variant="outline" size="sm" asChild>
+          {service.mechanic.phone && <Button variant="outline" size="sm" asChild>
               <a href={`tel:${service.mechanic.phone}`}>
                 <Phone className="h-4 w-4 mr-1" />
                 დარეკვა
               </a>
-            </Button>
-          )}
-          <SendMessageButton 
-            mechanicId={service.mechanic.id}
-            mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
-            variant="outline"
-            size="sm"
-          />
+            </Button>}
+          <SendMessageButton mechanicId={service.mechanic.id} mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`} variant="outline" size="sm" />
         </div>
 
-        {isValidUUID(service.mechanic.id) ? (
-          <Button 
-            variant="secondary" 
-            className="w-full"
-            onClick={() => navigate(`/mechanic/${service.mechanic.id}`)}
-          >
+        {isValidUUID(service.mechanic.id) ? <Button variant="secondary" onClick={() => navigate(`/mechanic/${service.mechanic.id}`)} className="w-full text-slate-50">
             სრული პროფილი
-          </Button>
-        ) : (
-          <div className="text-center text-sm text-muted-foreground py-2">
+          </Button> : <div className="text-center text-sm text-muted-foreground py-2">
             პროფილი მიუწვდომელია
-          </div>
-        )}
+          </div>}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 
   // Price Card Component - Only show if price is available
-  const PriceCard = ({ className = "" }: { className?: string }) => {
+  const PriceCard = ({
+    className = ""
+  }: {
+    className?: string;
+  }) => {
     const priceDisplay = formatPrice(service.price_from, service.price_to);
-    
     if (!priceDisplay) {
       return null; // Don't render the card if no price
     }
-
-    return (
-      <Card className={className}>
+    return <Card className={className}>
         <CardHeader>
           <CardTitle className="text-2xl text-primary font-bold">
             {priceDisplay}
           </CardTitle>
-          {service.rating && (
-            <div className="flex items-center gap-2">
+          {service.rating && <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="font-semibold">{service.rating}</span>
@@ -488,15 +401,10 @@ const ServiceDetail = () => {
               <span className="text-sm text-gray-500">
                 ({service.review_count || 0} შეფასება)
               </span>
-            </div>
-          )}
+            </div>}
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button 
-            className="w-full" 
-            size="lg"
-            onClick={() => navigate(`/book?service=${service.id}`)}
-          >
+          <Button className="w-full" size="lg" onClick={() => navigate(`/book?service=${service.id}`)}>
             დაჯავშვნა
           </Button>
           
@@ -515,18 +423,19 @@ const ServiceDetail = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   };
 
   // Rating Card Component - Show only rating when no price
-  const RatingCard = ({ className = "" }: { className?: string }) => {
+  const RatingCard = ({
+    className = ""
+  }: {
+    className?: string;
+  }) => {
     if (!service.rating && !service.review_count) {
       return null; // Don't show if no rating data
     }
-
-    return (
-      <Card className={className}>
+    return <Card className={className}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Star className="h-5 w-5 text-yellow-400" />
@@ -534,8 +443,7 @@ const ServiceDetail = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {service.rating && (
-            <div className="flex items-center gap-2 mb-4">
+          {service.rating && <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-1">
                 <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
                 <span className="text-2xl font-bold text-primary">{service.rating}</span>
@@ -543,8 +451,7 @@ const ServiceDetail = () => {
               <span className="text-gray-500">
                 ({service.review_count || 0} შეფასება)
               </span>
-            </div>
-          )}
+            </div>}
           
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
@@ -561,21 +468,10 @@ const ServiceDetail = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
-    );
+      </Card>;
   };
-
-  return (
-    <Layout>
-      <SEOHead
-        title={pageTitle}
-        description={pageDescription}
-        keywords={seoData?.meta_keywords}
-        image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
-        url={`${window.location.origin}/service/${createSlug(service.name)}`}
-        type="article"
-        structuredData={structuredData}
-      />
+  return <Layout>
+      <SEOHead title={pageTitle} description={pageDescription} keywords={seoData?.meta_keywords} image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined} url={`${window.location.origin}/service/${createSlug(service.name)}`} type="article" structuredData={structuredData} />
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumbs */}
@@ -596,91 +492,28 @@ const ServiceDetail = () => {
         </Breadcrumb>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-background via-background/95 to-primary/5 rounded-xl border border-border/40 p-6 mb-8 backdrop-blur-sm">
-          <div className="flex items-start gap-6">
-            <div className="flex flex-col items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/services")}
-                className="shrink-0 hover:shadow-md transition-all duration-200"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                უკან
-              </Button>
-              
-              {/* Additional space utilization - Quick actions */}
-              <div className="hidden md:flex flex-col gap-2 min-w-[80px]">
-                <div className="text-xs text-muted-foreground text-center">
-                  სწრაფი
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => navigate(`/book?service=${service.id}`)}
-                    className="text-xs px-2 py-1 h-auto hover:bg-primary/10"
-                  >
-                    დაჯავშვნა
-                  </Button>
-                  <SendMessageButton 
-                    mechanicId={service.mechanic.id}
-                    mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs px-2 py-1 h-auto hover:bg-primary/10"
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <div className="min-w-0 flex-1">
-              <div className="mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 leading-tight">
-                  {seoData?.h1_title || service.name}
-                </h1>
-                {seoData?.h2_description && (
-                  <h2 className="text-lg text-muted-foreground leading-relaxed">
-                    {seoData.h2_description}
-                  </h2>
-                )}
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mb-3">
-                {service.category && (
-                  <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
-                    {service.category.name}
-                  </Badge>
-                )}
-                {service.on_site_service && (
-                  <Badge variant="outline" className="hover:bg-accent transition-colors">
-                    ადგილზე მომსახურება
-                  </Badge>
-                )}
-                {!shouldShowPrice(service.price_from, service.price_to) && (
-                  <Badge variant="outline" className="hover:bg-accent transition-colors">
-                    ფასი შეთანხმებით
-                  </Badge>
-                )}
-              </div>
-              
-              {/* Location info in header for better space utilization */}
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>
-                  {service.city && service.district ? `${service.city}, ${service.district}` : service.city}
-                </span>
-                {service.rating && (
-                  <>
-                    <span className="text-muted-foreground/50">•</span>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <span className="font-medium">{service.rating}</span>
-                      <span className="text-xs">({service.review_count || 0})</span>
-                    </div>
-                  </>
-                )}
-              </div>
+        <div className="flex items-start gap-4 mb-8">
+          <Button variant="outline" size="sm" onClick={() => navigate("/services")} className="shrink-0 mt-1">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            უკან
+          </Button>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              {seoData?.h1_title || service.name}
+            </h1>
+            {seoData?.h2_description && <h2 className="text-lg text-gray-600 mb-3">
+                {seoData.h2_description}
+              </h2>}
+            <div className="flex flex-wrap gap-2">
+              {service.category && <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  {service.category.name}
+                </Badge>}
+              {service.on_site_service && <Badge variant="outline">
+                  ადგილზე მომსახურება
+                </Badge>}
+              {!shouldShowPrice(service.price_from, service.price_to) && <Badge variant="outline">
+                  ფასი შეთანხმებით
+                </Badge>}
             </div>
           </div>
         </div>
@@ -690,17 +523,12 @@ const ServiceDetail = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Mobile Contact & Price/Rating - Only visible on mobile */}
             <div className="lg:hidden space-y-4">
-              {shouldShowPrice(service.price_from, service.price_to) ? (
-                <PriceCard />
-              ) : (
-                <RatingCard />
-              )}
+              {shouldShowPrice(service.price_from, service.price_to) ? <PriceCard /> : <RatingCard />}
               <ContactCard />
             </div>
 
             {/* Service Photos */}
-            {service.photos && service.photos.length > 0 && (
-              <div className="lg:bg-card/30 lg:backdrop-blur-sm lg:rounded-xl lg:border lg:border-border/40 lg:overflow-hidden">
+            {service.photos && service.photos.length > 0 && <div className="lg:bg-card/30 lg:backdrop-blur-sm lg:rounded-xl lg:border lg:border-border/40 lg:overflow-hidden">
                 {/* Mobile version - keep as card */}
                 <div className="lg:hidden">
                   <Card>
@@ -711,27 +539,19 @@ const ServiceDetail = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
-                      <ServiceGallery 
-                        photos={service.photos} 
-                        serviceName={service.name} 
-                      />
+                      <ServiceGallery photos={service.photos} serviceName={service.name} />
                     </CardContent>
                   </Card>
                 </div>
                 
                 {/* Desktop version - modern design without title */}
                 <div className="hidden lg:block lg:p-6">
-                  <ServiceGallery 
-                    photos={service.photos} 
-                    serviceName={service.name} 
-                  />
+                  <ServiceGallery photos={service.photos} serviceName={service.name} />
                 </div>
-              </div>
-            )}
+              </div>}
 
             {/* Service Videos */}
-            {service.videos && service.videos.length > 0 && (
-              <Card>
+            {service.videos && service.videos.length > 0 && <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Video className="h-5 w-5" />
@@ -740,25 +560,17 @@ const ServiceDetail = () => {
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="max-w-4xl">
-                    <ServiceVideoGallery 
-                      videos={service.videos} 
-                      serviceName={service.name} 
-                    />
+                    <ServiceVideoGallery videos={service.videos} serviceName={service.name} />
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
 
             {/* Service Description */}
             <Card>
               <CardHeader>
                 <CardTitle>სერვისის აღწერა</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {service.description || "დეტალური აღწერა არ არის მითითებული"}
-                </p>
-              </CardContent>
+              
             </Card>
 
             {/* Service Details */}
@@ -782,12 +594,9 @@ const ServiceDetail = () => {
                     <MapPin className="h-5 w-5 text-primary shrink-0" />
                     <div>
                       <div className="text-sm font-medium">ადგილი</div>
-                       <div className="text-sm text-gray-600">
-                         {service.city && service.district ? `${service.city}, ${service.district}` : service.city}
-                         {service.address && (
-                           <div className="mt-1">{service.address}</div>
-                         )}
-                       </div>
+                      <div className="text-sm text-gray-600">
+                        {service.on_site_service ? "ადგილზე" : "სახელოსნოში"}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -798,63 +607,47 @@ const ServiceDetail = () => {
                 <div>
                   <h4 className="font-medium mb-3">გადახდის მეთოდები</h4>
                   <div className="flex gap-2">
-                    {service.accepts_cash_payment && (
-                      <Badge variant="outline" className="flex items-center gap-1">
+                    {service.accepts_cash_payment && <Badge variant="outline" className="flex items-center gap-1">
                         <Banknote className="h-3 w-3" />
                         ნაღდი
-                      </Badge>
-                    )}
-                    {service.accepts_card_payment && (
-                      <Badge variant="outline" className="flex items-center gap-1">
+                      </Badge>}
+                    {service.accepts_card_payment && <Badge variant="outline" className="flex items-center gap-1">
                         <CreditCard className="h-3 w-3" />
                         ბარათი
-                      </Badge>
-                    )}
+                      </Badge>}
                   </div>
                 </div>
 
                 {/* Car Brands */}
-                {service.car_brands && service.car_brands.length > 0 && (
-                  <>
+                {service.car_brands && service.car_brands.length > 0 && <>
                     <Separator />
                     <div>
                       <h4 className="font-medium mb-3 flex items-center gap-2">
                         <Car className="h-4 w-4" />
                         მანქანის მარკები
                       </h4>
-                      {service.car_brands.length >= 15 ? (
-                        <div className="p-4 bg-gray-50 rounded-lg border">
+                      {service.car_brands.length >= 15 ? <div className="p-4 bg-gray-50 rounded-lg border">
                           <div className="flex items-center gap-2">
                             <CheckCircle className="h-5 w-5 text-gray-600" />
                             <span className="text-sm text-gray-700 font-medium">
                               ყველა მარკის ავტომობილზე მუშაობა
                             </span>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap gap-2">
-                          {service.car_brands.map((brand, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
+                        </div> : <div className="flex flex-wrap gap-2">
+                          {service.car_brands.map((brand, index) => <Badge key={index} variant="secondary" className="text-xs">
                               {brand}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
+                            </Badge>)}
+                        </div>}
                     </div>
-                  </>
-                )}
+                  </>}
               </CardContent>
             </Card>
 
             {/* Service Reviews */}
-            <ServiceReviews 
-              serviceId={service.id} 
-              onReviewAdded={handleReviewAdded}
-            />
+            <ServiceReviews serviceId={service.id} onReviewAdded={handleReviewAdded} />
 
             {/* Mobile Location Map - Only visible on mobile */}
-            {service.latitude && service.longitude && (
-              <Card className="lg:hidden">
+            {service.latitude && service.longitude && <Card className="lg:hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
@@ -862,46 +655,29 @@ const ServiceDetail = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  {service.address && (
-                    <p className="text-sm text-gray-600 mb-4 p-3 bg-gray-50 rounded-lg">
+                  {service.address && <p className="text-sm text-gray-600 mb-4 p-3 bg-gray-50 rounded-lg">
                       📍 {service.address}
-                    </p>
-                  )}
+                    </p>}
                   <div className="rounded-lg overflow-hidden border mb-4">
-                    <LocationMapPicker
-                      latitude={service.latitude}
-                      longitude={service.longitude}
-                      onLocationChange={handleLocationChange}
-                      interactive={false}
-                    />
+                    <LocationMapPicker latitude={service.latitude} longitude={service.longitude} onLocationChange={handleLocationChange} interactive={false} />
                   </div>
-                  <Button 
-                    onClick={handleGetDirections}
-                    className="w-full"
-                    variant="outline"
-                  >
+                  <Button onClick={handleGetDirections} className="w-full" variant="outline">
                     <Navigation className="h-4 w-4 mr-2" />
                     მარშრუტის ნახვა
                   </Button>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
 
           {/* Desktop Sidebar - Hidden on mobile */}
           <div className="space-y-6 hidden lg:block">
             {/* Show Price Card if available, otherwise show Rating Card */}
-            {shouldShowPrice(service.price_from, service.price_to) ? (
-              <PriceCard />
-            ) : (
-              <RatingCard />
-            )}
+            {shouldShowPrice(service.price_from, service.price_to) ? <PriceCard /> : <RatingCard />}
             
             <ContactCard />
             
             {/* Location Info */}
-            {(service.city || service.district) && (
-              <Card>
+            {(service.city || service.district) && <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
@@ -910,32 +686,24 @@ const ServiceDetail = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {service.city && (
-                      <div className="flex justify-between">
+                    {service.city && <div className="flex justify-between">
                         <span className="text-gray-600">ქალაქი:</span>
                         <span className="font-medium">{service.city}</span>
-                      </div>
-                    )}
-                    {service.district && (
-                      <div className="flex justify-between">
+                      </div>}
+                    {service.district && <div className="flex justify-between">
                         <span className="text-gray-600">რაიონი:</span>
                         <span className="font-medium">{service.district}</span>
-                      </div>
-                    )}
-                    {service.address && (
-                      <div>
+                      </div>}
+                    {service.address && <div>
                         <span className="text-gray-600 block mb-1">მისამართი:</span>
                         <span className="font-medium text-sm">{service.address}</span>
-                      </div>
-                    )}
+                      </div>}
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
 
             {/* Location Map */}
-            {service.latitude && service.longitude && (
-              <Card>
+            {service.latitude && service.longitude && <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MapPin className="h-5 w-5" />
@@ -944,29 +712,17 @@ const ServiceDetail = () => {
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="rounded-lg overflow-hidden border mb-4">
-                    <LocationMapPicker
-                      latitude={service.latitude}
-                      longitude={service.longitude}
-                      onLocationChange={handleLocationChange}
-                      interactive={false}
-                    />
+                    <LocationMapPicker latitude={service.latitude} longitude={service.longitude} onLocationChange={handleLocationChange} interactive={false} />
                   </div>
-                  <Button 
-                    onClick={handleGetDirections}
-                    className="w-full"
-                    variant="outline"
-                  >
+                  <Button onClick={handleGetDirections} className="w-full" variant="outline">
                     <Navigation className="h-4 w-4 mr-2" />
                     მარშრუტის ნახვა
                   </Button>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default ServiceDetail;
