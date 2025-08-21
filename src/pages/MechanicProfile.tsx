@@ -427,7 +427,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
               <Avatar className="h-24 w-24 rounded-full border-4 border-white">
-                <AvatarImage src="" />
+                <AvatarImage src="" alt={`${mechanic?.profile.first_name || ''} ${mechanic?.profile.last_name || ''}`.trim() || 'Mechanic profile'} />
                 <AvatarFallback className="bg-secondary text-secondary-foreground text-xl">
                   {mechanic?.profile.first_name.charAt(0)}{mechanic?.profile.last_name.charAt(0)}
                 </AvatarFallback>

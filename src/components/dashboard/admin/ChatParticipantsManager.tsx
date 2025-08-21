@@ -90,7 +90,7 @@ export const ChatParticipantsManager: React.FC<Props> = ({ roomId, roomName }) =
               <div key={participant.id} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={participant.profile.avatar_url || undefined} />
+                    <AvatarImage src={participant.profile.avatar_url || undefined} alt={`${participant.profile.first_name || ''} ${participant.profile.last_name || ''}`.trim() || 'User'} />
                     <AvatarFallback>
                       {participant.profile.first_name?.[0]}{participant.profile.last_name?.[0]}
                     </AvatarFallback>

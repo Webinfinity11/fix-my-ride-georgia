@@ -106,22 +106,6 @@
 }
 
 @layer components {
-  .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-white font-medium py-3 px-5 rounded-lg shadow-sm transition-all duration-300;
-  }
-  
-  .btn-secondary {
-    @apply bg-secondary hover:bg-secondary/90 text-white font-medium py-3 px-5 rounded-lg shadow-sm transition-all duration-300;
-  }
-  
-  .btn-outline {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium py-3 px-5 rounded-lg shadow-sm transition-all duration-300;
-  }
-  
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-  }
-  
   .section-padding {
     @apply py-16 md:py-24;
   }
@@ -150,28 +134,6 @@
   /* Card Enhancements */
   .card {
     @apply transition-all duration-300 hover:shadow-md;
-  }
-  
-  /* Page Transitions */
-  .page-transition-enter {
-    @apply opacity-0;
-  }
-  
-  .page-transition-enter-active {
-    @apply opacity-100 transition-opacity duration-300;
-  }
-  
-  .page-transition-exit {
-    @apply opacity-100;
-  }
-  
-  .page-transition-exit-active {
-    @apply opacity-0 transition-opacity duration-300;
-  }
-  
-  /* Enhanced Badge Styling */
-  .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors;
   }
 }
 
