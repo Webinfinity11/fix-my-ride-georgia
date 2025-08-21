@@ -732,9 +732,12 @@ const ServiceDetail = () => {
                     <MapPin className="h-5 w-5 text-primary shrink-0" />
                     <div>
                       <div className="text-sm font-medium">ადგილი</div>
-                      <div className="text-sm text-gray-600">
-                        {service.on_site_service ? "ადგილზე" : "სახელოსნოში"}
-                      </div>
+                       <div className="text-sm text-gray-600">
+                         {service.city && service.district ? `${service.city}, ${service.district}` : service.city}
+                         {service.address && (
+                           <div className="mt-1">{service.address}</div>
+                         )}
+                       </div>
                     </div>
                   </div>
                 </div>
