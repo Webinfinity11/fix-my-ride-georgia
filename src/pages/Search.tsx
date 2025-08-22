@@ -39,6 +39,7 @@ type MechanicType = {
   review_count: number | null;
   experience_years: number | null;
   is_mobile: boolean;
+  display_id?: number;
 };
 
 const Search = () => {
@@ -151,6 +152,7 @@ const Search = () => {
           city,
           district,
           mechanic_profiles!inner(
+            display_id,
             specialization,
             rating,
             review_count,
@@ -183,6 +185,7 @@ const Search = () => {
           review_count: profile?.review_count || null,
           experience_years: profile?.experience_years || null,
           is_mobile: profile?.is_mobile || false,
+          display_id: profile?.display_id || undefined,
         };
       }) || [];
 
@@ -473,7 +476,7 @@ const Search = () => {
 
                               <div className="flex gap-2">
                                 <Button 
-                  onClick={() => navigate(`/mechanic/${createMechanicSlug(mechanic.id, mechanic.first_name, mechanic.last_name)}`)}
+                  onClick={() => navigate(`/mechanic/${createMechanicSlug(mechanic.display_id || 0, mechanic.first_name, mechanic.last_name)}`)}
                   className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                                 >
                                   პროფილი

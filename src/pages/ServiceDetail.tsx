@@ -66,6 +66,7 @@ interface ServiceType {
     last_name: string;
     rating: number | null;
     phone: string | null;
+    display_id?: number;
   };
 }
 
@@ -112,7 +113,7 @@ const ServiceDetail = () => {
             rating, review_count, photos, videos, category_id, mechanic_id,
             service_categories(id, name),
             mechanic_profiles(
-              id, rating,
+              display_id, rating,
               profiles(id, first_name, last_name, phone)
             )
           `)
@@ -142,7 +143,7 @@ const ServiceDetail = () => {
             rating, review_count, photos, videos, category_id, mechanic_id,
             service_categories(id, name),
             mechanic_profiles(
-              id, rating,
+              display_id, rating,
               profiles(id, first_name, last_name, phone)
             )
           `)
@@ -198,6 +199,7 @@ const ServiceDetail = () => {
       last_name: "ხელოსანი",
       rating: null,
       phone: null,
+      display_id: undefined as number | undefined,
     };
 
     if (mechanicProfile?.profiles) {
@@ -211,6 +213,7 @@ const ServiceDetail = () => {
         last_name: profile?.last_name || "ხელოსანი",
         rating: mechanicProfile?.rating || null,
         phone: profile?.phone || null,
+        display_id: mechanicProfile?.display_id || undefined,
       };
     }
 
@@ -465,7 +468,7 @@ const ServiceDetail = () => {
           <Button 
             variant="secondary" 
             className="w-full"
-            onClick={() => navigate(`/mechanic/${createMechanicSlug(service.mechanic.id, service.mechanic.first_name, service.mechanic.last_name)}`)}
+            onClick={() => navigate(`/mechanic/${createMechanicSlug(service.mechanic.display_id || 0, service.mechanic.first_name, service.mechanic.last_name)}`)}
           >
             სრული პროფილი
           </Button>

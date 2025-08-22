@@ -28,6 +28,7 @@ interface ServiceType {
   } | null;
   mechanic: {
     id: string;
+    display_id?: number;
     first_name: string;
     last_name: string;
     rating: number | null;
@@ -52,7 +53,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
   const handleViewMechanic = (e: React.MouseEvent) => {
     e.stopPropagation();
     const mechanicSlug = createMechanicSlug(
-      service.mechanic.id, 
+      service.mechanic.display_id || 0, 
       service.mechanic.first_name, 
       service.mechanic.last_name
     );

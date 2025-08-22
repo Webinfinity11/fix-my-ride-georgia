@@ -47,6 +47,7 @@ type ServiceType = {
     last_name: string;
     rating: number | null;
     is_mobile: boolean;
+    display_id?: number;
   };
 };
 
@@ -177,7 +178,7 @@ const ServiceSearch = () => {
             id,
             first_name,
             last_name,
-            mechanic_profiles(rating, is_mobile)
+            mechanic_profiles(display_id, rating, is_mobile)
           )
         `)
         .eq("is_active", true);
@@ -235,7 +236,8 @@ const ServiceSearch = () => {
             first_name: profile?.first_name || "",
             last_name: profile?.last_name || "",
             rating: profile?.mechanic_profiles?.rating || null,
-            is_mobile: profile?.mechanic_profiles?.is_mobile || false
+            is_mobile: profile?.mechanic_profiles?.is_mobile || false,
+            display_id: profile?.mechanic_profiles?.display_id || undefined
           }
         };
       }) || [];
@@ -510,7 +512,7 @@ const ServiceSearch = () => {
 
                         <div className="border-t pt-3">
                           <Link 
-                            to={`/mechanic/${createMechanicSlug(service.mechanic.id, service.mechanic.first_name, service.mechanic.last_name)}`}
+                            to={`/mechanic/${createMechanicSlug(service.mechanic.display_id || 0, service.mechanic.first_name, service.mechanic.last_name)}`}
                             className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
                           >
                             <span>ხელოსანი: {service.mechanic.first_name} {service.mechanic.last_name}</span>

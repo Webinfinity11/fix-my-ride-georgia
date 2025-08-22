@@ -12,6 +12,7 @@ import { createMechanicSlug } from "@/utils/slugUtils";
 interface MechanicCardProps {
   mechanic: {
     id: string;
+    display_id?: number;
     profiles: {
       first_name: string;
       last_name: string;
@@ -94,10 +95,10 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
       </CardContent>
 
       <CardFooter className="p-4 pt-0 flex gap-2">
-        {/* Only show links if mechanic ID is valid UUID */}
-        {isValidUUID(mechanic.id) ? (
+        {/* Show links if mechanic has display_id or valid UUID */}
+        {(mechanic.display_id || isValidUUID(mechanic.id)) ? (
           <>
-            <Link to={`/mechanic/${createMechanicSlug(mechanic.id, mechanic.profiles.first_name, mechanic.profiles.last_name)}`} className="flex-1">
+            <Link to={`/mechanic/${createMechanicSlug(mechanic.display_id || 0, mechanic.profiles.first_name, mechanic.profiles.last_name)}`} className="flex-1">
               <Button variant="outline" className="w-full">
                 დეტალები
               </Button>

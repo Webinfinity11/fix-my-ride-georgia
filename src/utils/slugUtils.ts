@@ -82,24 +82,29 @@ export function createServiceSlug(id: number, name: string): string {
 }
 
 /**
- * Create mechanic slug with ID for backwards compatibility
+ * Create mechanic slug with display_id for backwards compatibility
  */
-export function createMechanicSlug(id: string, firstName: string, lastName: string): string {
+export function createMechanicSlug(displayId: number, firstName: string, lastName: string): string {
   const fullName = `${firstName} ${lastName}`;
   const slug = createSlug(fullName);
-  return `${id}-${slug}` || id;
+  return `${displayId}-${slug}` || displayId.toString();
 }
 /**
- * Extract mechanic ID from slug or return the slug if it's already an ID
+ * Extract mechanic display ID from slug or return the slug if it's already an ID
  */
-export function extractMechanicId(slugOrId: string): string {
-  // Check if it follows the ID-slug format (e.g., "uuid-slug-name")
-  const idSlugMatch = slugOrId.match(/^([a-f0-9-]{36})-(.+)$/);
+export function extractMechanicDisplayId(slugOrId: string): string {
+  // Check if it follows the display_id-slug format (e.g., "123-slug-name")
+  const idSlugMatch = slugOrId.match(/^(\d+)-(.+)$/);
   if (idSlugMatch) {
-    return idSlugMatch[1]; // Return the ID part
+    return idSlugMatch[1]; // Return the display_id part
   }
   
-  // Return as is (could be pure UUID or legacy format)
+  // If it's just a number, return it
+  if (/^\d+$/.test(slugOrId)) {
+    return slugOrId;
+  }
+  
+  // Legacy UUID format - return as is for database lookup
   return slugOrId;
 }
 

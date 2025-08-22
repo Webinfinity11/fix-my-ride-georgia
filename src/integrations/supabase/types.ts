@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -486,6 +486,7 @@ export type Database = {
         Row: {
           accepts_card_payment: boolean | null
           description: string | null
+          display_id: number
           experience_years: number | null
           hourly_rate: number | null
           id: string
@@ -499,6 +500,7 @@ export type Database = {
         Insert: {
           accepts_card_payment?: boolean | null
           description?: string | null
+          display_id?: number
           experience_years?: number | null
           hourly_rate?: number | null
           id: string
@@ -512,6 +514,7 @@ export type Database = {
         Update: {
           accepts_card_payment?: boolean | null
           description?: string | null
+          display_id?: number
           experience_years?: number | null
           hourly_rate?: number | null
           id?: string
@@ -1036,13 +1039,13 @@ export type Database = {
       get_admin_stats: {
         Args: Record<PropertyKey, never>
         Returns: {
+          completed_bookings: number
+          pending_bookings: number
+          total_bookings: number
           total_customers: number
           total_mechanics: number
-          total_services: number
-          total_bookings: number
-          pending_bookings: number
-          completed_bookings: number
           total_revenue: number
+          total_services: number
         }[]
       }
       get_current_user_role: {
@@ -1052,29 +1055,29 @@ export type Database = {
       get_public_mechanic_info: {
         Args: { mechanic_id: string }
         Returns: {
-          id: string
-          first_name: string
-          last_name: string
-          city: string
-          district: string
           avatar_url: string
-          is_verified: boolean
-          role: Database["public"]["Enums"]["user_role"]
+          city: string
           created_at: string
+          district: string
+          first_name: string
+          id: string
+          is_verified: boolean
+          last_name: string
+          role: Database["public"]["Enums"]["user_role"]
         }[]
       }
       get_safe_mechanic_profiles: {
         Args: Record<PropertyKey, never>
         Returns: {
-          id: string
-          first_name: string
-          last_name: string
-          city: string
-          district: string
           avatar_url: string
-          is_verified: boolean
-          role: Database["public"]["Enums"]["user_role"]
+          city: string
           created_at: string
+          district: string
+          first_name: string
+          id: string
+          is_verified: boolean
+          last_name: string
+          role: Database["public"]["Enums"]["user_role"]
         }[]
       }
       is_admin: {
@@ -1091,21 +1094,21 @@ export type Database = {
       }
       submit_contact_message: {
         Args: {
-          p_name: string
           p_email: string
-          p_subject: string
           p_message: string
+          p_name: string
+          p_subject: string
           p_topic: string
           p_user_id?: string
         }
         Returns: undefined
       }
       user_can_access_room: {
-        Args: { user_id: string; room_id: string }
+        Args: { room_id: string; user_id: string }
         Returns: boolean
       }
       user_can_create_participant: {
-        Args: { user_id: string; room_id: string; target_user_id: string }
+        Args: { room_id: string; target_user_id: string; user_id: string }
         Returns: boolean
       }
     }

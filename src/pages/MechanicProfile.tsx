@@ -14,10 +14,11 @@ import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 // Fixed: removed useChat dependency
 import MechanicReviews from "@/components/reviews/MechanicReviews";
-import { extractMechanicId, createMechanicSlug } from "@/utils/slugUtils";
+import { extractMechanicDisplayId, createMechanicSlug } from "@/utils/slugUtils";
 
 type MechanicType = {
   id: string;
+  display_id?: number;
   profile: {
     first_name: string;
     last_name: string;
@@ -105,40 +106,78 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     const fetchMechanicData = async () => {
       setLoading(true);
       try {
-        // Extract the actual mechanic ID from the URL parameter
-        const mechanicId = extractMechanicId(id);
+        // Extract the actual mechanic display ID from the URL parameter
+        const mechanicDisplayId = extractMechanicDisplayId(id);
         
         // Fetch mechanic profile data (only public fields for verified mechanics)
-        const { data: mechanicData, error: mechanicError } = await supabase
-          .from("profiles")
-          .select(`
-            id,
-            first_name, 
-            last_name, 
-            phone,
-            city, 
-            district, 
-            avatar_url,
-            is_verified,
-            mechanic_profiles!inner(
-              description, 
-              specialization, 
-              experience_years, 
-              rating, 
-              review_count, 
-              is_mobile, 
-              accepts_card_payment, 
-              working_hours,
-              verified_at
-            )
-          `)
-          .eq("id", mechanicId)
-          .eq("role", "mechanic")
-          .single();
+        let mechanicQuery;
+        const isNumeric = /^\d+$/.test(mechanicDisplayId);
         
-        // Update the URL to use the new ID-slug format if we have the mechanic data
-        if (!mechanicError && mechanicData) {
-          const correctSlug = createMechanicSlug(mechanicData.id, mechanicData.first_name, mechanicData.last_name);
+        if (isNumeric) {
+          // Query by display_id
+          mechanicQuery = supabase
+            .from("profiles")
+            .select(`
+              id,
+              first_name, 
+              last_name, 
+              phone,
+              city, 
+              district, 
+              avatar_url,
+              is_verified,
+              mechanic_profiles!inner(
+                display_id,
+                description, 
+                specialization, 
+                experience_years, 
+                rating, 
+                review_count, 
+                is_mobile, 
+                accepts_card_payment, 
+                working_hours,
+                verified_at
+              )
+            `)
+            .eq("role", "mechanic")
+            .eq("mechanic_profiles.display_id", parseInt(mechanicDisplayId))
+            .single();
+        } else {
+          // Legacy UUID lookup
+          mechanicQuery = supabase
+            .from("profiles")
+            .select(`
+              id,
+              first_name, 
+              last_name, 
+              phone,
+              city, 
+              district, 
+              avatar_url,
+              is_verified,
+              mechanic_profiles!inner(
+                display_id,
+                description, 
+                specialization, 
+                experience_years, 
+                rating, 
+                review_count, 
+                is_mobile, 
+                accepts_card_payment, 
+                working_hours,
+                verified_at
+              )
+            `)
+            .eq("id", mechanicDisplayId)
+            .eq("role", "mechanic")
+            .single();
+        }
+        
+        const { data: mechanicData, error: mechanicError } = await mechanicQuery;
+        
+        // Update the URL to use the new display_id-slug format if we have the mechanic data
+        if (!mechanicError && mechanicData && mechanicData.mechanic_profiles?.display_id) {
+          const correctSlug = createMechanicSlug(mechanicData.mechanic_profiles.display_id, mechanicData.first_name, mechanicData.last_name);
           if (correctSlug !== id) {
             window.history.replaceState(null, '', `/mechanic/${correctSlug}`);
           }
@@ -149,6 +188,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         // Format the data to match MechanicType (now with phone available for verified mechanics)
         const formattedMechanic: MechanicType = {
           id: mechanicData.id,
+          display_id: mechanicData.mechanic_profiles?.display_id,
           profile: {
             first_name: mechanicData.first_name,
             last_name: mechanicData.last_name,
@@ -171,7 +211,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
             *,
             service_categories(name)
           `)
-          .eq("mechanic_id", mechanicId)
+          .eq("mechanic_id", mechanicData.id)
           .eq("is_active", true)
           .order("created_at", { ascending: false });
         
@@ -182,7 +222,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         const { data: certificatesData, error: certificatesError } = await supabase
           .from("certificates")
           .select("*")
-          .eq("mechanic_id", mechanicId)
+          .eq("mechanic_id", mechanicData.id)
           .order("issue_date", { ascending: false });
         
         if (certificatesError) throw certificatesError;
@@ -298,38 +338,75 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     // Refresh mechanic data to update rating
     if (id) {
       const fetchUpdatedMechanic = async () => {
-        const mechanicId = extractMechanicId(id);
+        const mechanicDisplayId = extractMechanicDisplayId(id);
         
-        const { data: mechanicData, error } = await supabase
-          .from("profiles")
-          .select(`
-            id,
-            first_name, 
-            last_name, 
-            phone,
-            city, 
-            district, 
-            avatar_url,
-            is_verified,
-            mechanic_profiles!inner(
-              description, 
-              specialization, 
-              experience_years, 
-              rating, 
-              review_count, 
-              is_mobile,
-              accepts_card_payment,
-              working_hours,
-              verified_at
-            )
-          `)
-          .eq("id", mechanicId)
-          .eq("role", "mechanic")
-          .single();
+        const isNumeric = /^\d+$/.test(mechanicDisplayId);
+        
+        let mechanicQuery;
+        if (isNumeric) {
+          mechanicQuery = supabase
+            .from("profiles")
+            .select(`
+              id,
+              first_name, 
+              last_name, 
+              phone,
+              city, 
+              district, 
+              avatar_url,
+              is_verified,
+              mechanic_profiles!inner(
+                display_id,
+                description, 
+                specialization, 
+                experience_years, 
+                rating, 
+                review_count, 
+                is_mobile,
+                accepts_card_payment,
+                working_hours,
+                verified_at
+              )
+            `)
+            .eq("role", "mechanic")
+            .eq("mechanic_profiles.display_id", parseInt(mechanicDisplayId))
+            .single();
+        } else {
+          mechanicQuery = supabase
+            .from("profiles")
+            .select(`
+              id,
+              first_name, 
+              last_name, 
+              phone,
+              city, 
+              district, 
+              avatar_url,
+              is_verified,
+              mechanic_profiles!inner(
+                display_id,
+                description, 
+                specialization, 
+                experience_years, 
+                rating, 
+                review_count, 
+                is_mobile,
+                accepts_card_payment,
+                working_hours,
+                verified_at
+              )
+            `)
+            .eq("id", mechanicDisplayId)
+            .eq("role", "mechanic")
+            .single();
+        }
+        
+        const { data: mechanicData, error } = await mechanicQuery;
         
         if (!error && mechanicData) {
           const formattedMechanic: MechanicType = {
             id: mechanicData.id,
+            display_id: mechanicData.mechanic_profiles?.display_id,
             profile: {
               first_name: mechanicData.first_name,
               last_name: mechanicData.last_name,
@@ -714,7 +791,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
                   <TabsContent value="reviews" className="p-6">
                     {id && (
                       <MechanicReviews 
-                        mechanicId={extractMechanicId(id)} 
+                        mechanicId={mechanic?.id || ''} 
                         onReviewAdded={handleReviewAdded}
                       />
                     )}
