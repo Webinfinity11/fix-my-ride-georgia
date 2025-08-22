@@ -81,6 +81,18 @@ export const SitemapUpdater = () => {
               {stats?.categories || 0} pages
             </Badge>
           </div>
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Mechanics</p>
+            <Badge variant="secondary" className="w-full justify-center">
+              {stats?.mechanics || 0} pages
+            </Badge>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Search Queries</p>
+            <Badge variant="secondary" className="w-full justify-center">
+              {stats?.searches || 0} pages
+            </Badge>
+          </div>
         </div>
 
         <div className="space-y-2">

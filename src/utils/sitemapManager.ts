@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 export interface SitemapStats {
   services: number;
   categories: number;
+  mechanics: number;
+  searches: number;
   lastGenerated: string;
   totalUrls: number;
 }
@@ -63,7 +65,7 @@ export class SitemapManager {
       const stats = this.extractSitemapStats(sitemapXML);
       localStorage.setItem('sitemap-stats', JSON.stringify(stats));
       
-      toast.success(`Sitemap updated: ${stats.services} services, ${stats.categories} categories`);
+      toast.success(`Sitemap updated: ${stats.services} services, ${stats.categories} categories, ${stats.mechanics} mechanics, ${stats.searches} searches`);
       return true;
     } catch (error) {
       console.error('Error updating local sitemap:', error);
@@ -76,11 +78,15 @@ export class SitemapManager {
   extractSitemapStats(sitemapXML: string): SitemapStats {
     const serviceMatches = sitemapXML.match(/<loc>https:\/\/fixup\.ge\/service\//g);
     const categoryMatches = sitemapXML.match(/<loc>https:\/\/fixup\.ge\/category\//g);
+    const mechanicMatches = sitemapXML.match(/<loc>https:\/\/fixup\.ge\/mechanic\//g);
+    const searchMatches = sitemapXML.match(/<loc>https:\/\/fixup\.ge\/search\?q=/g);
     const totalMatches = sitemapXML.match(/<url>/g);
     
     return {
       services: serviceMatches ? serviceMatches.length : 0,
       categories: categoryMatches ? categoryMatches.length : 0,
+      mechanics: mechanicMatches ? mechanicMatches.length : 0,
+      searches: searchMatches ? searchMatches.length : 0,
       lastGenerated: new Date().toISOString().split('T')[0],
       totalUrls: totalMatches ? totalMatches.length : 0,
     };

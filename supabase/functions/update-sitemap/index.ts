@@ -64,6 +64,36 @@ Deno.serve(async (req) => {
       })
     }
 
+    // Get all mechanics
+    const { data: mechanics, error: mechError } = await supabaseClient
+      .from('profiles')
+      .select(`
+        id,
+        first_name,
+        last_name,
+        updated_at,
+        mechanic_profiles!inner(display_id)
+      `)
+      .eq('role', 'mechanic')
+      .eq('is_verified', true)
+      .order('updated_at', { ascending: false });
+
+    if (mechError) {
+      console.error('Error fetching mechanics:', mechError);
+    }
+
+    // Get popular search queries
+    const { data: searchQueries, error: searchError } = await supabaseClient
+      .from('search_queries')
+      .select('query, search_count')
+      .gte('search_count', 5)
+      .order('search_count', { ascending: false })
+      .limit(100);
+
+    if (searchError) {
+      console.error('Error fetching search queries:', searchError);
+    }
+
     if (!services || services.length === 0) {
       return new Response(JSON.stringify({ error: 'No services found' }), {
         status: 404,
@@ -94,6 +124,31 @@ Deno.serve(async (req) => {
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>`;
+    });
+
+    // Generate mechanic URLs
+    const mechanicUrls = (mechanics || []).map(mechanic => {
+      const lastmod = mechanic.updated_at ? new Date(mechanic.updated_at).toISOString().split('T')[0] : currentDate;
+      const mechanicProfile = Array.isArray(mechanic.mechanic_profiles) ? mechanic.mechanic_profiles[0] : mechanic.mechanic_profiles;
+      const displayId = mechanicProfile?.display_id || 0;
+      const mechanicSlug = `${displayId}-${createSlug(mechanic.first_name)}-${createSlug(mechanic.last_name)}`;
+      return `  <url>
+    <loc>${baseUrl}/mechanic/${mechanicSlug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+    });
+
+    // Generate search query URLs
+    const searchUrls = (searchQueries || []).map(searchQuery => {
+      const querySlug = createSlug(searchQuery.query);
+      return `  <url>
+    <loc>${baseUrl}/search?q=${encodeURIComponent(searchQuery.query)}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>`;
     });
 
@@ -179,6 +234,12 @@ ${serviceUrls.join('\n')}
 
   <!-- ALL ${(categories || []).length} CATEGORIES -->
 ${categoryUrls.join('\n')}
+
+  <!-- ALL ${(mechanics || []).length} MECHANICS -->
+${mechanicUrls.join('\n')}
+
+  <!-- ALL ${(searchQueries || []).length} POPULAR SEARCHES -->
+${searchUrls.join('\n')}
   
   <!-- Links auto-updated: ${currentDate} -->
   
