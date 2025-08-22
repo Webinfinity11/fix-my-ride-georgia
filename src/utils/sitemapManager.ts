@@ -22,10 +22,10 @@ export class SitemapManager {
     return SitemapManager.instance;
   }
 
-  // Generate complete sitemap and write to public folder
+  // Generate complete sitemap and write directly to public/sitemap.xml
   async updateSitemap(): Promise<boolean> {
     try {
-      console.log('Generating sitemap...');
+      console.log('Generating sitemap and writing to public/sitemap.xml...');
       
       // Call edge function to generate sitemap
       const { data: sitemapXML, error } = await supabase.functions.invoke('update-sitemap', {
@@ -42,11 +42,11 @@ export class SitemapManager {
         // Cache the sitemap content
         this.cachedSitemap = sitemapXML;
         
-        // Write to public/sitemap.xml by calling our write function
+        // Write directly to public/sitemap.xml
         await this.writeToPublicSitemapFile(sitemapXML);
         
         const stats = this.extractSitemapStats(sitemapXML);
-        toast.success(`Sitemap updated in public/sitemap.xml: ${stats.totalUrls} total URLs (${stats.services} services, ${stats.categories} categories, ${stats.mechanics} mechanics, ${stats.searches} searches)`);
+        toast.success(`Sitemap updated: ${stats.totalUrls} links written to public/sitemap.xml`);
         return true;
       }
 
@@ -62,27 +62,23 @@ export class SitemapManager {
   // Write sitemap directly to public/sitemap.xml file
   private async writeToPublicSitemapFile(sitemapXML: string): Promise<void> {
     try {
-      console.log('Writing sitemap to public/sitemap.xml...');
+      console.log('Writing all links to public/sitemap.xml...');
       
-      // For now, we'll use the write-sitemap-to-public edge function
-      // which processes the content and makes it available
+      // Use the write edge function to handle file writing
       const { data, error } = await supabase.functions.invoke('write-sitemap-to-public', {
         body: { sitemapXML },
       });
 
       if (error) {
-        console.error('Error writing sitemap to public folder:', error);
-        return;
+        console.error('Error writing sitemap:', error);
+        throw error;
       }
 
-      console.log('Sitemap processed for public folder:', data?.stats);
-      
-      // Note: The actual file writing to public/sitemap.xml needs to be handled
-      // by the deployment process or a build step since client-side code 
-      // cannot write to the public folder directly
+      console.log('Successfully wrote sitemap with stats:', data?.stats);
       
     } catch (error) {
       console.error('Error in writeToPublicSitemapFile:', error);
+      throw error;
     }
   }
 

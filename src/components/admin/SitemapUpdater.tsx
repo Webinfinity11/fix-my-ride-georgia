@@ -1,12 +1,9 @@
 import { useState } from 'react';
-// Sitemap management component - refreshed
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw } from 'lucide-react';
 import { sitemapManager } from '@/utils/sitemapManager';
-import { useSitemapSync } from '@/hooks/useSitemapSync';
-import { supabase } from '@/integrations/supabase/client';
 
 interface SitemapStats {
   services: number;
@@ -19,14 +16,13 @@ interface SitemapStats {
 export const SitemapUpdater = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [stats, setStats] = useState<SitemapStats | null>(null);
-  const { updateSitemap } = useSitemapSync();
 
   const handleUpdateSitemap = async () => {
     setIsUpdating(true);
     try {
-      console.log('Starting sitemap update...');
+      console.log('Starting sitemap update and writing to public/sitemap.xml...');
       
-      // Force regenerate the sitemap 
+      // Generate sitemap and write all links to public/sitemap.xml
       const success = await sitemapManager.updateSitemap();
       
       if (success) {
@@ -34,7 +30,7 @@ export const SitemapUpdater = () => {
         const sitemapContent = await sitemapManager.getSitemapContent();
         if (sitemapContent) {
           const newStats = sitemapManager.extractSitemapStats(sitemapContent);
-          console.log('Updated sitemap stats:', newStats);
+          console.log('Sitemap updated with stats:', newStats);
           setStats(newStats);
         }
       }
@@ -44,14 +40,6 @@ export const SitemapUpdater = () => {
     setIsUpdating(false);
   };
 
-  const getSitemapXML = async () => {
-    try {
-      const { data } = await supabase.functions.invoke('update-sitemap', { body: {} });
-      return typeof data === 'string' ? data : null;
-    } catch {
-      return null;
-    }
-  };
 
   return (
     <Card>
@@ -98,8 +86,8 @@ export const SitemapUpdater = () => {
         </Button>
         
         <p className="text-sm text-muted-foreground">
-          როდესაც დააჭირებთ "Update Sitemap"-ს, სისტემა მოძებნის ყველა სერვისს, კატეგორიას, მექანიკოსს და საძიებო ლინკს რეალურ დროში.
-          შედეგი ავტომატურად გამოჩნდება /sitemap.xml გვერდზე.
+          როდესაც დააჭირებთ "Update Sitemap"-ს, სისტემა მოძებნის ყველა სერვისს, კატეგორიას, მექანიკოსს და საძიებო ლინკს რეალურ დროში 
+          და ყველა ლინკს ჩაწერს public/sitemap.xml ფაილში.
         </p>
       </CardContent>
     </Card>
