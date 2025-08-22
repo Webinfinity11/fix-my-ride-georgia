@@ -1,151 +1,100 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, AlertCircle, Download, RefreshCw } from 'lucide-react';
-import { sitemapManager, SitemapStats } from '@/utils/sitemapManager';
+import { RefreshCw } from 'lucide-react';
+import { sitemapManager } from '@/utils/sitemapManager';
 import { useSitemapSync } from '@/hooks/useSitemapSync';
+import { supabase } from '@/integrations/supabase/client';
+
+interface SitemapStats {
+  services: number;
+  categories: number;
+  mechanics: number;
+  searches: number;
+  totalUrls: number;
+}
 
 export const SitemapUpdater = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [stats, setStats] = useState<SitemapStats | null>(null);
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  
-  // Use the automatic sync hook
-  useSitemapSync();
+  const { updateSitemap } = useSitemapSync();
 
-  useEffect(() => {
-    // Load current stats
-    const currentStats = sitemapManager.getCurrentStats();
-    setStats(currentStats);
-    
-    // Check if update is needed
-    if (sitemapManager.needsUpdate()) {
-      setStatus('idle');
-    } else if (currentStats) {
-      setStatus('success');
-    }
-  }, []);
-
-  const handleManualUpdate = async () => {
+  const handleUpdateSitemap = async () => {
     setIsUpdating(true);
-    setStatus('idle');
-    
     try {
-      const success = await sitemapManager.updateLocalSitemap();
-      
+      const success = await updateSitemap();
       if (success) {
-        const newStats = sitemapManager.getCurrentStats();
-        setStats(newStats);
-        setStatus('success');
-        console.log('Sitemap update completed successfully');
-      } else {
-        setStatus('error');
+        // Get updated stats after successful update
+        const sitemapXML = await getSitemapXML();
+        if (sitemapXML) {
+          const newStats = sitemapManager.extractSitemapStats(sitemapXML);
+          setStats(newStats);
+        }
       }
     } catch (error) {
       console.error('Error updating sitemap:', error);
-      setStatus('error');
-    } finally {
-      setIsUpdating(false);
     }
+    setIsUpdating(false);
   };
 
-  const handleDownload = () => {
-    sitemapManager.downloadSitemap();
+  const getSitemapXML = async () => {
+    try {
+      const { data } = await supabase.functions.invoke('update-sitemap', { body: {} });
+      return typeof data === 'string' ? data : null;
+    } catch {
+      return null;
+    }
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <RefreshCw className="h-5 w-5" />
-          Sitemap Management
-          {status === 'success' && <CheckCircle className="h-5 w-5 text-green-500" />}
-          {status === 'error' && <AlertCircle className="h-5 w-5 text-red-500" />}
-        </CardTitle>
-        <CardDescription>
-          Generate and manage XML sitemaps for search engine optimization
-        </CardDescription>
+        <CardTitle>Sitemap Management</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Services</p>
-            <Badge variant="secondary" className="w-full justify-center">
-              {stats?.services || 0} pages
+        {stats && (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            <Badge variant="secondary">
+              Services: {stats.services}
             </Badge>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Categories</p>
-            <Badge variant="secondary" className="w-full justify-center">
-              {stats?.categories || 0} pages
+            <Badge variant="secondary">
+              Categories: {stats.categories}
             </Badge>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Mechanics</p>
-            <Badge variant="secondary" className="w-full justify-center">
-              {stats?.mechanics || 0} pages
+            <Badge variant="secondary">
+              Mechanics: {stats.mechanics}
             </Badge>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Search Queries</p>
-            <Badge variant="secondary" className="w-full justify-center">
-              {stats?.searches || 0} pages
+            <Badge variant="secondary">
+              Searches: {stats.searches}
             </Badge>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-sm font-medium">Total URLs</p>
-          <Badge variant="outline" className="w-full justify-center">
-            {stats?.totalUrls || 0} URLs
-          </Badge>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button 
-            onClick={handleManualUpdate}
-            disabled={isUpdating}
-            variant="default"
-            className="flex-1"
-          >
-            {isUpdating ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Update Sitemap
-              </>
-            )}
-          </Button>
-          
-          <Button 
-            onClick={handleDownload}
-            disabled={!stats}
-            variant="outline"
-            size="default"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download
-          </Button>
-        </div>
-        
-        {stats?.lastGenerated && (
-          <div className="text-sm text-muted-foreground">
-            Last generated: {stats.lastGenerated}
+            <Badge variant="outline">
+              Total: {stats.totalUrls}
+            </Badge>
           </div>
         )}
         
-        <div className="p-3 bg-muted rounded-lg">
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p>• Automatic sync when services/categories change</p>
-            <p>• Generated via Supabase Edge Function</p>
-            <p>• Available at /sitemap.xml for search engines</p>
-          </div>
-        </div>
+        <Button 
+          onClick={handleUpdateSitemap}
+          disabled={isUpdating}
+          className="w-full"
+        >
+          {isUpdating ? (
+            <>
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              Updating Sitemap...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Update Sitemap
+            </>
+          )}
+        </Button>
+        
+        <p className="text-sm text-muted-foreground">
+          This will regenerate public/sitemap.xml with all current services, categories, mechanics, and search queries.
+          The sitemap automatically updates when data changes.
+        </p>
       </CardContent>
     </Card>
   );

@@ -2,89 +2,78 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { sitemapManager } from '@/utils/sitemapManager';
 
-// Hook to sync sitemap when services change
+// Hook for automatic sitemap synchronization
 export const useSitemapSync = () => {
-  // Debouncing to prevent too many updates
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Debounced sitemap update function
   const updateSitemapDebounced = async () => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
     
     debounceRef.current = setTimeout(async () => {
-      try {
-        await sitemapManager.updateLocalSitemap();
-        console.log('Sitemap auto-updated successfully');
-      } catch (error) {
-        console.error('Error updating sitemap:', error);
-      }
-    }, 2000); // 2 second debounce
+      console.log('Auto-updating sitemap due to database changes...');
+      await sitemapManager.updateSitemap();
+    }, 2000); // 2 second delay
   };
 
   useEffect(() => {
-    // Subscribe to changes in all relevant tables
+    // Create a channel for listening to all relevant table changes
     const channel = supabase
-      .channel('sitemap-sync')
+      .channel('sitemap-changes')
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
           table: 'mechanic_services'
         },
-        async (payload) => {
-          console.log('Service changed, updating sitemap:', payload);
+        (payload) => {
+          console.log('Services changed:', payload);
           updateSitemapDebounced();
         }
       )
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
           table: 'service_categories'
         },
-        async (payload) => {
-          console.log('Category changed, updating sitemap:', payload);
+        (payload) => {
+          console.log('Categories changed:', payload);
           updateSitemapDebounced();
         }
       )
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
-          table: 'profiles'
+          table: 'profiles',
+          filter: 'role=eq.mechanic'
         },
-        async (payload) => {
-          console.log('Profile changed, checking if mechanic:', payload);
-          
-          // Only update sitemap for mechanic profiles
-          const isRelevant = 
-            payload.eventType === 'DELETE' || 
-            (payload.new as any)?.role === 'mechanic' || 
-            (payload.old as any)?.role === 'mechanic';
-          
-          if (isRelevant) {
-            updateSitemapDebounced();
-          }
+        (payload) => {
+          console.log('Mechanic profiles changed:', payload);
+          updateSitemapDebounced();
         }
       )
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          event: '*',
           schema: 'public',
           table: 'search_queries'
         },
-        async (payload) => {
-          console.log('Search query changed, updating sitemap:', payload);
+        (payload) => {
+          console.log('Search queries changed:', payload);
           updateSitemapDebounced();
         }
       )
       .subscribe();
 
+    // Cleanup function
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
@@ -93,10 +82,9 @@ export const useSitemapSync = () => {
     };
   }, []);
 
-
   // Manual update function
   const updateSitemap = async () => {
-    await sitemapManager.updateLocalSitemap();
+    return await sitemapManager.updateSitemap();
   };
 
   return { updateSitemap };

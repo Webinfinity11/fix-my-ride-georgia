@@ -24,9 +24,6 @@ import Chat from "./pages/Chat";
 import Mechanics from "./pages/Mechanics";
 import ServiceCategory from "./pages/ServiceCategory";
 import CategoryList from "./pages/CategoryList";
-import Sitemap from "./pages/Sitemap";
-import SitemapXML from "./pages/SitemapXML";
-import SitemapSearchXML from "./pages/SitemapSearchXML";
 import Map from "./pages/Map";
 
 const queryClient = new QueryClient();
@@ -62,9 +59,6 @@ function App() {
                 <Route path="/category" element={<CategoryList />} />
                 <Route path="/category/:categorySlug" element={<ServiceCategory />} />
         <Route path="/services/:categorySlug" element={<ServiceCategory />} />
-        <Route path="/sitemap" element={<Sitemap />} />
-        <Route path="/sitemap.xml" element={<SitemapXML />} />
-        <Route path="/sitemap-search.xml" element={<SitemapSearchXML />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AuthProvider>

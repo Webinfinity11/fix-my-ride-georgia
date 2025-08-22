@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import SitemapGenerator from '@/components/seo/SitemapGenerator';
-import SearchSitemapGenerator from '@/components/seo/SearchSitemapGenerator';
 import { SitemapUpdater } from '@/components/admin/SitemapUpdater';
-import { SitemapTestButton } from '@/components/admin/SitemapTestButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -228,16 +225,9 @@ const SEOManagement = () => {
         <h1 className="text-3xl font-bold">SEO მართვა</h1>
       </div>
 
-      {/* Sitemap Generators */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SitemapGenerator />
-        <SearchSitemapGenerator />
-      </div>
-      
       {/* Sitemap Management */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <SitemapUpdater />
-        <SitemapTestButton />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
