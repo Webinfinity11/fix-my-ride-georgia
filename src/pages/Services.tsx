@@ -1,11 +1,14 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
 import SEOHead from "@/components/seo/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { generateStructuredData } from "@/utils/seoUtils";
 
@@ -17,6 +20,7 @@ type ServiceCategory = {
 };
 
 const Services = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
 
@@ -74,9 +78,19 @@ const Services = () => {
             <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-6">
               აღმოაჩინეთ ჩვენი მრავალფეროვანი სერვისები ავტომობილებისთვის. ჩვენ გთავაზობთ მაღალი ხარისხის მომსახურებას სხვადასხვა საჭიროებისთვის.
             </p>
-            <p className="text-center max-w-2xl mx-auto mb-12">
+            <p className="text-center max-w-2xl mx-auto mb-8">
               ქვემოთ იხილეთ ჩვენი სერვისების სრული ჩამონათვალი. დააჭირეთ სასურველ სერვისს, რომ ნახოთ შესაბამისი ხელოსნების სია.
             </p>
+            <div className="text-center mb-12">
+              <Button 
+                onClick={() => navigate("/map")} 
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-white"
+              >
+                <MapPin className="mr-2 h-5 w-5" />
+                რუკით ძებნა
+              </Button>
+            </div>
           </div>
         </div>
         

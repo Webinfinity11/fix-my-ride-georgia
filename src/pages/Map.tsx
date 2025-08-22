@@ -431,7 +431,7 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
                 </div>
                 
                 <!-- View Details Button -->
-                <button onclick="window.location.href='/service/${service.id}'" 
+                <button onclick="window.location.href='/service/${service.slug || service.id}'" 
                         style="
                           width: 100%; 
                           background-color: #0F4C81; 

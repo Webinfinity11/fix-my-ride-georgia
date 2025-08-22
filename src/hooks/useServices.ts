@@ -6,6 +6,7 @@ import { toast } from "sonner";
 export type ServiceType = {
   id: number;
   name: string;
+  slug: string | null;
   description: string | null;
   price_from: number | null;
   price_to: number | null;
@@ -134,6 +135,7 @@ export const useServices = () => {
         .select(`
           id,
           name,
+          slug,
           description,
           price_from,
           price_to,
@@ -238,6 +240,7 @@ export const useServices = () => {
         return {
           id: service.id,
           name: service.name || "უცნობი სერვისი",
+          slug: service.slug,
           description: service.description,
           price_from: service.price_from,
           price_to: service.price_to,

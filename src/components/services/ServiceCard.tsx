@@ -99,7 +99,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
       !target.closest('button') && 
       !target.closest('h3') && 
       !target.closest('[role="button"]') &&
-      !target.closest('img') &&
+      !target.closest('.image-container') &&
       onMapFocus
     ) {
       onMapFocus();
@@ -110,7 +110,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
     <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
       <CardContent className="p-0" onClick={handleCardClick}>
         {/* Main Photo or Placeholder */}
-        <div className="relative overflow-hidden cursor-pointer" onClick={handleViewDetails}>
+        <div className="relative overflow-hidden cursor-pointer image-container" onClick={handleViewDetails}>
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
               <img
