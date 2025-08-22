@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { generateStructuredData } from "@/utils/seoUtils";
-import { getCategoryFromSlug, createCategorySlug } from "@/utils/slugUtils";
+import { getCategoryFromSlug, createCategorySlug, createSlug } from "@/utils/slugUtils";
 import { ServiceType } from "@/hooks/useServices";
 
 type CategoryType = {
@@ -89,6 +89,7 @@ const ServiceCategory = () => {
         .select(`
           id,
           name,
+          slug,
           description,
           price_from,
           price_to,
@@ -178,6 +179,7 @@ const ServiceCategory = () => {
         return {
           id: service.id,
           name: service.name || "უცნობი სერვისი",
+          slug: service.slug || createSlug(service.name || ""),
           description: service.description,
           price_from: service.price_from,
           price_to: service.price_to,

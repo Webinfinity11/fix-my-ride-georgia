@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { MechanicCard } from "@/components/mechanic/MechanicCard";
 import MechanicCardSkeleton from "@/components/mechanic/MechanicCardSkeleton";
 import MechanicFilters from "@/components/mechanic/MechanicFilters";
 import { useMechanics } from "@/hooks/useMechanics";
-import { Filter, RefreshCw } from "lucide-react";
+import { Filter, RefreshCw, MapPin } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -27,6 +27,7 @@ const tbilisiDistricts = [
 
 const Mechanics = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [visibleMechanicsCount, setVisibleMechanicsCount] = useState(12);
   const [showFilters, setShowFilters] = useState(true);
   
