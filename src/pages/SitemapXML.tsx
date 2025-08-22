@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { sitemapManager } from '@/utils/sitemapManager';
 
 const SitemapXML = () => {
   const [xmlContent, setXmlContent] = useState<string>('');
@@ -8,29 +7,13 @@ const SitemapXML = () => {
   useEffect(() => {
     const loadSitemap = async () => {
       try {
-        console.log('Loading sitemap XML...');
-        
-        // Get sitemap content from the manager (cached or fresh)
-        const sitemapContent = await sitemapManager.getSitemapContent();
-
-        if (sitemapContent) {
-          console.log('Sitemap loaded successfully, length:', sitemapContent.length);
-          const stats = sitemapManager.extractSitemapStats(sitemapContent);
-          console.log('Sitemap stats:', stats);
-          setXmlContent(sitemapContent);
+        // Load sitemap from public/sitemap.xml
+        const response = await fetch('/sitemap.xml');
+        if (response.ok) {
+          const content = await response.text();
+          setXmlContent(content);
         } else {
-          console.error('Failed to load sitemap content');
-          // Fallback to basic sitemap
-          setXmlContent(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://fixup.ge/</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <!-- Generated: ${new Date().toISOString()} -->
-</urlset>`);
+          throw new Error('Failed to load sitemap');
         }
       } catch (error) {
         console.error('Error loading sitemap:', error);
@@ -42,7 +25,6 @@ const SitemapXML = () => {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <!-- Error: ${String(error)} -->
 </urlset>`);
       } finally {
         setLoading(false);
@@ -62,7 +44,7 @@ const SitemapXML = () => {
   }, []);
 
   if (loading) {
-    return <div>Generating sitemap...</div>;
+    return <div>Loading sitemap...</div>;
   }
 
   // Return raw XML content
