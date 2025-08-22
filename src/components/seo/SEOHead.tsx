@@ -40,9 +40,7 @@ const SEOHead = ({
       <meta name="robots" content="index, follow" />
       <meta name="author" content="ავტოხელოსანი" />
       <meta name="language" content="ka" />
-      
-      {/* Canonical URL */}
-      <link rel="canonical" href={canonicalUrl} />
+
       
       {/* Open Graph Meta Tags */}
       <meta property="og:title" content={title} />
