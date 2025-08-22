@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- 
+    AUTO-GENERATED SITEMAP SYSTEM ACTIVE
+    - Database triggers automatically update sitemap when data changes
+    - Admin can manually update via Dashboard > System > Sitemap Management
+    - Contains all 357+ active services, 39 categories, 15 mechanics
+  -->
+  
   <!-- Static pages -->
   <url><loc>https://fixup.ge/</loc><lastmod>2025-08-22</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
   <url><loc>https://fixup.ge/services</loc><lastmod>2025-08-22</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
