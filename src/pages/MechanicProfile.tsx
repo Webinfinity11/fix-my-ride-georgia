@@ -15,8 +15,6 @@ import { useAuth } from "@/context/AuthContext";
 // Fixed: removed useChat dependency
 import MechanicReviews from "@/components/reviews/MechanicReviews";
 import { extractMechanicDisplayId, createMechanicSlug } from "@/utils/slugUtils";
-import SEOHead from "@/components/seo/SEOHead";
-import { generateStructuredData, generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 type MechanicType = {
   id: string;
@@ -429,49 +427,10 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
   };
 
   if (loading) {
-  // Generate SEO data
-  const seoData = mechanic ? {
-    first_name: mechanic.profile.first_name,
-    last_name: mechanic.profile.last_name,
-    city: mechanic.profile.city,
-    rating: mechanic.mechanic_profile.rating,
-    review_count: mechanic.mechanic_profile.review_count,
-    specialization: mechanic.mechanic_profile.specialization,
-    display_id: mechanic.display_id,
-    slug: createMechanicSlug(mechanic.display_id || 0, mechanic.profile.first_name, mechanic.profile.last_name)
-  } : null;
-
-  const structuredData = seoData ? generateStructuredData('Person', {
-    name: `${seoData.first_name} ${seoData.last_name}`,
-    jobTitle: 'ავტომექანიკოსი',
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: seoData.city,
-      addressCountry: 'GE'
-    },
-    aggregateRating: seoData.rating ? {
-      '@type': 'AggregateRating',
-      ratingValue: seoData.rating,
-      reviewCount: seoData.review_count || 0,
-      bestRating: 5,
-      worstRating: 1
-    } : undefined
-  }) : null;
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      {seoData && (
-        <SEOHead
-          title={generateSEOTitle('mechanic', seoData)}
-          description={generateSEODescription('mechanic', seoData)}
-          keywords={`${seoData.first_name} ${seoData.last_name}, ავტომექანიკოსი, ${seoData.city}, ${seoData.specialization || 'ავტოსერვისი'}`}
-          canonical={generateCanonicalURL('mechanic', seoData)}
-          structuredData={structuredData}
-          type="profile"
-        />
-      )}
-      <Header />
-      <main className="flex-grow bg-muted">
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow bg-muted">
           <div className="bg-primary text-white py-12">
             <div className="container mx-auto px-4">
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">

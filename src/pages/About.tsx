@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import SEOHead from "@/components/seo/SEOHead";
-import { generateStructuredData, generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 type Stats = {
   mechanics: number;
@@ -72,31 +70,8 @@ const About = () => {
     fetchStats();
   }, []);
 
-  const structuredData = generateStructuredData('Organization', {
-    name: 'ავტოხელოსანი',
-    description: 'საქართველოს უდიდესი ავტოსერვისების პლატფორმა',
-    url: 'https://fixup.ge',
-    logo: 'https://fixup.ge/fixup-logo.jpg',
-    sameAs: ['https://facebook.com/fixup.ge'],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'customer service',
-      areaServed: 'GE',
-      availableLanguage: 'Georgian'
-    }
-  });
-
   return (
-    <>
-      <SEOHead
-        title={generateSEOTitle('about', {})}
-        description={generateSEODescription('about', {})}
-        keywords="ავტოხელოსანი, ჩვენს შესახებ, ავტოსერვისი, საქართველო, ავტომექანიკოსი"
-        canonical={generateCanonicalURL('about', {})}
-        structuredData={structuredData}
-        type="website"
-      />
-      <Layout>
+    <Layout>
       <div className="bg-muted py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm">
@@ -155,7 +130,6 @@ const About = () => {
         </div>
       </div>
     </Layout>
-    </>
   );
 };
 

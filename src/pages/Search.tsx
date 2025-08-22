@@ -27,8 +27,6 @@ import {
 import { toast } from "sonner";
 import { createMechanicSlug } from "@/utils/slugUtils";
 import { useSearchTracking } from "@/hooks/useSearchTracking";
-import SEOHead from "@/components/seo/SEOHead";
-import { generateStructuredData, generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 type MechanicType = {
   id: string;
@@ -235,25 +233,8 @@ const Search = () => {
     ));
   };
 
-  const searchData = { query: searchQuery, tab: activeTab };
-  
-  const structuredData = generateStructuredData('SearchResultsPage', {
-    name: `ძიების შედეგები: ${searchQuery}`,
-    description: `ძიების შედეგები "${searchQuery}" - ავტოსერვისები და ხელოსნები`,
-    totalResults: activeTab === "services" ? services.length : mechanics.length,
-    searchQuery: searchQuery
-  });
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      <SEOHead
-        title={generateSEOTitle('search', searchData)}
-        description={generateSEODescription('search', searchData)}
-        keywords={`ძიება, ${searchQuery}, ავტოსერვისი, ხელოსანი, საქართველო`}
-        canonical={generateCanonicalURL('search', searchData)}
-        structuredData={structuredData}
-        type="website"
-      />
       <Header />
       
       <main className="py-8">

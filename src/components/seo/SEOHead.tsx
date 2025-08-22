@@ -40,7 +40,9 @@ const SEOHead = ({
       <meta name="robots" content="index, follow" />
       <meta name="author" content="ავტოხელოსანი" />
       <meta name="language" content="ka" />
-
+      
+      {/* Canonical URL */}
+      <link rel="canonical" href={canonicalUrl} />
       
       {/* Open Graph Meta Tags */}
       <meta property="og:title" content={title} />
@@ -58,9 +60,6 @@ const SEOHead = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
       <meta name="twitter:image:alt" content={title} />
-      
-      {/* Canonical URL */}
-      <link rel="canonical" href={canonicalUrl} />
       
       {/* Additional Meta Tags */}
       <meta name="viewport" content="width=device-width, initial-scale=1" />

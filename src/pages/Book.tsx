@@ -30,8 +30,6 @@ import {
   Loader2,
   Star
 } from "lucide-react";
-import SEOHead from "@/components/seo/SEOHead";
-import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 type ServiceType = {
   id: number;
@@ -420,22 +418,8 @@ const Book = () => {
   const displayName = service ? service.name : mechanic ? `${mechanic.first_name} ${mechanic.last_name}` : "";
   const mechanicInfo = service?.mechanic || mechanic;
 
-  const bookingData = {
-    serviceName: service?.name,
-    mechanicName: mechanic ? `${mechanic.first_name} ${mechanic.last_name}` : undefined,
-    serviceId: serviceId,
-    mechanicId: mechanicId
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
-      <SEOHead
-        title={generateSEOTitle('book', bookingData)}
-        description={generateSEODescription('book', bookingData)}
-        keywords={`ჯავშანი, ${displayName}, ავტოსერვისი, ${mechanicInfo?.first_name} ${mechanicInfo?.last_name}`}
-        canonical={generateCanonicalURL('book', bookingData)}
-        type="website"
-      />
       <Header />
 
       <main className="flex-grow bg-muted py-8">
