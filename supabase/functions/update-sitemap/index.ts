@@ -30,10 +30,14 @@ Deno.serve(async (req) => {
   }
 
   try {
+    console.log('Sitemap generation started...');
+    
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
+
+    console.log('Supabase client created, fetching services...');
 
     // Get all active services
     const { data: services, error: svcError } = await supabaseClient
@@ -41,6 +45,8 @@ Deno.serve(async (req) => {
       .select('id, name, slug, updated_at')
       .eq('is_active', true)
       .order('updated_at', { ascending: false });
+
+    console.log('Services fetched:', services?.length || 0, 'Error:', svcError);
 
     if (svcError) {
       console.error('Error fetching services:', svcError);
@@ -55,6 +61,8 @@ Deno.serve(async (req) => {
       .from('service_categories')
       .select('id, name')
       .order('name');
+
+    console.log('Categories fetched:', categories?.length || 0, 'Error:', catError);
 
     if (catError) {
       console.error('Error fetching categories:', catError);
@@ -78,6 +86,8 @@ Deno.serve(async (req) => {
       .eq('is_verified', true)
       .order('updated_at', { ascending: false });
 
+    console.log('Mechanics fetched:', mechanics?.length || 0, 'Error:', mechError);
+
     if (mechError) {
       console.error('Error fetching mechanics:', mechError);
     }
@@ -90,17 +100,21 @@ Deno.serve(async (req) => {
       .order('search_count', { ascending: false })
       .limit(100);
 
+    console.log('Search queries fetched:', searchQueries?.length || 0, 'Error:', searchError);
+
     if (searchError) {
       console.error('Error fetching search queries:', searchError);
     }
 
     if (!services || services.length === 0) {
+      console.log('No services found, returning error');
       return new Response(JSON.stringify({ error: 'No services found' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
+    console.log('Starting sitemap generation...');
     const baseUrl = 'https://fixup.ge';
     const currentDate = new Date().toISOString().split('T')[0];
 
@@ -246,11 +260,12 @@ ${searchUrls.join('\n')}
   
 </urlset>`;
 
+    console.log('Sitemap generation completed, total services:', services.length);
+
     return new Response(sitemapContent, {
       headers: { 
         ...corsHeaders, 
-        'Content-Type': 'application/xml',
-        'Content-Disposition': 'attachment; filename="sitemap.xml"'
+        'Content-Type': 'application/xml'
       },
     })
 

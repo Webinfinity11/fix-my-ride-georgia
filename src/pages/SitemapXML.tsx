@@ -15,8 +15,11 @@ const SitemapXML = () => {
           body: {}
         });
 
+        console.log('Sitemap response:', { data, error });
+
         if (error) {
           console.error('Error generating sitemap:', error);
+          // Fallback to basic sitemap
           setXmlContent(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -25,13 +28,15 @@ const SitemapXML = () => {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <!-- Error: ${error.message} -->
 </urlset>`);
         } else if (typeof data === 'string') {
-          console.log('Sitemap generated successfully');
+          console.log('Sitemap generated successfully, length:', data.length);
           setXmlContent(data);
         } else {
-          console.error('Invalid sitemap data received');
-          setXmlContent(`<?xml version="1.0" encoding="UTF-8"?>
+          console.error('Invalid sitemap data received:', typeof data, data);
+          // Still show the data if it exists
+          setXmlContent(String(data) || `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://fixup.ge/</loc>
@@ -51,6 +56,7 @@ const SitemapXML = () => {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <!-- Error: ${String(error)} -->
 </urlset>`);
       } finally {
         setLoading(false);
