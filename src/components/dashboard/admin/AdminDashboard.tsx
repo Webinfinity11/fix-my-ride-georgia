@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Shield, Users, Activity, Search } from "lucide-react";
 import SEOManagement from './SEOManagement';
+import SitemapManagement from './SitemapManagement';
 
 const AdminDashboard = () => {
   return (
@@ -74,6 +75,8 @@ const AdminDashboard = () => {
         </TabsContent>
 
         <TabsContent value="system" className="space-y-6">
+          <SitemapManagement />
+          
           <Card>
             <CardHeader>
               <CardTitle>სისტემის კონფიგურაცია</CardTitle>
