@@ -25,6 +25,7 @@ import Mechanics from "./pages/Mechanics";
 import ServiceCategory from "./pages/ServiceCategory";
 import CategoryList from "./pages/CategoryList";
 import Map from "./pages/Map";
+import SitemapXML from "./pages/SitemapXML";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/category" element={<CategoryList />} />
                 <Route path="/category/:categorySlug" element={<ServiceCategory />} />
         <Route path="/services/:categorySlug" element={<ServiceCategory />} />
+                <Route path="/sitemap.xml" element={<SitemapXML />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AuthProvider>

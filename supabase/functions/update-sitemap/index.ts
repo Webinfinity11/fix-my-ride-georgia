@@ -104,12 +104,13 @@ Deno.serve(async (req) => {
     const baseUrl = 'https://fixup.ge';
     const currentDate = new Date().toISOString().split('T')[0];
 
-    // Generate service URLs
+    // Generate service URLs with format: /service/{id}-{slug}
     const serviceUrls = services.map(service => {
       const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate;
-      const slug = service.slug || createSlug(service.name) || String(service.id);
+      const slug = service.slug || createSlug(service.name);
+      const serviceSlug = slug ? `${service.id}-${slug}` : String(service.id);
       return `  <url>
-    <loc>${baseUrl}/service/${slug}</loc>
+    <loc>${baseUrl}/service/${serviceSlug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
