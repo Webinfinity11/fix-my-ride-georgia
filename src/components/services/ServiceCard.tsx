@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, ImageOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { createSlug } from "@/utils/slugUtils";
+import { createServiceSlug } from "@/utils/slugUtils";
 
 interface ServiceType {
   id: number;
@@ -45,8 +45,8 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
   const [showPhone, setShowPhone] = useState(false);
 
   const handleViewDetails = () => {
-    const slugOrId = service.slug || service.id;
-    navigate(`/service/${slugOrId}`);
+    const slug = createServiceSlug(service.id, service.name);
+    navigate(`/service/${slug}`);
   };
 
   const handleViewMechanic = (e: React.MouseEvent) => {

@@ -63,8 +63,13 @@ export function extractServiceId(slugOrId: string): string {
     return slugOrId;
   }
   
-  // For now, we'll need to fetch from database to find ID by slug
-  // This is a placeholder - the actual lookup will be done in the component
+  // Check if it follows the ID-slug format (e.g., "425-slug-name")
+  const idSlugMatch = slugOrId.match(/^(\d+)-(.+)$/);
+  if (idSlugMatch) {
+    return idSlugMatch[1]; // Return the ID part
+  }
+  
+  // Legacy slug format - return as is for database lookup
   return slugOrId;
 }
 
@@ -73,7 +78,7 @@ export function extractServiceId(slugOrId: string): string {
  */
 export function createServiceSlug(id: number, name: string): string {
   const slug = createSlug(name);
-  return slug || id.toString();
+  return `${id}-${slug}` || id.toString();
 }
 
 /**

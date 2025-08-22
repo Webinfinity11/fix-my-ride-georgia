@@ -96,8 +96,13 @@ const ServiceDetail = () => {
     try {
       let serviceData, serviceError;
 
-      if (/^\d+$/.test(slugOrId)) {
-        // Fetch by ID
+      // Check for ID-slug format (e.g., "425-slug-name")
+      const idSlugMatch = slugOrId.match(/^(\d+)-(.+)$/);
+      const isNumericId = /^\d+$/.test(slugOrId);
+      
+      if (isNumericId || idSlugMatch) {
+        // Fetch by ID (either pure ID or extracted from ID-slug format)
+        const serviceId = idSlugMatch ? parseInt(idSlugMatch[1]) : parseInt(slugOrId);
         const result = await supabase
           .from("mechanic_services")
           .select(`
@@ -111,14 +116,23 @@ const ServiceDetail = () => {
               profiles(id, first_name, last_name, phone)
             )
           `)
-          .eq("id", parseInt(slugOrId))
+          .eq("id", serviceId)
           .eq("is_active", true)
           .single();
         
         serviceData = result.data;
         serviceError = result.error;
+        
+        // If we found the service and it was accessed via ID-slug format, 
+        // update URL to use the correct slug format
+        if (!serviceError && serviceData && idSlugMatch) {
+          const correctSlug = `${serviceData.id}-${createSlug(serviceData.name)}`;
+          if (correctSlug !== slugOrId) {
+            window.history.replaceState(null, '', `/service/${correctSlug}`);
+          }
+        }
       } else {
-        // Fetch by slug
+        // Fetch by legacy slug
         const result = await supabase
           .from("mechanic_services")
           .select(`
@@ -143,10 +157,9 @@ const ServiceDetail = () => {
             serviceData = foundService;
             serviceError = null;
             
-            const newSlug = createSlug(foundService.name);
-            if (newSlug !== slugOrId) {
-              window.history.replaceState(null, '', `/service/${newSlug}`);
-            }
+            // Update URL to use the new ID-slug format
+            const newSlug = `${foundService.id}-${createSlug(foundService.name)}`;
+            window.history.replaceState(null, '', `/service/${newSlug}`);
           } else {
             serviceError = { message: "Service not found" };
           }
