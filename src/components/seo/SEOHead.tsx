@@ -23,10 +23,12 @@ const SEOHead = ({
   canonical
 }: SEOHeadProps) => {
   const baseUrl = 'https://fixup.ge';
-  const defaultImage = `${baseUrl}/placeholder.svg`;
+  const defaultImage = `${baseUrl}/fixup-og-image.jpg`;
   const fullTitle = `${title} | ავტოხელოსანი`;
   const imageUrl = image || defaultImage;
-  const pageUrl = url || baseUrl;
+  // Fix canonical URL logic - use current page URL if no specific URL provided
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : baseUrl;
+  const pageUrl = url || currentUrl;
   const canonicalUrl = canonical || pageUrl;
 
   return (

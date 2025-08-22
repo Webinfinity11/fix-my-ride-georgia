@@ -35,6 +35,7 @@ import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
+import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 interface ServiceType {
   id: number;
@@ -379,10 +380,24 @@ const ServiceDetail = () => {
     } : undefined
   };
 
-  const pageTitle = seoData?.meta_title || `${service.name} - ${service.mechanic.first_name} ${service.mechanic.last_name} | FixUp.ge`;
-  const pageDescription = seoData?.meta_description || (service.description 
-    ? `${service.description.substring(0, 150)}...`
-    : `${service.name} ავტოსერვისი ${service.city}-ში. ხელოსანი: ${service.mechanic.first_name} ${service.mechanic.last_name}. ${service.rating ? `შეფასება: ${service.rating}/5` : ''}`);
+      const pageTitle = seoData?.meta_title || generateSEOTitle('service', {
+        name: service.name,
+        city: service.city,
+        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` }
+      });
+      
+      const pageDescription = seoData?.meta_description || generateSEODescription('service', {
+        name: service.name,
+        city: service.city,
+        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` },
+        rating: service.rating,
+        description: service.description
+      });
+
+      const canonicalUrl = generateCanonicalURL('service', {
+        id: service.id,
+        name: service.name
+      });
 
   // Contact Card Component
   const ContactCard = ({ className = "" }: { className?: string }) => (
@@ -586,9 +601,10 @@ const ServiceDetail = () => {
       <SEOHead
         title={pageTitle}
         description={pageDescription}
-        keywords={seoData?.meta_keywords}
+        keywords={seoData?.meta_keywords || `${service.name}, ავტოსერვისი, ${service.city}, ${service.mechanic.first_name} ${service.mechanic.last_name}, მექანიკოსი`}
         image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
-        url={`${window.location.origin}/service/${createSlug(service.name)}`}
+        url={canonicalUrl}
+        canonical={canonicalUrl}
         type="article"
         structuredData={structuredData}
       />

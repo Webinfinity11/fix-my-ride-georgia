@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MechanicCard } from "@/components/mechanic/MechanicCard";
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import SEOHead from "@/components/seo/SEOHead";
+import { generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
 import { supabase } from "@/integrations/supabase/client";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { 
@@ -238,6 +238,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
+      <SEOHead
+        title={generateSEOTitle('home', {})}
+        description={generateSEODescription('home', {})}
+        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი"
+        url="https://fixup.ge"
+        canonical="https://fixup.ge"
+        type="website"
+      />
       <Header />
       
       <main className="flex-grow">

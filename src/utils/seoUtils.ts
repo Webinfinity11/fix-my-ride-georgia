@@ -14,7 +14,7 @@ export const generateMetaTags = (
 ) => {
   const baseUrl = 'https://fixup.ge';
   const fullTitle = `${title} | ავტოხელოსანი`;
-  const imageUrl = image || `${baseUrl}/placeholder.svg`;
+  const imageUrl = image || `${baseUrl}/fixup-og-image.jpg`;
   const pageUrl = url || baseUrl;
 
   return {
@@ -29,63 +29,141 @@ export const generateMetaTags = (
 
 // Generate structured data for different types
 export const generateStructuredData = (type: string, data: any) => {
-  const baseStructure = {
-    '@context': 'https://schema.org',
-    '@type': type
+  const baseStructuredData = {
+    "@context": "https://schema.org",
+    "@type": type,
+    ...data
   };
 
   switch (type) {
     case 'Organization':
       return {
-        ...baseStructure,
+        ...baseStructuredData,
         name: 'ავტოხელოსანი',
-        url: 'https://fixup.ge',
-        logo: 'https://fixup.ge/placeholder.svg',
-        description: 'პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს',
-        contactPoint: {
-          '@type': 'ContactPoint',
-          contactType: 'customer service',
-          availableLanguage: 'Georgian'
+        url: "https://fixup.ge",
+        logo: "https://fixup.ge/fixup-logo.jpg",
+        description: 'საქართველოს უდიდესი ავტოსერვისების პლატფორმა',
+        address: {
+          "@type": "PostalAddress",
+          addressCountry: "GE",
+          addressLocality: "Tbilisi"
         },
-        ...data
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer service",
+          telephone: "+995577123456",
+          email: "info@fixup.ge",
+          availableLanguage: "Georgian"
+        },
+        sameAs: [
+          "https://www.facebook.com/fixup.ge",
+          "https://www.instagram.com/fixup.ge"
+        ]
       };
-    
+
     case 'LocalBusiness':
       return {
-        ...baseStructure,
-        name: data.name || 'ავტოხელოსანი',
-        address: data.address,
-        telephone: data.phone,
-        openingHours: data.hours,
-        ...data
+        ...baseStructuredData,
+        "@type": "AutomotiveRepairShop",
+        url: "https://fixup.ge",
+        logo: "https://fixup.ge/fixup-logo.jpg",
+        address: data.address ? {
+          "@type": "PostalAddress",
+          addressCountry: "GE",
+          addressLocality: data.address.city,
+          addressRegion: data.address.district,
+          streetAddress: data.address.street
+        } : undefined,
+        geo: data.geo ? {
+          "@type": "GeoCoordinates",
+          latitude: data.geo.latitude,
+          longitude: data.geo.longitude
+        } : undefined,
+        openingHours: data.openingHours || ["Mo-Fr 09:00-18:00", "Sa 09:00-16:00"],
+        priceRange: data.priceRange || "$$",
+        telephone: data.telephone,
+        aggregateRating: data.aggregateRating ? {
+          "@type": "AggregateRating",
+          ratingValue: data.aggregateRating.ratingValue,
+          reviewCount: data.aggregateRating.reviewCount,
+          bestRating: 5,
+          worstRating: 1
+        } : undefined
       };
-    
+
     case 'Service':
       return {
-        ...baseStructure,
-        name: data.name,
-        description: data.description,
-        provider: {
-          '@type': 'Organization',
-          name: 'ავტოხელოსანი'
+        ...baseStructuredData,
+        category: data.category || "Automotive Service",
+        areaServed: {
+          "@type": "City",
+          name: data.areaServed || "Tbilisi"
         },
-        ...data
+        provider: data.provider ? {
+          "@type": "Person",
+          name: data.provider.name,
+          telephone: data.provider.telephone,
+          address: data.provider.address ? {
+            "@type": "PostalAddress",
+            addressCountry: "GE",
+            addressLocality: data.provider.address.city,
+            addressRegion: data.provider.address.district,
+            streetAddress: data.provider.address.street
+          } : undefined
+        } : undefined,
+        offers: data.offers ? {
+          "@type": "Offer",
+          price: data.offers.price || "Price on request",
+          priceCurrency: "GEL",
+          availability: "https://schema.org/InStock"
+        } : undefined,
+        aggregateRating: data.aggregateRating ? {
+          "@type": "AggregateRating",
+          ratingValue: data.aggregateRating.ratingValue,
+          reviewCount: data.aggregateRating.reviewCount,
+          bestRating: 5,
+          worstRating: 1
+        } : undefined
       };
-    
+
     case 'Person':
       return {
-        ...baseStructure,
-        name: data.name,
-        jobTitle: data.jobTitle || 'მექანიკოსი',
+        ...baseStructuredData,
+        url: data.url || "https://fixup.ge",
+        image: data.image || "https://fixup.ge/fixup-logo.jpg",
+        jobTitle: data.jobTitle || "Automotive Mechanic",
         worksFor: {
-          '@type': 'Organization',
-          name: 'ავტოხელოსანი'
+          "@type": "Organization", 
+          name: "ავტოხელოსანი",
+          url: "https://fixup.ge"
         },
-        ...data
+        address: data.address ? {
+          "@type": "PostalAddress",
+          addressCountry: "GE",
+          addressLocality: data.address.city,
+          addressRegion: data.address.district
+        } : undefined,
+        makesOffer: data.makesOffer ? data.makesOffer.map((offer: any) => ({
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: offer.name,
+            description: offer.description
+          },
+          price: offer.price,
+          priceCurrency: "GEL"
+        })) : undefined,
+        aggregateRating: data.aggregateRating ? {
+          "@type": "AggregateRating",
+          ratingValue: data.aggregateRating.ratingValue,
+          reviewCount: data.aggregateRating.reviewCount,
+          bestRating: 5,
+          worstRating: 1
+        } : undefined
       };
-    
+
     default:
-      return { ...baseStructure, ...data };
+      return baseStructuredData;
   }
 };
 
@@ -119,19 +197,102 @@ export const generateFAQStructuredData = (faqs: Array<{question: string, answer:
   };
 };
 
-// Generate review/rating structured data
-export const generateReviewStructuredData = (reviews: any[]) => {
-  if (!reviews || reviews.length === 0) return null;
-  
-  const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
-  
+// Add new utility functions for enhanced SEO
+
+// Generate Product structured data for services
+export const generateProductStructuredData = (service: any) => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'AggregateRating',
-    ratingValue: averageRating.toFixed(1),
-    reviewCount: reviews.length,
-    bestRating: 5,
-    worstRating: 1
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": service.name,
+    "description": service.description || `${service.name} - ავტოსერვისი`,
+    "category": "Automotive Service",
+    "brand": {
+      "@type": "Brand",
+      "name": "ავტოხელოსანი"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": service.price_from || "შეთანხმებით",
+      "priceCurrency": "GEL",
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Person",
+        "name": service.mechanic?.name || "ხელოსანი"
+      }
+    },
+    "aggregateRating": service.rating ? {
+      "@type": "AggregateRating",
+      "ratingValue": service.rating,
+      "reviewCount": service.review_count || 0,
+      "bestRating": 5,
+      "worstRating": 1
+    } : undefined,
+    "provider": {
+      "@type": "Organization",
+      "name": "ავტოხელოსანი",
+      "url": "https://fixup.ge"
+    }
   };
+};
+
+// Generate SEO-optimized titles
+export const generateSEOTitle = (pageType: string, data: any, customTitle?: string) => {
+  if (customTitle) return customTitle;
+
+  switch (pageType) {
+    case 'service':
+      return `${data.name} - ${data.city || 'საქართველო'} | ${data.mechanic?.name || 'ხელოსანი'} | ავტოხელოსანი`;
+    case 'mechanic':
+      return `${data.name} - ხელოსანი ${data.city || 'საქართველო'}-ში | რეიტინგი ${data.rating}/5 | ავტოხელოსანი`;
+    case 'category':
+      return `${data.name} - ავტოსერვისები საქართველოში | ავტოხელოსანი`;
+    case 'services':
+      return `ავტოსერვისები - იპოვეთ საუკეთესო ხელოსანი | ავტოხელოსანი`;
+    case 'home':
+      return `ავტოხელოსანი - საქართველოს #1 ავტოსერვისების პლატფორმა`;
+    default:
+      return `${data.title || 'ავტოხელოსანი'} | საქართველოს ავტოსერვისების პლატფორმა`;
+  }
+};
+
+// Generate SEO-optimized descriptions
+export const generateSEODescription = (pageType: string, data: any, customDescription?: string) => {
+  if (customDescription) return customDescription;
+
+  switch (pageType) {
+    case 'service':
+      return `${data.name} - ${data.city || 'საქართველო'}-ში. ხელოსანი: ${data.mechanic?.name || 'დადასტურებული ხელოსანი'}. ${data.rating ? `შეფასება: ${data.rating}/5. ` : ''}${data.description ? data.description.substring(0, 100) : 'ხარისხიანი ავტოსერვისი'}...`;
+    case 'mechanic':
+      return `${data.name} - გამოცდილი ხელოსანი ${data.city || 'საქართველო'}-ში. რეიტინგი: ${data.rating}/5 (${data.review_count} შეფასება). ${data.specialization ? `სპეციალიზაცია: ${data.specialization}. ` : ''}დაუკავშირდით ახლავე!`;
+    case 'category':
+      return `${data.name} - იპოვეთ საუკეთესო ხელოსნები ${data.name}-ის სფეროში საქართველოში. ხარისხიანი სერვისი, მიმდინარე ფასები, დადასტურებული ხელოსნები.`;
+    case 'services':
+      return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. 2500+ ხელოსანი, 15000+ სერვისი, 4.8★ საშუალო რეიტინგი. ჯავშანი ახლავე!`;
+    case 'home':
+      return `საქართველოს უდიდესი ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში. სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
+    default:
+      return `ავტოხელოსანი - საქართველოს ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენი მანქანისთვის.`;
+  }
+};
+
+// Generate canonical URL
+export const generateCanonicalURL = (pageType: string, data: any) => {
+  const baseUrl = 'https://fixup.ge';
+  
+  switch (pageType) {
+    case 'service':
+      return `${baseUrl}/service/${data.id}-${data.slug || createSlug(data.name)}`;
+    case 'mechanic':
+      return `${baseUrl}/mechanic/${data.display_id || data.id}-${data.slug || createMechanicSlug(data.display_id, data.first_name, data.last_name)}`;
+    case 'category':
+      return `${baseUrl}/category/${data.slug || createCategorySlug(data.name)}`;
+    case 'services':
+      return `${baseUrl}/services`;
+    case 'home':
+      return baseUrl;
+    default:
+      return baseUrl;
+  }
 };
 

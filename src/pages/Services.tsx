@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
 import SEOHead from "@/components/seo/SEOHead";
-import { supabase } from "@/integrations/supabase/client";
+import { generateStructuredData, generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
@@ -63,10 +63,11 @@ const Services = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title="ავტოსერვისები - ყველა კატეგორია"
-        description="აღმოაჩინეთ ჩვენი მრავალფეროვანი ავტოსერვისები. მექანიკური რემონტიდან ელექტრო სისტემების მომსახურებამდე - ყველაფერი ერთ ადგილას."
+        title={generateSEOTitle('services', {})}
+        description={generateSEODescription('services', {})}
         keywords="ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, მომსახურება, საქართველო, თბილისი"
         url="https://fixup.ge/services"
+        canonical="https://fixup.ge/services"
         structuredData={structuredData}
       />
       <Header />
