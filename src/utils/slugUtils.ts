@@ -91,6 +91,7 @@ export function createMechanicSlug(displayId: number, firstName: string, lastNam
 }
 /**
  * Extract mechanic display ID from slug or return the slug if it's already an ID
+ * Updated to use numeric display_id instead of UUID
  */
 export function extractMechanicDisplayId(slugOrId: string): string {
   // Check if it follows the display_id-slug format (e.g., "123-slug-name")
