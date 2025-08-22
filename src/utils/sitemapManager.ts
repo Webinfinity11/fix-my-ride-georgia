@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+// Sitemap manager - clean implementation
 import { toast } from 'sonner';
 
 export interface SitemapStats {
