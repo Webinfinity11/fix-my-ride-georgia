@@ -78,19 +78,9 @@ const Services = () => {
             <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-6">
               აღმოაჩინეთ ჩვენი მრავალფეროვანი სერვისები ავტომობილებისთვის. ჩვენ გთავაზობთ მაღალი ხარისხის მომსახურებას სხვადასხვა საჭიროებისთვის.
             </p>
-            <p className="text-center max-w-2xl mx-auto mb-8">
+            <p className="text-center max-w-2xl mx-auto mb-12">
               ქვემოთ იხილეთ ჩვენი სერვისების სრული ჩამონათვალი. დააჭირეთ სასურველ სერვისს, რომ ნახოთ შესაბამისი ხელოსნების სია.
             </p>
-            <div className="text-center mb-12">
-              <Button 
-                onClick={() => navigate("/map")} 
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-white"
-              >
-                <MapPin className="mr-2 h-5 w-5" />
-                რუკით ძებნა
-              </Button>
-            </div>
           </div>
         </div>
         

@@ -9,6 +9,7 @@ import { createSlug } from "@/utils/slugUtils";
 interface ServiceType {
   id: number;
   name: string;
+  slug?: string | null;
   description: string | null;
   estimated_hours: number | null;
   city: string | null;
@@ -44,8 +45,8 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
   const [showPhone, setShowPhone] = useState(false);
 
   const handleViewDetails = () => {
-    const slug = createSlug(service.name);
-    navigate(`/service/${slug}`);
+    const slugOrId = service.slug || service.id;
+    navigate(`/service/${slugOrId}`);
   };
 
   const handleViewMechanic = (e: React.MouseEvent) => {
@@ -107,10 +108,10 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
   };
 
   return (
-    <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg">
+    <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg rounded-lg">
       <CardContent className="p-0" onClick={handleCardClick}>
         {/* Main Photo or Placeholder */}
-        <div className="relative overflow-hidden cursor-pointer image-container" onClick={handleViewDetails}>
+        <div className="relative overflow-hidden cursor-pointer image-container rounded-t-lg" onClick={handleViewDetails}>
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
               <img

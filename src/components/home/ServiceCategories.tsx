@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Wrench, Car, Zap, Settings, Gauge, Paintbrush } from "lucide-react";
+import { Wrench, Car, Zap, Settings, Gauge, Paintbrush, MapPin } from "lucide-react";
 import { createCategorySlug } from "@/utils/slugUtils";
 
 type ServiceCategory = {
@@ -95,14 +95,24 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
         </div>
         
         <div className="text-center mt-8">
-          <Button 
-            variant="outline" 
-            size="lg"
-            onClick={() => navigate('/category')}
-            className="hover:bg-primary hover:text-white transition-colors"
-          >
-            ყველა კატეგორიის ნახვა
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => navigate('/category')}
+              className="hover:bg-primary hover:text-white transition-colors"
+            >
+              ყველა კატეგორიის ნახვა
+            </Button>
+            <Button 
+              onClick={() => navigate("/map")} 
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-white"
+            >
+              <MapPin className="mr-2 h-5 w-5" />
+              რუკით ძებნა
+            </Button>
+          </div>
         </div>
       </div>
     </section>
