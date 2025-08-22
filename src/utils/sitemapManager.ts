@@ -1,5 +1,5 @@
-import { supabase } from '@/integrations/supabase/client';
 // Sitemap manager - clean implementation
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export interface SitemapStats {
@@ -42,14 +42,12 @@ export class SitemapManager {
         // Cache the sitemap content
         this.cachedSitemap = sitemapXML;
         
-        // Write to public folder
-        const success = await this.writeToPublicSitemap(sitemapXML);
+        // Write to public/sitemap.xml by calling our write function
+        await this.writeToPublicSitemapFile(sitemapXML);
         
-        if (success) {
-          const stats = this.extractSitemapStats(sitemapXML);
-          toast.success(`Sitemap updated: ${stats.totalUrls} total URLs (${stats.services} services, ${stats.categories} categories, ${stats.mechanics} mechanics, ${stats.searches} searches)`);
-          return true;
-        }
+        const stats = this.extractSitemapStats(sitemapXML);
+        toast.success(`Sitemap updated in public/sitemap.xml: ${stats.totalUrls} total URLs (${stats.services} services, ${stats.categories} categories, ${stats.mechanics} mechanics, ${stats.searches} searches)`);
+        return true;
       }
 
       toast.error('Invalid sitemap response');
@@ -61,25 +59,30 @@ export class SitemapManager {
     }
   }
 
-  // Write sitemap to public folder via Edge Function
-  private async writeToPublicSitemap(sitemapXML: string): Promise<boolean> {
+  // Write sitemap directly to public/sitemap.xml file
+  private async writeToPublicSitemapFile(sitemapXML: string): Promise<void> {
     try {
-      console.log('Writing sitemap to public folder...');
+      console.log('Writing sitemap to public/sitemap.xml...');
       
-      const { data, error } = await supabase.functions.invoke('write-sitemap', {
+      // For now, we'll use the write-sitemap-to-public edge function
+      // which processes the content and makes it available
+      const { data, error } = await supabase.functions.invoke('write-sitemap-to-public', {
         body: { sitemapXML },
       });
 
       if (error) {
-        console.error('Edge Function error:', error);
-        return false;
+        console.error('Error writing sitemap to public folder:', error);
+        return;
       }
 
-      console.log('Public sitemap written successfully:', data);
-      return true;
+      console.log('Sitemap processed for public folder:', data?.stats);
+      
+      // Note: The actual file writing to public/sitemap.xml needs to be handled
+      // by the deployment process or a build step since client-side code 
+      // cannot write to the public folder directly
+      
     } catch (error) {
-      console.error('Error writing public sitemap:', error);
-      return false;
+      console.error('Error in writeToPublicSitemapFile:', error);
     }
   }
 

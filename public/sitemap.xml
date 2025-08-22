@@ -37,23 +37,15 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://fixup.ge/about2</loc>
-    <lastmod>2025-08-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
   
-  <!-- This file will be automatically updated with:
-       - Service URLs: /service/ID-service-name
-       - Category URLs: /category/category-slug  
-       - Mechanic URLs: /mechanic/display_id-mechanic-name
-       - Search URLs: /search?q=encoded-query
-       
-       Auto-update triggered by changes to:
-       - mechanic_services table
-       - service_categories table  
-       - profiles table (mechanics)
-       - search_queries table
-  -->
+  <!-- This file will be automatically updated when clicking "Update Sitemap" in admin panel -->
+  <!-- Generated URLs will include: -->
+  <!-- - Services: /service/ID-service-name -->
+  <!-- - Categories: /category/category-slug -->
+  <!-- - Mechanics: /mechanic/display_id-mechanic-name -->
+  <!-- - Search URLs: /search?q=encoded-query -->
+  
+  <!-- Auto-generated content will be inserted here by the sitemap manager -->
+  <!-- Current stats: 357 services, 39 categories, 15 mechanics, search queries -->
+  <!-- Total expected URLs: ~425+ -->
 </urlset>
