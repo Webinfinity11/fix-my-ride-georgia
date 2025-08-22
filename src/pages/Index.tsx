@@ -1,4 +1,6 @@
 
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
@@ -7,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MechanicCard } from "@/components/mechanic/MechanicCard";
+import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/seo/SEOHead";
 import { generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
-import { supabase } from "@/integrations/supabase/client";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { 
   Search, 

@@ -6,11 +6,11 @@ import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
 import SEOHead from "@/components/seo/SEOHead";
 import { generateStructuredData, generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
+import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import { toast } from "sonner";
-import { generateStructuredData } from "@/utils/seoUtils";
 
 type ServiceCategory = {
   id: number;
