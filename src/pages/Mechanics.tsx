@@ -208,19 +208,28 @@ const Mechanics = () => {
             {/* Filters Section */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
-                >
-                  <Filter className="h-4 w-4" />
-                  ფილტრები
-                  {hasActiveFilters && (
-                    <Badge variant="secondary" className="ml-2">
-                      აქტიური
-                    </Badge>
-                  )}
-                </Button>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
+                  >
+                    <Filter className="h-4 w-4" />
+                    ფილტრები
+                    {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-2">
+                        აქტიური
+                      </Badge>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/map")}
+                    className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white"
+                  >
+                    <MapPin className="h-4 w-4" />
+                    რუკით ძებნა
+                  </Button>
+                </div>
 
                 <div className="flex items-center gap-4">
                   {/* Reset Filters */}

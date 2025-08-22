@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +7,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { useServices } from "@/hooks/useServices";
-import { Filter, RefreshCw } from "lucide-react";
+import { Filter, RefreshCw, MapPin } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -27,6 +27,7 @@ type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | 
 
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [visibleServicesCount, setVisibleServicesCount] = useState(12);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(true);
@@ -237,19 +238,28 @@ const ServicesDetail = () => {
             {/* Filters Section */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
-                >
-                  <Filter className="h-4 w-4" />
-                  ფილტრები
-                  {hasActiveFilters && (
-                    <Badge variant="secondary" className="ml-2">
-                      აქტიური
-                    </Badge>
-                  )}
-                </Button>
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
+                  >
+                    <Filter className="h-4 w-4" />
+                    ფილტრები
+                    {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-2">
+                        აქტიური
+                      </Badge>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/map")}
+                    className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white"
+                  >
+                    <MapPin className="h-4 w-4" />
+                    რუკით ძებნა
+                  </Button>
+                </div>
 
                 <div className="flex items-center gap-4">
                   {/* Reset Filters */}
