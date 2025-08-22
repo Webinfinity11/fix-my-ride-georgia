@@ -29,6 +29,7 @@ export type ServiceType = {
   } | null;
   mechanic: {
     id: string;
+    display_id?: number;
     first_name: string;
     last_name: string;
     rating: number | null;
@@ -216,7 +217,7 @@ export const useServices = () => {
           first_name,
           last_name,
           phone,
-          mechanic_profiles(rating)
+          mechanic_profiles(display_id, rating)
         `)
         .in("id", mechanicIds);
 
@@ -263,6 +264,7 @@ export const useServices = () => {
           } : null,
           mechanic: {
             id: mechanic?.id || "",
+            display_id: mechanicProfile?.display_id || undefined,
             first_name: mechanic?.first_name || "",
             last_name: mechanic?.last_name || "",
             rating: mechanicProfile?.rating || null,

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 export type MechanicType = {
   id: string;
+  display_id?: number;
   profiles: {
     first_name: string;
     last_name: string;
@@ -101,6 +102,7 @@ export const useMechanics = () => {
         .from("mechanic_profiles")
         .select(`
           id,
+          display_id,
           specialization,
           hourly_rate,
           rating,
@@ -171,6 +173,7 @@ export const useMechanics = () => {
       // Transform the data
       let transformedMechanics: MechanicType[] = mechanicsData.map(mechanic => ({
         id: mechanic.id,
+        display_id: mechanic.display_id,
         profiles: Array.isArray(mechanic.profiles) ? mechanic.profiles[0] : mechanic.profiles,
         specialization: mechanic.specialization,
         hourly_rate: mechanic.hourly_rate,

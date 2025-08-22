@@ -1,7 +1,7 @@
 
 import { ServiceType } from "@/hooks/useServices";
 import { supabase } from '@/integrations/supabase/client';
-import { createSlug, createCategorySlug } from './slugUtils';
+import { createSlug, createCategorySlug, createMechanicSlug } from './slugUtils';
 
 // Generate meta tags for SEO
 export const generateMetaTags = (
@@ -144,15 +144,24 @@ export const generateSitemap = async (): Promise<string> => {
     // 2. ALL MECHANIC PROFILES - Individual mechanic pages
     const { data: mechanics } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name, updated_at')
+      .select(`
+        id,
+        first_name,
+        last_name,
+        updated_at,
+        mechanic_profiles!inner(display_id)
+      `)
       .eq('role', 'mechanic')
+      .eq('is_verified', true)
       .limit(1000);
 
     if (mechanics && mechanics.length > 0) {
       const mechanicUrls = mechanics.map(mechanic => {
         const lastmod = mechanic.updated_at ? new Date(mechanic.updated_at).toISOString().split('T')[0] : currentDate;
+        const mechanicProfile = Array.isArray(mechanic.mechanic_profiles) ? mechanic.mechanic_profiles[0] : mechanic.mechanic_profiles;
+        const mechanicSlug = createMechanicSlug(mechanicProfile?.display_id || 0, mechanic.first_name, mechanic.last_name);
         return `  <url>
-    <loc>${baseUrl}/mechanic/${mechanic.id}-${mechanic.first_name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}-${mechanic.last_name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}</loc>
+    <loc>${baseUrl}/mechanic/${mechanicSlug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
