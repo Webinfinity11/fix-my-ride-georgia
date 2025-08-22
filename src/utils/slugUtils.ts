@@ -82,6 +82,28 @@ export function createServiceSlug(id: number, name: string): string {
 }
 
 /**
+ * Create mechanic slug with ID for backwards compatibility
+ */
+export function createMechanicSlug(id: string, firstName: string, lastName: string): string {
+  const fullName = `${firstName} ${lastName}`;
+  const slug = createSlug(fullName);
+  return `${id}-${slug}` || id;
+}
+/**
+ * Extract mechanic ID from slug or return the slug if it's already an ID
+ */
+export function extractMechanicId(slugOrId: string): string {
+  // Check if it follows the ID-slug format (e.g., "uuid-slug-name")
+  const idSlugMatch = slugOrId.match(/^([a-f0-9-]{36})-(.+)$/);
+  if (idSlugMatch) {
+    return idSlugMatch[1]; // Return the ID part
+  }
+  
+  // Return as is (could be pure UUID or legacy format)
+  return slugOrId;
+}
+
+/**
  * Create category slug from name
  */
 export function createCategorySlug(categoryName: string): string {

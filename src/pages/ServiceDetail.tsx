@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { createSlug } from "@/utils/slugUtils";
+import { createSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -465,7 +465,7 @@ const ServiceDetail = () => {
           <Button 
             variant="secondary" 
             className="w-full"
-            onClick={() => navigate(`/mechanic/${service.mechanic.id}`)}
+            onClick={() => navigate(`/mechanic/${createMechanicSlug(service.mechanic.id, service.mechanic.first_name, service.mechanic.last_name)}`)}
           >
             სრული პროფილი
           </Button>

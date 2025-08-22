@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MapPin, Star, Clock, DollarSign } from "lucide-react";
 import { SendMessageButton } from "./SendMessageButton";
+import { createMechanicSlug } from "@/utils/slugUtils";
 
 interface MechanicCardProps {
   mechanic: {
@@ -96,7 +97,7 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
         {/* Only show links if mechanic ID is valid UUID */}
         {isValidUUID(mechanic.id) ? (
           <>
-            <Link to={`/mechanic/${mechanic.id}`} className="flex-1">
+            <Link to={`/mechanic/${createMechanicSlug(mechanic.id, mechanic.profiles.first_name, mechanic.profiles.last_name)}`} className="flex-1">
               <Button variant="outline" className="w-full">
                 დეტალები
               </Button>

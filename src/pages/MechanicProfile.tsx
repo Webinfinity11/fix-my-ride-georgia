@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 // Fixed: removed useChat dependency
 import MechanicReviews from "@/components/reviews/MechanicReviews";
+import { extractMechanicId, createMechanicSlug } from "@/utils/slugUtils";
 
 type MechanicType = {
   id: string;
@@ -104,6 +105,9 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     const fetchMechanicData = async () => {
       setLoading(true);
       try {
+        // Extract the actual mechanic ID from the URL parameter
+        const mechanicId = extractMechanicId(id);
+        
         // Fetch mechanic profile data (only public fields for verified mechanics)
         const { data: mechanicData, error: mechanicError } = await supabase
           .from("profiles")
@@ -119,18 +123,26 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
             mechanic_profiles!inner(
               description, 
               specialization, 
-              experience_years,
+              experience_years, 
               rating, 
               review_count, 
-              is_mobile,
-              accepts_card_payment,
+              is_mobile, 
+              accepts_card_payment, 
               working_hours,
               verified_at
             )
           `)
-          .eq("id", id)
+          .eq("id", mechanicId)
           .eq("role", "mechanic")
           .single();
+        
+        // Update the URL to use the new ID-slug format if we have the mechanic data
+        if (!mechanicError && mechanicData) {
+          const correctSlug = createMechanicSlug(mechanicData.id, mechanicData.first_name, mechanicData.last_name);
+          if (correctSlug !== id) {
+            window.history.replaceState(null, '', `/mechanic/${correctSlug}`);
+          }
+        }
         
         if (mechanicError) throw mechanicError;
 
@@ -159,7 +171,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
             *,
             service_categories(name)
           `)
-          .eq("mechanic_id", id)
+          .eq("mechanic_id", mechanicId)
           .eq("is_active", true)
           .order("created_at", { ascending: false });
         
@@ -170,7 +182,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         const { data: certificatesData, error: certificatesError } = await supabase
           .from("certificates")
           .select("*")
-          .eq("mechanic_id", id)
+          .eq("mechanic_id", mechanicId)
           .order("issue_date", { ascending: false });
         
         if (certificatesError) throw certificatesError;
@@ -286,7 +298,9 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     // Refresh mechanic data to update rating
     if (id) {
       const fetchUpdatedMechanic = async () => {
-          const { data: mechanicData, error } = await supabase
+        const mechanicId = extractMechanicId(id);
+        
+        const { data: mechanicData, error } = await supabase
           .from("profiles")
           .select(`
             id,
@@ -309,7 +323,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
               verified_at
             )
           `)
-          .eq("id", id)
+          .eq("id", mechanicId)
           .eq("role", "mechanic")
           .single();
         
@@ -700,7 +714,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
                   <TabsContent value="reviews" className="p-6">
                     {id && (
                       <MechanicReviews 
-                        mechanicId={id} 
+                        mechanicId={extractMechanicId(id)} 
                         onReviewAdded={handleReviewAdded}
                       />
                     )}

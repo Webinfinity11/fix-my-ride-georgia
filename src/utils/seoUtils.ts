@@ -152,7 +152,7 @@ export const generateSitemap = async (): Promise<string> => {
       const mechanicUrls = mechanics.map(mechanic => {
         const lastmod = mechanic.updated_at ? new Date(mechanic.updated_at).toISOString().split('T')[0] : currentDate;
         return `  <url>
-    <loc>${baseUrl}/mechanic/${mechanic.id}</loc>
+    <loc>${baseUrl}/mechanic/${mechanic.id}-${mechanic.first_name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}-${mechanic.last_name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

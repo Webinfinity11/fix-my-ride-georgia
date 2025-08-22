@@ -25,6 +25,7 @@ import {
   Target
 } from "lucide-react";
 import { toast } from "sonner";
+import { createMechanicSlug } from "@/utils/slugUtils";
 import { useSearchTracking } from "@/hooks/useSearchTracking";
 
 type MechanicType = {
@@ -472,8 +473,8 @@ const Search = () => {
 
                               <div className="flex gap-2">
                                 <Button 
-                                  onClick={() => navigate(`/mechanic/${mechanic.id}`)}
-                                  className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                  onClick={() => navigate(`/mechanic/${createMechanicSlug(mechanic.id, mechanic.first_name, mechanic.last_name)}`)}
+                  className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                                 >
                                   პროფილი
                                 </Button>

@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { createServiceSlug } from "@/utils/slugUtils";
+import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { 
   Select,
   SelectContent,
@@ -510,7 +510,7 @@ const ServiceSearch = () => {
 
                         <div className="border-t pt-3">
                           <Link 
-                            to={`/mechanic/${service.mechanic.id}`}
+                            to={`/mechanic/${createMechanicSlug(service.mechanic.id, service.mechanic.first_name, service.mechanic.last_name)}`}
                             className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
                           >
                             <span>ხელოსანი: {service.mechanic.first_name} {service.mechanic.last_name}</span>
