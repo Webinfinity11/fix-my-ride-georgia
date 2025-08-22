@@ -37,15 +37,5 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  
-  <!-- This file will be automatically updated when clicking "Update Sitemap" in admin panel -->
-  <!-- Generated URLs will include: -->
-  <!-- - Services: /service/ID-service-name -->
-  <!-- - Categories: /category/category-slug -->
-  <!-- - Mechanics: /mechanic/display_id-mechanic-name -->
-  <!-- - Search URLs: /search?q=encoded-query -->
-  
-  <!-- Auto-generated content will be inserted here by the sitemap manager -->
-  <!-- Current stats: 357 services, 39 categories, 15 mechanics, search queries -->
-  <!-- Total expected URLs: ~425+ -->
+
 </urlset>
