@@ -1,24 +1,25 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { sitemapManager } from '@/utils/sitemapManager';
 
 const SitemapXML = () => {
   const [xmlContent, setXmlContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const generateSitemap = async () => {
+    const loadSitemap = async () => {
       try {
-        console.log('Generating sitemap XML...');
+        console.log('Loading sitemap XML...');
         
-        // Call the update-sitemap edge function to get XML content
-        const { data, error } = await supabase.functions.invoke('update-sitemap', {
-          body: {}
-        });
+        // Get sitemap content from the manager (cached or fresh)
+        const sitemapContent = await sitemapManager.getSitemapContent();
 
-        console.log('Sitemap response:', { data, error });
-
-        if (error) {
-          console.error('Error generating sitemap:', error);
+        if (sitemapContent) {
+          console.log('Sitemap loaded successfully, length:', sitemapContent.length);
+          const stats = sitemapManager.extractSitemapStats(sitemapContent);
+          console.log('Sitemap stats:', stats);
+          setXmlContent(sitemapContent);
+        } else {
+          console.error('Failed to load sitemap content');
           // Fallback to basic sitemap
           setXmlContent(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -28,26 +29,11 @@ const SitemapXML = () => {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <!-- Error: ${error.message} -->
-</urlset>`);
-        } else if (typeof data === 'string') {
-          console.log('Sitemap generated successfully, length:', data.length);
-          setXmlContent(data);
-        } else {
-          console.error('Invalid sitemap data received:', typeof data, data);
-          // Still show the data if it exists
-          setXmlContent(String(data) || `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://fixup.ge/</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
+  <!-- Generated: ${new Date().toISOString()} -->
 </urlset>`);
         }
       } catch (error) {
-        console.error('Error calling sitemap function:', error);
+        console.error('Error loading sitemap:', error);
         setXmlContent(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -63,7 +49,7 @@ const SitemapXML = () => {
       }
     };
 
-    generateSitemap();
+    loadSitemap();
 
     // Set proper XML content type
     const metaTag = document.querySelector('meta[http-equiv="Content-Type"]');

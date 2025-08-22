@@ -13,6 +13,7 @@ export interface SitemapStats {
 // Simplified sitemap management utility
 export class SitemapManager {
   private static instance: SitemapManager;
+  private cachedSitemap: string | null = null;
   
   static getInstance(): SitemapManager {
     if (!SitemapManager.instance) {
@@ -38,12 +39,15 @@ export class SitemapManager {
       }
 
       if (typeof sitemapXML === 'string') {
+        // Cache the sitemap content
+        this.cachedSitemap = sitemapXML;
+        
         // Write to public folder
         const success = await this.writeToPublicSitemap(sitemapXML);
         
         if (success) {
           const stats = this.extractSitemapStats(sitemapXML);
-          toast.success(`Sitemap updated: ${stats.services} services, ${stats.categories} categories, ${stats.mechanics} mechanics, ${stats.searches} searches`);
+          toast.success(`Sitemap updated: ${stats.totalUrls} total URLs (${stats.services} services, ${stats.categories} categories, ${stats.mechanics} mechanics, ${stats.searches} searches)`);
           return true;
         }
       }
@@ -77,6 +81,34 @@ export class SitemapManager {
       console.error('Error writing public sitemap:', error);
       return false;
     }
+  }
+
+  // Get cached or generate new sitemap
+  async getSitemapContent(): Promise<string | null> {
+    if (this.cachedSitemap) {
+      return this.cachedSitemap;
+    }
+    
+    // Generate new sitemap if none cached
+    try {
+      const { data: sitemapXML, error } = await supabase.functions.invoke('update-sitemap', {
+        body: {},
+      });
+
+      if (error) {
+        console.error('Error generating sitemap:', error);
+        return null;
+      }
+
+      if (typeof sitemapXML === 'string') {
+        this.cachedSitemap = sitemapXML;
+        return sitemapXML;
+      }
+    } catch (error) {
+      console.error('Error getting sitemap content:', error);
+    }
+    
+    return null;
   }
 
   // Extract statistics from sitemap XML

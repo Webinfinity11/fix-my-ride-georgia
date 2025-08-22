@@ -24,12 +24,17 @@ export const SitemapUpdater = () => {
   const handleUpdateSitemap = async () => {
     setIsUpdating(true);
     try {
-      const success = await updateSitemap();
+      console.log('Starting sitemap update...');
+      
+      // Force regenerate the sitemap 
+      const success = await sitemapManager.updateSitemap();
+      
       if (success) {
-        // Get updated stats after successful update
-        const sitemapXML = await getSitemapXML();
-        if (sitemapXML) {
-          const newStats = sitemapManager.extractSitemapStats(sitemapXML);
+        // Get the updated sitemap content to show stats
+        const sitemapContent = await sitemapManager.getSitemapContent();
+        if (sitemapContent) {
+          const newStats = sitemapManager.extractSitemapStats(sitemapContent);
+          console.log('Updated sitemap stats:', newStats);
           setStats(newStats);
         }
       }
@@ -93,8 +98,8 @@ export const SitemapUpdater = () => {
         </Button>
         
         <p className="text-sm text-muted-foreground">
-          This will regenerate public/sitemap.xml with all current services, categories, mechanics, and search queries.
-          The sitemap automatically updates when data changes.
+          როდესაც დააჭირებთ "Update Sitemap"-ს, სისტემა მოძებნის ყველა სერვისს, კატეგორიას, მექანიკოსს და საძიებო ლინკს რეალურ დროში.
+          შედეგი ავტომატურად გამოჩნდება /sitemap.xml გვერდზე.
         </p>
       </CardContent>
     </Card>
