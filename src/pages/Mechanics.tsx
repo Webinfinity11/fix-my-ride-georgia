@@ -10,6 +10,8 @@ import MechanicCardSkeleton from "@/components/mechanic/MechanicCardSkeleton";
 import MechanicFilters from "@/components/mechanic/MechanicFilters";
 import { useMechanics } from "@/hooks/useMechanics";
 import { Filter, RefreshCw, MapPin } from "lucide-react";
+import SEOHead from "@/components/seo/SEOHead";
+import { generateStructuredData, generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -193,8 +195,35 @@ const Mechanics = () => {
     citiesCount: availableCities.length
   });
 
+  const structuredData = generateStructuredData('ItemList', {
+    name: 'ავტომექანიკოსები საქართველოში',
+    description: 'ყველა გამოცდილი ავტომექანიკოსი საქართველოში',
+    numberOfItems: mechanics.length,
+    itemListElement: mechanics.slice(0, 10).map((mechanic, index) => ({
+      '@type': 'Person',
+      position: index + 1,
+      name: `${mechanic.profiles.first_name} ${mechanic.profiles.last_name}`,
+      jobTitle: 'ავტომექანიკოსი',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: mechanic.profiles.city || 'საქართველო',
+        addressCountry: 'GE'
+      }
+    }))
+  });
+
+  const canonicalUrl = generateCanonicalURL('mechanics', {});
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <SEOHead
+        title={generateSEOTitle('mechanics', {})}
+        description={generateSEODescription('mechanics', {})}
+        keywords="ავტომექანიკოსები, ხელოსანი, ავტოსერვისი, საქართველო, მექანიკოსი"
+        canonical={canonicalUrl}
+        structuredData={structuredData}
+        type="website"
+      />
       <Header />
       
       <main className="py-8">

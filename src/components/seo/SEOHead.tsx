@@ -59,6 +59,9 @@ const SEOHead = ({
       <meta name="twitter:image" content={imageUrl} />
       <meta name="twitter:image:alt" content={title} />
       
+      {/* Canonical URL */}
+      <link rel="canonical" href={canonicalUrl} />
+      
       {/* Additional Meta Tags */}
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="theme-color" content="#000000" />

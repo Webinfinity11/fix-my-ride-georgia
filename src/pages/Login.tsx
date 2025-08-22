@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Wrench, Facebook, Mail } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import SEOHead from "@/components/seo/SEOHead";
+import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 const Login = () => {
   const { signIn, loading } = useAuth();
@@ -48,6 +50,13 @@ const Login = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={generateSEOTitle('login', {})}
+        description={generateSEODescription('login', {})}
+        keywords="შესვლა, ავტორიზაცია, ლოგინი, ავტოხელოსანი"
+        canonical={generateCanonicalURL('login', {})}
+        type="website"
+      />
       <Header />
       
       <main className="flex-grow flex items-center justify-center bg-muted py-10">

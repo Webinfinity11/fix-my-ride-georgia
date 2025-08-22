@@ -1,4 +1,3 @@
-
 import { ServiceType } from "@/hooks/useServices";
 import { supabase } from '@/integrations/supabase/client';
 import { createSlug, createCategorySlug, createMechanicSlug } from './slugUtils';
@@ -81,14 +80,7 @@ export const generateStructuredData = (type: string, data: any) => {
         } : undefined,
         openingHours: data.openingHours || ["Mo-Fr 09:00-18:00", "Sa 09:00-16:00"],
         priceRange: data.priceRange || "$$",
-        telephone: data.telephone,
-        aggregateRating: data.aggregateRating ? {
-          "@type": "AggregateRating",
-          ratingValue: data.aggregateRating.ratingValue,
-          reviewCount: data.aggregateRating.reviewCount,
-          bestRating: 5,
-          worstRating: 1
-        } : undefined
+        telephone: data.telephone
       };
 
     case 'Service':
@@ -102,27 +94,7 @@ export const generateStructuredData = (type: string, data: any) => {
         provider: data.provider ? {
           "@type": "Person",
           name: data.provider.name,
-          telephone: data.provider.telephone,
-          address: data.provider.address ? {
-            "@type": "PostalAddress",
-            addressCountry: "GE",
-            addressLocality: data.provider.address.city,
-            addressRegion: data.provider.address.district,
-            streetAddress: data.provider.address.street
-          } : undefined
-        } : undefined,
-        offers: data.offers ? {
-          "@type": "Offer",
-          price: data.offers.price || "Price on request",
-          priceCurrency: "GEL",
-          availability: "https://schema.org/InStock"
-        } : undefined,
-        aggregateRating: data.aggregateRating ? {
-          "@type": "AggregateRating",
-          ratingValue: data.aggregateRating.ratingValue,
-          reviewCount: data.aggregateRating.reviewCount,
-          bestRating: 5,
-          worstRating: 1
+          telephone: data.provider.telephone
         } : undefined
       };
 
@@ -137,29 +109,17 @@ export const generateStructuredData = (type: string, data: any) => {
           name: "ავტოხელოსანი",
           url: "https://fixup.ge"
         },
-        address: data.address ? {
-          "@type": "PostalAddress",
-          addressCountry: "GE",
-          addressLocality: data.address.city,
-          addressRegion: data.address.district
-        } : undefined,
-        makesOffer: data.makesOffer ? data.makesOffer.map((offer: any) => ({
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: offer.name,
-            description: offer.description
-          },
-          price: offer.price,
-          priceCurrency: "GEL"
-        })) : undefined,
-        aggregateRating: data.aggregateRating ? {
-          "@type": "AggregateRating",
-          ratingValue: data.aggregateRating.ratingValue,
-          reviewCount: data.aggregateRating.reviewCount,
-          bestRating: 5,
-          worstRating: 1
-        } : undefined
+        address: data.address
+      };
+
+    case 'ItemList':
+    case 'SearchResultsPage':
+      return {
+        ...baseStructuredData,
+        name: data.name,
+        description: data.description,
+        numberOfItems: data.numberOfItems || 0,
+        itemListElement: data.itemListElement || []
       };
 
     default:
@@ -197,8 +157,6 @@ export const generateFAQStructuredData = (faqs: Array<{question: string, answer:
   };
 };
 
-// Add new utility functions for enhanced SEO
-
 // Generate Product structured data for services
 export const generateProductStructuredData = (service: any) => {
   return {
@@ -215,23 +173,7 @@ export const generateProductStructuredData = (service: any) => {
       "@type": "Offer",
       "price": service.price_from || "შეთანხმებით",
       "priceCurrency": "GEL",
-      "availability": "https://schema.org/InStock",
-      "seller": {
-        "@type": "Person",
-        "name": service.mechanic?.name || "ხელოსანი"
-      }
-    },
-    "aggregateRating": service.rating ? {
-      "@type": "AggregateRating",
-      "ratingValue": service.rating,
-      "reviewCount": service.review_count || 0,
-      "bestRating": 5,
-      "worstRating": 1
-    } : undefined,
-    "provider": {
-      "@type": "Organization",
-      "name": "ავტოხელოსანი",
-      "url": "https://fixup.ge"
+      "availability": "https://schema.org/InStock"
     }
   };
 };
@@ -244,11 +186,27 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
     case 'service':
       return `${data.name} - ${data.city || 'საქართველო'} | ${data.mechanic?.name || 'ხელოსანი'} | ავტოხელოსანი`;
     case 'mechanic':
-      return `${data.name} - ხელოსანი ${data.city || 'საქართველო'}-ში | რეიტინგი ${data.rating}/5 | ავტოხელოსანი`;
+      return `${data.first_name} ${data.last_name} - ხელოსანი ${data.city}-ში | რეიტინგი ${data.rating}/5 | ავტოხელოსანი`;
     case 'category':
       return `${data.name} - ავტოსერვისები საქართველოში | ავტოხელოსანი`;
     case 'services':
       return `ავტოსერვისები - იპოვეთ საუკეთესო ხელოსანი | ავტოხელოსანი`;
+    case 'mechanics':
+      return `ავტომექანიკოსები - ყველა ხელოსანი საქართველოში | ავტოხელოსანი`;
+    case 'search':
+      return `ძიების შედეგები: ${data.query} | ავტოხელოსანი`;
+    case 'about':
+      return `ჩვენს შესახებ - ავტოხელოსანი | საქართველოს ავტოსერვისების პლატფორმა`;
+    case 'contact':
+      return `კონტაქტი - ავტოხელოსანი | დაგვიკავშირდით`;
+    case 'login':
+      return `შესვლა - ავტოხელოსანი | სისტემაში ავტორიზაცია`;
+    case 'register':
+      return `რეგისტრაცია - ავტოხელოსანი | ანგარიშის შექმნა`;
+    case 'book':
+      return `ჯავშნის გაკეთება - ${data.serviceName || data.mechanicName} | ავტოხელოსანი`;
+    case 'map':
+      return `ინტერაქტიული რუკა - იპოვეთ ხელოსანი რუკაზე | ავტოხელოსანი`;
     case 'home':
       return `ავტოხელოსანი - საქართველოს #1 ავტოსერვისების პლატფორმა`;
     default:
@@ -262,33 +220,68 @@ export const generateSEODescription = (pageType: string, data: any, customDescri
 
   switch (pageType) {
     case 'service':
-      return `${data.name} - ${data.city || 'საქართველო'}-ში. ხელოსანი: ${data.mechanic?.name || 'დადასტურებული ხელოსანი'}. ${data.rating ? `შეფასება: ${data.rating}/5. ` : ''}${data.description ? data.description.substring(0, 100) : 'ხარისხიანი ავტოსერვისი'}...`;
+      return `${data.name} - ${data.city}-ში. ხელოსანი: ${data.mechanic?.name}. ხარისხიანი ავტოსერვისი.`;
     case 'mechanic':
-      return `${data.name} - გამოცდილი ხელოსანი ${data.city || 'საქართველო'}-ში. რეიტინგი: ${data.rating}/5 (${data.review_count} შეფასება). ${data.specialization ? `სპეციალიზაცია: ${data.specialization}. ` : ''}დაუკავშირდით ახლავე!`;
+      return `${data.first_name} ${data.last_name} - გამოცდილი ხელოსანი ${data.city}-ში. დაუკავშირდით ახლავე!`;
     case 'category':
-      return `${data.name} - იპოვეთ საუკეთესო ხელოსნები ${data.name}-ის სფეროში საქართველოში. ხარისხიანი სერვისი, მიმდინარე ფასები, დადასტურებული ხელოსნები.`;
+      return `${data.name} - იპოვეთ საუკეთესო ხელოსნები საქართველოში.`;
     case 'services':
-      return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. 2500+ ხელოსანი, 15000+ სერვისი, 4.8★ საშუალო რეიტინგი. ჯავშანი ახლავე!`;
+      return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. ჯავშანი ახლავე!`;
+    case 'mechanics':
+      return `ყველა გამომცდილი ავტომექანიკოსი საქართველოში. დადასტურებული პროფილები, რეიტინგები.`;
+    case 'search':
+      return `ძიების შედეგები "${data.query}" - იპოვეთ საუკეთესო ავტოსერვისები და ხელოსნები საქართველოში.`;
+    case 'about':
+      return `ავტოხელოსანი - საქართველოს უდიდესი ავტოსერვისების პლატფორმა.`;
+    case 'contact': 
+      return `დაგვიკავშირდით - ავტოხელოსანი. გაქვთ კითხვები?`;
+    case 'login':
+      return `შედით თქვენს ანგარიშში ავტოხელოსნის პლატფორმაზე.`;
+    case 'register':
+      return `შექმენით ანგარიში ავტوხელოსნის პლატფორმაზე.`;
+    case 'book':
+      return `დაჯავშეთ ${data.serviceName || 'სერვისი'} ახლავე.`;
+    case 'map':
+      return `იპოვეთ ავტოხელოსნები თქვენს მახლობლად რუკაზე.`;
     case 'home':
-      return `საქართველოს უდიდესი ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში. სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
+      return `საქართველოს უდიდესი ავტოსერვისების პლატფორმა.`;
     default:
-      return `ავტოხელოსანი - საქართველოს ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენი მანქანისთვის.`;
+      return `ავტოხელოსანი - საქართველოს ავტოსერვისების პლატფორმა.`;
   }
 };
 
-// Generate canonical URL
+// Generate canonical URL with proper normalization
 export const generateCanonicalURL = (pageType: string, data: any) => {
   const baseUrl = 'https://fixup.ge';
   
   switch (pageType) {
     case 'service':
-      return `${baseUrl}/service/${data.id}-${data.slug || createSlug(data.name)}`;
+      return `${baseUrl}/service/${data.id}-${data.slug || 'service'}`;
     case 'mechanic':
-      return `${baseUrl}/mechanic/${data.display_id || data.id}-${data.slug || createMechanicSlug(data.display_id, data.first_name, data.last_name)}`;
+      return `${baseUrl}/mechanic/${data.display_id}-${data.slug || 'mechanic'}`;
     case 'category':
-      return `${baseUrl}/category/${data.slug || createCategorySlug(data.name)}`;
+      return `${baseUrl}/category/${data.slug || data.id}`;
     case 'services':
       return `${baseUrl}/services`;
+    case 'mechanics':
+      return `${baseUrl}/mechanics`;
+    case 'search':
+      const searchParams = new URLSearchParams();
+      if (data.query) searchParams.set('q', data.query);
+      if (data.tab && data.tab !== 'services') searchParams.set('tab', data.tab);
+      return `${baseUrl}/search${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+    case 'about':
+      return `${baseUrl}/about`;
+    case 'contact':
+      return `${baseUrl}/contact`;
+    case 'login':
+      return `${baseUrl}/login`;
+    case 'register':
+      return `${baseUrl}/register`;
+    case 'book':
+      return `${baseUrl}/book${data.serviceId ? `?service=${data.serviceId}` : data.mechanicId ? `?mechanic=${data.mechanicId}` : ''}`;
+    case 'map':
+      return `${baseUrl}/map`;
     case 'home':
       return baseUrl;
     default:
@@ -296,3 +289,7 @@ export const generateCanonicalURL = (pageType: string, data: any) => {
   }
 };
 
+// Create default OG image URL
+export const createOGImageURL = (title: string, description?: string) => {
+  return 'https://fixup.ge/fixup-og-image.jpg';
+};
