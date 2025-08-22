@@ -65,11 +65,38 @@ export class SitemapManager {
       const stats = this.extractSitemapStats(sitemapXML);
       localStorage.setItem('sitemap-stats', JSON.stringify(stats));
       
+      // Write to public sitemap.xml
+      await this.writeToPublicSitemap(sitemapXML);
+      
       toast.success(`Sitemap updated: ${stats.services} services, ${stats.categories} categories, ${stats.mechanics} mechanics, ${stats.searches} searches`);
       return true;
     } catch (error) {
       console.error('Error updating local sitemap:', error);
       toast.error('Failed to update sitemap');
+      return false;
+    }
+  }
+
+  // Write sitemap to public folder via Edge Function
+  async writeToPublicSitemap(sitemapXML: string): Promise<boolean> {
+    try {
+      console.log('Writing sitemap to public folder...');
+      
+      const { data, error } = await supabase.functions.invoke('write-sitemap', {
+        body: { sitemapXML },
+      });
+
+      if (error) {
+        console.error('Edge Function error:', error);
+        toast.error('Failed to write public sitemap');
+        return false;
+      }
+
+      console.log('Public sitemap written successfully:', data);
+      return true;
+    } catch (error) {
+      console.error('Error writing public sitemap:', error);
+      toast.error('Failed to write public sitemap');
       return false;
     }
   }
