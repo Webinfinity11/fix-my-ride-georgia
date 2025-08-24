@@ -89,17 +89,68 @@ const Index = () => {
   const [minRating, setMinRating] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       try {
-        // Fetch categories
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from("service_categories")
-          .select("*")
-          .order("id", { ascending: true })
-          .limit(8);
+        // Fetch all data in parallel to reduce critical request chain
+        const [categoriesResponse, mechanicsResponse, allCategoriesResponse] = await Promise.all([
+          supabase
+            .from("service_categories")
+            .select("*")
+            .order("id", { ascending: true })
+            .limit(8),
+          supabase
+            .from("mechanic_profiles")
+            .select(`
+              id,
+              specialization,
+              rating,
+              review_count,
+              profiles!inner (
+                first_name,
+                last_name,
+                avatar_url,
+                city,
+                district
+              )
+            `)
+            .gte("rating", 4.0)
+            .not("rating", "is", null)
+            .order("rating", { ascending: false })
+            .order("review_count", { ascending: false })
+            .limit(6),
+          supabase
+            .from("service_categories")
+            .select("*")
+            .order("name", { ascending: true })
+        ]);
 
-        if (categoriesError) throw categoriesError;
-        setCategories(categoriesData || []);
+        // Handle categories
+        if (categoriesResponse.error) throw categoriesResponse.error;
+        setCategories(categoriesResponse.data || []);
+
+        // Handle all categories
+        if (allCategoriesResponse.error) throw allCategoriesResponse.error;
+        setAllCategories(allCategoriesResponse.data || []);
+
+        // Handle mechanics
+        if (mechanicsResponse.error) throw mechanicsResponse.error;
+        
+        if (mechanicsResponse.data && mechanicsResponse.data.length > 0) {
+          const transformedMechanics: FeaturedMechanic[] = mechanicsResponse.data.map(mechanic => ({
+            id: mechanic.id,
+            profiles: {
+              first_name: mechanic.profiles.first_name,
+              last_name: mechanic.profiles.last_name,
+              avatar_url: mechanic.profiles.avatar_url,
+              city: mechanic.profiles.city,
+              district: mechanic.profiles.district,
+            },
+            specialization: mechanic.specialization,
+            rating: mechanic.rating,
+            review_count: mechanic.review_count,
+          }));
+          setFeaturedMechanics(transformedMechanics);
+        }
 
         // თბილისის უბნების fetch თუ თბილისია არჩეული
         if (selectedCity === "თბილისი") {
@@ -113,79 +164,18 @@ const Index = () => {
         } else {
           setDistricts([]);
         }
+
       } catch (error: any) {
         console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [selectedCity]);
-
-  // Fetch featured mechanics with 4+ star rating
-  useEffect(() => {
-    const fetchFeaturedMechanics = async () => {
-      console.log("🔄 Fetching featured mechanics with 4+ star rating...");
-      setMechanicsLoading(true);
-      
-      try {
-        const { data: mechanicsData, error: mechanicsError } = await supabase
-          .from("mechanic_profiles")
-          .select(`
-            id,
-            specialization,
-            rating,
-            review_count,
-            profiles!inner (
-              first_name,
-              last_name,
-              avatar_url,
-              city,
-              district
-            )
-          `)
-          .gte("rating", 4.0)
-          .not("rating", "is", null)
-          .order("rating", { ascending: false })
-          .order("review_count", { ascending: false })
-          .limit(6);
-
-        if (mechanicsError) {
-          console.error("❌ Error fetching mechanics:", mechanicsError);
-          throw mechanicsError;
-        }
-
-        console.log("✅ Featured mechanics data:", mechanicsData);
-
-        if (mechanicsData && mechanicsData.length > 0) {
-          const transformedMechanics: FeaturedMechanic[] = mechanicsData.map(mechanic => ({
-            id: mechanic.id,
-            profiles: {
-              first_name: mechanic.profiles.first_name,
-              last_name: mechanic.profiles.last_name,
-              avatar_url: mechanic.profiles.avatar_url,
-              city: mechanic.profiles.city,
-              district: mechanic.profiles.district,
-            },
-            specialization: mechanic.specialization,
-            rating: mechanic.rating,
-            review_count: mechanic.review_count,
-          }));
-
-          setFeaturedMechanics(transformedMechanics);
-        }
-
-      } catch (error: any) {
-        console.error("❌ Error fetching featured mechanics:", error);
         setFeaturedMechanics([]);
       } finally {
+        setLoading(false);
         setMechanicsLoading(false);
       }
     };
 
-    fetchFeaturedMechanics();
-  }, []);
+    fetchInitialData();
+  }, [selectedCity]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -217,26 +207,8 @@ const Index = () => {
     setMinRating(null);
   };
 
-  // Fetch all categories for the filter
+  // All categories state (now loaded in parallel with other data)
   const [allCategories, setAllCategories] = useState<ServiceCategory[]>([]);
-
-  useEffect(() => {
-    const fetchAllCategories = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("service_categories")
-          .select("*")
-          .order("name", { ascending: true });
-
-        if (error) throw error;
-        setAllCategories(data || []);
-      } catch (error: any) {
-        console.error("Error fetching all categories:", error);
-      }
-    };
-
-    fetchAllCategories();
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
