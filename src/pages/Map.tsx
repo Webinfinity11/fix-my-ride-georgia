@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { Link, useNavigate } from "react-router-dom";
+import { createServiceSlug } from "@/utils/slugUtils";
 import "leaflet/dist/leaflet.css";
 
 // Add custom styles for markers
@@ -386,6 +387,9 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
           const isSelected = selectedService?.id === service.id;
           const size = isSelected ? 32 : 28;
           
+          // Generate proper service slug
+          const serviceSlug = createServiceSlug(service.id, service.name);
+          
           // Create custom icon without shadow
           const customIcon = L.divIcon({
             html: createCustomMarkerHTML(service, isSelected),
@@ -431,7 +435,7 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
                 </div>
                 
                 <!-- View Details Button -->
-                <button onclick="window.location.href='/service/${service.id}-${service.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}'" 
+                <button onclick="window.location.href='/service/${serviceSlug}'" 
                         style="
                           width: 100%; 
                           background-color: #0F4C81; 
