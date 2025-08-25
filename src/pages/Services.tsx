@@ -9,7 +9,7 @@ import { generateStructuredData, generateSEOTitle, generateSEODescription } from
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { MapPin, PhoneCall } from "lucide-react";
 import { toast } from "sonner";
 
 type ServiceCategory = {
@@ -82,6 +82,39 @@ const Services = () => {
             <p className="text-center max-w-2xl mx-auto mb-12">
               ქვემოთ იხილეთ ჩვენი სერვისების სრული ჩამონათვალი. დააჭირეთ სასურველ სერვისს, რომ ნახოთ შესაბამისი ხელოსნების სია.
             </p>
+          </div>
+        </div>
+
+        {/* Choose a Craftsman Promotional Banner */}
+        <div className="container mx-auto px-4 py-8">
+          <div 
+            onClick={() => window.location.href = 'tel:+995574047994'}
+            className="bg-gradient-to-r from-secondary to-secondary/80 rounded-xl p-6 md:p-8 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+          >
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4 text-white">
+                <div className="bg-white/20 rounded-full p-3">
+                  <PhoneCall className="h-8 w-8" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">🔧 მირჩიე ხელოსანი</h3>
+                  <p className="text-white/90 mb-2">დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს თქვენი საჭიროებისთვის</p>
+                  <p className="text-lg font-semibold">+995 574 04 79 94</p>
+                </div>
+              </div>
+              <Button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.href = 'tel:+995574047994';
+                }}
+                variant="secondary"
+                size="lg"
+                className="bg-white text-secondary hover:bg-white/90 font-semibold px-8 py-3 shrink-0"
+              >
+                <PhoneCall className="mr-2 h-5 w-5" />
+                დარეკვა
+              </Button>
+            </div>
           </div>
         </div>
         
