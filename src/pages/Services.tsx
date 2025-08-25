@@ -7,8 +7,6 @@ import SEOHead from "@/components/seo/SEOHead";
 import { generateStructuredData, generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 type ServiceCategory = {
@@ -90,85 +88,10 @@ const Services = () => {
           </div>
         </div>
 
-        {/* სარეკლამო გრაფა - მირჩიე ხელოსანი */}
-        <div style={{ padding: '32px 0', backgroundColor: '#fefce8', borderTop: '1px solid #fed7aa', borderBottom: '1px solid #fed7aa' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
-            <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-              <div 
-                style={{
-                  backgroundColor: 'white',
-                  border: '2px solid #fdba74',
-                  borderRadius: '12px',
-                  padding: '24px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  transition: 'all 0.3s ease'
-                }}
-                onClick={() => window.location.href = 'tel:+995574047994'}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div style={{
-                  width: '60px',
-                  height: '60px',
-                  backgroundColor: '#fed7aa',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px auto'
-                }}>
-                  <MapPin style={{ width: '32px', height: '32px', color: '#ea580c' }} />
-                </div>
-                
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: '0 0 8px 0' }}>
-                  🔧 მირჩიე ხელოسანი
-                </h3>
-                
-                <p style={{ color: '#6b7280', fontSize: '16px', margin: '0 0 20px 0', lineHeight: '1.5' }}>
-                  დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს თქვენი საჭიროებისთვის
-                </p>
-                
-                <button
-                  style={{
-                    backgroundColor: '#ea580c',
-                    color: 'white',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontWeight: '600',
-                    fontSize: '16px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                    marginBottom: '12px'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.location.href = 'tel:+995574047994';
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#dc2626';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#ea580c';
-                  }}
-                >
-                  📞 დარეკვა
-                </button>
-                
-                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ea580c', marginTop: '8px' }}>
-                  +995 574 04 79 94
-                </div>
-              </div>
-            </div>
-          </div>
+        <div style={{backgroundColor: "orange", padding: "30px", textAlign: "center"}}>
+          <h2>🔧 მირჩიე ხელოსანი</h2>
+          <p>დაგვირეკეთ: +995 574 04 79 94</p>
+          <a href="tel:+995574047994">დარეკვა</a>
         </div>
 
         {loading ? (
