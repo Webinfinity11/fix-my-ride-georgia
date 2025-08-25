@@ -24,8 +24,10 @@ const Services = () => {
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
 
   useEffect(() => {
+    console.log('Services component mounted!');
     const fetchCategories = async () => {
       try {
+        console.log('Fetching categories...');
         const { data, error } = await supabase
           .from("service_categories")
           .select("*")
@@ -33,16 +35,20 @@ const Services = () => {
 
         if (error) throw error;
         setCategories(data || []);
+        console.log('Categories loaded:', data?.length);
       } catch (error: any) {
         console.error("Error fetching service categories:", error);
         toast.error("სერვისების კატეგორიების ჩატვირთვისას შეცდომა დაფიქსირდა");
       } finally {
+        console.log('Setting loading to false');
         setLoading(false);
       }
     };
 
     fetchCategories();
   }, []);
+
+  console.log('Render - loading:', loading, 'categories:', categories.length);
 
   const structuredData = generateStructuredData('Organization', {
     name: 'ავტოხელოსანი - ავტოსერვისები',
