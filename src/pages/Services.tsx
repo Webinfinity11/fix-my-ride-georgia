@@ -44,10 +44,6 @@ const Services = () => {
     fetchCategories();
   }, []);
 
-  const handleCallCraftsman = () => {
-    window.location.href = 'tel:+995574047994';
-  };
-
   const structuredData = generateStructuredData('Organization', {
     name: 'ავტოხელოსანი - ავტოსერვისები',
     description: 'მრავალფეროვანი ავტოსერვისები საქართველოში',
@@ -88,41 +84,34 @@ const Services = () => {
           </div>
         </div>
 
-        {/* Choose Craftsman Promotional Section - Placed after search/header section */}
-        <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 border-y border-amber-200">
-          <div className="container mx-auto px-4 py-8">
-            <div className="max-w-2xl mx-auto">
+        {/* სარეკლამო გრაფა - მირჩიე ხელოსანი */}
+        <div className="py-8 bg-gradient-to-r from-yellow-50 to-orange-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-lg mx-auto">
               <div 
-                className="bg-white shadow-lg border border-amber-300 rounded-xl p-8 text-center cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                onClick={handleCallCraftsman}
+                className="bg-white rounded-lg shadow-lg border-2 border-orange-200 p-6 text-center cursor-pointer hover:shadow-xl transition-all duration-300"
+                onClick={() => window.location.href = 'tel:+995574047994'}
               >
-                <div className="flex items-center justify-center mb-6">
-                  <div className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-full p-4 shadow-lg">
-                    <MapPin className="h-8 w-8 text-white" />
+                <div className="mb-4">
+                  <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                    <MapPin className="w-8 h-8 text-orange-600" />
                   </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">🔧 მირჩიე ხელოსანი</h3>
+                  <p className="text-gray-600 mb-4">
+                    დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს თქვენი საჭიროებისთვის
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                  🔧 მირჩიე ხელოსანი
-                </h3>
-                <p className="text-gray-600 text-lg mb-6 leading-relaxed">
-                  არ იცი რომელი სერვისი მოგირჩევნია? დაგვირეკეთ და ჩვენი ექსპერტი კონსულტანტები მოგარჩევენ იდეალურ ხელოსანს თქვენი საჭიროებისთვის
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-                  <Button 
-                    variant="default" 
-                    size="lg"
-                    className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCallCraftsman();
-                    }}
-                  >
-                    📞 დარეკვა ახლავე
-                  </Button>
-                  <span className="text-xl font-bold text-amber-600">+995 574 04 79 94</span>
-                </div>
-                <div className="mt-4 text-sm text-gray-500">
-                  ✅ უფასო კონსულტაცია • ⚡ სწრაფი პასუხი • 🏆 გარანტირებული ხარისხი
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.location.href = 'tel:+995574047994';
+                  }}
+                >
+                  📞 დარეკვა
+                </Button>
+                <div className="mt-3 text-lg font-bold text-orange-600">
+                  +995 574 04 79 94
                 </div>
               </div>
             </div>
