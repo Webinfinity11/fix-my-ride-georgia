@@ -85,6 +85,36 @@ const Services = () => {
           </div>
         </div>
         
+        {/* Choose Craftsman Section */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-md mx-auto">
+            <div 
+              className="bg-card border border-border rounded-lg p-6 text-center cursor-pointer hover:bg-accent transition-colors"
+              onClick={() => window.location.href = 'tel:+995574047994'}
+            >
+              <div className="flex items-center justify-center mb-4">
+                <div className="bg-primary/10 rounded-full p-3">
+                  <MapPin className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">მირჩიე ხელოსანი</h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს
+              </p>
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.href = 'tel:+995574047994';
+                }}
+              >
+                დარეკვა
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {loading ? (
           <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
