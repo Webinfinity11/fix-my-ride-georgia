@@ -85,32 +85,79 @@ const Services = () => {
         </div>
 
         {/* სარეკლამო გრაფა - მირჩიე ხელოსანი */}
-        <div className="py-8 bg-gradient-to-r from-yellow-50 to-orange-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-lg mx-auto">
+        <div style={{ padding: '32px 0', backgroundColor: '#fefce8', borderTop: '1px solid #fed7aa', borderBottom: '1px solid #fed7aa' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+            <div style={{ maxWidth: '500px', margin: '0 auto' }}>
               <div 
-                className="bg-white rounded-lg shadow-lg border-2 border-orange-200 p-6 text-center cursor-pointer hover:shadow-xl transition-all duration-300"
+                style={{
+                  backgroundColor: 'white',
+                  border: '2px solid #fdba74',
+                  borderRadius: '12px',
+                  padding: '24px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s ease'
+                }}
                 onClick={() => window.location.href = 'tel:+995574047994'}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
-                <div className="mb-4">
-                  <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                    <MapPin className="w-8 h-8 text-orange-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">🔧 მირჩიე ხელოსანი</h3>
-                  <p className="text-gray-600 mb-4">
-                    დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს თქვენი საჭიროებისთვის
-                  </p>
+                <div style={{
+                  width: '60px',
+                  height: '60px',
+                  backgroundColor: '#fed7aa',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 16px auto'
+                }}>
+                  <MapPin style={{ width: '32px', height: '32px', color: '#ea580c' }} />
                 </div>
-                <Button 
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold"
+                
+                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: '0 0 8px 0' }}>
+                  🔧 მირჩიე ხელოسანი
+                </h3>
+                
+                <p style={{ color: '#6b7280', fontSize: '16px', margin: '0 0 20px 0', lineHeight: '1.5' }}>
+                  დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს თქვენი საჭიროებისთვის
+                </p>
+                
+                <button
+                  style={{
+                    backgroundColor: '#ea580c',
+                    color: 'white',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontWeight: '600',
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease',
+                    marginBottom: '12px'
+                  }}
                   onClick={(e) => {
                     e.stopPropagation();
                     window.location.href = 'tel:+995574047994';
                   }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#dc2626';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#ea580c';
+                  }}
                 >
                   📞 დარეკვა
-                </Button>
-                <div className="mt-3 text-lg font-bold text-orange-600">
+                </button>
+                
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ea580c', marginTop: '8px' }}>
                   +995 574 04 79 94
                 </div>
               </div>
