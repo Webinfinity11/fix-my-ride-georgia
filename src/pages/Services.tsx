@@ -87,8 +87,8 @@ const Services = () => {
             </p>
           </div>
         </div>
-        
-        {/* Choose Craftsman Promotional Section */}
+
+        {/* Choose Craftsman Promotional Section - Placed after search/header section */}
         <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 border-y border-amber-200">
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-2xl mx-auto">
