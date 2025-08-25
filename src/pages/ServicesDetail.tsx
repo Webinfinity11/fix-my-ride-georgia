@@ -304,6 +304,27 @@ const ServicesDetail = () => {
                 </div>
               )}
             </div>
+
+            {/* Choose a Craftsman Promotional Box */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200 mb-8 cursor-pointer hover:shadow-xl transition-all duration-300" 
+                 onClick={() => window.location.href = 'tel:+995574047994'}>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="text-center md:text-left">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">🔧 მირჩიე ხელოსანი</h3>
+                  <p className="text-gray-600">დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს</p>
+                  <p className="text-lg font-semibold text-primary mt-1">+995 574 04 79 94</p>
+                </div>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.location.href = 'tel:+995574047994';
+                  }}
+                  className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2 shrink-0"
+                >
+                  📞 დარეკვა
+                </button>
+              </div>
+            </div>
             
             {/* Results Section */}
             {loading ? (
