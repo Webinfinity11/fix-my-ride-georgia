@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -45,6 +44,10 @@ const Services = () => {
     fetchCategories();
   }, []);
 
+  const handleCallCraftsman = () => {
+    window.location.href = 'tel:+995574047994';
+  };
+
   const structuredData = generateStructuredData('Organization', {
     name: 'ავტოხელოსანი - ავტოსერვისები',
     description: 'მრავალფეროვანი ავტოსერვისები საქართველოში',
@@ -85,32 +88,43 @@ const Services = () => {
           </div>
         </div>
         
-        {/* Choose Craftsman Section */}
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-md mx-auto">
-            <div 
-              className="bg-card border border-border rounded-lg p-6 text-center cursor-pointer hover:bg-accent transition-colors"
-              onClick={() => window.location.href = 'tel:+995574047994'}
-            >
-              <div className="flex items-center justify-center mb-4">
-                <div className="bg-primary/10 rounded-full p-3">
-                  <MapPin className="h-6 w-6 text-primary" />
+        {/* Choose Craftsman Promotional Section */}
+        <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 border-y border-amber-200">
+          <div className="container mx-auto px-4 py-8">
+            <div className="max-w-2xl mx-auto">
+              <div 
+                className="bg-white shadow-lg border border-amber-300 rounded-xl p-8 text-center cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                onClick={handleCallCraftsman}
+              >
+                <div className="flex items-center justify-center mb-6">
+                  <div className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-full p-4 shadow-lg">
+                    <MapPin className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-3">
+                  🔧 მირჩიე ხელოსანი
+                </h3>
+                <p className="text-gray-600 text-lg mb-6 leading-relaxed">
+                  არ იცი რომელი სერვისი მოგირჩევნია? დაგვირეკეთ და ჩვენი ექსპერტი კონსულტანტები მოგარჩევენ იდეალურ ხელოსანს თქვენი საჭიროებისთვის
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                  <Button 
+                    variant="default" 
+                    size="lg"
+                    className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCallCraftsman();
+                    }}
+                  >
+                    📞 დარეკვა ახლავე
+                  </Button>
+                  <span className="text-xl font-bold text-amber-600">+995 574 04 79 94</span>
+                </div>
+                <div className="mt-4 text-sm text-gray-500">
+                  ✅ უფასო კონსულტაცია • ⚡ სწრაფი პასუხი • 🏆 გარანტირებული ხარისხი
                 </div>
               </div>
-              <h3 className="text-lg font-semibold mb-2">მირჩიე ხელოსანი</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს
-              </p>
-              <Button 
-                variant="default" 
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  window.location.href = 'tel:+995574047994';
-                }}
-              >
-                დარეკვა
-              </Button>
             </div>
           </div>
         </div>
