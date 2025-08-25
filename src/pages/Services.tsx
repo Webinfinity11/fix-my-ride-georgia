@@ -88,10 +88,29 @@ const Services = () => {
           </div>
         </div>
 
-        <div style={{backgroundColor: "orange", padding: "30px", textAlign: "center"}}>
-          <h2>🔧 მირჩიე ხელოსანი</h2>
-          <p>დაგვირეკეთ: +995 574 04 79 94</p>
-          <a href="tel:+995574047994">დარეკვა</a>
+        <div className="container mx-auto px-4 py-8">
+          <div 
+            onClick={() => window.location.href = 'tel:+995574047994'}
+            className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-xl p-8 text-center cursor-pointer hover:from-orange-500 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="text-4xl">🔧</div>
+              <h2 className="text-2xl font-bold text-white mb-2">მირჩიე ხელოსანი</h2>
+              <p className="text-white/90 mb-4">დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს</p>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <span className="text-white font-semibold text-lg">+995 574 04 79 94</span>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.location.href = 'tel:+995574047994';
+                  }}
+                  className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors duration-200 shadow-md"
+                >
+                  დარეკვა
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {loading ? (
