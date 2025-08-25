@@ -98,7 +98,7 @@ const Services = () => {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold mb-2">🔧 მირჩიე ხელოსანი</h3>
-                  <p className="text-white/90 mb-2">დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს თქვენი საჭიროებისთვის</p>
+                  <p className="text-white/90 mb-2">დაგვირეკეთ და ჩვენ შეგირჩევთ შესაფერის ხელოსანს თქვენი საჭიროებისთვის</p>
                   <p className="text-lg font-semibold">+995 574 04 79 94</p>
                 </div>
               </div>

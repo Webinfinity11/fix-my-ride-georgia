@@ -311,7 +311,7 @@ const ServicesDetail = () => {
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="text-center md:text-left">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">🔧 მირჩიე ხელოსანი</h3>
-                  <p className="text-gray-600">დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს</p>
+                  <p className="text-gray-600">დაგვირეკეთ და ჩვენ შეგირჩევთ შესაფერის ხელოსანს</p>
                   <p className="text-lg font-semibold text-primary mt-1">+995 574 04 79 94</p>
                 </div>
                 <button 
