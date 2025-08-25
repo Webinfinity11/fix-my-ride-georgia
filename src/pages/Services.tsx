@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -7,6 +8,8 @@ import SEOHead from "@/components/seo/SEOHead";
 import { generateStructuredData, generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 type ServiceCategory = {
@@ -22,10 +25,8 @@ const Services = () => {
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
 
   useEffect(() => {
-    console.log('Services component mounted!');
     const fetchCategories = async () => {
       try {
-        console.log('Fetching categories...');
         const { data, error } = await supabase
           .from("service_categories")
           .select("*")
@@ -33,20 +34,16 @@ const Services = () => {
 
         if (error) throw error;
         setCategories(data || []);
-        console.log('Categories loaded:', data?.length);
       } catch (error: any) {
         console.error("Error fetching service categories:", error);
         toast.error("სერვისების კატეგორიების ჩატვირთვისას შეცდომა დაფიქსირდა");
       } finally {
-        console.log('Setting loading to false');
         setLoading(false);
       }
     };
 
     fetchCategories();
   }, []);
-
-  console.log('Render - loading:', loading, 'categories:', categories.length);
 
   const structuredData = generateStructuredData('Organization', {
     name: 'ავტოხელოსანი - ავტოსერვისები',
@@ -87,32 +84,7 @@ const Services = () => {
             </p>
           </div>
         </div>
-
-        <div className="container mx-auto px-4 py-8">
-          <div 
-            onClick={() => window.location.href = 'tel:+995574047994'}
-            className="bg-gradient-to-r from-orange-400 to-orange-500 rounded-xl p-8 text-center cursor-pointer hover:from-orange-500 hover:to-orange-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <div className="text-4xl">🔧</div>
-              <h2 className="text-2xl font-bold text-white mb-2">მირჩიე ხელოსანი</h2>
-              <p className="text-white/90 mb-4">დაგვირეკეთ და ჩვენ მოგარჩევთ შესაფერის ხელოსანს</p>
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                <span className="text-white font-semibold text-lg">+995 574 04 79 94</span>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.location.href = 'tel:+995574047994';
-                  }}
-                  className="bg-white text-orange-500 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition-colors duration-200 shadow-md"
-                >
-                  დარეკვა
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        
         {loading ? (
           <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
