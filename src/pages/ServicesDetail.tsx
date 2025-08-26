@@ -193,7 +193,6 @@ const ServicesDetail = () => {
                   <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20">
                     <Filter className="h-4 w-4" />
                     ფილტრები
-                    {hasActiveFilters}
                   </Button>
                   <Button onClick={() => navigate("/map")} className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white">
                     <MapPin className="h-4 w-4" />
