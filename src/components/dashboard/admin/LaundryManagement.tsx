@@ -67,20 +67,10 @@ const LaundryManagement = () => {
                 {selectedLaundry ? "სამრეცხაოს რედაქტირება" : "ახალი სამრეცხაოს დამატება"}
               </DialogTitle>
             </DialogHeader>
-            <div className="p-6">
-              <p className="text-muted-foreground mb-4">
-                {selectedLaundry ? "სამრეცხაოს რედაქტირება" : "ახალი სამრეცხაოს დამატება"}
-              </p>
-              <p className="text-sm text-muted-foreground mb-4">
-                ფორმა დროებით გათიშულია Context შეცდომის გამო. 
-                ვამუშავებთ ამ პრობლემას.
-              </p>
-              <div className="flex gap-2">
-                <Button onClick={handleFormClose}>
-                  დახურვა
-                </Button>
-              </div>
-            </div>
+            <LaundryForm 
+              laundry={selectedLaundry}
+              onSuccess={handleFormSuccess}
+            />
           </DialogContent>
         </Dialog>
       </div>

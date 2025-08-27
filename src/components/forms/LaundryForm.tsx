@@ -166,15 +166,11 @@ const LaundryForm = ({ laundry, onSuccess }: LaundryFormProps) => {
           )}
         />
 
+        {/* Temporarily disabled map to isolate render2 error */}
         <div className="space-y-2">
           <Label>მდებარეობა რუკაზე *</Label>
-          <div className="h-64 border rounded-lg overflow-hidden">
-            <SimpleMapLocationPicker
-              latitude={form.watch("latitude")}
-              longitude={form.watch("longitude")}
-              onLocationChange={handleLocationChange}
-              interactive={true}
-            />
+          <div className="h-64 border rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+            <p className="text-muted-foreground">რუკა დროებით გათიშულია</p>
           </div>
         </div>
 
