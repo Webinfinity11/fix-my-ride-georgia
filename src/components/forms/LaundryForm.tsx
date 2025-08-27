@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import SimpleMapLocationPicker from "@/components/forms/SimpleMapLocationPicker";
+import LocationMapPicker from "@/components/forms/LocationMapPicker";
 import PhotoUpload from "@/components/forms/PhotoUpload";
 import VideoUpload from "@/components/forms/VideoUpload";
 import { useCreateLaundry, useUpdateLaundry } from "@/hooks/useLaundries";
@@ -166,12 +166,14 @@ const LaundryForm = ({ laundry, onSuccess }: LaundryFormProps) => {
           )}
         />
 
-        {/* Temporarily disabled map to isolate render2 error */}
         <div className="space-y-2">
-          <Label>მდებარეობა რუკაზე *</Label>
-          <div className="h-64 border rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-            <p className="text-muted-foreground">რუკა დროებით გათიშულია</p>
-          </div>
+          <Label>რუკაზე მდებარეობა *</Label>
+          <LocationMapPicker
+            latitude={form.watch("latitude")}
+            longitude={form.watch("longitude")}
+            onLocationChange={handleLocationChange}
+            interactive={true}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
