@@ -5,34 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { useLaundries, useDeleteLaundry } from "@/hooks/useLaundries";
+import LaundryForm from "@/components/forms/LaundryForm";
+import { Database } from "@/integrations/supabase/types";
 
-// Temporary interface until Supabase types are updated
-interface TempLaundry {
-  id: number;
-  name: string;
-  description?: string;
-  address?: string;
-  contact_number?: string;
-  latitude?: number;
-  longitude: number;
-  water_price?: number;
-  foam_price?: number;
-  wax_price?: number;
-  box_count?: number;
-  photos?: string[];
-  videos?: string[];
-  created_at?: string;
-}
+type Laundry = Database["public"]["Tables"]["laundries"]["Row"];
 
 const LaundryManagement = () => {
-  const [selectedLaundry, setSelectedLaundry] = useState<TempLaundry | null>(null);
+  const [selectedLaundry, setSelectedLaundry] = useState<Laundry | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   
-  // Temporary empty data until backend is ready
-  const laundries: TempLaundry[] = [];
-  const isLoading = false;
+  const { data: laundries = [], isLoading } = useLaundries();
+  const deleteLaundryMutation = useDeleteLaundry();
 
-  const handleEdit = (laundry: TempLaundry) => {
+  const handleEdit = (laundry: Laundry) => {
     setSelectedLaundry(laundry);
     setIsFormOpen(true);
   };
@@ -43,10 +29,19 @@ const LaundryManagement = () => {
   };
 
   const handleDelete = async (id: number) => {
-    console.log("Delete laundry:", id);
+    try {
+      await deleteLaundryMutation.mutateAsync(id);
+    } catch (error) {
+      console.error("Error deleting laundry:", error);
+    }
   };
 
   const handleFormClose = () => {
+    setIsFormOpen(false);
+    setSelectedLaundry(null);
+  };
+
+  const handleFormSuccess = () => {
     setIsFormOpen(false);
     setSelectedLaundry(null);
   };
@@ -72,15 +67,10 @@ const LaundryManagement = () => {
                 {selectedLaundry ? "სამრეცხაოს რედაქტირება" : "ახალი სამრეცხაოს დამატება"}
               </DialogTitle>
             </DialogHeader>
-            <div className="p-6">
-              <p className="text-muted-foreground">
-                სამრეცხაოს ფორმა დროებით არ არის ხელმისაწვდომი. 
-                მონაცემთა ბაზის ტიპები განახლდება მალე.
-              </p>
-              <Button onClick={handleFormClose} className="mt-4">
-                დახურვა
-              </Button>
-            </div>
+            <LaundryForm 
+              laundry={selectedLaundry}
+              onSuccess={handleFormSuccess}
+            />
           </DialogContent>
         </Dialog>
       </div>
