@@ -2,20 +2,36 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Filter, Search, MapPin } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import LaundryCard from "@/components/laundry/LaundryCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useLaundries } from "@/hooks/useLaundries";
-import type { Database } from "@/integrations/supabase/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type Laundry = Database["public"]["Tables"]["laundries"]["Row"];
+// Temporary interface until Supabase types are updated
+interface TempLaundry {
+  id: number;
+  name: string;
+  description?: string;
+  address?: string;
+  contact_number?: string;
+  latitude?: number;
+  longitude: number;
+  water_price?: number;
+  foam_price?: number;
+  wax_price?: number;
+  box_count?: number;
+  photos?: string[];
+  videos?: string[];
+  created_at?: string;
+}
 
 const Laundries = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   
-  const { data: laundries, isLoading } = useLaundries();
+  // Temporary mock data until backend is ready
+  const laundries: TempLaundry[] = [];
+  const isLoading = false;
 
   // Filter laundries based on search term
   const filteredLaundries = laundries?.filter((laundry) =>
@@ -24,8 +40,7 @@ const Laundries = () => {
     laundry.description?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
-  const handleViewDetails = (laundry: Laundry) => {
-    // Navigate to laundry details or open modal
+  const handleViewDetails = (laundry: TempLaundry) => {
     console.log("View details for:", laundry);
   };
 
@@ -119,11 +134,41 @@ const Laundries = () => {
         {!isLoading && filteredLaundries.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredLaundries.map((laundry) => (
-              <LaundryCard 
-                key={laundry.id} 
-                laundry={laundry} 
-                onViewDetails={handleViewDetails}
-              />
+              <Card key={laundry.id} className="h-full hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">{laundry.name}</CardTitle>
+                  {laundry.address && (
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {laundry.address}
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {laundry.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {laundry.description}
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {laundry.water_price && (
+                      <Badge variant="outline" className="text-xs">
+                        წყალი: {laundry.water_price}₾
+                      </Badge>
+                    )}
+                    {laundry.foam_price && (
+                      <Badge variant="outline" className="text-xs">
+                        ქაფი: {laundry.foam_price}₾
+                      </Badge>
+                    )}
+                    {laundry.wax_price && (
+                      <Badge variant="outline" className="text-xs">
+                        ცვილი: {laundry.wax_price}₾
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
