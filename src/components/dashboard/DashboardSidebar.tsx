@@ -79,7 +79,7 @@ const DashboardSidebar = () => {
             
             <NavLink to="/dashboard/admin" className={navLinkClasses}>
               <Shield size={18} />
-              <span className="text-sm md:text-base">ადმიн პანელი</span>
+              <span className="text-sm md:text-base">ადმინ პანელი</span>
             </NavLink>
 
             <NavLink to="/dashboard/admin/service-details" className={navLinkClasses}>
