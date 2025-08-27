@@ -455,6 +455,66 @@ export type Database = {
           },
         ]
       }
+      laundries: {
+        Row: {
+          address: string | null
+          box_count: number | null
+          contact_number: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          foam_price: number | null
+          id: number
+          latitude: number | null
+          longitude: number
+          name: string
+          photos: string[] | null
+          slug: string | null
+          updated_at: string
+          videos: string[] | null
+          water_price: number | null
+          wax_price: number | null
+        }
+        Insert: {
+          address?: string | null
+          box_count?: number | null
+          contact_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          foam_price?: number | null
+          id?: number
+          latitude?: number | null
+          longitude: number
+          name: string
+          photos?: string[] | null
+          slug?: string | null
+          updated_at?: string
+          videos?: string[] | null
+          water_price?: number | null
+          wax_price?: number | null
+        }
+        Update: {
+          address?: string | null
+          box_count?: number | null
+          contact_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          foam_price?: number | null
+          id?: number
+          latitude?: number | null
+          longitude?: number
+          name?: string
+          photos?: string[] | null
+          slug?: string | null
+          updated_at?: string
+          videos?: string[] | null
+          water_price?: number | null
+          wax_price?: number | null
+        }
+        Relationships: []
+      }
       mechanic_profile_views: {
         Row: {
           created_at: string | null
@@ -1019,6 +1079,10 @@ export type Database = {
       current_user_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      generate_unique_laundry_slug: {
+        Args: { base_name: string; exclude_id?: number }
+        Returns: string
       }
       generate_unique_slug: {
         Args: { base_name: string; exclude_id?: number }

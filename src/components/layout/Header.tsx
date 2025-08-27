@@ -59,6 +59,9 @@ const Header = () => {
             <Map className="h-4 w-4" />
             <span>რუკა</span>
           </Link>
+          <Link to="/laundries" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            სამრეცხაოები
+          </Link>
           <Link to="/chat" className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium">
             <MessageCircle className="h-4 w-4" />
             <span>ჩატი</span>

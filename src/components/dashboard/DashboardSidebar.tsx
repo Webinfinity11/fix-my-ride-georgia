@@ -92,6 +92,11 @@ const DashboardSidebar = () => {
               <span className="text-sm md:text-base">ჩატის მართვა</span>
             </NavLink>
 
+            <NavLink to="/dashboard/admin/laundries" className={navLinkClasses}>
+              <Settings size={18} />
+              <span className="text-sm md:text-base">სამრეცხაოები</span>
+            </NavLink>
+
             <NavLink to="/dashboard/admin/booking-management" className={navLinkClasses}>
               <CalendarCog size={18} />
               <span className="text-sm md:text-base">ჯავშნების მართვა</span>
