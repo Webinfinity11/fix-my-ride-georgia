@@ -56,7 +56,7 @@ const MobileBottomNav = () => {
       icon: User,
       label: 'Profile',
       path: '/dashboard',
-      onClick: () => navigate('/dashboard')
+      onClick: () => navigate(user ? '/dashboard' : '/login')
     }
   ];
 
