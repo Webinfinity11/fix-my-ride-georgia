@@ -114,12 +114,7 @@ const RegisterForm = () => {
       return;
     }
 
-    // Validate full name has at least 2 words
-    const nameParts = formData.fullName.trim().split(' ').filter(part => part.length > 0);
-    if (nameParts.length < 2) {
-      toast.error("გთხოვთ შეიყვანოთ სრული სახელი და გვარი");
-      return;
-    }
+    // Full name validation removed - single word names are now allowed
     
     try {
       console.log('🚀 Starting registration process for:', formType);
