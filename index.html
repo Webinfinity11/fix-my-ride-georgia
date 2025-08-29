@@ -30,11 +30,7 @@
     <meta property="twitter:description" content="პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს" />
     <meta property="twitter:image" content="https://kwozniwtygkdoagjegom.supabase.co/storage/v1/object/public/service-photos/gallery/531101807_122109107396961337_4038428176183698631_n.jpg" />
 
-    <!-- Performance Optimizations -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
-    <link rel="dns-prefetch" href="https://kwozniwtygkdoagjegom.supabase.co">
+    <!-- Enhanced Performance Optimizations -->
     <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
     <link rel="dns-prefetch" href="https://a.tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://b.tile.openstreetmap.org">
@@ -50,75 +46,76 @@
     <link rel="icon" type="image/png" href="/icons/service-pin.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/service-pin.png" />
     
-    <!-- Critical CSS for above-the-fold content -->
-    <style>
-      /* Critical styles for initial render */
-      * { box-sizing: border-box; }
-      body { margin: 0; font-family: 'Noto Sans Georgian', system-ui, sans-serif; }
-      #root { min-height: 100vh; }
-      .min-h-screen { min-height: 100vh; }
-      .flex { display: flex; }
-      .flex-col { flex-direction: column; }
-      .flex-grow { flex-grow: 1; }
-      /* Loading skeleton */
-      .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-    </style>
 
     <!-- Google Site Verification -->
     <meta name="google-site-verification" content="5LPHwP2tb47OMfc-W_DYFGcLkj2AS8zZsosuoHE6cTI" />
     
-    <!-- Render Block Prevention Script -->
-    <script>
-      // Prevent render blocking by intercepting CSS loading
-      (function() {
-        // Store original appendChild method
-        var originalAppendChild = HTMLHeadElement.prototype.appendChild;
-        var originalInsertBefore = HTMLHeadElement.prototype.insertBefore;
-        
-        // Override appendChild for head element
-        HTMLHeadElement.prototype.appendChild = function(element) {
-          if (element.tagName === 'LINK' && element.rel === 'stylesheet' && 
-              element.href && element.href.includes('assets/index-') && element.href.includes('.css')) {
-            // Make main CSS non-render-blocking
-            element.media = 'print';
-            element.onload = function() { 
-              this.media = 'all'; 
-              this.onload = null; 
-            };
-          }
-          return originalAppendChild.call(this, element);
-        };
-        
-        // Override insertBefore for head element
-        HTMLHeadElement.prototype.insertBefore = function(element, before) {
-          if (element.tagName === 'LINK' && element.rel === 'stylesheet' && 
-              element.href && element.href.includes('assets/index-') && element.href.includes('.css')) {
-            // Make main CSS non-render-blocking
-            element.media = 'print';
-            element.onload = function() { 
-              this.media = 'all'; 
-              this.onload = null; 
-            };
-          }
-          return originalInsertBefore.call(this, element, before);
-        };
-        
-        // Also handle existing links after DOM loads
-        document.addEventListener('DOMContentLoaded', function() {
-          var links = document.querySelectorAll('link[rel="stylesheet"]');
-          links.forEach(function(link) {
-            if (link.href && link.href.includes('assets/index-') && link.href.includes('.css')) {
-              link.media = 'print';
-              link.onload = function() { 
-                this.media = 'all'; 
-                this.onload = null; 
-              };
-            }
-          });
-        });
-      })();
-    </script>
+    <!-- Performance Optimizations -->
+    <link rel="preload" as="style" href="/src/index.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/src/index.css"></noscript>
+    
+    <!-- Resource Hints for Better Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://kwozniwtygkdoagjegom.supabase.co">
+    
+    <!-- Critical CSS Inline for Instant Rendering -->
+    <style>
+      /* Critical above-the-fold styles */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body { 
+        font-family: 'Noto Sans Georgian', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #root { min-height: 100vh; display: flex; flex-direction: column; }
+      
+      /* Header critical styles */
+      .header-container { 
+        background: hsl(210 50% 98%);
+        border-bottom: 1px solid hsl(214.3 31.8% 91.4%);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      
+      /* Button critical styles */
+      .btn-primary { 
+        background: hsl(210 80% 28%);
+        color: hsl(210 40% 98%);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      /* Loading states */
+      .loading-skeleton { 
+        background: linear-gradient(90deg, hsl(210 40% 96%) 25%, hsl(210 40% 92%) 50%, hsl(210 40% 96%) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        .header-container { 
+          background: hsl(222.2 84% 4.9%);
+          border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
+        }
+        .loading-skeleton { 
+          background: linear-gradient(90deg, hsl(217.2 32.6% 17.5%) 25%, hsl(215 20.2% 65.1%) 50%, hsl(217.2 32.6% 17.5%) 75%);
+        }
+      }
+    </style>
 
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SHBK1B237B"></script>
