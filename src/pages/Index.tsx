@@ -1,33 +1,33 @@
 
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, lazy, Suspense } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
-import ServiceCategories from "@/components/home/ServiceCategories";
+import HeroSection from "@/components/home/HeroSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MechanicCard } from "@/components/mechanic/MechanicCard";
 import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/seo/SEOHead";
 import { generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
-import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { 
-  Search, 
-  TrendingUp, 
   Zap, 
   Shield, 
   Users, 
   Star,
   MapPin,
-  ArrowRight,
-  CheckCircle2,
-  Sparkles,
   UserPlus,
   Wrench,
-  Car
+  Car,
+  ArrowRight,
+  CheckCircle2
 } from "lucide-react";
+
+// Lazy load non-critical components
+const ServiceCategories = lazy(() => import("@/components/home/ServiceCategories"));
+const ModernServiceFilters = lazy(() => import("@/components/services/ModernServiceFilters"));
+const MechanicCard = lazy(() => import("@/components/mechanic/MechanicCard").then(module => ({ default: module.MechanicCard })));
 
 type ServiceCategory = {
   id: number;
@@ -227,126 +227,122 @@ const Index = () => {
       <Header />
       
       <main className="flex-grow">
-        {/* Enhanced Search Section */}
-        <section className="relative py-16 lg:py-24 overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-blue-50 to-purple-50"></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-blue-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-200/20 to-primary/10 rounded-full blur-3xl"></div>
-          
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-6xl mx-auto">
-              {/* Hero Content */}
-              <div className="text-center mb-12">
-                <Badge className="mb-6 bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-2 text-sm font-medium">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  საქართველოს #1 ავტო-სერვისის პლატფორმა
-                </Badge>
-                
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                  იპოვეთ საუკეთესო 
-                  <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent block lg:inline lg:ml-4">
-                    ხელოსანი
-                  </span>
-                </h1>
+        {/* Critical Hero Section - loads immediately */}
+        <HeroSection />
 
-                <p className="text-base lg:text-lg text-gray-500 mb-10 max-w-2xl mx-auto">
-                  სწრაფი, საიმედო და ხარისხიანი ავტო-სერვისი თქვენი მანქანისთვის
-                </p>
-              </div>
+        {/* Non-critical content - lazy loaded */}
+        <Suspense fallback={
+          <div className="py-16">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden mb-8">
+                  <div className="bg-gradient-to-r from-primary to-blue-600 p-1">
+                    <div className="bg-white rounded-t-xl p-6 lg:p-8">
+                      <div className="animate-pulse space-y-4">
+                        <div className="h-8 bg-gray-200 rounded w-64 mx-auto"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="h-12 bg-gray-200 rounded"></div>
+                          <div className="h-12 bg-gray-200 rounded"></div>
+                          <div className="h-12 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
 
-              {/* Popular Searches */}
-              <div className="mb-10">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <span className="font-semibold text-gray-700">პოპულარული ძიებები</span>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2 lg:gap-3">
-                  {popularSearches.map((search) => (
-                    <Button
-                      key={search}
-                      variant="outline"
-                      onClick={() => handleQuickSearch(search)}
-                      className="text-sm lg:text-base rounded-full border-2 border-primary/20 hover:border-primary hover:bg-primary hover:text-white transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                    >
-                      <Search className="h-4 w-4 mr-2" />
-                      {search}
-                    </Button>
+                {/* Quick Access Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="border-0 shadow-lg">
+                      <CardContent className="p-4 lg:p-6 text-center">
+                        <div className="animate-pulse">
+                          <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-3"></div>
+                          <div className="h-6 bg-gray-200 rounded w-32 mx-auto mb-2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-24 mx-auto"></div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               </div>
-              
-              {/* Advanced Search Form */}
-              <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden mb-8">
-                <div className="bg-gradient-to-r from-primary to-blue-600 p-1">
-                  <div className="bg-white rounded-t-xl p-6 lg:p-8">
-                    <div className="flex items-center justify-center gap-2 mb-6">
-                      <div className="p-2 bg-gradient-to-r from-primary to-blue-600 rounded-full">
-                        <Search className="h-5 w-5 text-white" />
-                      </div>
-                      <h2 className="text-xl lg:text-2xl font-bold text-gray-900">დეტალური ძიება</h2>
-                    </div>
-                    
-                    <ModernServiceFilters
-                      searchTerm={searchTerm}
-                      setSearchTerm={setSearchTerm}
-                      selectedCategory={selectedCategory}
-                      setSelectedCategory={setSelectedCategory}
-                      categories={allCategories}
-                      selectedCity={selectedCity}
-                      setSelectedCity={setSelectedCity}
-                      cities={cities}
-                      selectedDistrict={selectedDistrict}
-                      setSelectedDistrict={setSelectedDistrict}
-                      districts={districts}
-                      selectedBrands={selectedBrands}
-                      setSelectedBrands={setSelectedBrands}
-                      onSiteOnly={onSiteOnly}
-                      setOnSiteOnly={setOnSiteOnly}
-                      minRating={minRating}
-                      setMinRating={setMinRating}
-                      onSearch={handleSearch}
-                      onResetFilters={handleResetFilters}
-                    />
-                  </div>
-                </div>
-              </Card>
-
-              {/* Quick Access Buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?onSite=true")}>
-                  <CardContent className="p-4 lg:p-6 text-center">
-                    <div className="p-3 lg:p-4 bg-green-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
-                      <MapPin className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
-                    </div>
-                    <h3 className="text-lg lg:text-xl font-bold text-green-900 mb-2">მისვლითი სერვისი</h3>
-                    <p className="text-sm lg:text-base text-green-700">ხელოსანი თქვენთან მოვა</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?minRating=4")}>
-                  <CardContent className="p-4 lg:p-6 text-center">
-                    <div className="p-3 lg:p-4 bg-blue-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
-                      <Star className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
-                    </div>
-                    <h3 className="text-lg lg:text-xl font-bold text-blue-900 mb-2">ტოპ რეიტინგი</h3>
-                    <p className="text-sm lg:text-base text-blue-700">მხოლოდ 4+ ვარსკვლავი</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services")}>
-                  <CardContent className="p-4 lg:p-6 text-center">
-                    <div className="p-3 lg:p-4 bg-purple-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
-                      <Zap className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
-                    </div>
-                    <h3 className="text-lg lg:text-xl font-bold text-purple-900 mb-2">ყველა სერვისი</h3>
-                    <p className="text-sm lg:text-base text-purple-700">სრული კატალოგი</p>
-                  </CardContent>
-                </Card>
-              </div>
             </div>
           </div>
-        </section>
+        }>
+          {/* Advanced Search Form */}
+          <section className="py-8">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <Card className="shadow-2xl border-0 bg-white/90 backdrop-blur-sm overflow-hidden mb-8">
+                  <div className="bg-gradient-to-r from-primary to-blue-600 p-1">
+                    <div className="bg-white rounded-t-xl p-6 lg:p-8">
+                      <div className="flex items-center justify-center gap-2 mb-6">
+                        <div className="p-2 bg-gradient-to-r from-primary to-blue-600 rounded-full">
+                          <MapPin className="h-5 w-5 text-white" />
+                        </div>
+                        <h2 className="text-xl lg:text-2xl font-bold text-gray-900">დეტალური ძიება</h2>
+                      </div>
+                      
+                      <ModernServiceFilters
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                        categories={allCategories}
+                        selectedCity={selectedCity}
+                        setSelectedCity={setSelectedCity}
+                        cities={cities}
+                        selectedDistrict={selectedDistrict}
+                        setSelectedDistrict={setSelectedDistrict}
+                        districts={districts}
+                        selectedBrands={selectedBrands}
+                        setSelectedBrands={setSelectedBrands}
+                        onSiteOnly={onSiteOnly}
+                        setOnSiteOnly={setOnSiteOnly}
+                        minRating={minRating}
+                        setMinRating={setMinRating}
+                        onSearch={handleSearch}
+                        onResetFilters={handleResetFilters}
+                      />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Quick Access Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+                  <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?onSite=true")}>
+                    <CardContent className="p-4 lg:p-6 text-center">
+                      <div className="p-3 lg:p-4 bg-green-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
+                        <MapPin className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+                      </div>
+                      <h3 className="text-lg lg:text-xl font-bold text-green-900 mb-2">მისვლითი სერვისი</h3>
+                      <p className="text-sm lg:text-base text-green-700">ხელოსანი თქვენთან მოვა</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?minRating=4")}>
+                    <CardContent className="p-4 lg:p-6 text-center">
+                      <div className="p-3 lg:p-4 bg-blue-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
+                        <Star className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+                      </div>
+                      <h3 className="text-lg lg:text-xl font-bold text-blue-900 mb-2">ტოპ რეიტინგი</h3>
+                      <p className="text-sm lg:text-base text-blue-700">მხოლოდ 4+ ვარსკვლავი</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services")}>
+                    <CardContent className="p-4 lg:p-6 text-center">
+                      <div className="p-3 lg:p-4 bg-purple-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
+                        <Zap className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
+                      </div>
+                      <h3 className="text-lg lg:text-xl font-bold text-purple-900 mb-2">ყველა სერვისი</h3>
+                      <p className="text-sm lg:text-base text-purple-700">სრული კატალოგი</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </section>
+        </Suspense>
 
         {/* Stats Section */}
         <section className="py-12 lg:py-16 bg-white">
@@ -373,227 +369,77 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Simple Registration Section */}
-        <section className="py-12 lg:py-20 bg-gradient-to-br from-gray-50 to-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
-                <UserPlus className="h-4 w-4 mr-2" />
-                გაწევრება
-              </Badge>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">დაიწყეთ ახლავე</h2>
-              <p className="text-lg lg:text-xl text-gray-600 mb-8 lg:mb-12 max-w-2xl mx-auto">
-                შეუერთდით ჩვენს პლატფორმას და იღებდეთ ან გაწვდოდეთ ხარისხიანი ავტო-სერვისი
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                {/* Customer Registration */}
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-2xl transition-all duration-300 group">
-                  <CardContent className="p-6 lg:p-8 text-center">
-                    <div className="p-4 lg:p-6 bg-blue-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
-                      <Car className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
-                    </div>
-                    <h3 className="text-xl lg:text-2xl font-bold text-blue-900 mb-3 lg:mb-4">მომხმარებლად</h3>
-                    <p className="text-sm lg:text-base text-blue-700 mb-4 lg:mb-6">
-                      იპოვეთ და დაჯავშნეთ საუკეთესო ხელოსნები თქვენი ავტომობილისთვის
-                    </p>
-                    <div className="space-y-3 lg:space-y-4">
-                      <Link to="/register?type=customer">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 lg:py-3 text-base lg:text-lg">
-                          რეგისტრაცია მომხმარებლად
-                        </Button>
-                      </Link>
-                      <Link to="/login">
-                        <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 py-2 lg:py-3 text-base lg:text-lg">
-                          შესვლა
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
+        {/* Service Categories - Lazy Loaded */}
+        <Suspense fallback={<div className="py-12 animate-pulse"><div className="container mx-auto px-4"><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4,5,6,7,8].map(i => <div key={i} className="h-24 bg-gray-200 rounded"></div>)}</div></div></div>}>
+          <ServiceCategories categories={categories} loading={loading} />
+        </Suspense>
 
-                {/* Mechanic Registration */}
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-orange-50 to-orange-100 hover:shadow-2xl transition-all duration-300 group">
-                  <CardContent className="p-6 lg:p-8 text-center">
-                    <div className="p-4 lg:p-6 bg-orange-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
-                      <Wrench className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
-                    </div>
-                    <h3 className="text-xl lg:text-2xl font-bold text-orange-900 mb-3 lg:mb-4">ხელოსნად</h3>
-                    <p className="text-sm lg:text-base text-orange-700 mb-4 lg:mb-6">
-                      გაიზარდეთ თქვენი ბიზნესი და მოიძიეთ ახალი კლიენტები ჩვენს პლატფორმაზე
-                    </p>
-                    <div className="space-y-3 lg:space-y-4">
-                      <Link to="/register?type=mechanic">
-                        <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 lg:py-3 text-base lg:text-lg">
-                          რეგისტრაცია ხელოსნად
-                        </Button>
-                      </Link>
-                      <Link to="/login">
-                        <Button variant="outline" className="w-full border-orange-600 text-orange-600 hover:bg-orange-50 py-2 lg:py-3 text-base lg:text-lg">
-                          შესვლა
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Our Services Section - Redesigned */}
-        <section className="py-12 lg:py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12 lg:mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
-                <Zap className="h-4 w-4 mr-2" />
-                ჩვენი სერვისები
-              </Badge>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                სრული სპექტრის ავტო სერვისში
-              </h2>
-              <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
-                პროფესიონალური მომსახურება ყველა ტიპის ავტომობილისთვის
-              </p>
-            </div>
-            
-            {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                {[...Array(8)].map((_, i) => (
-                  <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
-                    <CardContent className="p-4 lg:p-6 text-center">
-                      <div className="h-12 w-12 lg:h-16 lg:w-16 bg-gray-200 rounded-full mb-4 mx-auto"></div>
-                      <div className="h-5 lg:h-6 bg-gray-200 rounded mb-2"></div>
-                      <div className="h-3 lg:h-4 bg-gray-200 rounded"></div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                {categories.map((category) => (
-                  <Card 
-                    key={category.id} 
-                    className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white cursor-pointer overflow-hidden"
-                    onClick={() => navigate(`/services?category=${category.id}`)}
-                  >
-                    <CardContent className="p-4 lg:p-6 text-center relative">
-                      {/* Background Gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      <div className="relative z-10">
-                        {/* Icon Container - Fixed */}
-                        <div className="flex items-center justify-center mb-4">
-                          <div className="p-3 lg:p-4 bg-gradient-to-r from-primary to-blue-600 rounded-full group-hover:scale-110 transition-transform duration-300">
-                            <Wrench className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
-                          </div>
-                        </div>
-                        
-                        {/* Category Info */}
-                        <h3 className="text-base lg:text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
-                          {category.name}
-                        </h3>
-                        
-                        {category.description && (
-                          <p className="text-xs lg:text-sm text-gray-600 line-clamp-2">
-                            {category.description}
-                          </p>
-                        )}
-                        
-                        {/* Hover Arrow */}
-                        <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <ArrowRight className="h-4 w-4 text-primary mx-auto" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-            
-            <div className="text-center mt-8 lg:mt-12">
-              <Link to="/services">
-                <Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
-                  ყველა სერვისის ნახვა
-                  <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Recommended Mechanics */}
-        <section className="py-12 lg:py-20 bg-gradient-to-br from-gray-50 to-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12 lg:mb-16">
-              <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                რეკომენდირებული ხელოსნები
-              </Badge>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                ჩვენი საუკეთესო ხელოსნები
-              </h2>
-              <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
-                გაეცანით ხელოსნებს, რომლებმაც მოიპოვეს კლიენტების უმაღლესი შეფასება
-              </p>
-            </div>
-            
-            {mechanicsLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
-                    <CardContent className="p-4 lg:p-6">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="h-12 w-12 lg:h-16 lg:w-16 bg-gray-200 rounded-full"></div>
-                        <div className="flex-1">
-                          <div className="h-5 lg:h-6 bg-gray-200 rounded mb-2"></div>
-                          <div className="h-3 lg:h-4 bg-gray-200 rounded mb-2"></div>
-                          <div className="h-3 lg:h-4 bg-gray-200 rounded"></div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="h-4 bg-gray-200 rounded"></div>
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : featuredMechanics.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
-                {featuredMechanics.map((mechanic) => (
-                  <MechanicCard 
-                    key={mechanic.id} 
-                    mechanic={mechanic}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 lg:py-12">
-                <div className="max-w-md mx-auto">
-                  <div className="p-4 bg-gray-100 rounded-full w-fit mx-auto mb-4">
-                    <Star className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-lg lg:text-xl font-semibold text-gray-700 mb-2">
-                    მალე დაემატება რეკომენდირებული ხელოსნები
-                  </h3>
-                  <p className="text-base lg:text-lg text-gray-500">
-                    ხელოსნები შეაფასდებიან მომხმარებლების მიერ რეიტინგის მიხედვით
+        {/* Featured Mechanics - Lazy Loaded */}
+        <Suspense fallback={<div className="py-12 animate-pulse"><div className="container mx-auto px-4"><div className="grid grid-cols-1 md:grid-cols-3 gap-4">{[1,2,3].map(i => <div key={i} className="h-32 bg-gray-200 rounded"></div>)}</div></div></div>}>
+          <section className="py-12 lg:py-20 bg-white">
+            <div className="container mx-auto px-4">
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-12">
+                  <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
+                    <Star className="h-4 w-4 mr-2" />
+                    ტოპ ხელოსნები
+                  </Badge>
+                  <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">რეკომენდებული სპეციალისტები</h2>
+                  <p className="text-base lg:text-lg text-gray-600 max-w-2xl mx-auto">
+                    ჩვენი საუკეთესო რეიტინგის მქონე ხელოსნები, რომლებიც უზრუნველყოფენ ხარისხიან სერვისს
                   </p>
                 </div>
+
+                {mechanicsLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                      <Card key={i} className="animate-pulse">
+                        <CardContent className="p-6">
+                          <div className="flex items-center space-x-4 mb-4">
+                            <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                            <div className="space-y-2 flex-1">
+                              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="h-3 bg-gray-200 rounded"></div>
+                            <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : featuredMechanics.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {featuredMechanics.map((mechanic) => (
+                      <MechanicCard
+                        key={mechanic.id}
+                        mechanic={{
+                          id: mechanic.id,
+                          profiles: {
+                            first_name: mechanic.profiles.first_name,
+                            last_name: mechanic.profiles.last_name,
+                            city: mechanic.profiles.city,
+                            district: mechanic.profiles.district,
+                            avatar_url: mechanic.profiles.avatar_url
+                          },
+                          specialization: mechanic.specialization,
+                          rating: mechanic.rating,
+                          review_count: mechanic.review_count
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">ფეატურებული ხელოსნები არ მოიძებნა</p>
+                  </div>
+                )}
               </div>
-            )}
-            
-            <div className="text-center">
-              <Link to="/search?tab=mechanics">
-                <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
-                  ყველა ხელოსნის ნახვა
-                  <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
-                </Button>
-              </Link>
             </div>
-          </div>
-        </section>
+          </section>
+        </Suspense>
       </main>
       
       <Footer />
