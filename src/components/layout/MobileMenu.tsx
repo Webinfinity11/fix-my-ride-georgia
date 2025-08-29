@@ -13,7 +13,7 @@ export const MobileMenu = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden">
+        <Button variant="ghost" size="icon" className="md:hidden" aria-label="მენიუს გახსნა">
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>

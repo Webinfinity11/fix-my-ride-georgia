@@ -73,6 +73,7 @@ const MobileBottomNav = () => {
                 <button
                   key={index}
                   onClick={item.onClick}
+                  aria-label={!user ? 'კატეგორიები' : (user.role === 'mechanic' ? 'სერვისის დამატება' : 'მანქანის დამატება')}
                   className="flex flex-col items-center justify-center w-14 h-14 bg-primary rounded-full shadow-lg transform -translate-y-2 transition-all duration-200 hover:bg-primary-dark active:scale-95"
                 >
                   <Icon className="h-6 w-6 text-white" />
