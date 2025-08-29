@@ -43,8 +43,49 @@
     <link rel="icon" type="image/png" href="/icons/service-pin.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/service-pin.png" />
     
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      /* Critical styles for initial render */
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: 'Noto Sans Georgian', system-ui, sans-serif; }
+      #root { min-height: 100vh; }
+      .min-h-screen { min-height: 100vh; }
+      .flex { display: flex; }
+      .flex-col { flex-direction: column; }
+      .flex-grow { flex-grow: 1; }
+      /* Loading skeleton */
+      .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+
     <!-- Google Site Verification -->
     <meta name="google-site-verification" content="5LPHwP2tb47OMfc-W_DYFGcLkj2AS8zZsosuoHE6cTI" />
+    
+    <!-- Async CSS Loading Script -->
+    <script>
+      // Function to load CSS asynchronously
+      function loadCSS(href) {
+        var ss = window.document.createElement('link');
+        var ref = window.document.getElementsByTagName('script')[0];
+        ss.rel = 'stylesheet';
+        ss.href = href;
+        ss.media = 'only x';
+        ref.parentNode.insertBefore(ss, ref);
+        setTimeout(function() { ss.media = 'all'; });
+      }
+      
+      // Override default CSS loading behavior
+      document.addEventListener('DOMContentLoaded', function() {
+        // Find and defer main CSS
+        var links = document.querySelectorAll('link[rel="stylesheet"]:not([data-async])');
+        links.forEach(function(link) {
+          if (link.href && link.href.includes('index-') && link.href.includes('.css')) {
+            link.media = 'print';
+            link.onload = function() { this.media = 'all'; this.onload = null; };
+          }
+        });
+      });
+    </script>
 
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SHBK1B237B"></script>
