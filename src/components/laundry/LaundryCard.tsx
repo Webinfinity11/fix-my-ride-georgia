@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, MapPin, Car } from "lucide-react";
+import { Phone, MapPin, Car, Image } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type Laundry = Database["public"]["Tables"]["laundries"]["Row"];
@@ -27,6 +27,32 @@ const LaundryCard = ({ laundry, onViewDetails }: LaundryCardProps) => {
 
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
+      {/* Photo Section */}
+      {laundry.photos && laundry.photos.length > 0 ? (
+        <div className="relative h-48 overflow-hidden rounded-t-lg">
+          <img
+            src={laundry.photos[0]}
+            alt={laundry.name}
+            className="w-full h-full object-cover transition-transform hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.src = '/placeholder.svg';
+            }}
+          />
+          {laundry.photos.length > 1 && (
+            <Badge 
+              variant="secondary" 
+              className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm"
+            >
+              +{laundry.photos.length - 1} ფოტო
+            </Badge>
+          )}
+        </div>
+      ) : (
+        <div className="h-48 bg-muted flex items-center justify-center rounded-t-lg">
+          <Image className="w-12 h-12 text-muted-foreground" />
+        </div>
+      )}
+      
       <CardHeader>
         <CardTitle className="text-lg font-semibold">{laundry.name}</CardTitle>
         {laundry.address && (
