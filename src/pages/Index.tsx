@@ -371,7 +371,7 @@ const Index = () => {
 
         {/* Service Categories - Lazy Loaded */}
         <Suspense fallback={<div className="py-12 animate-pulse"><div className="container mx-auto px-4"><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{[1,2,3,4,5,6,7,8].map(i => <div key={i} className="h-24 bg-gray-200 rounded"></div>)}</div></div></div>}>
-          <ServiceCategories categories={categories} loading={loading} />
+          <ServiceCategories categories={categories} />
         </Suspense>
 
         {/* Featured Mechanics - Lazy Loaded */}
