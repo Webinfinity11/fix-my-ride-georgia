@@ -36,8 +36,12 @@ const Header = () => {
         {/* Mobile Menu & Logo */}
         <div className="flex items-center gap-3">
           <MobileMenu />
-          <Link to="/" className="text-xl md:text-2xl font-bold text-primary">
-            FixUp
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png" 
+              alt="FixUp Auto Service" 
+              className="h-8 md:h-10 w-auto object-contain"
+            />
           </Link>
         </div>
 
