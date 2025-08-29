@@ -173,7 +173,12 @@ const Index = () => {
       }
     };
 
-    fetchInitialData();
+    // Defer API calls to break critical request chain and improve FCP
+    const timeoutId = setTimeout(() => {
+      fetchInitialData();
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [selectedCity]);
 
   const handleSearch = () => {
