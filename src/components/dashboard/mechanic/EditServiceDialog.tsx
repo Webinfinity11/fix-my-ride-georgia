@@ -60,6 +60,8 @@ const EditServiceDialog = ({ service, open, onOpenChange, onServiceUpdated }: Ed
   });
 
   const handleSubmit = () => {
+    // ServiceForm has already completed the save operation successfully
+    // Now we refresh the services list and close the dialog
     onServiceUpdated();
     onOpenChange(false);
   };

@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -47,6 +47,7 @@ interface UserServicesListProps {
 const UserServicesList = ({ userId, userName, open, onOpenChange }: UserServicesListProps) => {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: services, isLoading, refetch } = useQuery({
     queryKey: ['user-services', userId],
@@ -72,7 +73,8 @@ const UserServicesList = ({ userId, userName, open, onOpenChange }: UserServices
   };
 
   const handleServiceUpdated = () => {
-    refetch();
+    // Invalidate and refetch the services query to ensure fresh data
+    queryClient.invalidateQueries({ queryKey: ['user-services', userId] });
     setEditDialogOpen(false);
     setSelectedService(null);
   };
