@@ -68,30 +68,56 @@
     <!-- Google Site Verification -->
     <meta name="google-site-verification" content="5LPHwP2tb47OMfc-W_DYFGcLkj2AS8zZsosuoHE6cTI" />
     
-    <!-- Async CSS Loading Script -->
+    <!-- Render Block Prevention Script -->
     <script>
-      // Function to load CSS asynchronously
-      function loadCSS(href) {
-        var ss = window.document.createElement('link');
-        var ref = window.document.getElementsByTagName('script')[0];
-        ss.rel = 'stylesheet';
-        ss.href = href;
-        ss.media = 'only x';
-        ref.parentNode.insertBefore(ss, ref);
-        setTimeout(function() { ss.media = 'all'; });
-      }
-      
-      // Override default CSS loading behavior
-      document.addEventListener('DOMContentLoaded', function() {
-        // Find and defer main CSS
-        var links = document.querySelectorAll('link[rel="stylesheet"]:not([data-async])');
-        links.forEach(function(link) {
-          if (link.href && link.href.includes('index-') && link.href.includes('.css')) {
-            link.media = 'print';
-            link.onload = function() { this.media = 'all'; this.onload = null; };
+      // Prevent render blocking by intercepting CSS loading
+      (function() {
+        // Store original appendChild method
+        var originalAppendChild = HTMLHeadElement.prototype.appendChild;
+        var originalInsertBefore = HTMLHeadElement.prototype.insertBefore;
+        
+        // Override appendChild for head element
+        HTMLHeadElement.prototype.appendChild = function(element) {
+          if (element.tagName === 'LINK' && element.rel === 'stylesheet' && 
+              element.href && element.href.includes('assets/index-') && element.href.includes('.css')) {
+            // Make main CSS non-render-blocking
+            element.media = 'print';
+            element.onload = function() { 
+              this.media = 'all'; 
+              this.onload = null; 
+            };
           }
+          return originalAppendChild.call(this, element);
+        };
+        
+        // Override insertBefore for head element
+        HTMLHeadElement.prototype.insertBefore = function(element, before) {
+          if (element.tagName === 'LINK' && element.rel === 'stylesheet' && 
+              element.href && element.href.includes('assets/index-') && element.href.includes('.css')) {
+            // Make main CSS non-render-blocking
+            element.media = 'print';
+            element.onload = function() { 
+              this.media = 'all'; 
+              this.onload = null; 
+            };
+          }
+          return originalInsertBefore.call(this, element, before);
+        };
+        
+        // Also handle existing links after DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+          var links = document.querySelectorAll('link[rel="stylesheet"]');
+          links.forEach(function(link) {
+            if (link.href && link.href.includes('assets/index-') && link.href.includes('.css')) {
+              link.media = 'print';
+              link.onload = function() { 
+                this.media = 'all'; 
+                this.onload = null; 
+              };
+            }
+          });
         });
-      });
+      })();
     </script>
 
     <!-- Google tag (gtag.js) -->
