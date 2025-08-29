@@ -16,6 +16,7 @@ export interface User {
   email: string | null;
   firstName: string | null;
   lastName: string | null;
+  fullName: string | null;
   role: UserRole;
   isVerified: boolean;
   phone?: string | null;
@@ -24,6 +25,7 @@ export interface User {
   street?: string | null;
   building?: string | null;
   apartment?: string | null;
+  fullAddress?: string | null;
 }
 
 // Define auth context state

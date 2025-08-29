@@ -55,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   email: currentSession.user.email,
                   firstName: profile.first_name,
                   lastName: profile.last_name,
+                  fullName: profile.full_name || `${profile.first_name} ${profile.last_name}`.trim(),
                   role: profile.role,
                   isVerified: profile.is_verified,
                   phone: profile.phone,
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   street: profile.street,
                   building: profile.building,
                   apartment: profile.apartment,
+                  fullAddress: profile.full_address,
                 },
                 initialized: true,
                 loading: false,
@@ -117,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   email: currentSession.user.email,
                   firstName: profile.first_name,
                   lastName: profile.last_name,
+                  fullName: profile.full_name || `${profile.first_name} ${profile.last_name}`.trim(),
                   role: profile.role,
                   isVerified: profile.is_verified,
                   phone: profile.phone,
@@ -125,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   street: profile.street,
                   building: profile.building,
                   apartment: profile.apartment,
+                  fullAddress: profile.full_address,
                 },
                 initialized: true,
                 loading: false,
@@ -177,6 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           first_name: userData.firstName,
           last_name: userData.lastName,
+          full_name: userData.fullName,
         }
       }
     });
@@ -197,12 +202,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: email,
           first_name: userData.firstName || '',
           last_name: userData.lastName || '',
+          full_name: userData.fullName,
           phone: userData.phone,
           city: userData.city,
           district: userData.district,
           street: userData.street,
           building: userData.building,
           apartment: userData.apartment,
+          full_address: userData.fullAddress,
           role: userData.role || 'customer',
         })
         .select()

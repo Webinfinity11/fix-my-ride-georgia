@@ -23,15 +23,12 @@ const RegisterForm = () => {
   
   // Basic form state
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    fullName: '',
     email: '',
     phone: '',
     password: '',
     confirmPassword: '',
-    city: '',
-    district: '',
-    street: '',
+    fullAddress: '',
     avatar: null as File | null,
     isMobile: false,
   });
@@ -116,21 +113,32 @@ const RegisterForm = () => {
       toast.error("პაროლები არ ემთხვევა!");
       return;
     }
+
+    // Validate full name has at least 2 words
+    const nameParts = formData.fullName.trim().split(' ').filter(part => part.length > 0);
+    if (nameParts.length < 2) {
+      toast.error("გთხოვთ შეიყვანოთ სრული სახელი და გვარი");
+      return;
+    }
     
     try {
       console.log('🚀 Starting registration process for:', formType);
+      
+      // Split full name into first and last name for backward compatibility
+      const nameParts = formData.fullName.trim().split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(' ') || nameParts[0];
       
       // Register the user
       const { data, error } = await signUp(
         formData.email,
         formData.password,
         {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          firstName: firstName,
+          lastName: lastName,
+          fullName: formData.fullName,
           phone: formData.phone,
-          city: formData.city,
-          district: formData.district,
-          street: formData.street,
+          fullAddress: formData.fullAddress || null,
           role: formType
         }
       );
@@ -226,31 +234,17 @@ const RegisterForm = () => {
             />
           </div>
         
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">სახელი</Label>
-              <Input 
-                id="firstName" 
-                name="firstName" 
-                placeholder="შეიყვანეთ სახელი" 
-                required
-                value={formData.firstName}
-                onChange={handleChange}
-                className="border-primary/20 focus-visible:ring-primary"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">გვარი</Label>
-              <Input 
-                id="lastName" 
-                name="lastName" 
-                placeholder="შეიყვანეთ გვარი" 
-                required
-                value={formData.lastName}
-                onChange={handleChange}
-                className="border-primary/20 focus-visible:ring-primary"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="fullName">სახელი და გვარი</Label>
+            <Input 
+              id="fullName" 
+              name="fullName" 
+              placeholder="მაგ: ნინო ვაშაძე" 
+              required
+              value={formData.fullName}
+              onChange={handleChange}
+              className="border-primary/20 focus-visible:ring-primary"
+            />
           </div>
           
           <div className="space-y-2">
@@ -286,40 +280,12 @@ const RegisterForm = () => {
               <Label>მისამართი</Label>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city" className="text-sm text-muted-foreground">ქალაქი</Label>
-                <Input 
-                  id="city" 
-                  name="city" 
-                  placeholder="ქალაქი" 
-                  required
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="border-primary/20 focus-visible:ring-primary"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="district" className="text-sm text-muted-foreground">უბანი</Label>
-                <Input 
-                  id="district" 
-                  name="district" 
-                  placeholder="უბანი" 
-                  required
-                  value={formData.district}
-                  onChange={handleChange}
-                  className="border-primary/20 focus-visible:ring-primary"
-                />
-              </div>
-            </div>
-            
             <div className="space-y-2">
-              <Label htmlFor="street" className="text-sm text-muted-foreground">ქუჩა</Label>
               <Input 
-                id="street" 
-                name="street" 
-                placeholder="ქუჩა" 
-                value={formData.street}
+                id="fullAddress" 
+                name="fullAddress" 
+                placeholder="მაგ: თბილისი, ვაკე, ჩაჩავას 15, ბინა 10" 
+                value={formData.fullAddress}
                 onChange={handleChange}
                 className="border-primary/20 focus-visible:ring-primary"
               />
