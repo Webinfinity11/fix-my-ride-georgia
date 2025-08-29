@@ -802,6 +802,8 @@ export type Database = {
           district: string | null
           email: string
           first_name: string
+          full_address: string | null
+          full_name: string | null
           id: string
           is_verified: boolean
           last_name: string
@@ -819,6 +821,8 @@ export type Database = {
           district?: string | null
           email: string
           first_name: string
+          full_address?: string | null
+          full_name?: string | null
           id: string
           is_verified?: boolean
           last_name: string
@@ -836,6 +840,8 @@ export type Database = {
           district?: string | null
           email?: string
           first_name?: string
+          full_address?: string | null
+          full_name?: string | null
           id?: string
           is_verified?: boolean
           last_name?: string
