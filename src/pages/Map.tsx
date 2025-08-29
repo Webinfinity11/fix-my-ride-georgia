@@ -412,8 +412,12 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
                 ${service.photos && service.photos.length > 0 ? 
                   `<img src="${service.photos[0]}" 
                         alt="${service.name}" 
+                        width="250" 
+                        height="120"
+                        loading="lazy"
+                        decoding="async"
                         style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : 
-                  `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: #0F4C81; font-size: 14px; text-align: center;">
+                  `<div style="width: 250px; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: #0F4C81; font-size: 14px; text-align: center;">
                     <div>
                       <div style="font-size: 24px; margin-bottom: 4px;">🔧</div>
                       <div>სერვისის ფოტო</div>

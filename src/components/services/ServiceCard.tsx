@@ -123,6 +123,11 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
               <img
                 src={mainPhoto}
                 alt={service.name}
+                width="300"
+                height="225"
+                loading={onMapFocus ? "eager" : "lazy"}
+                decoding="async"
+                fetchPriority={onMapFocus ? "high" : "auto"}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
               />
             </div>
