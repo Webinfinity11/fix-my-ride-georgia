@@ -85,7 +85,7 @@ const ModernServiceFilters = ({
         <div className="space-y-4 md:space-y-6">
           {/* Main Search Bar - Fixed mobile spacing */}
           <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 md:h-5 w-4 md:w-5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 md:h-5 w-4 md:w-5 text-muted-foreground" style={{transform: 'translateY(-50%)', willChange: 'transform'}} />
             <Input placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10 md:pl-12 h-12 md:h-14 text-sm md:text-lg border-2 border-primary/20 focus-visible:ring-primary" />
           </form>
 
@@ -195,7 +195,7 @@ const ModernServiceFilters = ({
             </div>
 
             {/* Advanced Filters Content - Better mobile layout */}
-            <CollapsibleContent className="space-y-4 pt-4 border-t border-primary/10 mt-4">
+            <CollapsibleContent className="space-y-4 pt-4 border-t border-primary/10 mt-4" style={{willChange: 'height'}}>
               <div className="space-y-4">
                 <Label className="text-sm font-medium flex items-center gap-1">
                   <Car className="h-4 w-4" />
@@ -206,12 +206,19 @@ const ModernServiceFilters = ({
                 <div className="space-y-4">
                   {/* First 6 brands always visible */}
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    {commonCarBrands.slice(0, 6).map(brand => <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white min-h-[48px]">
-                        <Checkbox id={`brand-${brand}`} checked={selectedBrands.includes(brand)} onCheckedChange={() => handleBrandToggle(brand)} className="h-5 w-5" />
+                    {commonCarBrands.slice(0, 6).map(brand => (
+                      <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white h-12">
+                        <Checkbox 
+                          id={`brand-${brand}`} 
+                          checked={selectedBrands.includes(brand)} 
+                          onCheckedChange={() => handleBrandToggle(brand)} 
+                          className="h-5 w-5" 
+                        />
                         <Label htmlFor={`brand-${brand}`} className="text-sm flex-1 cursor-pointer font-medium">
                           {brand}
                         </Label>
-                      </div>)}
+                      </div>
+                    ))}
                   </div>
                   
                   {/* More brands in collapsible */}
@@ -222,14 +229,21 @@ const ModernServiceFilters = ({
                         <ChevronDown className="h-4 w-4 ml-2" />
                       </Button>
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-4">
+                    <CollapsibleContent className="pt-4" style={{willChange: 'height'}}>
                       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                        {commonCarBrands.slice(6).map(brand => <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white min-h-[48px]">
-                            <Checkbox id={`brand-${brand}`} checked={selectedBrands.includes(brand)} onCheckedChange={() => handleBrandToggle(brand)} className="h-5 w-5" />
+                        {commonCarBrands.slice(6).map(brand => (
+                          <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white h-12">
+                            <Checkbox 
+                              id={`brand-${brand}`} 
+                              checked={selectedBrands.includes(brand)} 
+                              onCheckedChange={() => handleBrandToggle(brand)} 
+                              className="h-5 w-5" 
+                            />
                             <Label htmlFor={`brand-${brand}`} className="text-sm flex-1 cursor-pointer font-medium">
                               {brand}
                             </Label>
-                          </div>)}
+                          </div>
+                        ))}
                       </div>
                     </CollapsibleContent>
                   </Collapsible>
