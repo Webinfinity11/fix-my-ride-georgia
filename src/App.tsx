@@ -6,6 +6,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "@/components/error/ErrorBoundary";
 import { Preloader } from "@/components/performance/Preloader";
 import { AuthProvider } from "@/context/AuthContext";
+import { SEOMonitor } from "@/components/seo/SEOMonitor";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import Index from "./pages/Index";
 import ServicesDetail from "./pages/ServicesDetail";
@@ -48,6 +49,7 @@ function App() {
                 critical={true}
               />
               <ScrollToTop />
+              <SEOMonitor />
               <AuthProvider>
                 <Routes>
                   <Route path="/" element={<Index />} />
