@@ -79,7 +79,7 @@ const ServiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
   
-  const { seoData } = useSEOData('service', service?.id.toString() || '');
+  const { seoData, loading: seoLoading } = useSEOData('service', service?.id.toString() || '');
 
   useEffect(() => {
     requestAnimationFrame(() => {
