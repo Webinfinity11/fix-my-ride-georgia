@@ -81,6 +81,26 @@ const ServiceDetail = () => {
   
   const { seoData, loading: seoLoading } = useSEOData('service', service?.id.toString() || '');
 
+  // Generate SEO data
+  const pageTitle = service ? (seoData?.meta_title || generateSEOTitle('service', {
+    name: service.name,
+    city: service.city,
+    mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` }
+  })) : 'იტვირთება... | AutoMechanico';
+  
+  const pageDescription = service ? (seoData?.meta_description || generateSEODescription('service', {
+    name: service.name,
+    city: service.city,
+    mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` },
+    rating: service.rating,
+    description: service.description
+  })) : 'ავტოსერვისის ინფორმაცია იტვირთება...';
+
+  const canonicalUrl = service ? generateCanonicalURL('service', {
+    id: service.id,
+    name: service.name
+  }) : undefined;
+
   useEffect(() => {
     requestAnimationFrame(() => {
       window.scrollTo(0, 0);
@@ -380,25 +400,6 @@ const ServiceDetail = () => {
       "worstRating": 1
     } : undefined
   };
-
-      const pageTitle = seoData?.meta_title || generateSEOTitle('service', {
-        name: service.name,
-        city: service.city,
-        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` }
-      });
-      
-      const pageDescription = seoData?.meta_description || generateSEODescription('service', {
-        name: service.name,
-        city: service.city,
-        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` },
-        rating: service.rating,
-        description: service.description
-      });
-
-      const canonicalUrl = generateCanonicalURL('service', {
-        id: service.id,
-        name: service.name
-      });
 
   // Contact Card Component
   const ContactCard = ({ className = "" }: { className?: string }) => (

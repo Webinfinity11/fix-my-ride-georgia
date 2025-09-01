@@ -37,7 +37,7 @@ export const SEOMonitor = () => {
           console.warn('Invalid structured data JSON for:', location.pathname);
         }
       }
-    }, 100); // Small delay to let PageMeta render
+    }, 200); // Longer delay to ensure PageMeta fully renders
 
     return () => clearTimeout(timeoutId);
   }, [location.pathname]);
