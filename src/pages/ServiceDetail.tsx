@@ -34,7 +34,6 @@ import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
 import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 import { useSEOData } from "@/hooks/useSEOData";
-import { PageMeta } from "@/components/seo/PageMeta";
 import SEOHead from "@/components/seo/SEOHead";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
@@ -79,27 +78,7 @@ const ServiceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
   
-  const { seoData, loading: seoLoading } = useSEOData('service', service?.id.toString() || '');
-
-  // Generate SEO data
-  const pageTitle = service ? (seoData?.meta_title || generateSEOTitle('service', {
-    name: service.name,
-    city: service.city,
-    mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` }
-  })) : 'იტვირთება... | AutoMechanico';
-  
-  const pageDescription = service ? (seoData?.meta_description || generateSEODescription('service', {
-    name: service.name,
-    city: service.city,
-    mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` },
-    rating: service.rating,
-    description: service.description
-  })) : 'ავტოსერვისის ინფორმაცია იტვირთება...';
-
-  const canonicalUrl = service ? generateCanonicalURL('service', {
-    id: service.id,
-    name: service.name
-  }) : undefined;
+  const { seoData } = useSEOData('service', service?.id.toString() || '');
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -401,6 +380,25 @@ const ServiceDetail = () => {
     } : undefined
   };
 
+      const pageTitle = seoData?.meta_title || generateSEOTitle('service', {
+        name: service.name,
+        city: service.city,
+        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` }
+      });
+      
+      const pageDescription = seoData?.meta_description || generateSEODescription('service', {
+        name: service.name,
+        city: service.city,
+        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` },
+        rating: service.rating,
+        description: service.description
+      });
+
+      const canonicalUrl = generateCanonicalURL('service', {
+        id: service.id,
+        name: service.name
+      });
+
   // Contact Card Component
   const ContactCard = ({ className = "" }: { className?: string }) => (
     <Card className={className}>
@@ -600,15 +598,16 @@ const ServiceDetail = () => {
 
   return (
     <Layout>
-        <PageMeta
-          title={pageTitle}
-          description={pageDescription}
-          keywords={seoData?.meta_keywords || `${service.name}, ავტოსერვისი, ${service.city}, ${service.mechanic.first_name} ${service.mechanic.last_name}, მექანიკოსი`}
-          image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
-          canonicalUrl={canonicalUrl}
-          type="article"
-          structuredData={structuredData}
-        />
+      <SEOHead
+        title={pageTitle}
+        description={pageDescription}
+        keywords={seoData?.meta_keywords || `${service.name}, ავტოსერვისი, ${service.city}, ${service.mechanic.first_name} ${service.mechanic.last_name}, მექანიკოსი`}
+        image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        type="article"
+        structuredData={structuredData}
+      />
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumbs */}
