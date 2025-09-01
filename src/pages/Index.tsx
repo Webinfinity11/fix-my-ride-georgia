@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { MechanicCard } from "@/components/mechanic/MechanicCard";
 import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/seo/SEOHead";
+import { PageMeta } from "@/components/seo/PageMeta";
 import { generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { 
@@ -210,13 +211,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
-      <SEOHead
+      <PageMeta
         title={generateSEOTitle('home', {})}
         description={generateSEODescription('home', {})}
-        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი"
-        url="https://fixup.ge"
-        canonical="https://fixup.ge"
+        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, ბათუმი"
+        canonicalUrl="https://fixup.ge/"
         type="website"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "FixUp",
+          "url": "https://fixup.ge",
+          "description": "საქართველოს უდიდესი ავტო-სერვისის პლატფორმა",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://fixup.ge/services?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }}
       />
       <Header />
       
