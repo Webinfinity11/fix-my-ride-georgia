@@ -256,13 +256,80 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
   }
 };
 
+// Smart text truncation for Georgian language
+const smartTruncate = (text: string, maxLength: number): string => {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  
+  // Find the last space before maxLength to avoid cutting words
+  const truncated = text.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(' ');
+  
+  if (lastSpace > maxLength * 0.8) {
+    return truncated.substring(0, lastSpace).trim();
+  }
+  
+  return truncated.trim();
+};
+
+// Generate category-specific keywords
+const getCategoryKeywords = (categoryName?: string): string => {
+  const categoryMap: { [key: string]: string } = {
+    'ავტოდიაგნოსტიკა': 'ავტოდიაგნოსტიკა, ელექტროდიაგნოსტიკა',
+    'ძრავის რემონტი': 'ძრავის რემონტი, მოტორის რემონტი',
+    'ფრენების რემონტი': 'ფრენების რემონტი, სამუხრუჭე სისტემა',
+    'კვება': 'საწვავის სისტემა, ინჟექტორი',
+    'ელექტრო': 'ელექტრო სისტემა, ავტოელექტრიკი',
+    'რუბანვა': 'ავტორუბანვა, მანქანის რუბანვა'
+  };
+  
+  return categoryMap[categoryName || ''] || '';
+};
+
+// Generate price range text
+const getPriceText = (priceFrom?: number, priceTo?: number): string => {
+  if (!priceFrom && !priceTo) return '';
+  
+  if (priceFrom && priceTo && priceFrom !== priceTo) {
+    return ` ფასი: ${priceFrom}-${priceTo}₾.`;
+  } else if (priceFrom) {
+    return ` ფასი: ${priceFrom}₾-დან.`;
+  }
+  
+  return '';
+};
+
 // Generate SEO-optimized descriptions
 export const generateSEODescription = (pageType: string, data: any, customDescription?: string) => {
   if (customDescription) return customDescription;
 
   switch (pageType) {
-    case 'service':
-      return `${data.name} - ${data.city || 'საქართველო'}-ში. ხელოსანი: ${data.mechanic?.name || 'დადასტურებული ხელოსანი'}. ${data.rating ? `შეფასება: ${data.rating}/5. ` : ''}${data.description ? data.description.substring(0, 100) : 'ხარისხიანი ავტოსერვისი'}...`;
+    case 'service': {
+      const serviceName = data.name || 'ავტოსერვისი';
+      const city = data.city || 'საქართველო';
+      const district = data.district ? `, ${data.district} რაიონი` : '';
+      const mechanicName = data.mechanic?.name || data.profiles?.full_name || 'დადასტურებული ხელოსანი';
+      const rating = data.rating ? ` შეფასება: ${data.rating}/5.` : '';
+      const categoryKeywords = getCategoryKeywords(data.category_name);
+      const priceText = getPriceText(data.price_from, data.price_to);
+      const mobileService = data.on_site_service ? ' მობილური სერვისი.' : '';
+      
+      // Calculate available space for description
+      const baseText = `${serviceName} - ${city}${district}-ში. ხელოსანი: ${mechanicName}.${rating}${priceText}${mobileService}`;
+      const availableSpace = 155 - baseText.length; // Target 155 characters total
+      
+      let description = '';
+      if (data.description && availableSpace > 20) {
+        description = ' ' + smartTruncate(data.description, availableSpace - 5);
+      } else if (categoryKeywords && availableSpace > 15) {
+        description = ' ' + smartTruncate(categoryKeywords, availableSpace - 5);
+      } else if (availableSpace > 15) {
+        description = ' ხარისხიანი მომსახურება';
+      }
+      
+      return `${baseText}${description}`;
+    }
+    
     case 'mechanic':
       return `${data.name} - გამოცდილი ხელოსანი ${data.city || 'საქართველო'}-ში. რეიტინგი: ${data.rating}/5 (${data.review_count} შეფასება). ${data.specialization ? `სპეციალიზაცია: ${data.specialization}. ` : ''}დაუკავშირდით ახლავე!`;
     case 'category':
