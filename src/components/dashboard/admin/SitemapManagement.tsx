@@ -151,10 +151,10 @@ const SitemapManagement = () => {
           </h3>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Database trigger-ები ავტომატურად განაახლებენ sitemap-ს</li>
-            <li>• Sitemap ფაილები: /sitemap.xml და /sitemap-index.xml</li>
+            <li>• <a href="/sitemap.xml" target="_blank" className="text-primary hover:underline">Live sitemap: /sitemap.xml</a> (ავტომატურად განახლდება)</li>
             <li>• Google Search Console-ისთვის ოპტიმიზებული</li>
-            <li>• ყველა აქტიური კონტენტი ირიცხება ორივე ფაილში</li>
-            <li>• sitemap-index.xml მიუთითებს მთავარ sitemap.xml ფაილზე</li>
+            <li>• ყველა აქტიური კონტენტი ირიცხება ავტომატურად</li>
+            <li>• ღილაკის დაწკაპუნებით ხდება სრული განახლება</li>
           </ul>
         </div>
       </CardContent>
