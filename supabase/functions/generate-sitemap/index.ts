@@ -179,10 +179,21 @@ serve(async (req) => {
     sitemapXml += `
 </urlset>`
 
-    // Write sitemap to storage
+    // Generate sitemap-index.xml
+    const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://fixup.ge/sitemap.xml</loc>
+    <lastmod>${currentDate}</lastmod>
+  </sitemap>
+</sitemapindex>`
+
+    // Write both files to storage
     const encoder = new TextEncoder()
     const xmlData = encoder.encode(sitemapXml)
+    const indexXmlData = encoder.encode(sitemapIndexXml)
     
+    // Upload sitemap.xml
     const { error: uploadError } = await supabase.storage
       .from('service-photos')
       .upload('sitemap.xml', xmlData, {
@@ -195,22 +206,36 @@ serve(async (req) => {
       throw uploadError
     }
 
+    // Upload sitemap-index.xml
+    const { error: indexUploadError } = await supabase.storage
+      .from('service-photos')
+      .upload('sitemap-index.xml', indexXmlData, {
+        contentType: 'application/xml',
+        upsert: true
+      })
+
+    if (indexUploadError) {
+      console.error('Error uploading sitemap-index:', indexUploadError)
+      throw indexUploadError
+    }
+
     const totalUrls = 6 + (services?.length || 0) + (categories?.length || 0) + (mechanics?.length || 0)
     
-    console.log(`Sitemap generated successfully with ${totalUrls} URLs:`)
-    console.log(`- 6 static pages`)
-    console.log(`- ${services?.length || 0} services`)
-    console.log(`- ${categories?.length || 0} categories`)
-    console.log(`- ${mechanics?.length || 0} mechanics`)
+    console.log(`Sitemap files generated successfully:`)
+    console.log(`- sitemap.xml with ${totalUrls} URLs`)
+    console.log(`- sitemap-index.xml updated`)
+    console.log(`Breakdown: ${services?.length || 0} services, ${categories?.length || 0} categories, ${mechanics?.length || 0} mechanics`)
 
     return new Response(JSON.stringify({ 
       success: true, 
       totalUrls,
+      lastUpdate: currentDate,
       breakdown: {
         static: 6,
         services: services?.length || 0,
         categories: categories?.length || 0,
-        mechanics: mechanics?.length || 0
+        mechanics: mechanics?.length || 0,
+        totalUrls
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

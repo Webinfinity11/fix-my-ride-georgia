@@ -35,7 +35,7 @@ const SitemapManagement = () => {
       if (data.success) {
         setSitemapStats(data.breakdown);
         setLastUpdate(new Date().toLocaleString('ka-GE'));
-        toast.success(`Sitemap წარმატებით განახლდა! სულ ${data.totalUrls} ლინკი`);
+        toast.success(`Sitemap ფაილები წარმატებით განახლდა! sitemap.xml (${data.totalUrls} ლინკი) და sitemap-index.xml`);
       } else {
         toast.error('Sitemap განახლება ვერ მოხერხდა');
       }
@@ -76,7 +76,7 @@ const SitemapManagement = () => {
             <div>
               <h3 className="font-medium">მანუალური განახლება</h3>
               <p className="text-sm text-muted-foreground">
-                Sitemap.xml ფაილის ხელით განახლება ყველა აქტიური კონტენტით
+                Sitemap ფაილების (sitemap.xml და sitemap-index.xml) ხელით განახლება ყველა აქტიური კონტენტით
               </p>
             </div>
             <Button 
@@ -92,7 +92,7 @@ const SitemapManagement = () => {
               ) : (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Sitemap-ის განახლება
+                  Sitemap ფაილების განახლება
                 </>
               )}
             </Button>
@@ -151,9 +151,10 @@ const SitemapManagement = () => {
           </h3>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Database trigger-ები ავტომატურად განაახლებენ sitemap-ს</li>
-            <li>• Sitemap ფაილი ხელმისაწვდომია: /sitemap.xml</li>
+            <li>• Sitemap ფაილები: /sitemap.xml და /sitemap-index.xml</li>
             <li>• Google Search Console-ისთვის ოპტიმიზებული</li>
-            <li>• ყველა აქტიური კონტენტი ირიცხება</li>
+            <li>• ყველა აქტიური კონტენტი ირიცხება ორივე ფაილში</li>
+            <li>• sitemap-index.xml მიუთითებს მთავარ sitemap.xml ფაილზე</li>
           </ul>
         </div>
       </CardContent>
