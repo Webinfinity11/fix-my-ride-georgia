@@ -1,8 +1,11 @@
 import { corsHeaders } from '../_shared/cors.ts';
 
 const DOMAIN = 'https://fixup.ge';
-const MAX_URLS = 1000;
-const TIMEOUT = 10000;
+const MAX_URLS = 2000;
+const MIN_URLS_TARGET = 100;
+const MAX_DEPTH = 4;
+const TIMEOUT = 15000;
+const CONCURRENT_REQUESTS = 5;
 
 interface CrawlResult {
   url: string;
@@ -10,6 +13,14 @@ interface CrawlResult {
   status: number;
   redirectCount: number;
   lastmod: string;
+  depth: number;
+  contentType?: string;
+}
+
+interface UrlQueueItem {
+  url: string;
+  depth: number;
+  source: string;
 }
 
 interface CrawlProgress {
@@ -17,6 +28,7 @@ interface CrawlProgress {
   processed: number;
   valid: number;
   redirectsResolved: number;
+  currentDepth: number;
   status: string;
 }
 
@@ -27,28 +39,64 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('Starting dynamic website crawl...');
+    console.log('Starting comprehensive deep crawl...');
     
-    const discoveredUrls = new Set<string>();
+    const discoveredUrls = new Map<string, number>(); // URL -> depth
     const processedUrls = new Set<string>();
     const validUrls = new Map<string, CrawlResult>();
-    const urlQueue: string[] = [DOMAIN];
+    const urlQueue: UrlQueueItem[] = [];
     
-    // Add initial known routes
-    const staticRoutes = [
-      '',
-      '/services',
-      '/mechanics', 
-      '/search',
-      '/about',
-      '/contact',
-      '/laundries'
+    // Comprehensive seed URLs
+    const seedUrls = [
+      // Main pages
+      { url: DOMAIN, depth: 0, source: 'seed' },
+      { url: `${DOMAIN}/services`, depth: 0, source: 'seed' },
+      { url: `${DOMAIN}/mechanics`, depth: 0, source: 'seed' },
+      { url: `${DOMAIN}/search`, depth: 0, source: 'seed' },
+      { url: `${DOMAIN}/about`, depth: 0, source: 'seed' },
+      { url: `${DOMAIN}/contact`, depth: 0, source: 'seed' },
+      { url: `${DOMAIN}/laundries`, depth: 0, source: 'seed' },
+      // Discover API endpoints and potential routes
+      { url: `${DOMAIN}/sitemap.xml`, depth: 0, source: 'seed' },
+      { url: `${DOMAIN}/robots.txt`, depth: 0, source: 'seed' },
     ];
-    
-    staticRoutes.forEach(route => {
-      const fullUrl = DOMAIN + route;
-      discoveredUrls.add(fullUrl);
-      urlQueue.push(fullUrl);
+
+    // Add search pattern URLs
+    const searchPatterns = [
+      '/services?category=',
+      '/services?search=',
+      '/mechanics?city=',
+      '/mechanics?specialization=',
+      '/search?q=',
+      '/search?type=service',
+      '/search?type=mechanic',
+    ];
+
+    const commonSearchTerms = [
+      'ავტო', 'სერვისი', 'შეკეთება', 'ძრავა', 'ფრენები', 'ზეთი', 'ბატარეა',
+      'მექანიკი', 'ელექტრო', 'კონდიციონერი', 'შუშა', 'საღებავი'
+    ];
+
+    // Generate search URLs
+    searchPatterns.forEach(pattern => {
+      commonSearchTerms.forEach(term => {
+        const searchUrl = `${DOMAIN}${pattern}${encodeURIComponent(term)}`;
+        seedUrls.push({ url: searchUrl, depth: 1, source: 'search-pattern' });
+      });
+    });
+
+    // Add pagination patterns
+    for (let page = 1; page <= 10; page++) {
+      seedUrls.push({ url: `${DOMAIN}/services?page=${page}`, depth: 1, source: 'pagination' });
+      seedUrls.push({ url: `${DOMAIN}/mechanics?page=${page}`, depth: 1, source: 'pagination' });
+    }
+
+    // Initialize queue
+    seedUrls.forEach(item => {
+      if (!discoveredUrls.has(item.url)) {
+        discoveredUrls.set(item.url, item.depth);
+        urlQueue.push(item);
+      }
     });
 
     let progress: CrawlProgress = {
@@ -56,56 +104,97 @@ Deno.serve(async (req) => {
       processed: 0,
       valid: 0,
       redirectsResolved: 0,
-      status: 'Starting crawl...'
+      currentDepth: 0,
+      status: 'Starting comprehensive crawl...'
     };
 
     console.log(`Initial queue: ${urlQueue.length} URLs`);
 
-    // Process URLs from queue
+    // Process URLs from queue with depth-first approach
     while (urlQueue.length > 0 && processedUrls.size < MAX_URLS) {
-      const currentUrl = urlQueue.shift()!;
-      
-      if (processedUrls.has(currentUrl)) continue;
-      processedUrls.add(currentUrl);
+      // Process in batches for efficiency
+      const batch = urlQueue.splice(0, CONCURRENT_REQUESTS);
+      const promises = batch.map(async (item) => {
+        if (processedUrls.has(item.url)) return null;
+        processedUrls.add(item.url);
 
-      progress.processed = processedUrls.size;
-      progress.status = `Processing: ${currentUrl}`;
-      console.log(`Processing ${processedUrls.size}/${discoveredUrls.size}: ${currentUrl}`);
-
-      try {
-        const result = await crawlUrl(currentUrl);
+        progress.processed = processedUrls.size;
+        progress.currentDepth = item.depth;
+        progress.status = `Processing depth ${item.depth}: ${item.url}`;
         
-        if (result && result.status === 200) {
-          validUrls.set(result.finalUrl, result);
-          progress.valid = validUrls.size;
-          
-          if (result.redirectCount > 0) {
-            progress.redirectsResolved++;
-          }
+        console.log(`Processing ${processedUrls.size}/${discoveredUrls.size} (depth ${item.depth}): ${item.url}`);
 
-          // Extract more URLs from HTML content
-          const newUrls = await extractUrlsFromContent(result.finalUrl);
-          newUrls.forEach(url => {
-            if (!discoveredUrls.has(url) && isInternalUrl(url)) {
-              discoveredUrls.add(url);
-              urlQueue.push(url);
+        try {
+          const result = await crawlUrl(item.url, item.depth);
+          
+          if (result && result.status === 200) {
+            validUrls.set(result.finalUrl, result);
+            progress.valid = validUrls.size;
+            
+            if (result.redirectCount > 0) {
+              progress.redirectsResolved++;
             }
-          });
-          
-          progress.discovered = discoveredUrls.size;
-        }
-      } catch (error) {
-        console.log(`Failed to process ${currentUrl}: ${error.message}`);
-      }
 
-      // Small delay to prevent overwhelming the server
-      await new Promise(resolve => setTimeout(resolve, 100));
+            // Continue crawling deeper if within depth limit
+            if (item.depth < MAX_DEPTH) {
+              const newUrls = await extractUrlsFromContent(result.finalUrl, item.depth + 1);
+              
+              // Add discovered URLs to queue
+              newUrls.forEach(newItem => {
+                const existingDepth = discoveredUrls.get(newItem.url);
+                if (!existingDepth || existingDepth > newItem.depth) {
+                  discoveredUrls.set(newItem.url, newItem.depth);
+                  if (!processedUrls.has(newItem.url)) {
+                    urlQueue.push(newItem);
+                  }
+                }
+              });
+              
+              progress.discovered = discoveredUrls.size;
+            }
+
+            return result;
+          }
+        } catch (error) {
+          console.log(`Failed to process ${item.url}: ${error.message}`);
+        }
+        return null;
+      });
+
+      await Promise.all(promises);
+
+      // Small delay between batches
+      await new Promise(resolve => setTimeout(resolve, 200));
     }
 
-    progress.status = 'Generating sitemap...';
-    console.log(`Crawl complete. Found ${validUrls.size} valid URLs`);
+    // If we haven't reached our target, try pattern-based discovery
+    if (validUrls.size < MIN_URLS_TARGET) {
+      console.log(`Only found ${validUrls.size} URLs, attempting pattern discovery...`);
+      progress.status = 'Attempting pattern-based discovery...';
+      
+      const patternUrls = await discoverUrlPatterns(validUrls);
+      
+      for (const patternUrl of patternUrls) {
+        if (processedUrls.size >= MAX_URLS) break;
+        if (processedUrls.has(patternUrl)) continue;
+        
+        processedUrls.add(patternUrl);
+        try {
+          const result = await crawlUrl(patternUrl, MAX_DEPTH);
+          if (result && result.status === 200) {
+            validUrls.set(result.finalUrl, result);
+            progress.valid = validUrls.size;
+          }
+        } catch (error) {
+          console.log(`Pattern discovery failed for ${patternUrl}: ${error.message}`);
+        }
+      }
+    }
 
-    // Generate sitemap XML
+    progress.status = 'Analyzing discovered content...';
+    console.log(`Crawl complete. Found ${validUrls.size} valid URLs across ${Math.max(...Array.from(discoveredUrls.values())) + 1} depth levels`);
+
+    // Generate comprehensive sitemap
     const sitemap = generateSitemapXml(Array.from(validUrls.values()));
     const sitemapIndex = generateSitemapIndexXml();
 
@@ -143,15 +232,20 @@ Deno.serve(async (req) => {
 
     progress.status = 'Complete';
 
+    const depthStats = analyzeDepthDistribution(Array.from(validUrls.values()));
+    const contentStats = analyzeContentTypes(Array.from(validUrls.values()));
+
     const breakdown = {
-      static: staticRoutes.length,
       discovered: discoveredUrls.size,
       processed: processedUrls.size,
       valid: validUrls.size,
-      redirectsResolved: progress.redirectsResolved
+      redirectsResolved: progress.redirectsResolved,
+      maxDepth: Math.max(...Array.from(discoveredUrls.values())),
+      depthDistribution: depthStats,
+      contentTypes: contentStats
     };
 
-    console.log('Sitemap generation complete:', breakdown);
+    console.log('Comprehensive sitemap generation complete:', breakdown);
 
     return new Response(JSON.stringify({
       success: true,
@@ -163,7 +257,7 @@ Deno.serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Error in crawl-sitemap:', error);
+    console.error('Error in comprehensive crawl-sitemap:', error);
     return new Response(JSON.stringify({
       success: false,
       error: error.message
@@ -174,24 +268,21 @@ Deno.serve(async (req) => {
   }
 });
 
-async function crawlUrl(url: string): Promise<CrawlResult | null> {
+async function crawlUrl(url: string, depth: number): Promise<CrawlResult | null> {
   try {
-    // Add cache busting parameter
-    const urlWithTimestamp = new URL(url);
-    urlWithTimestamp.searchParams.set('t', Date.now().toString());
-    
     let redirectCount = 0;
     let currentUrl = url;
     let finalResponse: Response;
 
     // Manual redirect following to count redirects
-    while (redirectCount < 10) { // Prevent infinite redirects
+    while (redirectCount < 10) {
       const response = await fetch(currentUrl, {
         method: 'HEAD',
         redirect: 'manual',
         signal: AbortSignal.timeout(TIMEOUT),
         headers: {
-          'User-Agent': 'FixUp-Sitemap-Crawler/1.0'
+          'User-Agent': 'FixUp-Deep-Crawler/2.0',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
         }
       });
 
@@ -224,18 +315,16 @@ async function crawlUrl(url: string): Promise<CrawlResult | null> {
       return null;
     }
 
-    // Verify it's HTML content
     const contentType = finalResponse.headers.get('content-type') || '';
-    if (!contentType.includes('text/html')) {
-      return null;
-    }
 
     return {
       url,
       finalUrl: currentUrl,
       status: finalResponse.status,
       redirectCount,
-      lastmod: new Date().toISOString().split('T')[0]
+      lastmod: new Date().toISOString().split('T')[0],
+      depth,
+      contentType
     };
 
   } catch (error) {
@@ -244,29 +333,31 @@ async function crawlUrl(url: string): Promise<CrawlResult | null> {
   }
 }
 
-async function extractUrlsFromContent(url: string): Promise<string[]> {
+async function extractUrlsFromContent(url: string, depth: number): Promise<UrlQueueItem[]> {
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(TIMEOUT),
       headers: {
-        'User-Agent': 'FixUp-Sitemap-Crawler/1.0'
+        'User-Agent': 'FixUp-Deep-Crawler/2.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
       }
     });
 
     if (!response.ok) return [];
 
     const html = await response.text();
-    const urls = new Set<string>();
+    const discoveredUrls: UrlQueueItem[] = [];
 
     // Extract all href attributes
     const hrefMatches = html.matchAll(/href\s*=\s*["']([^"']+)["']/gi);
     for (const match of hrefMatches) {
       const href = match[1];
-      if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+      if (href && !href.startsWith('#') && !href.startsWith('mailto:') && 
+          !href.startsWith('tel:') && !href.startsWith('javascript:')) {
         try {
           const fullUrl = new URL(href, url).href;
           if (isInternalUrl(fullUrl) && isValidPageUrl(fullUrl)) {
-            urls.add(fullUrl);
+            discoveredUrls.push({ url: fullUrl, depth, source: 'href-extraction' });
           }
         } catch (e) {
           // Invalid URL, skip
@@ -274,11 +365,140 @@ async function extractUrlsFromContent(url: string): Promise<string[]> {
       }
     }
 
-    return Array.from(urls);
+    // Extract JavaScript-generated URLs
+    const jsUrlMatches = html.matchAll(/['"`](\/[^'"`\s<>]*?)['"`]/g);
+    for (const match of jsUrlMatches) {
+      const path = match[1];
+      if (path && path.length > 1 && !path.includes('.')) {
+        try {
+          const fullUrl = new URL(path, DOMAIN).href;
+          if (isInternalUrl(fullUrl) && isValidPageUrl(fullUrl)) {
+            discoveredUrls.push({ url: fullUrl, depth, source: 'js-extraction' });
+          }
+        } catch (e) {
+          // Invalid URL, skip
+        }
+      }
+    }
+
+    // Extract data attributes that might contain URLs
+    const dataUrlMatches = html.matchAll(/data-[^=]*=\s*["']([^"']*\/[^"']*)["']/gi);
+    for (const match of dataUrlMatches) {
+      const dataUrl = match[1];
+      if (dataUrl && dataUrl.startsWith('/')) {
+        try {
+          const fullUrl = new URL(dataUrl, DOMAIN).href;
+          if (isInternalUrl(fullUrl) && isValidPageUrl(fullUrl)) {
+            discoveredUrls.push({ url: fullUrl, depth, source: 'data-attribute' });
+          }
+        } catch (e) {
+          // Invalid URL, skip
+        }
+      }
+    }
+
+    // Look for pagination patterns
+    const paginationMatches = html.matchAll(/(?:page|გვერდი)\s*[=:]\s*(\d+)/gi);
+    const currentPageMatch = url.match(/[?&]page=(\d+)/);
+    const currentPage = currentPageMatch ? parseInt(currentPageMatch[1]) : 1;
+    
+    // Generate pagination URLs
+    for (let page = 1; page <= Math.min(currentPage + 5, 20); page++) {
+      if (page !== currentPage) {
+        const baseUrl = url.split('?')[0];
+        const paginationUrl = `${baseUrl}?page=${page}`;
+        discoveredUrls.push({ url: paginationUrl, depth, source: 'pagination-discovery' });
+      }
+    }
+
+    // Extract API endpoints from JavaScript
+    const apiMatches = html.matchAll(/['"`](\/api\/[^'"`\s]*?)['"`]/g);
+    for (const match of apiMatches) {
+      const apiPath = match[1];
+      try {
+        const apiUrl = new URL(apiPath, DOMAIN).href;
+        if (isInternalUrl(apiUrl)) {
+          discoveredUrls.push({ url: apiUrl, depth: depth + 1, source: 'api-discovery' });
+        }
+      } catch (e) {
+        // Invalid URL, skip
+      }
+    }
+
+    console.log(`Extracted ${discoveredUrls.length} URLs from ${url} at depth ${depth}`);
+    return discoveredUrls;
+
   } catch (error) {
     console.log(`Error extracting URLs from ${url}: ${error.message}`);
     return [];
   }
+}
+
+async function discoverUrlPatterns(validUrls: Map<string, CrawlResult>): Promise<string[]> {
+  const patterns: string[] = [];
+  const existingPaths = new Set<string>();
+  
+  // Analyze existing URLs for patterns
+  validUrls.forEach((result) => {
+    const url = new URL(result.finalUrl);
+    existingPaths.add(url.pathname);
+  });
+
+  // Generate service detail pages based on found patterns
+  const serviceMatches = Array.from(existingPaths).filter(path => path.includes('/service/'));
+  serviceMatches.forEach(path => {
+    const match = path.match(/\/service\/(\d+)/);
+    if (match) {
+      const serviceId = parseInt(match[1]);
+      // Generate similar service IDs
+      for (let i = Math.max(1, serviceId - 10); i <= serviceId + 50; i++) {
+        patterns.push(`${DOMAIN}/service/${i}`);
+      }
+    }
+  });
+
+  // Generate mechanic profile pages
+  const mechanicMatches = Array.from(existingPaths).filter(path => path.includes('/mechanic/'));
+  mechanicMatches.forEach(path => {
+    const match = path.match(/\/mechanic\/([^/]+)/);
+    if (match) {
+      // Try variations of mechanic IDs
+      for (let i = 1; i <= 100; i++) {
+        patterns.push(`${DOMAIN}/mechanic/${i}`);
+      }
+    }
+  });
+
+  // Generate category pages
+  const categories = [
+    'auto-service', 'engine-repair', 'brake-service', 'oil-change',
+    'tire-service', 'electrical', 'body-work', 'diagnostics'
+  ];
+  
+  categories.forEach(category => {
+    patterns.push(`${DOMAIN}/services/category/${category}`);
+    patterns.push(`${DOMAIN}/category/${category}`);
+  });
+
+  console.log(`Generated ${patterns.length} pattern-based URLs for discovery`);
+  return patterns.slice(0, 200); // Limit pattern discovery
+}
+
+function analyzeDepthDistribution(results: CrawlResult[]): Record<number, number> {
+  const distribution: Record<number, number> = {};
+  results.forEach(result => {
+    distribution[result.depth] = (distribution[result.depth] || 0) + 1;
+  });
+  return distribution;
+}
+
+function analyzeContentTypes(results: CrawlResult[]): Record<string, number> {
+  const types: Record<string, number> = {};
+  results.forEach(result => {
+    const type = result.contentType?.split(';')[0] || 'unknown';
+    types[type] = (types[type] || 0) + 1;
+  });
+  return types;
 }
 
 function isInternalUrl(url: string): boolean {
@@ -296,18 +516,28 @@ function isValidPageUrl(url: string): boolean {
     const path = urlObj.pathname.toLowerCase();
     
     // Exclude file extensions
-    if (path.match(/\.(css|js|jpg|jpeg|png|gif|svg|pdf|zip|xml|json|ico|woff|woff2|ttf|eot)$/i)) {
+    if (path.match(/\.(css|js|jpg|jpeg|png|gif|svg|pdf|zip|json|ico|woff|woff2|ttf|eot|mp4|mp3|webp)$/i)) {
       return false;
     }
     
-    // Exclude admin/private pages
-    if (path.includes('/admin') || path.includes('/login') || path.includes('/register') || 
-        path.includes('/dashboard') || path.includes('/api/') || path.includes('/_')) {
+    // Allow certain admin paths for comprehensive discovery but exclude sensitive ones
+    if (path.includes('/dashboard') || path.includes('/login') || path.includes('/register') || 
+        path.includes('/_') || path.includes('/admin/users') || path.includes('/admin/settings')) {
       return false;
+    }
+    
+    // Allow API endpoints for discovery
+    if (path.startsWith('/api/')) {
+      return true;
     }
     
     // Remove fragment-only URLs
     if (urlObj.hash && !urlObj.pathname.replace('/', '')) {
+      return false;
+    }
+
+    // Exclude very long URLs (likely invalid)
+    if (url.length > 2000) {
       return false;
     }
     
@@ -325,7 +555,12 @@ function generateSitemapXml(results: CrawlResult[]): string {
   results.sort((a, b) => a.finalUrl.localeCompare(b.finalUrl));
   
   for (const result of results) {
-    const priority = calculatePriority(result.finalUrl);
+    // Only include HTML pages in sitemap
+    if (result.contentType && !result.contentType.includes('text/html')) {
+      continue;
+    }
+
+    const priority = calculatePriority(result.finalUrl, result.depth);
     const changefreq = calculateChangeFreq(result.finalUrl);
     
     xml += '  <url>\n';
@@ -352,16 +587,26 @@ function generateSitemapIndexXml(): string {
 </sitemapindex>`;
 }
 
-function calculatePriority(url: string): string {
-  const path = new URL(url).pathname;
+function calculatePriority(url: string, depth: number): string {
+  const urlObj = new URL(url);
+  const path = urlObj.pathname;
   
-  if (path === '/' || path === '') return '1.0';
-  if (path === '/services' || path === '/mechanics') return '0.9';
-  if (path === '/search' || path === '/laundries') return '0.8';
-  if (path.startsWith('/service/') || path.startsWith('/mechanic/')) return '0.8';
-  if (path === '/about' || path === '/contact') return '0.6';
+  // Base priority calculation
+  let priority = 1.0;
   
-  return '0.5';
+  if (path === '/' || path === '') priority = 1.0;
+  else if (path === '/services' || path === '/mechanics') priority = 0.9;
+  else if (path === '/search' || path === '/laundries') priority = 0.8;
+  else if (path.startsWith('/service/') || path.startsWith('/mechanic/')) priority = 0.8;
+  else if (path.includes('/category/')) priority = 0.7;
+  else if (path === '/about' || path === '/contact') priority = 0.6;
+  else priority = 0.5;
+  
+  // Reduce priority based on depth
+  const depthPenalty = depth * 0.1;
+  priority = Math.max(0.1, priority - depthPenalty);
+  
+  return priority.toFixed(1);
 }
 
 function calculateChangeFreq(url: string): string {
@@ -370,6 +615,7 @@ function calculateChangeFreq(url: string): string {
   if (path === '/' || path === '') return 'daily';
   if (path === '/services' || path === '/mechanics' || path === '/search') return 'daily';
   if (path.startsWith('/service/') || path.startsWith('/mechanic/')) return 'weekly';
+  if (path.includes('/category/')) return 'weekly';
   if (path === '/about' || path === '/contact') return 'monthly';
   
   return 'weekly';

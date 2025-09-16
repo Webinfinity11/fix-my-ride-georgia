@@ -16,7 +16,10 @@ const SitemapManagement = () => {
     discovered: 0,
     processed: 0,
     valid: 0,
-    redirectsResolved: 0
+    redirectsResolved: 0,
+    maxDepth: 0,
+    depthDistribution: {} as Record<number, number>,
+    contentTypes: {} as Record<string, number>
   });
 
   const handleUpdateSitemap = async () => {
@@ -40,7 +43,10 @@ const SitemapManagement = () => {
           discovered: data.breakdown.discovered,
           processed: data.breakdown.processed,
           valid: data.breakdown.valid,
-          redirectsResolved: data.breakdown.redirectsResolved
+          redirectsResolved: data.breakdown.redirectsResolved,
+          maxDepth: data.breakdown.maxDepth || 0,
+          depthDistribution: data.breakdown.depthDistribution || {},
+          contentTypes: data.breakdown.contentTypes || {}
         });
         setLastUpdate(new Date().toLocaleString('ka-GE'));
         setCrawlProgress('');
@@ -178,6 +184,10 @@ const SitemapManagement = () => {
                   <span>დამუშავებული:</span>
                   <Badge variant="secondary">{sitemapStats.processed}</Badge>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span>მაქსიმალური სიღრმე:</span>
+                  <Badge variant="secondary">{sitemapStats.maxDepth}</Badge>
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -189,8 +199,26 @@ const SitemapManagement = () => {
                   <span>Redirects გადაწყვეტილი:</span>
                   <Badge variant="secondary">{sitemapStats.redirectsResolved}</Badge>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span>HTML გვერდები:</span>
+                  <Badge variant="secondary">{sitemapStats.contentTypes['text/html'] || 0}</Badge>
+                </div>
               </div>
             </div>
+
+            {Object.keys(sitemapStats.depthDistribution).length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">სიღრმის განაწილება:</h4>
+                <div className="grid grid-cols-4 gap-2">
+                  {Object.entries(sitemapStats.depthDistribution).map(([depth, count]) => (
+                    <div key={depth} className="flex justify-between text-xs bg-muted p-2 rounded">
+                      <span>Lvl {depth}:</span>
+                      <span>{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
           <div className="flex justify-between items-center pt-2 border-t">
             <span className="font-medium">სულ ლინკები:</span>
