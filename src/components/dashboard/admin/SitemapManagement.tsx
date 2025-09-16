@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { RefreshCw, Globe, CheckCircle, AlertCircle } from "lucide-react";
+import { RefreshCw, Globe, CheckCircle, AlertCircle, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -47,6 +47,39 @@ const SitemapManagement = () => {
     }
   };
 
+  const handleDownloadSitemap = async () => {
+    try {
+      const { data: { publicUrl } } = supabase.storage
+        .from('service-photos')
+        .getPublicUrl('sitemap.xml');
+
+      const response = await fetch(publicUrl);
+      
+      if (!response.ok) {
+        toast.error('Sitemap ფაილი ვერ მოიძებნა. პირველად განაახლეთ');
+        return;
+      }
+
+      const xmlContent = await response.text();
+      
+      // Create and download the file
+      const blob = new Blob([xmlContent], { type: 'application/xml' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sitemap-${new Date().toISOString().split('T')[0]}.xml`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Sitemap ფაილი წარმატებით გადმოწერილია');
+    } catch (error) {
+      console.error('Error downloading sitemap:', error);
+      toast.error('Sitemap ფაილის გადმოწერა ვერ მოხერხდა');
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -79,23 +112,33 @@ const SitemapManagement = () => {
                 Sitemap ფაილების (sitemap.xml და sitemap-index.xml) ხელით განახლება ყველა აქტიური კონტენტით
               </p>
             </div>
-            <Button 
-              onClick={handleUpdateSitemap}
-              disabled={isUpdating}
-              size="sm"
-            >
-              {isUpdating ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  განახლება...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Sitemap ფაილების განახლება
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleDownloadSitemap}
+                variant="outline"
+                size="sm"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                გადმოწერა
+              </Button>
+              <Button 
+                onClick={handleUpdateSitemap}
+                disabled={isUpdating}
+                size="sm"
+              >
+                {isUpdating ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    განახლება...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    განახლება
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
           {lastUpdate && (
