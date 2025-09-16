@@ -10,19 +10,21 @@ import { toast } from "sonner";
 const SitemapManagement = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
+  const [crawlProgress, setCrawlProgress] = useState<string>('');
   const [sitemapStats, setSitemapStats] = useState({
     totalUrls: 0,
-    static: 0,
-    services: 0,
-    categories: 0,
-    mechanics: 0
+    discovered: 0,
+    processed: 0,
+    valid: 0,
+    redirectsResolved: 0
   });
 
   const handleUpdateSitemap = async () => {
     setIsUpdating(true);
+    setCrawlProgress('Starting website crawl...');
     
     try {
-      const { data, error } = await supabase.functions.invoke('generate-sitemap', {
+      const { data, error } = await supabase.functions.invoke('crawl-sitemap', {
         body: { trigger: 'manual_admin' }
       });
 
@@ -33,9 +35,16 @@ const SitemapManagement = () => {
       }
 
       if (data.success) {
-        setSitemapStats(data.breakdown);
+        setSitemapStats({
+          totalUrls: data.totalUrls,
+          discovered: data.breakdown.discovered,
+          processed: data.breakdown.processed,
+          valid: data.breakdown.valid,
+          redirectsResolved: data.breakdown.redirectsResolved
+        });
         setLastUpdate(new Date().toLocaleString('ka-GE'));
-        toast.success(`Sitemap ფაილები წარმატებით განახლდა! sitemap.xml (${data.totalUrls} ლინკი) და sitemap-index.xml`);
+        setCrawlProgress('');
+        toast.success(`Sitemap წარმატებით განახლდა! ${data.totalUrls} ვალიდური URL დამუშავდა (${data.breakdown.redirectsResolved} redirect გადაწყდა)`);
       } else {
         toast.error('Sitemap განახლება ვერ მოხერხდა');
       }
@@ -44,6 +53,7 @@ const SitemapManagement = () => {
       toast.error('Sitemap განახლება ვერ მოხერხდა');
     } finally {
       setIsUpdating(false);
+      setCrawlProgress('');
     }
   };
 
@@ -105,13 +115,18 @@ const SitemapManagement = () => {
         <Separator />
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">მანუალური განახლება</h3>
-              <p className="text-sm text-muted-foreground">
-                Sitemap ფაილების (sitemap.xml და sitemap-index.xml) ხელით განახლება ყველა აქტიური კონტენტით
-              </p>
-            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium">მანუალური განახლება</h3>
+                <p className="text-sm text-muted-foreground">
+                  ვებსაიტის დინამიური crawling და redirect resolution - მხოლოდ საბოლოო, მუშა URLs-ები
+                </p>
+                {crawlProgress && (
+                  <p className="text-xs text-primary mt-1 animate-pulse">
+                    {crawlProgress}
+                  </p>
+                )}
+              </div>
             <div className="flex gap-2">
               <Button 
                 onClick={handleDownloadSitemap}
@@ -153,29 +168,29 @@ const SitemapManagement = () => {
         <div className="space-y-3">
           <h3 className="font-medium">Sitemap სტატისტიკა</h3>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>სტატიკური გვერდები:</span>
-                <Badge variant="secondary">{sitemapStats.static}</Badge>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>აღმოჩენილი URLs:</span>
+                  <Badge variant="secondary">{sitemapStats.discovered}</Badge>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>დამუშავებული:</span>
+                  <Badge variant="secondary">{sitemapStats.processed}</Badge>
+                </div>
               </div>
-              <div className="flex justify-between text-sm">
-                <span>სერვისები:</span>
-                <Badge variant="secondary">{sitemapStats.services}</Badge>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>ვალიდური URLs:</span>
+                  <Badge variant="secondary">{sitemapStats.valid}</Badge>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Redirects გადაწყვეტილი:</span>
+                  <Badge variant="secondary">{sitemapStats.redirectsResolved}</Badge>
+                </div>
               </div>
             </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>კატეგორიები:</span>
-                <Badge variant="secondary">{sitemapStats.categories}</Badge>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>მექანიკოსები:</span>
-                <Badge variant="secondary">{sitemapStats.mechanics}</Badge>
-              </div>
-            </div>
-          </div>
 
           <div className="flex justify-between items-center pt-2 border-t">
             <span className="font-medium">სულ ლინკები:</span>
@@ -193,11 +208,12 @@ const SitemapManagement = () => {
             ინფორმაცია
           </h3>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• Database trigger-ები ავტომატურად განაახლებენ sitemap-ს</li>
+            <li>• დინამიური website crawling რეალურ დროში</li>
+            <li>• ყველა redirect-ის (301, 302, 307, 308) გადაწყვეტა საბოლოო URL-მდე</li>
+            <li>• მხოლოდ მუშა, ვალიდური URLs-ები (200 status)</li>
+            <li>• დუბლიკატების და external links-ების ავტომატური გაფილტვრა</li>
             <li>• <a href="/sitemap.xml" target="_blank" className="text-primary hover:underline">Live sitemap: /sitemap.xml</a> (ავტომატურად განახლდება)</li>
             <li>• Google Search Console-ისთვის ოპტიმიზებული</li>
-            <li>• ყველა აქტიური კონტენტი ირიცხება ავტომატურად</li>
-            <li>• ღილაკის დაწკაპუნებით ხდება სრული განახლება</li>
           </ul>
         </div>
       </CardContent>
