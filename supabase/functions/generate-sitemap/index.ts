@@ -6,20 +6,42 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Georgian to Latin transliteration for consistent slug generation
+const georgianToLatin = (text: string): string => {
+  if (!text) return '';
+  
+  const mapping: { [key: string]: string } = {
+    'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
+    'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh',
+    'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'f', 'ქ': 'q', 'ღ': 'gh', 'ყ': 'q',
+    'შ': 'sh', 'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh', 'ჯ': 'j', 'ჰ': 'h'
+  };
+  
+  return text
+    .toLowerCase()
+    .split('')
+    .map(char => mapping[char] || char)
+    .join('')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    console.log('Starting sitemap generation...')
+    console.log('Generating focused sitemap with real URLs only...')
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Fetch all active services
+    // Fetch all active services with proper slug data
     const { data: services, error: servicesError } = await supabase
       .from('mechanic_services')
       .select('id, name, slug, updated_at')
@@ -31,7 +53,7 @@ serve(async (req) => {
       throw servicesError
     }
 
-    // Fetch all categories
+    // Fetch all categories for category pages
     const { data: categories, error: categoriesError } = await supabase
       .from('service_categories')
       .select('id, name')
@@ -42,25 +64,26 @@ serve(async (req) => {
       throw categoriesError
     }
 
-    // Fetch all verified mechanics
+    // Fetch verified mechanics with display_id for proper URLs  
     const { data: mechanics, error: mechanicsError } = await supabase
-      .from('profiles')
-      .select('id, first_name, last_name, updated_at')
-      .eq('role', 'mechanic')
-      .eq('is_verified', true)
-      .order('first_name')
+      .from('mechanic_profiles')
+      .select('id, display_id')
+      .inner('profiles', 'id', 'id')
+      .eq('profiles.role', 'mechanic')
+      .eq('profiles.is_verified', true)
+      .order('display_id')
 
     if (mechanicsError) {
       console.error('Error fetching mechanics:', mechanicsError) 
       throw mechanicsError
     }
 
-    // Generate sitemap XML
+    // Generate sitemap XML with real, indexable URLs only
     const currentDate = new Date().toISOString().split('T')[0]
     
     let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Static pages -->
+  <!-- Static pages matching App.tsx routes -->
   <url>
     <loc>https://fixup.ge/</loc>
     <lastmod>${currentDate}</lastmod>
@@ -74,7 +97,7 @@ serve(async (req) => {
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://fixup.ge/mechanics</loc>
+    <loc>https://fixup.ge/mechanic</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -89,25 +112,44 @@ serve(async (req) => {
     <loc>https://fixup.ge/about</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://fixup.ge/contact</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/map</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://fixup.ge/laundries</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/category</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 
-  <!-- Service pages -->`
+  <!-- Real service pages with proper slugs -->`
 
-    // Add all services
+    // Add real service pages - only services that exist
     services?.forEach(service => {
-      const slug = service.slug || `${service.id}-${service.name.toLowerCase().replace(/\s+/g, '-')}`
+      const slug = service.slug || georgianToLatin(service.name)
+      const serviceUrl = slug ? `${service.id}-${slug}` : service.id
       const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate
       
       sitemapXml += `
   <url>
-    <loc>https://fixup.ge/service/${service.id}-${slug}</loc>
+    <loc>https://fixup.ge/service/${serviceUrl}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -116,63 +158,46 @@ serve(async (req) => {
 
     sitemapXml += `
 
-  <!-- Category pages -->`
+  <!-- Real category pages -->`
 
-    // Add all categories
+    // Add category pages that match actual categories
     categories?.forEach(category => {
-      const categorySlug = category.name.toLowerCase()
-        .replace(/[ა-ჰ]/g, (char: string) => {
-          const georgianToLatin: { [key: string]: string } = {
-            'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
-            'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh',
-            'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'f', 'ქ': 'q', 'ღ': 'gh', 'ყ': 'q',
-            'შ': 'sh', 'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh', 'ჯ': 'j', 'ჰ': 'h'
-          }
-          return georgianToLatin[char] || char
-        })
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim()
-
+      const categorySlug = georgianToLatin(category.name)
+      
+      // Both routes exist: /category/:slug and /services/:slug
       sitemapXml += `
   <url>
     <loc>https://fixup.ge/category/${categorySlug}</loc>
     <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/services/${categorySlug}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`
     })
 
     sitemapXml += `
 
-  <!-- Mechanic pages -->`
+  <!-- Real mechanic pages -->`
 
-    // Add all mechanics
+    // Add verified mechanic pages using display_id
     mechanics?.forEach(mechanic => {
-      const mechanicSlug = `${mechanic.first_name}-${mechanic.last_name}`.toLowerCase()
-        .replace(/[ა-ჰ]/g, (char: string) => {
-          const georgianToLatin: { [key: string]: string } = {
-            'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
-            'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh',
-            'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'f', 'ქ': 'q', 'ღ': 'gh', 'ყ': 'q',
-            'შ': 'sh', 'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh', 'ჯ': 'j', 'ჰ': 'h'
-          }
-          return georgianToLatin[char] || char
-        })
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim()
-
-      const lastmod = mechanic.updated_at ? new Date(mechanic.updated_at).toISOString().split('T')[0] : currentDate
-
       sitemapXml += `
   <url>
-    <loc>https://fixup.ge/mechanic/${mechanic.id}/${mechanicSlug}</loc>
-    <lastmod>${lastmod}</lastmod>
+    <loc>https://fixup.ge/mechanic/${mechanic.display_id}</loc>
+    <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/book/${mechanic.display_id}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>`
     })
 
@@ -219,22 +244,26 @@ serve(async (req) => {
       throw indexUploadError
     }
 
-    const totalUrls = 6 + (services?.length || 0) + (categories?.length || 0) + (mechanics?.length || 0)
+    const staticUrls = 9 // Updated count for static pages
+    const serviceUrls = services?.length || 0
+    const categoryUrls = (categories?.length || 0) * 2 // Both /category and /services routes
+    const mechanicUrls = (mechanics?.length || 0) * 2 // Both /mechanic and /book routes
+    const totalUrls = staticUrls + serviceUrls + categoryUrls + mechanicUrls
     
-    console.log(`Sitemap files generated successfully:`)
-    console.log(`- sitemap.xml with ${totalUrls} URLs`)
-    console.log(`- sitemap-index.xml updated`)
-    console.log(`Breakdown: ${services?.length || 0} services, ${categories?.length || 0} categories, ${mechanics?.length || 0} mechanics`)
+    console.log(`Focused sitemap generated successfully:`)
+    console.log(`- sitemap.xml with ${totalUrls} real URLs`)
+    console.log(`- Only indexable content included`)
+    console.log(`Breakdown: ${staticUrls} static, ${serviceUrls} services, ${categoryUrls} categories, ${mechanicUrls} mechanics`)
 
     return new Response(JSON.stringify({ 
       success: true, 
       totalUrls,
       lastUpdate: currentDate,
       breakdown: {
-        static: 6,
-        services: services?.length || 0,
-        categories: categories?.length || 0,
-        mechanics: mechanics?.length || 0,
+        static: staticUrls,
+        services: serviceUrls,
+        categories: categoryUrls,
+        mechanics: mechanicUrls,
         totalUrls
       }
     }), {

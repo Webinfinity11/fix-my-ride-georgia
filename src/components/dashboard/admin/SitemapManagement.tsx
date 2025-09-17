@@ -13,21 +13,18 @@ const SitemapManagement = () => {
   const [crawlProgress, setCrawlProgress] = useState<string>('');
   const [sitemapStats, setSitemapStats] = useState({
     totalUrls: 0,
-    discovered: 0,
-    processed: 0,
-    valid: 0,
-    redirectsResolved: 0,
-    maxDepth: 0,
-    depthDistribution: {} as Record<number, number>,
-    contentTypes: {} as Record<string, number>
+    static: 0,
+    services: 0,
+    categories: 0,
+    mechanics: 0
   });
 
   const handleUpdateSitemap = async () => {
     setIsUpdating(true);
-    setCrawlProgress('Starting website crawl...');
+    setCrawlProgress('Starting sitemap generation...');
     
     try {
-      const { data, error } = await supabase.functions.invoke('crawl-sitemap', {
+      const { data, error } = await supabase.functions.invoke('generate-sitemap', {
         body: { trigger: 'manual_admin' }
       });
 
@@ -40,17 +37,14 @@ const SitemapManagement = () => {
       if (data.success) {
         setSitemapStats({
           totalUrls: data.totalUrls,
-          discovered: data.breakdown.discovered,
-          processed: data.breakdown.processed,
-          valid: data.breakdown.valid,
-          redirectsResolved: data.breakdown.redirectsResolved,
-          maxDepth: data.breakdown.maxDepth || 0,
-          depthDistribution: data.breakdown.depthDistribution || {},
-          contentTypes: data.breakdown.contentTypes || {}
+          static: data.breakdown.static,
+          services: data.breakdown.services,
+          categories: data.breakdown.categories,
+          mechanics: data.breakdown.mechanics
         });
         setLastUpdate(new Date().toLocaleString('ka-GE'));
         setCrawlProgress('');
-        toast.success(`Sitemap წარმატებით განახლდა! ${data.totalUrls} ვალიდური URL დამუშავდა (${data.breakdown.redirectsResolved} redirect გადაწყდა)`);
+        toast.success(`Sitemap წარმატებით განახლდა! ${data.totalUrls} რეალური URL გენერირდა`);
       } else {
         toast.error('Sitemap განახლება ვერ მოხერხდა');
       }
@@ -125,7 +119,7 @@ const SitemapManagement = () => {
               <div>
                 <h3 className="font-medium">მანუალური განახლება</h3>
                 <p className="text-sm text-muted-foreground">
-                  ვებსაიტის დინამიური crawling და redirect resolution - მხოლოდ საბოლოო, მუშა URLs-ები
+                  დათაბეისიდან რეალური სერვისების, კატეგორიებისა და მექანიკოსების მიხედვით - მხოლოდ ინდექსირებადი URLs-ები
                 </p>
                 {crawlProgress && (
                   <p className="text-xs text-primary mt-1 animate-pulse">
@@ -177,48 +171,26 @@ const SitemapManagement = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>აღმოჩენილი URLs:</span>
-                  <Badge variant="secondary">{sitemapStats.discovered}</Badge>
+                  <span>სტატიკური გვერდები:</span>
+                  <Badge variant="secondary">{sitemapStats.static}</Badge>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>დამუშავებული:</span>
-                  <Badge variant="secondary">{sitemapStats.processed}</Badge>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>მაქსიმალური სიღრმე:</span>
-                  <Badge variant="secondary">{sitemapStats.maxDepth}</Badge>
+                  <span>სერვისები:</span>
+                  <Badge variant="secondary">{sitemapStats.services}</Badge>
                 </div>
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>ვალიდური URLs:</span>
-                  <Badge variant="secondary">{sitemapStats.valid}</Badge>
+                  <span>კატეგორიები:</span>
+                  <Badge variant="secondary">{sitemapStats.categories}</Badge>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Redirects გადაწყვეტილი:</span>
-                  <Badge variant="secondary">{sitemapStats.redirectsResolved}</Badge>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>HTML გვერდები:</span>
-                  <Badge variant="secondary">{sitemapStats.contentTypes['text/html'] || 0}</Badge>
+                  <span>მექანიკოსები:</span>
+                  <Badge variant="secondary">{sitemapStats.mechanics}</Badge>
                 </div>
               </div>
             </div>
-
-            {Object.keys(sitemapStats.depthDistribution).length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">სიღრმის განაწილება:</h4>
-                <div className="grid grid-cols-4 gap-2">
-                  {Object.entries(sitemapStats.depthDistribution).map(([depth, count]) => (
-                    <div key={depth} className="flex justify-between text-xs bg-muted p-2 rounded">
-                      <span>Lvl {depth}:</span>
-                      <span>{count}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
           <div className="flex justify-between items-center pt-2 border-t">
             <span className="font-medium">სულ ლინკები:</span>
@@ -236,12 +208,12 @@ const SitemapManagement = () => {
             ინფორმაცია
           </h3>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• დინამიური website crawling რეალურ დროში</li>
-            <li>• ყველა redirect-ის (301, 302, 307, 308) გადაწყვეტა საბოლოო URL-მდე</li>
-            <li>• მხოლოდ მუშა, ვალიდური URLs-ები (200 status)</li>
-            <li>• დუბლიკატების და external links-ების ავტომატური გაფილტვრა</li>
+            <li>• მხოლოდ რეალური, ინდექსირებადი URLs-ები database-იდან</li>
+            <li>• სერვისები, კატეგორიები და მექანიკოსები რომლებიც მართლაც არსებობს</li>
+            <li>• URLs-ები რომელიც იუზერი ხედავს გარედან</li>
+            <li>• საძიებო სისტემებისთვის ოპტიმიზებული</li>
             <li>• <a href="/sitemap.xml" target="_blank" className="text-primary hover:underline">Live sitemap: /sitemap.xml</a> (ავტომატურად განახლდება)</li>
-            <li>• Google Search Console-ისთვის ოპტიმიზებული</li>
+            <li>• Google Search Console-ისთვის მზადაა</li>
           </ul>
         </div>
       </CardContent>
