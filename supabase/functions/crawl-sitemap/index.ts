@@ -46,9 +46,9 @@ Deno.serve(async (req) => {
     const validUrls = new Map<string, CrawlResult>();
     const urlQueue: UrlQueueItem[] = [];
     
-    // Comprehensive seed URLs
+    // Real content seed URLs - only pages with actual content
     const seedUrls = [
-      // Main pages
+      // Main content pages only
       { url: DOMAIN, depth: 0, source: 'seed' },
       { url: `${DOMAIN}/services`, depth: 0, source: 'seed' },
       { url: `${DOMAIN}/mechanics`, depth: 0, source: 'seed' },
@@ -56,9 +56,6 @@ Deno.serve(async (req) => {
       { url: `${DOMAIN}/about`, depth: 0, source: 'seed' },
       { url: `${DOMAIN}/contact`, depth: 0, source: 'seed' },
       { url: `${DOMAIN}/laundries`, depth: 0, source: 'seed' },
-      // Discover API endpoints and potential routes
-      { url: `${DOMAIN}/sitemap.xml`, depth: 0, source: 'seed' },
-      { url: `${DOMAIN}/robots.txt`, depth: 0, source: 'seed' },
     ];
 
     // Add search pattern URLs
@@ -85,8 +82,8 @@ Deno.serve(async (req) => {
       });
     });
 
-    // Add pagination patterns
-    for (let page = 1; page <= 10; page++) {
+    // Add only first few pagination pages - will validate content later
+    for (let page = 1; page <= 3; page++) {
       seedUrls.push({ url: `${DOMAIN}/services?page=${page}`, depth: 1, source: 'pagination' });
       seedUrls.push({ url: `${DOMAIN}/mechanics?page=${page}`, depth: 1, source: 'pagination' });
     }
@@ -128,8 +125,15 @@ Deno.serve(async (req) => {
           const result = await crawlUrl(item.url, item.depth);
           
           if (result && result.status === 200) {
-            validUrls.set(result.finalUrl, result);
-            progress.valid = validUrls.size;
+            // Validate content before adding to valid URLs
+            const hasRealContent = await validatePageContent(result.finalUrl);
+            if (hasRealContent) {
+              validUrls.set(result.finalUrl, result);
+              progress.valid = validUrls.size;
+            } else {
+              console.log(`Filtered out empty/invalid content: ${result.finalUrl}`);
+              continue;
+            }
             
             if (result.redirectCount > 0) {
               progress.redirectsResolved++;
@@ -182,8 +186,12 @@ Deno.serve(async (req) => {
         try {
           const result = await crawlUrl(patternUrl, MAX_DEPTH);
           if (result && result.status === 200) {
-            validUrls.set(result.finalUrl, result);
-            progress.valid = validUrls.size;
+            // Validate content for pattern URLs too
+            const hasRealContent = await validatePageContent(result.finalUrl);
+            if (hasRealContent) {
+              validUrls.set(result.finalUrl, result);
+              progress.valid = validUrls.size;
+            }
           }
         } catch (error) {
           console.log(`Pattern discovery failed for ${patternUrl}: ${error.message}`);
@@ -402,8 +410,9 @@ async function extractUrlsFromContent(url: string, depth: number): Promise<UrlQu
     const currentPageMatch = url.match(/[?&]page=(\d+)/);
     const currentPage = currentPageMatch ? parseInt(currentPageMatch[1]) : 1;
     
-    // Generate pagination URLs
-    for (let page = 1; page <= Math.min(currentPage + 5, 20); page++) {
+    // Generate only a few pagination URLs - content will be validated
+    const maxPages = Math.min(currentPage + 3, 10);
+    for (let page = 1; page <= maxPages; page++) {
       if (page !== currentPage) {
         const baseUrl = url.split('?')[0];
         const paginationUrl = `${baseUrl}?page=${page}`;
@@ -411,19 +420,8 @@ async function extractUrlsFromContent(url: string, depth: number): Promise<UrlQu
       }
     }
 
-    // Extract API endpoints from JavaScript
-    const apiMatches = html.matchAll(/['"`](\/api\/[^'"`\s]*?)['"`]/g);
-    for (const match of apiMatches) {
-      const apiPath = match[1];
-      try {
-        const apiUrl = new URL(apiPath, DOMAIN).href;
-        if (isInternalUrl(apiUrl)) {
-          discoveredUrls.push({ url: apiUrl, depth: depth + 1, source: 'api-discovery' });
-        }
-      } catch (e) {
-        // Invalid URL, skip
-      }
-    }
+    // Skip API endpoints - not user-facing content
+    // Focus only on user-facing content pages
 
     console.log(`Extracted ${discoveredUrls.length} URLs from ${url} at depth ${depth}`);
     return discoveredUrls;
@@ -510,41 +508,110 @@ function isInternalUrl(url: string): boolean {
   }
 }
 
-function isValidPageUrl(url: string): boolean {
+// Validate if page has real content
+async function validatePageContent(url: string): Promise<boolean> {
   try {
-    const urlObj = new URL(url);
-    const path = urlObj.pathname.toLowerCase();
-    
-    // Exclude file extensions
-    if (path.match(/\.(css|js|jpg|jpeg|png|gif|svg|pdf|zip|json|ico|woff|woff2|ttf|eot|mp4|mp3|webp)$/i)) {
-      return false;
-    }
-    
-    // Allow certain admin paths for comprehensive discovery but exclude sensitive ones
-    if (path.includes('/dashboard') || path.includes('/login') || path.includes('/register') || 
-        path.includes('/_') || path.includes('/admin/users') || path.includes('/admin/settings')) {
-      return false;
-    }
-    
-    // Allow API endpoints for discovery
-    if (path.startsWith('/api/')) {
-      return true;
-    }
-    
-    // Remove fragment-only URLs
-    if (urlObj.hash && !urlObj.pathname.replace('/', '')) {
+    // Skip validation for static files and non-HTML content
+    if (!isValidPageUrl(url)) {
       return false;
     }
 
-    // Exclude very long URLs (likely invalid)
-    if (url.length > 2000) {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(TIMEOUT),
+      headers: {
+        'User-Agent': 'FixUp-Content-Validator/1.0',
+        'Accept': 'text/html,application/xhtml+xml'
+      }
+    });
+
+    if (!response.ok) return false;
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('text/html')) {
       return false;
     }
+
+    const html = await response.text();
     
-    return true;
-  } catch {
+    // Check for real content indicators
+    const hasTitle = /<title[^>]*>([^<]+)<\/title>/i.test(html) && 
+                    !html.includes('<title></title>') &&
+                    !html.includes('<title>404') &&
+                    !html.includes('<title>Not Found');
+    
+    // Check for main content elements
+    const hasContent = html.includes('<main') || 
+                      html.includes('class="content') ||
+                      html.includes('id="content') ||
+                      html.length > 5000; // Substantial content
+    
+    // Check for specific FixUp content patterns
+    const hasFixUpContent = html.includes('service') || 
+                           html.includes('mechanic') || 
+                           html.includes('სერვისი') ||
+                           html.includes('მექანიკი') ||
+                           html.includes('FixUp');
+    
+    // Filter out empty pagination pages
+    if (url.includes('page=')) {
+      const hasListItems = html.includes('<article') || 
+                          html.includes('service-card') ||
+                          html.includes('mechanic-card') ||
+                          html.includes('class="card');
+      if (!hasListItems) {
+        return false;
+      }
+    }
+    
+    // Must have title and either content or FixUp-specific elements
+    return hasTitle && (hasContent || hasFixUpContent);
+    
+  } catch (error) {
+    console.log(`Content validation failed for ${url}: ${error.message}`);
     return false;
   }
+}
+
+function isValidPageUrl(url: string): boolean {
+  const urlObj = new URL(url);
+  const path = urlObj.pathname.toLowerCase();
+  
+  // Exclude static files and non-content URLs
+  const invalidExtensions = [
+    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico',
+    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.zip', '.rar',
+    '.css', '.js', '.json', '.xml', '.txt', '.rss', '.map'
+  ];
+  
+  if (invalidExtensions.some(ext => path.endsWith(ext))) {
+    return false;
+  }
+  
+  // Exclude admin, auth, and non-content paths
+  const excludePaths = [
+    '/admin', '/login', '/register', '/auth', '/api',
+    '/dashboard', '/_', '/wp-admin', '/cms', '/robots.txt',
+    '/sitemap.xml', '/.well-known', '/favicon'
+  ];
+  
+  if (excludePaths.some(excludePath => path.startsWith(excludePath))) {
+    return false;
+  }
+
+  // Exclude URLs with only fragments
+  if (urlObj.hash && !urlObj.pathname.replace('/', '')) {
+    return false;
+  }
+  
+  // Must be a real content path
+  const validPaths = [
+    '/services', '/service/', '/mechanics', '/mechanic/',
+    '/categories', '/category/', '/laundries', '/laundry/',
+    '/search', '/about', '/contact', '/map'
+  ];
+  
+  // Allow homepage and valid content paths
+  return path === '/' || validPaths.some(validPath => path.startsWith(validPath));
 }
 
 function generateSitemapXml(results: CrawlResult[]): string {
