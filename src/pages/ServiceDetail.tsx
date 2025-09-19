@@ -36,6 +36,7 @@ import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
+import { ServiceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 
 interface ServiceType {
@@ -347,42 +348,6 @@ const ServiceDetail = () => {
     );
   }
 
-  // Generate structured data for SEO
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": service.name,
-    "description": service.description || `${service.name} - ავტოსერვისი`,
-    "provider": {
-      "@type": "Person",
-      "name": `${service.mechanic.first_name} ${service.mechanic.last_name}`,
-      "telephone": service.mechanic.phone,
-      "address": service.address ? {
-        "@type": "PostalAddress",
-        "addressLocality": service.city,
-        "addressRegion": service.district,
-        "streetAddress": service.address
-      } : undefined
-    },
-    "areaServed": {
-      "@type": "City",
-      "name": service.city
-    },
-    "offers": {
-      "@type": "Offer",
-      "price": service.price_from || "Price on request",
-      "priceCurrency": "GEL",
-      "availability": "InStock"
-    },
-    "aggregateRating": service.rating ? {
-      "@type": "AggregateRating",
-      "ratingValue": service.rating,
-      "reviewCount": service.review_count || 0,
-      "bestRating": 5,
-      "worstRating": 1
-    } : undefined
-  };
-
       const pageTitle = seoData?.meta_title || generateSEOTitle('service', {
         name: service.name,
         city: service.city,
@@ -401,6 +366,14 @@ const ServiceDetail = () => {
         id: service.id,
         name: service.name
       });
+
+  // Generate breadcrumb items for SEO
+  const breadcrumbItems = [
+    { name: 'მთავარი', url: 'https://fixup.ge/' },
+    { name: 'სერვისები', url: 'https://fixup.ge/services' },
+    ...(service.category ? [{ name: service.category.name, url: `https://fixup.ge/category/${service.category.id}` }] : []),
+    { name: service.name, url: canonicalUrl }
+  ];
 
   // Contact Card Component
   const ContactCard = ({ className = "" }: { className?: string }) => (
@@ -601,16 +574,42 @@ const ServiceDetail = () => {
 
   return (
     <Layout>
-      <SEOHead
-        title={pageTitle}
-        description={pageDescription}
-        keywords={seoData?.meta_keywords || `${service.name}, ავტოსერვისი, ${service.city}, ${service.mechanic.first_name} ${service.mechanic.last_name}, მექანიკოსი`}
-        image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
-        url={canonicalUrl}
-        canonical={canonicalUrl}
-        type="article"
-        structuredData={structuredData}
-      />
+        <SEOHead
+          title={pageTitle}
+          description={pageDescription}
+          keywords={seoData?.meta_keywords || `${service.name}, ავტოსერვისი, ${service.city}, ${service.mechanic.first_name} ${service.mechanic.last_name}, მექანიკოსი`}
+          image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
+          url={canonicalUrl}
+          canonical={canonicalUrl}
+          type="article"
+        />
+        
+        <ServiceSchema
+          name={service.name}
+          description={service.description || `${service.name} - ავტოსერვისი`}
+          provider={{
+            name: `${service.mechanic.first_name} ${service.mechanic.last_name}`,
+            telephone: service.mechanic.phone,
+            address: service.address ? {
+              "@type": "PostalAddress",
+              addressLocality: service.city,
+              addressRegion: service.district,
+              streetAddress: service.address
+            } : undefined
+          }}
+          areaServed={service.city}
+          offers={{
+            price: service.price_from || "Price on request",
+            priceCurrency: "GEL",
+            availability: "InStock"
+          }}
+          aggregateRating={service.rating ? {
+            ratingValue: service.rating,
+            reviewCount: service.review_count || 0
+          } : undefined}
+        />
+        
+        <BreadcrumbSchema items={breadcrumbItems} />
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumbs */}

@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { MechanicCard } from "@/components/mechanic/MechanicCard";
 import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/seo/SEOHead";
-import { generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
+import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { 
   Search, 
@@ -68,7 +69,12 @@ const stats = [
   { number: "4.8★", label: "საშუალო რეიტინგი", icon: Star },
 ];
 
+import { useSitemapAutoUpdate } from '@/hooks/useSitemapAutoUpdate';
+
 const Index = () => {
+  // Initialize sitemap auto-update listener
+  useSitemapAutoUpdate();
+  
   const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [featuredMechanics, setFeaturedMechanics] = useState<FeaturedMechanic[]>([]);
@@ -208,16 +214,32 @@ const Index = () => {
   // All categories state (now loaded in parallel with other data)
   const [allCategories, setAllCategories] = useState<ServiceCategory[]>([]);
 
+  const canonicalUrl = generateCanonicalURL('home', {});
+  
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
       <SEOHead
         title={generateSEOTitle('home', {})}
         description={generateSEODescription('home', {})}
-        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი"
-        url="https://fixup.ge"
-        canonical="https://fixup.ge"
+        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup"
+        url={canonicalUrl}
+        canonical={canonicalUrl}
         type="website"
       />
+      
+      <OrganizationSchema 
+        name="ავტოხელოსანი"
+        url="https://fixup.ge"
+        description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა"
+        contactPoint={{
+          contactType: "customer service",
+          email: "info@fixup.ge"
+        }}
+      />
+      
+      <BreadcrumbSchema items={[
+        { name: 'მთავარი', url: 'https://fixup.ge/' }
+      ]} />
       <Header />
       
       <main className="flex-grow">

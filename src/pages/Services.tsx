@@ -5,7 +5,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ServiceCategories from "@/components/home/ServiceCategories";
 import SEOHead from "@/components/seo/SEOHead";
-import { generateStructuredData, generateSEOTitle, generateSEODescription } from "@/utils/seoUtils";
+import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { generateStructuredData, generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ const Services = () => {
     fetchCategories();
   }, []);
 
+  const canonicalUrl = generateCanonicalURL('services', {});
   const structuredData = generateStructuredData('Organization', {
     name: 'ავტოხელოსანი - ავტოსერვისები',
     description: 'მრავალფეროვანი ავტოსერვისები საქართველოში',
@@ -65,11 +67,26 @@ const Services = () => {
       <SEOHead
         title={generateSEOTitle('services', {})}
         description={generateSEODescription('services', {})}
-        keywords="ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, მომსახურება, საქართველო, თბილისი"
-        url="https://fixup.ge/services"
-        canonical="https://fixup.ge/services"
-        structuredData={structuredData}
+        keywords="ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, მომსახურება, საქართველო, თბილისი, fixup"
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        type="website"
       />
+      
+      <OrganizationSchema 
+        name="ავტოხელოსანი - სერვისები"
+        url={canonicalUrl}
+        description="მრავალფეროვანი ავტოსერვისები საქართველოში"
+        contactPoint={{
+          contactType: "customer service",
+          email: "info@fixup.ge"
+        }}
+      />
+      
+      <BreadcrumbSchema items={[
+        { name: 'მთავარი', url: 'https://fixup.ge/' },
+        { name: 'სერვისები', url: 'https://fixup.ge/services' }
+      ]} />
       <Header />
       
       <main className="flex-grow">
