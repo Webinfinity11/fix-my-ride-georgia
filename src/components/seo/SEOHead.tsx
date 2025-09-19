@@ -26,10 +26,21 @@ const SEOHead = ({
   const defaultImage = `${baseUrl}/fixup-og-image.jpg`;
   const fullTitle = `${title} | ავტოხელოსანი`;
   const imageUrl = image || defaultImage;
-  // Fix canonical URL logic - use current page URL if no specific URL provided
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : baseUrl;
-  const pageUrl = url || currentUrl;
-  const canonicalUrl = canonical || pageUrl;
+  
+  // Generate clean canonical URL without query params or fragments
+  const getCanonicalUrl = () => {
+    if (canonical) return canonical;
+    if (url) return url.startsWith('http') ? url : `${baseUrl}${url}`;
+    
+    if (typeof window !== 'undefined') {
+      const cleanPath = window.location.pathname;
+      return `${baseUrl}${cleanPath}`;
+    }
+    return baseUrl;
+  };
+  
+  const canonicalUrl = getCanonicalUrl();
+  const pageUrl = url || canonicalUrl;
 
   return (
     <Helmet>

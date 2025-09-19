@@ -82,24 +82,48 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
   }
 };
 
+// Helper function to truncate Georgian text properly (respects word boundaries)
+const truncateGeorgianText = (text: string, maxLength: number = 155): string => {
+  if (!text || text.length <= maxLength) return text;
+  
+  const truncated = text.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(' ');
+  
+  // If we find a space near the end, cut there to avoid breaking words
+  if (lastSpace > maxLength - 20) {
+    return truncated.substring(0, lastSpace) + '...';
+  }
+  
+  return truncated + '...';
+};
+
 // Generate SEO-optimized descriptions
 export const generateSEODescription = (pageType: string, data: any, customDescription?: string) => {
-  if (customDescription) return customDescription;
+  if (customDescription) return truncateGeorgianText(customDescription);
 
+  let description = '';
+  
   switch (pageType) {
     case 'service':
-      return `${data.name} - ${data.city}-ში. ხელოსანი: ${data.mechanic?.name}. ${data.rating ? `შეფასება: ${data.rating}/5. ` : ''}${data.description ? data.description.substring(0, 100) : 'ხარისხიანი ავტოსერვისი'}...`;
+      description = `${data.name} - ${data.city}-ში. ხელოსანი: ${data.mechanic?.name}. ${data.rating ? `შეფასება: ${data.rating}/5. ` : ''}${data.description ? data.description.substring(0, 80) : 'ხარისხიანი ავტოსერვისი'}`;
+      break;
     case 'mechanic':
-      return `${data.name} - გამოცდილი ხელოსანი ${data.city}-ში. რეიტინგი: ${data.rating}/5 (${data.review_count} შეფასება). ${data.specialization ? `სპეციალიზაცია: ${data.specialization}. ` : ''}დაუკავშირდით ახლავე!`;
+      description = `${data.name} - გამოცდილი ხელოსანი ${data.city}-ში. რეიტინგი: ${data.rating}/5 (${data.review_count} შეფასება). ${data.specialization ? `სპეციალიზაცია: ${data.specialization}. ` : ''}დაუკავშირდით ახლავე!`;
+      break;
     case 'category':
-      return `${data.name} - იპოვეთ საუკეთესო ხელოსნები ${data.name}-ის სფეროში საქართველოში. ხარისხიანი სერვისი, მიმდინარე ფასები, დადასტურებული ხელოსნები.`;
+      description = `${data.name} - იპოვეთ საუკეთესო ხელოსნები ${data.name}-ის სფეროში საქართველოში. ხარისხიანი სერვისი, მიმდინარე ფასები, დადასტურებული ხელოსნები.`;
+      break;
     case 'services':
-      return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. 2500+ ხელოსანი, 15000+ სერვისი, 4.8★ საშუალო რეიტინგი. ჯავშანი ახლავე!`;
+      description = `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. 2500+ ხელოსანი, 15000+ სერვისი, 4.8★ საშუალო რეიტინგი. ჯავშანი ახლავე!`;
+      break;
     case 'home':
-      return `საქართველოს უდიდესი ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში. სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
+      description = `საქართველოს უდიდესი ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში. სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
+      break;
     default:
-      return `ავტოხელოსანი - საქართველოს ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენი მანქანისთვის.`;
+      description = `ავტოხელოსანი - საქართველოს ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოسანი თქვენი მანქანისთვის.`;
   }
+  
+  return truncateGeorgianText(description);
 };
 
 // Generate canonical URL
@@ -108,13 +132,27 @@ export const generateCanonicalURL = (pageType: string, data: any) => {
   
   switch (pageType) {
     case 'service':
-      return `${baseUrl}/service/${data.id}-${data.slug || 'service'}`;
+      // Use proper slug generation from utils
+      const serviceSlug = data.slug || `${data.id}-${data.name?.toLowerCase().replace(/\s+/g, '-') || 'service'}`;
+      return `${baseUrl}/service/${serviceSlug}`;
     case 'mechanic':
-      return `${baseUrl}/mechanic/${data.display_id}-${data.slug || 'mechanic'}`;
+      const mechanicSlug = data.slug || `${data.display_id || data.id}-${data.name?.toLowerCase().replace(/\s+/g, '-') || 'mechanic'}`;
+      return `${baseUrl}/mechanic/${mechanicSlug}`;
     case 'category':
-      return `${baseUrl}/category/${data.slug || data.id}`;
+      const categorySlug = data.slug || data.id;
+      return `${baseUrl}/category/${categorySlug}`;
     case 'services':
       return `${baseUrl}/services`;
+    case 'mechanics':
+      return `${baseUrl}/mechanic`;
+    case 'laundries':
+      return `${baseUrl}/laundries`;
+    case 'about':
+      return `${baseUrl}/about`;
+    case 'contact':
+      return `${baseUrl}/contact`;
+    case 'map':
+      return `${baseUrl}/map`;
     case 'home':
       return baseUrl;
     default:

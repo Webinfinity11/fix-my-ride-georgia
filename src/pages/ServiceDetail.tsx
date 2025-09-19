@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { performRedirect, needsCanonicalRedirect } from "@/utils/redirectUtils";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { createSlug, createMechanicSlug } from "@/utils/slugUtils";
@@ -126,11 +127,12 @@ const ServiceDetail = () => {
         serviceError = result.error;
         
         // If we found the service and it was accessed via ID-slug format, 
-        // update URL to use the correct slug format
+        // redirect to canonical URL if needed
         if (!serviceError && serviceData && idSlugMatch) {
           const correctSlug = `${serviceData.id}-${createSlug(serviceData.name)}`;
-          if (correctSlug !== slugOrId) {
-            window.history.replaceState(null, '', `/service/${correctSlug}`);
+          if (needsCanonicalRedirect(slugOrId, correctSlug)) {
+            performRedirect(navigate, `/service/${correctSlug}`, { permanent: true });
+            return; // Stop processing to prevent double navigation
           }
         }
       } else {
@@ -159,9 +161,10 @@ const ServiceDetail = () => {
             serviceData = foundService;
             serviceError = null;
             
-            // Update URL to use the new ID-slug format
+            // Redirect to canonical ID-slug format for SEO
             const newSlug = `${foundService.id}-${createSlug(foundService.name)}`;
-            window.history.replaceState(null, '', `/service/${newSlug}`);
+            performRedirect(navigate, `/service/${newSlug}`, { permanent: true });
+            return; // Stop processing to prevent double navigation
           } else {
             serviceError = { message: "Service not found" };
           }
