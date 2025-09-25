@@ -187,11 +187,13 @@ serve(async (req) => {
 
   <!-- Real mechanic pages -->`
 
-    // Add verified mechanic pages using display_id-slug format
+    // Add verified mechanic pages using display_id-slug format with safe profile access
     mechanics?.forEach(mechanic => {
-      // Generate mechanic slug from first_name and last_name  
-      const profile = mechanic.profiles[0] // profiles is array from inner join
-      const fullName = `${profile.first_name} ${profile.last_name}`.trim()
+      // Safely access profile data with fallback
+      const profile = mechanic.profiles?.[0]
+      const firstName = profile?.first_name || 'Mechanic'
+      const lastName = profile?.last_name || ''
+      const fullName = `${firstName} ${lastName}`.trim()
       const mechanicSlug = georgianToLatin(fullName)
       const mechanicUrl = mechanicSlug ? `${mechanic.display_id}-${mechanicSlug}` : mechanic.display_id
       
