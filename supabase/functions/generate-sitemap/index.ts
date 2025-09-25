@@ -64,13 +64,13 @@ serve(async (req) => {
       throw categoriesError
     }
 
-    // Fetch verified mechanics with display_id for proper URLs  
+    // Fetch verified mechanics with display_id and names for proper URL slugs
     const { data: mechanics, error: mechanicsError } = await supabase
       .from('mechanic_profiles')
       .select(`
         id, 
         display_id,
-        profiles!inner(role, is_verified)
+        profiles!inner(role, is_verified, first_name, last_name)
       `)
       .eq('profiles.role', 'mechanic')
       .eq('profiles.is_verified', true)
@@ -187,17 +187,23 @@ serve(async (req) => {
 
   <!-- Real mechanic pages -->`
 
-    // Add verified mechanic pages using display_id
+    // Add verified mechanic pages using display_id-slug format
     mechanics?.forEach(mechanic => {
+      // Generate mechanic slug from first_name and last_name  
+      const profile = mechanic.profiles[0] // profiles is array from inner join
+      const fullName = `${profile.first_name} ${profile.last_name}`.trim()
+      const mechanicSlug = georgianToLatin(fullName)
+      const mechanicUrl = mechanicSlug ? `${mechanic.display_id}-${mechanicSlug}` : mechanic.display_id
+      
       sitemapXml += `
   <url>
-    <loc>https://fixup.ge/mechanic/${mechanic.display_id}</loc>
+    <loc>https://fixup.ge/mechanic/${mechanicUrl}</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://fixup.ge/book/${mechanic.display_id}</loc>
+    <loc>https://fixup.ge/book/${mechanicUrl}</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
