@@ -67,8 +67,11 @@ serve(async (req) => {
     // Fetch verified mechanics with display_id for proper URLs  
     const { data: mechanics, error: mechanicsError } = await supabase
       .from('mechanic_profiles')
-      .select('id, display_id')
-      .inner('profiles', 'id', 'id')
+      .select(`
+        id, 
+        display_id,
+        profiles!inner(role, is_verified)
+      `)
       .eq('profiles.role', 'mechanic')
       .eq('profiles.is_verified', true)
       .order('display_id')
@@ -270,10 +273,10 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating sitemap:', error)
     return new Response(JSON.stringify({ 
-      error: error.message 
+      error: error?.message || 'Unknown error occurred' 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

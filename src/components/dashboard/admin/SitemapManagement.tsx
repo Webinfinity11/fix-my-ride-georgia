@@ -21,7 +21,7 @@ const SitemapManagement = () => {
 
   const handleUpdateSitemap = async () => {
     setIsUpdating(true);
-    setCrawlProgress('Starting sitemap generation...');
+    setCrawlProgress('რეალური ლინკების გენერირება...');
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-sitemap', {
@@ -30,30 +30,33 @@ const SitemapManagement = () => {
 
       if (error) {
         console.error('Error updating sitemap:', error);
-        toast.error('Sitemap განახლება ვერ მოხერხდა');
+        toast.error('Sitemap განახლება ვერ მოხერხდა: ' + error.message);
+        setCrawlProgress('შეცდომა: ' + error.message);
         return;
       }
 
-      if (data.success) {
+      if (data && data.success) {
         setSitemapStats({
-          totalUrls: data.totalUrls,
-          static: data.breakdown.static,
-          services: data.breakdown.services,
-          categories: data.breakdown.categories,
-          mechanics: data.breakdown.mechanics
+          totalUrls: data.totalUrls || 0,
+          static: data.breakdown?.static || 0,
+          services: data.breakdown?.services || 0,
+          categories: data.breakdown?.categories || 0,
+          mechanics: data.breakdown?.mechanics || 0
         });
         setLastUpdate(new Date().toLocaleString('ka-GE'));
         setCrawlProgress('');
         toast.success(`Sitemap წარმატებით განახლდა! ${data.totalUrls} რეალური URL გენერირდა`);
       } else {
-        toast.error('Sitemap განახლება ვერ მოხერხდა');
+        toast.error('Sitemap განახლება ვერ მოხერხდა: ' + (data?.error || 'უცნობი შეცდომა'));
+        setCrawlProgress('შეცდომა: ' + (data?.error || 'უცნობი შეცდომა'));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      toast.error('Sitemap განახლება ვერ მოხერხდა');
+      toast.error('Sitemap განახლება ვერ მოხერხდა: ' + error.message);
+      setCrawlProgress('შეცდომა: ' + error.message);
     } finally {
       setIsUpdating(false);
-      setCrawlProgress('');
+      setTimeout(() => setCrawlProgress(''), 3000);
     }
   };
 
@@ -122,7 +125,7 @@ const SitemapManagement = () => {
                   დათაბეისიდან რეალური სერვისების, კატეგორიებისა და მექანიკოსების მიხედვით - მხოლოდ ინდექსირებადი URLs-ები
                 </p>
                 {crawlProgress && (
-                  <p className="text-xs text-primary mt-1 animate-pulse">
+                  <p className={`text-xs mt-1 ${crawlProgress.includes('შეცდომა') ? 'text-red-500' : 'text-primary animate-pulse'}`}>
                     {crawlProgress}
                   </p>
                 )}
