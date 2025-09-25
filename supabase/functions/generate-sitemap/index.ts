@@ -144,10 +144,20 @@ serve(async (req) => {
 
   <!-- Real service pages with proper slugs -->`
 
-    // Add real service pages - only services that exist
+    // Add real service pages - only services that exist with proper slug format
     services?.forEach(service => {
-      const slug = service.slug || georgianToLatin(service.name)
-      const serviceUrl = slug ? `${service.id}-${slug}` : service.id
+      let serviceUrl
+      
+      // Check if slug already contains id-slug format (from database)
+      if (service.slug && service.slug.match(/^\d+-/)) {
+        // Slug already has id-slug format, use as is
+        serviceUrl = service.slug
+      } else {
+        // Generate slug from name and combine with id
+        const slug = service.slug || georgianToLatin(service.name)
+        serviceUrl = slug ? `${service.id}-${slug}` : service.id
+      }
+      
       const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate
       
       sitemapXml += `
