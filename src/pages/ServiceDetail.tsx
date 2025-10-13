@@ -38,6 +38,7 @@ import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
 import { ServiceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
+import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
 
 interface ServiceType {
   id: number;
@@ -649,7 +650,7 @@ const ServiceDetail = () => {
                 {seoData.h2_description}
               </h2>
             )}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
               {service.category && (
                 <Badge variant="secondary" className="bg-primary/10 text-primary">
                   {service.category.name}
@@ -666,6 +667,11 @@ const ServiceDetail = () => {
                 </Badge>
               )}
             </div>
+            <ServiceShareButtons 
+              serviceName={service.name}
+              serviceUrl={canonicalUrl}
+              serviceDescription={service.description || undefined}
+            />
           </div>
         </div>
 
