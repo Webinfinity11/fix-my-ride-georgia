@@ -1,9 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Shield, Users, Activity, Search } from "lucide-react";
+import { BarChart3, Shield, Users, Activity, Search, Bookmark } from "lucide-react";
 import SEOManagement from './SEOManagement';
 import SitemapManagement from './SitemapManagement';
+import { SavedServicesManagement } from './SavedServicesManagement';
 
 const AdminDashboard = () => {
   return (
@@ -16,7 +17,7 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-4 w-full max-w-3xl">
+        <TabsList className="grid grid-cols-5 w-full max-w-4xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             მიმოხილვა
@@ -24,6 +25,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             მომხმარებლები
+          </TabsTrigger>
+          <TabsTrigger value="saved" className="flex items-center gap-2">
+            <Bookmark className="h-4 w-4" />
+            შენახული
           </TabsTrigger>
           <TabsTrigger value="system" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
@@ -72,6 +77,10 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="saved" className="space-y-6">
+          <SavedServicesManagement />
         </TabsContent>
 
         <TabsContent value="system" className="space-y-6">

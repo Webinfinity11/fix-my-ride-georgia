@@ -5,6 +5,7 @@ import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, Im
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
+import { SaveServiceButton } from "./SaveServiceButton";
 
 interface ServiceType {
   id: number;
@@ -228,6 +229,13 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
 
           {/* Action Buttons */}
           <div className="flex gap-2">
+            {/* Save Button */}
+            <SaveServiceButton 
+              serviceId={service.id}
+              size="icon"
+              showText={false}
+            />
+            
             {/* Call Button */}
             {service.mechanic.phone_number && (
               <Button 

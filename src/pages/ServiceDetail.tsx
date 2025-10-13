@@ -39,6 +39,7 @@ import SEOHead from "@/components/seo/SEOHead";
 import { ServiceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
+import { SaveServiceButton } from "@/components/services/SaveServiceButton";
 
 interface ServiceType {
   id: number;
@@ -667,11 +668,14 @@ const ServiceDetail = () => {
                 </Badge>
               )}
             </div>
-            <ServiceShareButtons 
-              serviceName={service.name}
-              serviceUrl={canonicalUrl}
-              serviceDescription={service.description || undefined}
-            />
+            <div className="flex items-center gap-2">
+              <ServiceShareButtons 
+                serviceName={service.name}
+                serviceUrl={canonicalUrl}
+                serviceDescription={service.description || undefined}
+              />
+              <SaveServiceButton serviceId={service.id} />
+            </div>
           </div>
         </div>
 
