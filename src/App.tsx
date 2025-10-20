@@ -22,6 +22,7 @@ import MechanicProfile from "./pages/MechanicProfile";
 import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
 import Laundries from "./pages/Laundries";
+import FuelImporters from "./pages/FuelImporters";
 import Mechanics from "./pages/Mechanics";
 import ServiceCategory from "./pages/ServiceCategory";
 import CategoryList from "./pages/CategoryList";
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/map" element={<Map />} />
                 <Route path="/laundries" element={<Laundries />} />
+                <Route path="/fuel-importers" element={<FuelImporters />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

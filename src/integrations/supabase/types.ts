@@ -455,6 +455,42 @@ export type Database = {
           },
         ]
       }
+      fuel_importers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: number
+          logo_url: string | null
+          name: string
+          premium_ron_96_price: number | null
+          regular_ron_93_price: number | null
+          super_ron_98_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: number
+          logo_url?: string | null
+          name: string
+          premium_ron_96_price?: number | null
+          regular_ron_93_price?: number | null
+          super_ron_98_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: number
+          logo_url?: string | null
+          name?: string
+          premium_ron_96_price?: number | null
+          regular_ron_93_price?: number | null
+          super_ron_98_price?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       laundries: {
         Row: {
           address: string | null

@@ -1,10 +1,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Shield, Users, Activity, Search, Bookmark } from "lucide-react";
+import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel } from "lucide-react";
 import SEOManagement from './SEOManagement';
 import SitemapManagement from './SitemapManagement';
 import { SavedServicesManagement } from './SavedServicesManagement';
+import FuelImporterManagement from './FuelImporterManagement';
 
 const AdminDashboard = () => {
   return (
@@ -17,7 +18,7 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-5 w-full max-w-4xl">
+        <TabsList className="grid grid-cols-6 w-full max-w-5xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             მიმოხილვა
@@ -25,6 +26,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             მომხმარებლები
+          </TabsTrigger>
+          <TabsTrigger value="fuel" className="flex items-center gap-2">
+            <Fuel className="h-4 w-4" />
+            საწვავი
           </TabsTrigger>
           <TabsTrigger value="saved" className="flex items-center gap-2">
             <Bookmark className="h-4 w-4" />
@@ -77,6 +82,10 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="fuel" className="space-y-6">
+          <FuelImporterManagement />
         </TabsContent>
 
         <TabsContent value="saved" className="space-y-6">
