@@ -95,3 +95,43 @@ export const useDeleteFuelImporter = () => {
     },
   });
 };
+
+// Hooks for fuel page banner
+export const useFuelPageSettings = () => {
+  return useQuery({
+    queryKey: ["fuel-page-settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("fuel_page_settings")
+        .select("*")
+        .eq("id", "1")
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+};
+
+export const useUpdateFuelPageBanner = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (bannerUrl: string | null) => {
+      const { error } = await supabase
+        .from("fuel_page_settings")
+        .update({ banner_url: bannerUrl, updated_at: new Date().toISOString() })
+        .eq("id", "1");
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fuel-page-settings"] });
+      toast.success("ბანერი წარმატებით განახლდა");
+    },
+    onError: (error) => {
+      console.error("Error updating banner:", error);
+      toast.error("შეცდომა ბანერის განახლებისას");
+    },
+  });
+};

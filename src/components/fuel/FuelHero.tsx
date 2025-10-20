@@ -1,12 +1,24 @@
 import { Fuel } from "lucide-react";
+import { useFuelPageSettings } from "@/hooks/useFuelImporters";
 
 const FuelHero = () => {
+  const { data: pageSettings } = useFuelPageSettings();
+  
   return (
     <div className="relative bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground py-16 px-4 overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+      {pageSettings?.banner_url ? (
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${pageSettings.banner_url})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+        </div>
+      ) : (
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-40 h-40 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+      )}
       
       <div className="max-w-7xl mx-auto text-center relative z-10">
         <div className="flex justify-center mb-6 animate-fade-in">

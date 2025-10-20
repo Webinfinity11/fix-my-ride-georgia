@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { useFuelImporters, useDeleteFuelImporter } from "@/hooks/useFuelImporters";
+import { useFuelImporters, useDeleteFuelImporter, useFuelPageSettings, useUpdateFuelPageBanner } from "@/hooks/useFuelImporters";
 import FuelImporterForm from "@/components/forms/FuelImporterForm";
+import BannerUpload from "@/components/forms/BannerUpload";
 import { Database } from "@/integrations/supabase/types";
 
 type FuelImporter = Database["public"]["Tables"]["fuel_importers"]["Row"];
@@ -16,7 +17,9 @@ const FuelImporterManagement = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   
   const { data: importers = [], isLoading } = useFuelImporters();
+  const { data: pageSettings } = useFuelPageSettings();
   const deleteMutation = useDeleteFuelImporter();
+  const updateBannerMutation = useUpdateFuelPageBanner();
 
   const handleEdit = (importer: FuelImporter) => {
     setSelectedImporter(importer);
@@ -46,12 +49,36 @@ const FuelImporterManagement = () => {
     setSelectedImporter(null);
   };
 
+  const handleBannerUpdate = async (url: string | null) => {
+    await updateBannerMutation.mutateAsync(url);
+  };
+
   if (isLoading) {
     return <div className="p-6">იტვირთება...</div>;
   }
 
   return (
     <div className="p-6 space-y-6">
+      {/* Banner Management Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Image className="w-5 h-5" />
+            სარეკლამო ბანერი
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            ატვირთეთ სარეკლამო ბანერი რომელიც გამოჩნდება საწვავის გვერდის თავში
+          </p>
+          <BannerUpload
+            bannerUrl={pageSettings?.banner_url || null}
+            onBannerChange={handleBannerUpdate}
+            bucketName="fuel-importer-logos"
+          />
+        </CardContent>
+      </Card>
+
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">საწვავის იმპორტიორების მართვა</h1>
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
