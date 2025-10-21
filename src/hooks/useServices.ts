@@ -297,7 +297,10 @@ export const useServices = () => {
           // Search in mechanic phone (remove spaces and special characters for phone search)
           const phoneMatch = service.mechanic.phone?.replace(/[\s\-\(\)]/g, '').includes(searchLower.replace(/[\s\-\(\)]/g, ''));
           
-          return nameMatch || descriptionMatch || categoryMatch || mechanicFirstNameMatch || mechanicLastNameMatch || phoneMatch;
+          // Search in car brands
+          const carBrandMatch = service.car_brands?.some(brand => brand.toLowerCase().includes(searchLower));
+          
+          return nameMatch || descriptionMatch || categoryMatch || mechanicFirstNameMatch || mechanicLastNameMatch || phoneMatch || carBrandMatch;
         });
         
         console.log("✅ Enhanced search results:", transformedServices.length);
