@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -37,9 +36,9 @@ const Header = () => {
         <div className="flex items-center gap-3">
           <MobileMenu />
           <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png" 
-              alt="FixUp Auto Service" 
+            <img
+              src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
+              alt="FixUp Auto Service"
               className="h-8 md:h-10 w-auto object-contain"
             />
           </Link>
@@ -53,23 +52,23 @@ const Header = () => {
           <Link to="/services" className="text-gray-700 hover:text-primary transition-colors font-medium">
             სერვისები
           </Link>
-          <Link to="/about" className="text-gray-700 hover:text-primary transition-colors font-medium">
-            ჩვენ შესახებ
-          </Link>
-          <Link to="/contact" className="text-gray-700 hover:text-primary transition-colors font-medium">
-            კონტაქტი
-          </Link>
-          <Link to="/map" className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium">
+          <Link
+            to="/map"
+            className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium"
+          >
             <Map className="h-4 w-4" />
             <span>რუკა</span>
           </Link>
           <Link to="/laundries" className="text-gray-700 hover:text-primary transition-colors font-medium">
-            სამრეცხაოები
+            სამრეცხაო
           </Link>
           <Link to="/fuel-importers" className="text-gray-700 hover:text-primary transition-colors font-medium">
             საწვავი
           </Link>
-          <Link to="/chat" className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium">
+          <Link
+            to="/chat"
+            className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium"
+          >
             <MessageCircle className="h-4 w-4" />
             <span>ჩატი</span>
           </Link>
@@ -82,7 +81,8 @@ const Header = () => {
               <Button variant="ghost" className="h-10 w-10 p-0 rounded-full">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                    {user.firstName?.charAt(0)}
+                    {user.lastName?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -93,9 +93,7 @@ const Header = () => {
                   <p className="text-sm font-medium leading-none">
                     {user.firstName} {user.lastName}
                   </p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user.email}
-                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -103,7 +101,7 @@ const Header = () => {
                 <User className="mr-2 h-4 w-4" />
                 <span>პროფილი</span>
               </DropdownMenuItem>
-              {user.role === 'mechanic' && (
+              {user.role === "mechanic" && (
                 <DropdownMenuItem onClick={() => navigate("/add-service")}>
                   <Plus className="mr-2 h-4 w-4" />
                   <span>სერვისის დამატება</span>
@@ -123,7 +121,9 @@ const Header = () => {
         ) : (
           <div className="hidden md:flex items-center space-x-4">
             <Link to="/login">
-              <Button variant="outline" size="sm">შესვლა</Button>
+              <Button variant="outline" size="sm">
+                შესვლა
+              </Button>
             </Link>
             <Link to="/register">
               <Button size="sm">რეგისტრაცია</Button>
