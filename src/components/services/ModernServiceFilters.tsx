@@ -286,7 +286,7 @@ const ModernServiceFilters = ({
               <CollapsibleTrigger asChild>
                 <Button variant="outline" className="border-primary/20 hover:bg-primary/5 h-12 w-full sm:w-auto">
                   <Filter className="h-4 w-4 mr-2" />
-                  ბრენდით ფილტრაცია
+                  ავტომობილის მარკები
                   {activeFiltersCount > 0 && (
                     <Badge variant="secondary" className="ml-2">
                       {activeFiltersCount}

@@ -127,7 +127,7 @@ const SearchFilter = () => {
                   <CollapsibleTrigger asChild>
                     <Button variant="outline" className="w-full h-12 border-2 border-gray-200 transition-colors">
                       <Filter className="h-4 w-4 mr-2" />
-                      ბრენდით ფილტრაცია
+                      ავტომობილის მარკები
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-4 mt-4">
