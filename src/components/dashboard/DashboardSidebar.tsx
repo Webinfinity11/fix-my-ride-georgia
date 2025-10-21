@@ -13,6 +13,7 @@ import {
   Cog,
   MessageCircle,
   CalendarCog,
+  Bookmark,
 } from "lucide-react";
 
 const DashboardSidebar = () => {
@@ -68,6 +69,13 @@ const DashboardSidebar = () => {
           <span className="text-sm md:text-base">ჯავშნები</span>
         </NavLink>
 
+        {(user?.role === "customer" || user?.role === "mechanic") && (
+          <NavLink to="/dashboard/saved-services" className={navLinkClasses}>
+            <Bookmark size={18} />
+            <span className="text-sm md:text-base">შენახული სერვისები</span>
+          </NavLink>
+        )}
+
         {user?.role === "admin" && (
           <>
             <div className="border-t border-muted my-3 md:my-4"></div>
@@ -110,6 +118,11 @@ const DashboardSidebar = () => {
             <NavLink to="/dashboard/admin/users" className={navLinkClasses}>
               <Users size={18} />
               <span className="text-sm md:text-base">მომხმარებლები</span>
+            </NavLink>
+
+            <NavLink to="/dashboard/admin/saved-services" className={navLinkClasses}>
+              <Bookmark size={18} />
+              <span className="text-sm md:text-base">შენახული სერვისები</span>
             </NavLink>
           </>
         )}

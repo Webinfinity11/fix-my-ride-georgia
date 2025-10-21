@@ -20,11 +20,10 @@ interface SavedService {
   id: string;
   created_at: string;
   notes: string | null;
-  service_id: number;
-  user_id: string;
   service: {
     id: number;
     name: string;
+    slug: string;
     city: string | null;
     district: string | null;
   };
@@ -33,6 +32,7 @@ interface SavedService {
     first_name: string;
     last_name: string;
     email: string;
+    role: string;
   };
 }
 
@@ -56,37 +56,27 @@ export const SavedServicesManagement = () => {
           notes,
           service_id,
           user_id,
-          mechanic_services (
+          service:mechanic_services!saved_services_service_id_fkey (
             id,
             name,
+            slug,
             city,
             district
           ),
-          profiles (
+          user:profiles!saved_services_user_id_fkey (
             id,
             first_name,
             last_name,
-            email
+            email,
+            role
           )
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const formattedData = data.map(item => ({
-        id: item.id,
-        created_at: item.created_at,
-        notes: item.notes,
-        service_id: item.service_id,
-        user_id: item.user_id,
-        service: Array.isArray(item.mechanic_services)
-          ? item.mechanic_services[0]
-          : item.mechanic_services,
-        user: Array.isArray(item.profiles) ? item.profiles[0] : item.profiles,
-      }));
-
-      setSavedServices(formattedData as SavedService[]);
-    } catch (error) {
+      setSavedServices((data as any) || []);
+    } catch (error: any) {
       console.error('Error fetching saved services:', error);
       toast.error('შენახული სერვისების ჩატვირთვა ვერ მოხერხდა');
     } finally {
@@ -94,9 +84,8 @@ export const SavedServicesManagement = () => {
     }
   };
 
-  const handleViewService = (serviceId: number, serviceName: string) => {
-    const slug = `${serviceId}-${createSlug(serviceName)}`;
-    navigate(`/service/${slug}`);
+  const handleViewService = (slug: string) => {
+    navigate(`/services/${slug}`);
   };
 
   const formatDate = (dateString: string) => {
@@ -195,9 +184,7 @@ export const SavedServicesManagement = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() =>
-                          handleViewService(saved.service_id, saved.service?.name || '')
-                        }
+                        onClick={() => handleViewService(saved.service?.slug || '')}
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         ნახვა
@@ -213,3 +200,5 @@ export const SavedServicesManagement = () => {
     </Card>
   );
 };
+
+export default SavedServicesManagement;

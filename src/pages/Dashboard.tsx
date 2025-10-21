@@ -17,6 +17,9 @@ import ServiceManagement from "@/components/dashboard/admin/ServiceManagement";
 import ChatManagement from "@/components/dashboard/admin/ChatManagement";
 import LaundryManagement from "@/components/dashboard/admin/LaundryManagement";
 import BookingManagement from "@/components/dashboard/admin/BookingManagement";
+import SavedServicesManagement from "@/components/dashboard/admin/SavedServicesManagement";
+import { CustomerSavedServices } from "@/components/dashboard/customer/CustomerSavedServices";
+import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicSavedServices";
 import { Header } from "@/components/layout/Header";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { toast } from "sonner";
@@ -150,6 +153,20 @@ const Dashboard = () => {
                   }
                 />
                 
+                {/* Saved Services Routes */}
+                <Route
+                  path="/saved-services"
+                  element={
+                    user.role === "customer" ? (
+                      <CustomerSavedServices />
+                    ) : user.role === "mechanic" ? (
+                      <MechanicSavedServices />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                
                 {/* Admin Routes */}
                 <Route
                   path="/admin"
@@ -216,6 +233,16 @@ const Dashboard = () => {
                   element={
                     user.role === "admin" ? (
                       <AdminUsers />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/saved-services"
+                  element={
+                    user.role === "admin" ? (
+                      <SavedServicesManagement />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )
