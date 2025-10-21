@@ -5,19 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Search as SearchIcon, MapPin, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type ServiceCategory = {
   id: number;
@@ -55,9 +44,7 @@ const SearchFilter = () => {
 
         if (mechanicsError) throw mechanicsError;
 
-        const uniqueCities = Array.from(
-          new Set(mechanicsData?.map(m => m.city).filter(Boolean) as string[])
-        ).sort();
+        const uniqueCities = Array.from(new Set(mechanicsData?.map((m) => m.city).filter(Boolean) as string[])).sort();
         setCities(uniqueCities);
       } catch (error: any) {
         console.error("Error fetching filter data:", error);
@@ -72,16 +59,16 @@ const SearchFilter = () => {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    
+
     if (searchQuery) params.set("q", searchQuery);
     if (selectedCategory) params.set("category", selectedCategory.toString());
     if (selectedCity) params.set("city", selectedCity);
-    
+
     navigate(`/services?${params.toString()}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -119,7 +106,7 @@ const SearchFilter = () => {
               გამოიყენეთ ჩვენი მოწინავე ძიების სისტემა, რომ მოძებნოთ თქვენი საჭიროებისთვის შესაფერისი ხელოსანი
             </p>
           </div>
-          
+
           <div className="bg-white rounded-2xl shadow-lg p-4 md:p-8">
             <div className="space-y-4">
               {/* Main Search Input - Always Visible */}
@@ -138,23 +125,23 @@ const SearchFilter = () => {
               <div className="md:hidden">
                 <Collapsible open={showAdvancedFilters} onOpenChange={setShowAdvancedFilters}>
                   <CollapsibleTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full h-12 border-2 border-gray-200 transition-colors"
-                    >
+                    <Button variant="outline" className="w-full h-12 border-2 border-gray-200 transition-colors">
                       <Filter className="h-4 w-4 mr-2" />
-                      დამატებითი ფილტრები
+                      ბრენდით ფილტრაცია
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-4 mt-4">
                     {/* Service Category Select */}
-                    <Select value={selectedCategory?.toString() || ""} onValueChange={(value) => setSelectedCategory(value ? parseInt(value) : null)}>
+                    <Select
+                      value={selectedCategory?.toString() || ""}
+                      onValueChange={(value) => setSelectedCategory(value ? parseInt(value) : null)}
+                    >
                       <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary transition-colors">
                         <SelectValue placeholder="აირჩიეთ სერვისი" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {categories.map(category => (
+                          {categories.map((category) => (
                             <SelectItem key={category.id} value={category.id.toString()}>
                               {category.name}
                             </SelectItem>
@@ -170,7 +157,7 @@ const SearchFilter = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {cities.map(city => (
+                          {cities.map((city) => (
                             <SelectItem key={city} value={city}>
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-4 w-4" />
@@ -188,13 +175,16 @@ const SearchFilter = () => {
               {/* Desktop: Side-by-side Filters */}
               <div className="hidden md:grid md:grid-cols-2 gap-4">
                 {/* Service Category Select */}
-                <Select value={selectedCategory?.toString() || ""} onValueChange={(value) => setSelectedCategory(value ? parseInt(value) : null)}>
+                <Select
+                  value={selectedCategory?.toString() || ""}
+                  onValueChange={(value) => setSelectedCategory(value ? parseInt(value) : null)}
+                >
                   <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary transition-colors">
                     <SelectValue placeholder="აირჩიეთ სერვისი" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {categories.map(category => (
+                      {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id.toString()}>
                           {category.name}
                         </SelectItem>
@@ -210,7 +200,7 @@ const SearchFilter = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {cities.map(city => (
+                      {cities.map((city) => (
                         <SelectItem key={city} value={city}>
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4" />
@@ -224,7 +214,7 @@ const SearchFilter = () => {
               </div>
 
               {/* Search Button */}
-              <Button 
+              <Button
                 onClick={handleSearch}
                 className="w-full h-12 md:h-14 bg-primary hover:bg-primary-dark transition-colors font-semibold text-base"
                 size="lg"
