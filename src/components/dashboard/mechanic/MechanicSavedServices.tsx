@@ -93,7 +93,7 @@ export const MechanicSavedServices = () => {
   };
 
   const handleViewService = (slug: string) => {
-    navigate(`/services/${slug}`);
+    navigate(`/service/${slug}`);
   };
 
   const formatPrice = (from: number | null, to: number | null) => {

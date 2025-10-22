@@ -85,7 +85,7 @@ export const SavedServicesManagement = () => {
   };
 
   const handleViewService = (slug: string) => {
-    navigate(`/services/${slug}`);
+    navigate(`/service/${slug}`);
   };
 
   const formatDate = (dateString: string) => {
