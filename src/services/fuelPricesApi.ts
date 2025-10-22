@@ -1,7 +1,7 @@
 // Fuel Prices API Service
 // Based on API_INTEGRATION_GUIDE.md
 
-const API_BASE_URL = "https://fuel-prices-backend.onrender.com/";
+const API_BASE_URL = "https://fuel-prices-backend.onrender.com";
 
 export interface FuelPrice {
   fuelType: string;
