@@ -54,8 +54,6 @@ export const SavedServicesManagement = () => {
           id,
           created_at,
           notes,
-          service_id,
-          user_id,
           service:mechanic_services(
             id,
             name,

@@ -576,7 +576,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           mechanic_id: string
           user_agent: string | null
           viewer_id: string | null
@@ -584,7 +584,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           mechanic_id: string
           user_agent?: string | null
           viewer_id?: string | null
@@ -592,7 +592,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           mechanic_id?: string
           user_agent?: string | null
           viewer_id?: string | null
@@ -997,6 +997,13 @@ export type Database = {
             referencedRelation: "mechanic_services"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "saved_services_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       search_queries: {
@@ -1171,10 +1178,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      current_user_is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      current_user_is_admin: { Args: never; Returns: boolean }
       generate_unique_laundry_slug: {
         Args: { base_name: string; exclude_id?: number }
         Returns: string
@@ -1187,16 +1191,13 @@ export type Database = {
         Args: { base_name: string; exclude_id?: number }
         Returns: string
       }
-      georgian_to_latin: {
-        Args: { input_text: string }
-        Returns: string
-      }
+      georgian_to_latin: { Args: { input_text: string }; Returns: string }
       georgian_to_latin_enhanced: {
         Args: { input_text: string }
         Returns: string
       }
       get_admin_stats: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           completed_bookings: number
           pending_bookings: number
@@ -1207,10 +1208,7 @@ export type Database = {
           total_services: number
         }[]
       }
-      get_current_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      get_current_user_role: { Args: never; Returns: string }
       get_public_mechanic_info: {
         Args: { mechanic_id: string }
         Returns: {
@@ -1226,7 +1224,7 @@ export type Database = {
         }[]
       }
       get_safe_mechanic_profiles: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           avatar_url: string
           city: string
@@ -1239,18 +1237,12 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"]
         }[]
       }
-      is_admin: {
-        Args: { user_id?: string }
-        Returns: boolean
-      }
+      is_admin: { Args: { user_id?: string }; Returns: boolean }
       is_admin_or_self_or_public_mechanic: {
         Args: { profile_id: string }
         Returns: boolean
       }
-      is_current_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_current_user_admin: { Args: never; Returns: boolean }
       submit_contact_message: {
         Args: {
           p_email: string
