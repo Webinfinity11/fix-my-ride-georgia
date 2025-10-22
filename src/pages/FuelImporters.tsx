@@ -4,42 +4,38 @@ import FuelImporterCard from "@/components/fuel/FuelImporterCard";
 import FuelHero from "@/components/fuel/FuelHero";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, X, Fuel } from "lucide-react";
+import { Search, X, Fuel, RefreshCw } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { toast } from "sonner";
 
 const FuelImporters = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<string>("name");
-  
-  const { data: importers = [], isLoading } = useFuelImporters();
+
+  const { data: importers = [], isLoading, refetch, isRefetching } = useFuelImporters();
+
+  const handleRefresh = async () => {
+    toast.loading("მონაცემები ახლდება...");
+    await refetch();
+    toast.dismiss();
+    toast.success("მონაცემები წარმატებით განახლდა");
+  };
 
   // Apply search filter
   const filteredImporters = importers.filter((importer) => {
-    const matchesSearch = searchQuery === "" || 
+    const matchesSearch = searchQuery === "" ||
       importer.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
 
-  // Apply sorting
+  // Sort: Connect first, then alphabetically
   const sortedImporters = [...filteredImporters].sort((a, b) => {
-    if (sortBy === "name") {
-      return a.name.localeCompare(b.name, "ka");
-    } else if (sortBy === "super-price") {
-      return (a.super_ron_98_price || 999) - (b.super_ron_98_price || 999);
-    } else if (sortBy === "premium-price") {
-      return (a.premium_ron_96_price || 999) - (b.premium_ron_96_price || 999);
-    } else if (sortBy === "regular-price") {
-      return (a.regular_ron_93_price || 999) - (b.regular_ron_93_price || 999);
-    }
-    return 0;
+    // Connect always comes first
+    if (a.name === "Connect") return -1;
+    if (b.name === "Connect") return 1;
+
+    // Then sort alphabetically
+    return a.name.localeCompare(b.name, "ka");
   });
 
   return (
@@ -53,6 +49,15 @@ const FuelImporters = () => {
       <FuelHero />
 
       <div className="container mx-auto px-4 py-8">
+        {/* Statistics Header */}
+        {!isLoading && importers.length > 0 && (
+          <div className="mb-6">
+            <div className="text-sm text-muted-foreground">
+              სულ {importers.length} კომპანია • {importers.reduce((sum, imp) => sum + (imp.totalFuelTypes || 0), 0)} საწვავის ტიპი
+            </div>
+          </div>
+        )}
+
         {/* Search and Filter Section */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
@@ -66,18 +71,15 @@ const FuelImporters = () => {
                 className="pl-10"
               />
             </div>
-            
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-64">
-                <SelectValue placeholder="დალაგება" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">დასახელება (ა-ჰ)</SelectItem>
-                <SelectItem value="super-price">სუპერი (ფასი)</SelectItem>
-                <SelectItem value="premium-price">პრემიუმი (ფასი)</SelectItem>
-                <SelectItem value="regular-price">რეგულარი (ფასი)</SelectItem>
-              </SelectContent>
-            </Select>
+
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isRefetching}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isRefetching ? 'animate-spin' : ''}`} />
+              განახლება
+            </Button>
 
             {searchQuery && (
               <Button
@@ -101,13 +103,13 @@ const FuelImporters = () => {
             <Fuel className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-xl font-semibold mb-2">კომპანია არ მოიძებნა</h3>
             <p className="text-muted-foreground mb-4">
-              {searchQuery 
-                ? "სცადეთ სხვა საძიებო ტერმინი" 
+              {searchQuery
+                ? "სცადეთ სხვა საძიებო ტერმინი"
                 : "საწვავის იმპორტიორები ჯერ არ არის დამატებული"
               }
             </p>
             {searchQuery && (
-              <Button 
+              <Button
                 variant="outline"
                 onClick={() => setSearchQuery("")}
               >
@@ -116,7 +118,7 @@ const FuelImporters = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {sortedImporters.map((importer) => (
               <FuelImporterCard key={importer.id} importer={importer} />
             ))}

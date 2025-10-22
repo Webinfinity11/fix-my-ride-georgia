@@ -1,76 +1,155 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2 } from "lucide-react";
-import type { Database } from "@/integrations/supabase/types";
-
-type FuelImporter = Database["public"]["Tables"]["fuel_importers"]["Row"];
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import type { FuelImporter } from "@/hooks/useFuelImporters";
 
 interface FuelImporterCardProps {
   importer: FuelImporter;
 }
 
 const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
-  return (
-    <Card className="h-full hover:shadow-lg transition-shadow">
-      {/* Logo Section */}
-      {importer.logo_url ? (
-        <div className="relative h-32 overflow-hidden rounded-t-lg bg-muted flex items-center justify-center p-4">
-          <img
-            src={importer.logo_url}
-            alt={importer.name}
-            className="max-h-full max-w-full object-contain"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.parentElement!.innerHTML = '<div class="flex items-center justify-center w-full h-full"><div class="w-12 h-12 text-muted-foreground"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M7 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 3v18"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/></svg></div></div>';
-            }}
-          />
-        </div>
-      ) : (
-        <div className="h-32 bg-muted flex items-center justify-center rounded-t-lg">
-          <Building2 className="w-12 h-12 text-muted-foreground" />
-        </div>
-      )}
-      
-      <CardHeader>
-        <CardTitle className="text-xl font-bold text-center">{importer.name}</CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-3">
-        <div className="space-y-2">
-          {importer.super_ron_98_price && (
-            <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-              <span className="font-medium text-green-900 dark:text-green-100">სუპერი RON 98</span>
-              <Badge variant="default" className="bg-green-600 hover:bg-green-700 text-white">
-                {importer.super_ron_98_price} ₾
-              </Badge>
-            </div>
-          )}
-          
-          {importer.premium_ron_96_price && (
-            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-              <span className="font-medium text-blue-900 dark:text-blue-100">პრემიუმი RON 96</span>
-              <Badge variant="default" className="bg-blue-600 hover:bg-blue-700 text-white">
-                {importer.premium_ron_96_price} ₾
-              </Badge>
-            </div>
-          )}
-          
-          {importer.regular_ron_93_price && (
-            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <span className="font-medium text-slate-900 dark:text-slate-100">რეგულარი RON 93</span>
-              <Badge variant="secondary">
-                {importer.regular_ron_93_price} ₾
-              </Badge>
-            </div>
-          )}
-        </div>
+  const [isExpanded, setIsExpanded] = useState(false);
+  const INITIAL_DISPLAY_COUNT = 5;
 
-        {!importer.super_ron_98_price && !importer.premium_ron_96_price && !importer.regular_ron_93_price && (
-          <p className="text-center text-sm text-muted-foreground py-4">
-            ფასები ჯერ არ არის მითითებული
-          </p>
+  const fuelPrices = importer.fuelPrices || [];
+  const hasMoreItems = fuelPrices.length > INITIAL_DISPLAY_COUNT;
+  const displayedPrices = isExpanded
+    ? fuelPrices
+    : fuelPrices.slice(0, INITIAL_DISPLAY_COUNT);
+
+  // Connect company uses yellow header with black text/prices, others use blue
+  const isConnect = importer.name === "Connect";
+  const isGulf = importer.name === "Gulf";
+  const isLukoil = importer.name === "Lukoil";
+  const isPortal = importer.name === "Portal";
+  const isRompetrol = importer.name === "Rompetrol";
+  const isSocar = importer.name === "Socar";
+  const isWissol = importer.name === "Wissol";
+  const hasLogo = isConnect || isGulf || isLukoil || isPortal || isRompetrol || isSocar || isWissol;
+
+  const primaryColor = isConnect ? '#000000' : '#027bc7'; // Black for Connect prices, blue for others
+  const gradientColor = isConnect ? '#ffdd00' : '#027bc7'; // Yellow for Connect header
+  const gradientEnd = isConnect ? '#ffc700' : '#0268a8';
+  const textColor = isConnect ? 'text-gray-900' : 'text-white';
+  const subtextColor = isConnect ? 'text-gray-700' : 'text-white/80';
+
+  // Get logo path
+  const getLogoPath = () => {
+    if (isConnect) return '/fuel-company-logos/connect-main-logo.svg';
+    if (isGulf) return '/fuel-company-logos/gulf-logo.png';
+    if (isLukoil) return '/fuel-company-logos/lukoil-logo.png';
+    if (isPortal) return '/fuel-company-logos/portal-logo.svg';
+    if (isRompetrol) return '/fuel-company-logos/rompetrol-logo.png';
+    if (isSocar) return '/fuel-company-logos/socar-logo.svg';
+    if (isWissol) return '/fuel-company-logos/wissol-logo.png';
+    return null;
+  };
+
+  return (
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      {/* Header with gradient background */}
+      <div className={`p-4 ${textColor}`} style={{ background: `linear-gradient(to right, ${gradientColor}, ${gradientEnd})` }}>
+        <div className="flex items-center gap-3">
+          {hasLogo && getLogoPath() && (
+            <div className="bg-white rounded-full p-3 flex items-center justify-center w-16 h-16 shrink-0">
+              <img
+                src={getLogoPath()}
+                alt={`${importer.name} logo`}
+                className={`h-10 w-10 object-contain ${isWissol ? 'rounded-md' : ''}`}
+              />
+            </div>
+          )}
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold mb-1">{importer.name}</h3>
+            <p className={`text-sm ${subtextColor}`}>
+              {importer.totalFuelTypes ? `${importer.totalFuelTypes} საწვავის ტიპი` : ''}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Fuel prices list */}
+      <div className="bg-white">
+        {fuelPrices.length > 0 ? (
+          <>
+            <div className="divide-y divide-gray-100">
+              {displayedPrices.map((fuel, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-gray-700 font-medium">
+                    {fuel.fuelType}
+                  </span>
+                  <span className="font-bold text-lg" style={{ color: primaryColor }}>
+                    {fuel.price.toFixed(2)} ₾
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Expand/Collapse button */}
+            {hasMoreItems && (
+              <div className="border-t border-gray-100">
+                <Button
+                  variant="ghost"
+                  className="w-full py-3 text-sm hover:bg-gray-50"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  style={{ color: primaryColor }}
+                >
+                  {isExpanded ? (
+                    <>
+                      <ChevronUp className="w-4 h-4 mr-2" />
+                      შეკეცვა
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4 mr-2" />
+                      ვრცლად ({fuelPrices.length - INITIAL_DISPLAY_COUNT} დამატებითი)
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          // Fallback: show old format if fuelPrices is not available
+          <div className="divide-y divide-gray-100">
+            {importer.super_ron_98_price && (
+              <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+                <span className="text-gray-700 font-medium">სუპერი RON 98</span>
+                <span className="font-bold text-lg" style={{ color: primaryColor }}>
+                  {importer.super_ron_98_price.toFixed(2)} ₾
+                </span>
+              </div>
+            )}
+            {importer.premium_ron_96_price && (
+              <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+                <span className="text-gray-700 font-medium">პრემიუმი RON 96</span>
+                <span className="font-bold text-lg" style={{ color: primaryColor }}>
+                  {importer.premium_ron_96_price.toFixed(2)} ₾
+                </span>
+              </div>
+            )}
+            {importer.regular_ron_93_price && (
+              <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+                <span className="text-gray-700 font-medium">რეგულარი RON 93</span>
+                <span className="font-bold text-lg" style={{ color: primaryColor }}>
+                  {importer.regular_ron_93_price.toFixed(2)} ₾
+                </span>
+              </div>
+            )}
+            {!importer.super_ron_98_price && !importer.premium_ron_96_price && !importer.regular_ron_93_price && (
+              <div className="px-4 py-8 text-center">
+                <p className="text-sm text-gray-500">
+                  ფასები ჯერ არ არის მითითებული
+                </p>
+              </div>
+            )}
+          </div>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 };
