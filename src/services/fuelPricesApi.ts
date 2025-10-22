@@ -1,7 +1,7 @@
 // Fuel Prices API Service
 // Based on API_INTEGRATION_GUIDE.md
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = "https://fuel-prices-backend.onrender.com/";
 
 export interface FuelPrice {
   fuelType: string;
@@ -41,7 +41,7 @@ export interface BestPricesResponse {
 
 // Fetch all fuel prices from all companies
 export const getAllFuelPrices = async (forceRefresh = false): Promise<FuelPricesResponse> => {
-  const url = `${API_BASE_URL}/api/fuel-prices${forceRefresh ? '?refresh=true' : ''}`;
+  const url = `${API_BASE_URL}/api/fuel-prices${forceRefresh ? "?refresh=true" : ""}`;
 
   try {
     const response = await fetch(url);
@@ -53,13 +53,13 @@ export const getAllFuelPrices = async (forceRefresh = false): Promise<FuelPrices
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch fuel prices');
+      throw new Error(data.error || "Failed to fetch fuel prices");
     }
 
     return data;
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error('Network error - check API server connection');
+      throw new Error("Network error - check API server connection");
     }
     throw error;
   }
@@ -67,7 +67,7 @@ export const getAllFuelPrices = async (forceRefresh = false): Promise<FuelPrices
 
 // Fetch best prices across all companies
 export const getBestPrices = async (forceRefresh = false): Promise<BestPricesResponse> => {
-  const url = `${API_BASE_URL}/api/fuel-prices/best${forceRefresh ? '?refresh=true' : ''}`;
+  const url = `${API_BASE_URL}/api/fuel-prices/best${forceRefresh ? "?refresh=true" : ""}`;
 
   try {
     const response = await fetch(url);
@@ -79,13 +79,13 @@ export const getBestPrices = async (forceRefresh = false): Promise<BestPricesRes
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch best prices');
+      throw new Error(data.error || "Failed to fetch best prices");
     }
 
     return data;
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error('Network error - check API server connection');
+      throw new Error("Network error - check API server connection");
     }
     throw error;
   }
@@ -94,9 +94,9 @@ export const getBestPrices = async (forceRefresh = false): Promise<BestPricesRes
 // Fetch prices for a specific company
 export const getCompanyPrices = async (
   companyName: string,
-  forceRefresh = false
+  forceRefresh = false,
 ): Promise<{ success: boolean; data: Company }> => {
-  const url = `${API_BASE_URL}/api/fuel-prices/company/${companyName}${forceRefresh ? '?refresh=true' : ''}`;
+  const url = `${API_BASE_URL}/api/fuel-prices/company/${companyName}${forceRefresh ? "?refresh=true" : ""}`;
 
   try {
     const response = await fetch(url);
@@ -108,13 +108,13 @@ export const getCompanyPrices = async (
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.error || 'Failed to fetch company prices');
+      throw new Error(data.error || "Failed to fetch company prices");
     }
 
     return data;
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error('Network error - check API server connection');
+      throw new Error("Network error - check API server connection");
     }
     throw error;
   }
@@ -139,7 +139,7 @@ export const checkApiHealth = async (): Promise<{
     return await response.json();
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error('API is not reachable');
+      throw new Error("API is not reachable");
     }
     throw error;
   }
