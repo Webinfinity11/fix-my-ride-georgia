@@ -32,7 +32,7 @@ export default {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))',
 					light: 'hsl(25 95% 65%)',
-					dark: 'hsl(25 100% 42%)'
+					dark: 'hsl(25 100% 38%)'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',

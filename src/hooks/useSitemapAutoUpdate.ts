@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
  */
 export const useSitemapAutoUpdate = () => {
   useEffect(() => {
-    // Subscribe to real-time sitemap update notifications
+    // Subscribe to real-time sitemap update notifications with error handling
     const subscription = supabase
       .channel('sitemap_updates')
       .on('postgres_changes', {
@@ -31,7 +31,12 @@ export const useSitemapAutoUpdate = () => {
       }, () => {
         debouncedSitemapUpdate();
       })
-      .subscribe();
+      .subscribe((status, err) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          // Silently handle connection errors to prevent console pollution
+          console.debug('Realtime connection status:', status);
+        }
+      });
 
     return () => {
       subscription.unsubscribe();
