@@ -1,7 +1,8 @@
 // Fuel Prices API Service
 // Based on API_INTEGRATION_GUIDE.md
 
-const API_BASE_URL = "https://fuel-prices-backend.onrender.com";
+// Use environment variable for API URL, fallback to production URL
+const API_BASE_URL = import.meta.env.VITE_FUEL_API_URL || "https://fuel-prices-backend.onrender.com";
 
 export interface FuelPrice {
   fuelType: string;

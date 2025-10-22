@@ -294,35 +294,36 @@ const Laundries = () => {
 
       <div className="h-screen flex flex-col">
         {/* Search Header */}
-        <div className="bg-background border-b p-4 flex-shrink-0">
+        <div className="bg-background border-b p-3 sm:p-4 flex-shrink-0">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="relative flex-1 max-w-md">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 mb-3 sm:mb-4">
+              <div className="relative flex-1 max-w-full sm:max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   type="text"
                   placeholder="მოძებნეთ სამრეცხაო..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 text-sm sm:text-base"
                 />
               </div>
-              
+
               {searchQuery && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setSearchQuery("")}
+                  className="w-full sm:w-auto"
                 >
                   <X className="w-4 h-4 mr-2" />
                   გასუფთავება
                 </Button>
               )}
             </div>
-            
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">სამრეცხაოები რუკაზე</h1>
-              <Badge variant="secondary">
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold">სამრეცხაოები რუკაზე</h1>
+              <Badge variant="secondary" className="text-xs sm:text-sm">
                 ნაპოვნია {filteredLaundries.length} სამრეცხაო
               </Badge>
             </div>
@@ -330,10 +331,10 @@ const Laundries = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           {/* Sidebar */}
-          <div className="w-1/3 border-r bg-background overflow-y-auto">
-            <div className="p-4 space-y-4">
+          <div className="w-full md:w-2/5 lg:w-1/3 border-b md:border-b-0 md:border-r bg-background overflow-y-auto h-1/2 md:h-full">
+            <div className="p-2 sm:p-3 md:p-4 space-y-3 md:space-y-4">
               {isLoading ? (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground">იტვირთება სამრეცხაოები...</p>
