@@ -510,7 +510,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          // Silently handle connection errors to prevent console pollution
+          console.debug('Message channel status:', status);
+        }
+      });
 
     // User presence real-time listener
     const presenceChannel = supabase
@@ -525,7 +530,12 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           loadOnlineUsers();
         }
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          // Silently handle connection errors to prevent console pollution
+          console.debug('Presence channel status:', status);
+        }
+      });
 
     // Update presence
     const updatePresence = async () => {
