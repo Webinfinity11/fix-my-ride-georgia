@@ -267,7 +267,28 @@ const ServiceDetail = () => {
     return maskedPart + visiblePart;
   };
 
-  const togglePhoneVisibility = () => {
+  const togglePhoneVisibility = async () => {
+    // თუ ნომერი დამალულია და ვაპირებთ ჩვენებას, track phone view
+    if (!showFullPhone) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        const { error } = await supabase
+          .from('service_phone_views')
+          .insert({
+            service_id: service.id,
+            viewer_id: user?.id || null,
+            user_agent: navigator.userAgent
+          });
+
+        if (error) {
+          console.error('Error tracking phone view:', error);
+        }
+      } catch (err) {
+        console.error('Error tracking phone view:', err);
+      }
+    }
+    
     setShowFullPhone(!showFullPhone);
   };
 
