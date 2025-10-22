@@ -440,12 +440,12 @@ const Index = () => {
                     </p>
                     <div className="space-y-3 lg:space-y-4">
                       <Link to="/register?type=mechanic">
-                        <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 lg:py-3 text-base lg:text-lg">
+                        <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground py-2 lg:py-3 text-base lg:text-lg">
                           რეგისტრაცია ხელოსნად
                         </Button>
                       </Link>
                       <Link to="/login">
-                        <Button variant="outline" className="w-full border-orange-600 text-orange-600 hover:bg-orange-50 py-2 lg:py-3 text-base lg:text-lg">
+                        <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary/10 py-2 lg:py-3 text-base lg:text-lg">
                           შესვლა
                         </Button>
                       </Link>
