@@ -56,14 +56,14 @@ export const SavedServicesManagement = () => {
           notes,
           service_id,
           user_id,
-          service:mechanic_services!saved_services_service_id_fkey (
+          service:mechanic_services(
             id,
             name,
             slug,
             city,
             district
           ),
-          user:profiles!saved_services_user_id_fkey (
+          user:profiles(
             id,
             first_name,
             last_name,
@@ -73,8 +73,12 @@ export const SavedServicesManagement = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase query error:', error);
+        throw error;
+      }
 
+      console.log('Fetched saved services:', data);
       setSavedServices((data as any) || []);
     } catch (error: any) {
       console.error('Error fetching saved services:', error);
