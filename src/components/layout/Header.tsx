@@ -39,6 +39,9 @@ const Header = () => {
             <img
               src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
               alt="FixUp Auto Service"
+              width="164"
+              height="80"
+              fetchPriority="high"
               className="h-8 md:h-10 w-auto object-contain"
             />
           </Link>
