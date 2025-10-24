@@ -87,10 +87,6 @@ export default defineConfig(({ mode }) => ({
         drop_console: true,
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        passes: 2,
-      },
-      mangle: {
-        safari10: true,
       },
     },
   },
@@ -131,13 +127,13 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/kwozniwtygkdoagjegom\.supabase\.co\/rest/i,
-            handler: 'StaleWhileRevalidate',
+            urlPattern: /^https:\/\/kwozniwtygkdoagjegom\.supabase\.co\/.*/i,
+            handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache',
+              cacheName: 'supabase-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 5 * 60 // 5 minutes
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
               }
             }
           },

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -42,7 +42,7 @@ interface MobileDrawerMenuProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export const MobileDrawerMenu = React.memo(({ children, open, onOpenChange }: MobileDrawerMenuProps) => {
+export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerMenuProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -62,15 +62,15 @@ export const MobileDrawerMenu = React.memo(({ children, open, onOpenChange }: Mo
     onOpenChange?.(false);
   };
 
-  // Memoize navigation items for unauthenticated users
-  const publicNavItems = useMemo(() => [
+  // Public navigation items for unauthenticated users
+  const publicNavItems = [
     { icon: Home, label: "მთავარი", path: "/" },
     { icon: Wrench, label: "სერვისები", path: "/services" },
     { icon: Map, label: "რუკა", path: "/map" },
     { icon: Sparkles, label: "სამრეცხაო", path: "/laundries" },
     { icon: Fuel, label: "საწვავი", path: "/fuel-importers" },
     { icon: HelpCircle, label: "დახმარება", path: "/contact" },
-  ], []);
+  ];
 
   // If not logged in, show public navigation
   if (!user) {
@@ -310,4 +310,4 @@ export const MobileDrawerMenu = React.memo(({ children, open, onOpenChange }: Mo
       </DrawerContent>
     </Drawer>
   );
-});
+};

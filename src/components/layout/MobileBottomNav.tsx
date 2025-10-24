@@ -1,23 +1,24 @@
-import React, { useState, useMemo, useCallback } from 'react';
+
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu } from 'lucide-react';
 import { MobileDrawerMenu } from './MobileDrawerMenu';
 
-const MobileBottomNav = React.memo(() => {
+const MobileBottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const isActive = useCallback((path: string) => {
+  const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
     }
     return location.pathname.startsWith(path);
-  }, [location.pathname]);
+  };
 
-  const handleAddClick = useCallback(() => {
+  const handleAddClick = () => {
     if (!user) {
       navigate('/services');
     } else if (user.role === 'mechanic') {
@@ -25,9 +26,9 @@ const MobileBottomNav = React.memo(() => {
     } else {
       navigate('/dashboard/cars');
     }
-  }, [user, navigate]);
+  };
 
-  const navItems = useMemo(() => [
+  const navItems = [
     {
       icon: Home,
       label: 'Home',
@@ -60,7 +61,7 @@ const MobileBottomNav = React.memo(() => {
       onClick: () => setDrawerOpen(true),
       isMenu: true
     }
-  ], [user, navigate, handleAddClick]);
+  ];
 
   return (
     <>
@@ -115,6 +116,6 @@ const MobileBottomNav = React.memo(() => {
       </div>
     </>
   );
-});
+};
 
 export default MobileBottomNav;
