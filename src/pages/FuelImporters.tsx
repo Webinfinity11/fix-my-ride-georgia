@@ -7,18 +7,15 @@ import FuelPriceHistory from "@/components/fuel/FuelPriceHistory";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FloatingActionButton } from "@/components/mobile/FloatingActionButton";
-import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp, Navigation } from "lucide-react";
+import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { PullToRefreshIndicator } from "@/components/mobile/PullToRefreshIndicator";
-import { useNavigate } from "react-router-dom";
 
 const FuelImporters = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
 
   const { data: importers = [], isLoading, refetch, isRefetching } = useFuelImporters();
 
@@ -169,15 +166,6 @@ const FuelImporters = () => {
             <FuelPriceHistory />
           </TabsContent>
         </Tabs>
-      </div>
-      
-      {/* Floating Action Button - Navigate to Map */}
-      <div className="md:hidden">
-        <FloatingActionButton
-          icon={Navigation}
-          label="უახლოესი გასამართი"
-          onClick={() => navigate('/map')}
-        />
       </div>
     </Layout>
   );

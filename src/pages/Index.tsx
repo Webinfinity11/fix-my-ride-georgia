@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MechanicCard } from "@/components/mechanic/MechanicCard";
-import { MobileSearchBar } from "@/components/mobile/MobileSearchBar";
 import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/seo/SEOHead";
 import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -222,17 +221,6 @@ const Index = () => {
 
               {/* Popular Searches */}
               <div className="mb-10">
-                {/* Mobile Search Bar - Only visible on mobile */}
-                <div className="md:hidden mb-6">
-                  <MobileSearchBar
-                    placeholder="მოძებნეთ სერვისი ან ხელოსანი..."
-                    onSearch={(query) => {
-                      setSearchTerm(query);
-                      handleSearch();
-                    }}
-                  />
-                </div>
-
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <span className="font-semibold text-gray-700">პოპულარული ძიებები</span>
