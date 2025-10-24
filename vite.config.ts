@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: true,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -26,6 +27,12 @@ export default defineConfig(({ mode }) => ({
           'query-vendor': ['@tanstack/react-query'],
           'form-vendor': ['react-hook-form', 'zod'],
           'map-vendor': ['leaflet', 'react-leaflet'],
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/[name]-[hash][extname]';
+          }
+          return 'assets/[name]-[hash][extname]';
         },
       },
     },
