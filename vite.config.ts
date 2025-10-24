@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: true,
+    cssCodeSplit: true, // Split CSS by route/component for better performance
     rollupOptions: {
       output: {
         manualChunks: (id) => {
