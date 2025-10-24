@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,14 +36,14 @@ const Header = () => {
         {/* Mobile Menu & Logo */}
         <div className="flex items-center gap-3">
           <MobileMenu />
-          <Link to="/" className="flex items-center">
-            <img
-              src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
-              alt="FixUp Auto Service"
-              width="164"
-              height="80"
-              fetchPriority="high"
+          <Link to="/" className="flex items-center" aria-label="FixUp Auto Service - მთავარი გვერდი">
+            <OptimizedImage
+              src="/lovable-uploads/logo-optimized.png"
+              alt="FixUp Auto Service - ავტოსერვისების პლატფორმა"
+              width={164}
+              height={80}
               className="h-8 md:h-10 w-auto object-contain"
+              fetchPriority="high"
             />
           </Link>
         </div>

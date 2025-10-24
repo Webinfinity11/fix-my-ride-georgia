@@ -18,77 +18,25 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: true,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Core React dependencies
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-core';
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
+          'query-vendor': ['@tanstack/react-query'],
+          'form-vendor': ['react-hook-form', 'zod'],
+          'map-vendor': ['leaflet', 'react-leaflet'],
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/[name]-[hash][extname]';
           }
-          if (id.includes('node_modules/react-router-dom')) {
-            return 'react-router';
-          }
-          
-          // Heavy mapping libraries - lazy loaded per route
-          if (id.includes('node_modules/leaflet') || id.includes('node_modules/react-leaflet')) {
-            return 'map-vendor';
-          }
-          
-          // Date picker - lazy loaded in booking
-          if (id.includes('node_modules/react-day-picker') || id.includes('node_modules/date-fns')) {
-            return 'date-picker';
-          }
-          
-          // Form validation - lazy loaded per form
-          if (id.includes('node_modules/zod')) {
-            return 'zod-vendor';
-          }
-          if (id.includes('node_modules/react-hook-form')) {
-            return 'form-vendor';
-          }
-          
-          // Supabase
-          if (id.includes('node_modules/@supabase')) {
-            return 'supabase-vendor';
-          }
-          
-          // React Query
-          if (id.includes('node_modules/@tanstack/react-query')) {
-            return 'query-vendor';
-          }
-          
-          // UI Components - split by type
-          if (id.includes('node_modules/@radix-ui')) {
-            if (id.includes('dialog') || id.includes('alert-dialog')) {
-              return 'ui-dialogs';
-            }
-            if (id.includes('dropdown') || id.includes('select') || id.includes('popover')) {
-              return 'ui-menus';
-            }
-            return 'ui-vendor';
-          }
-          
-          // Charts - only loaded on dashboard
-          if (id.includes('node_modules/recharts')) {
-            return 'charts-vendor';
-          }
-          
-          // Other vendor code
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
+          return 'assets/[name]-[hash][extname]';
         },
       },
     },
     chunkSizeWarningLimit: 1000,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
-      },
-    },
   },
   plugins: [
     react(),
