@@ -291,52 +291,45 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
     });
   };
 
-  // Fetch services on component mount
+  // Fetch services on component mount and handle filters
   useEffect(() => {
     let mounted = true;
+    let timeoutId: NodeJS.Timeout;
     
     const loadServices = async () => {
       if (!mounted) return;
-      await fetchInitialData();
       
-      if (!mounted) return;
-      // Fetch all services initially
-      await fetchServices({
-        searchTerm: "",
-        selectedCategory: "all",
-        selectedCity: null,
-        selectedDistrict: null,
-        selectedBrands: [],
-        onSiteOnly: false,
-        minRating: null,
-      });
+      // Initial load
+      if (categories.length === 0) {
+        await fetchInitialData();
+        if (!mounted) return;
+      }
+      
+      // Fetch services with current filters (debounced if search query exists)
+      if (categories.length > 0) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+          if (!mounted) return;
+          await fetchServices({
+            searchTerm: searchQuery,
+            selectedCategory,
+            selectedCity,
+            selectedDistrict: null,
+            selectedBrands: [],
+            onSiteOnly: false,
+            minRating: null,
+          });
+        }, searchQuery ? 300 : 0);
+      }
     };
 
     loadServices();
     
     return () => {
       mounted = false;
+      clearTimeout(timeoutId);
     };
-  }, []); // Empty dependency array to run only once on mount
-
-  // Apply filters when they change
-  useEffect(() => {
-    if (categories.length > 0) { // Only apply if data is loaded
-      const timeoutId = setTimeout(() => {
-        fetchServices({
-          searchTerm: searchQuery,
-          selectedCategory,
-          selectedCity,
-          selectedDistrict: null,
-          selectedBrands: [],
-          onSiteOnly: false,
-          minRating: null,
-        });
-      }, 300);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [selectedCategory, selectedCity, searchQuery, categories.length]);
+  }, [selectedCategory, selectedCity, searchQuery, categories.length, fetchInitialData, fetchServices]);
 
 
   useEffect(() => {

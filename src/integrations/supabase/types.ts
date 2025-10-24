@@ -751,6 +751,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_mechanic_services_profiles"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "mechanic_services_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false

@@ -184,7 +184,17 @@ const ServicesDetail = () => {
     if (categories.length === 0) return;
     
     const timeoutId = setTimeout(() => {
-      performSearch();
+      fetchServices({
+        searchTerm: searchTerm.trim(),
+        selectedCategory,
+        selectedCity,
+        selectedDistrict,
+        selectedBrands,
+        onSiteOnly,
+        minRating,
+      }).then(() => {
+        updateURL();
+      });
     }, searchTerm ? 500 : 100);
     
     return () => clearTimeout(timeoutId);
@@ -196,7 +206,8 @@ const ServicesDetail = () => {
     selectedBrands.join(','),
     onSiteOnly, 
     minRating,
-    performSearch
+    categories.length,
+    fetchServices
   ]);
 
   return (
