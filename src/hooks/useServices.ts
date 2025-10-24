@@ -139,7 +139,14 @@ export const useServices = () => {
           category_id,
           mechanic_id,
           created_at,
-          service_categories(id, name)
+          service_categories(id, name),
+          profiles!inner(
+            id,
+            first_name,
+            last_name,
+            phone,
+            mechanic_profiles(display_id, rating)
+          )
         `)
         .eq("is_active", true)
         .limit(200);
@@ -174,23 +181,12 @@ export const useServices = () => {
         return;
       }
 
-      // Fetch mechanic profiles
-      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))];
-      
-      const { data: mechanicsData } = await supabase
-        .from("profiles")
-        .select(`
-          id,
-          first_name,
-          last_name,
-          phone,
-          mechanic_profiles(display_id, rating)
-        `)
-        .in("id", mechanicIds);
-
-      // Transform the data
-      let transformedServices: ServiceType[] = servicesData.map(service => {
-        const mechanic = mechanicsData?.find(m => m.id === service.mechanic_id);
+      // Transform the data with nested relations
+      let transformedServices: ServiceType[] = servicesData.map((service: any) => {
+        const mechanic = Array.isArray(service.profiles) 
+          ? service.profiles[0] 
+          : service.profiles;
+        
         const mechanicProfile = Array.isArray(mechanic?.mechanic_profiles) 
           ? mechanic.mechanic_profiles[0] 
           : mechanic?.mechanic_profiles;
@@ -272,7 +268,16 @@ export const useServices = () => {
       setServices(transformedServices);
       
     } catch (error: any) {
-      toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
+      console.error("Services fetch error:", error);
+      
+      if (error.message?.includes('Failed to fetch')) {
+        toast.error("ინტერნეტ კავშირი არ არის. გთხოვთ შეამოწმოთ ქსელი");
+      } else if (error.code === 'PGRST116') {
+        toast.error("სერვისები დროებით მიუწვდომელია");
+      } else {
+        toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
+      }
+      
       setServices([]);
     } finally {
       setLoading(false);

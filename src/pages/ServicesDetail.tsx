@@ -128,7 +128,11 @@ const ServicesDetail = () => {
     setSearchParams(params);
   }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, setSearchParams]);
 
+  const canSearch = useMemo(() => categories.length > 0, [categories.length]);
+
   const performSearch = useCallback(async () => {
+    if (!canSearch) return;
+    
     const filters = {
       searchTerm: searchTerm.trim(),
       selectedCategory,
@@ -140,7 +144,7 @@ const ServicesDetail = () => {
     };
     await fetchServices(filters);
     updateURL();
-  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, fetchServices, updateURL]);
+  }, [canSearch, searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, fetchServices, updateURL]);
 
   const handleResetFilters = useCallback(async () => {
     setSearchTerm("");
@@ -177,13 +181,23 @@ const ServicesDetail = () => {
 
   // Trigger search when filters change (with debouncing for searchTerm)
   useEffect(() => {
-    if (categories.length > 0) {
-      const timeoutId = setTimeout(() => {
-        performSearch();
-      }, searchTerm ? 500 : 0);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories, performSearch]);
+    if (categories.length === 0) return;
+    
+    const timeoutId = setTimeout(() => {
+      performSearch();
+    }, searchTerm ? 500 : 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [
+    searchTerm, 
+    selectedCategory, 
+    selectedCity, 
+    selectedDistrict, 
+    selectedBrands.join(','),
+    onSiteOnly, 
+    minRating,
+    performSearch
+  ]);
 
   return (
     <Layout>
