@@ -18,7 +18,6 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     sourcemap: true,
-    cssCodeSplit: true, // Split CSS by route/component for better performance
     rollupOptions: {
       output: {
         manualChunks: (id) => {
@@ -88,6 +87,10 @@ export default defineConfig(({ mode }) => ({
         drop_console: true,
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        passes: 2,
+      },
+      mangle: {
+        safari10: true,
       },
     },
   },
@@ -128,13 +131,13 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/kwozniwtygkdoagjegom\.supabase\.co\/.*/i,
-            handler: 'NetworkFirst',
+            urlPattern: /^https:\/\/kwozniwtygkdoagjegom\.supabase\.co\/rest/i,
+            handler: 'StaleWhileRevalidate',
             options: {
-              cacheName: 'supabase-cache',
+              cacheName: 'api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                maxAgeSeconds: 5 * 60 // 5 minutes
               }
             }
           },
