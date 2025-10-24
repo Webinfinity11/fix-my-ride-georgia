@@ -5,28 +5,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
-    <!-- Critical Resource Hints for FCP Optimization -->
+    <!-- Enhanced Performance Optimizations -->
     <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://connect.facebook.net">
-    <link rel="preconnect" href="https://www.googletagmanager.com">
-    
-    <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
+    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
     <link rel="dns-prefetch" href="https://a.tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://b.tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://c.tile.openstreetmap.org">
-    
-    <!-- Preload Critical Assets -->
-    <link rel="preload" href="/lovable-uploads/logo-optimized.png" as="image" type="image/png" fetchpriority="high">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" as="style">
-    
-    <!-- Optimized Font Loading -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" media="all">
-    
-    <!-- Deferred Leaflet CSS -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="preload" href="/icons/service-pin.png" as="image" type="image/png">
     <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all';this.onload=null">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap"></noscript>
     
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="/icons/service-pin.png" />
@@ -36,10 +28,19 @@
     <!-- Google Site Verification -->
     <meta name="google-site-verification" content="5LPHwP2tb47OMfc-W_DYFGcLkj2AS8zZsosuoHE6cTI" />
     
+    <!-- Performance Optimizations -->
+    <link rel="preload" as="style" href="/src/index.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/src/index.css"></noscript>
+    
+    <!-- Resource Hints for Better Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://kwozniwtygkdoagjegom.supabase.co">
     
     <!-- Critical CSS Inline for Instant Rendering -->
     <style>
-      /* Critical above-the-fold styles - Comprehensive for FCP/LCP */
+      /* Critical above-the-fold styles */
       * { box-sizing: border-box; margin: 0; padding: 0; }
       html { scroll-behavior: smooth; }
       body { 
@@ -47,179 +48,34 @@
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        background: hsl(0 0% 100%);
-        color: hsl(222.2 84% 4.9%);
       }
       #root { min-height: 100vh; display: flex; flex-direction: column; }
       
-      /* Header critical styles - Immediate paint */
-      header { 
-        background: hsl(0 0% 100%);
+      /* Header critical styles */
+      .header-container { 
+        background: hsl(210 50% 98%);
         border-bottom: 1px solid hsl(214.3 31.8% 91.4%);
-        height: 4rem;
-        display: flex;
-        align-items: center;
         position: sticky;
         top: 0;
         z-index: 50;
-        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-      }
-      
-      header .container {
-        width: 100%;
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      
-      @media (min-width: 768px) {
-        header { height: 5rem; }
-        header .container { padding: 0 2rem; }
-      }
-      
-      /* Navigation critical styles */
-      nav { display: flex; gap: 1.5rem; align-items: center; }
-      nav a { 
-        color: hsl(222.2 47.4% 11.2%);
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s;
-      }
-      nav a:hover { color: hsl(210 80% 28%); }
-      
-      /* Logo critical styles */
-      header img {
-        height: 2rem;
-        width: auto;
-        object-fit: contain;
-      }
-      
-      @media (min-width: 768px) {
-        header img { height: 2.5rem; }
       }
       
       /* Button critical styles */
-      .btn-primary, button[class*="primary"] { 
+      .btn-primary { 
         background: hsl(210 80% 28%);
         color: hsl(210 40% 98%);
-        padding: 0.5rem 1.5rem;
+        padding: 0.5rem 1rem;
         border-radius: 0.5rem;
         border: none;
         cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
+        transition: all 0.2s ease;
       }
-      
-      .btn-primary:hover, button[class*="primary"]:hover {
-        background: hsl(210 80% 24%);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      }
-      
-      /* Hero section critical styles */
-      main { flex-grow: 1; }
-      
-      .hero-section, section[class*="hero"] {
-        padding: 4rem 1rem;
-        background: linear-gradient(to bottom right, hsl(210 40% 98%), hsl(0 0% 100%), hsl(214 100% 97%));
-        text-align: center;
-      }
-      
-      .hero-section .container, section[class*="hero"] .container {
-        max-width: 1280px;
-        margin: 0 auto;
-      }
-      
-      .hero-section h1, section[class*="hero"] h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: hsl(222.2 47.4% 11.2%);
-        line-height: 1.2;
-      }
-      
-      .hero-section p, section[class*="hero"] p {
-        font-size: 1.125rem;
-        color: hsl(215.4 16.3% 46.9%);
-        margin-bottom: 2rem;
-      }
-      
-      @media (min-width: 768px) {
-        .hero-section h1, section[class*="hero"] h1 { font-size: 3rem; }
-        .hero-section p, section[class*="hero"] p { font-size: 1.25rem; }
-      }
-      
-      @media (min-width: 1024px) {
-        .hero-section, section[class*="hero"] { padding: 6rem 1rem; }
-      }
-      
-      /* Container utilities */
-      .container {
-        width: 100%;
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 1rem;
-      }
-      
-      @media (min-width: 768px) {
-        .container { padding: 0 2rem; }
-      }
-      
-      /* Card critical styles */
-      .card, [class*="card"] {
-        background: hsl(0 0% 100%);
-        border: 1px solid hsl(214.3 31.8% 91.4%);
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-        transition: all 0.2s;
-      }
-      
-      .card:hover, [class*="card"]:hover {
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        transform: translateY(-2px);
-      }
-      
-      /* Grid utilities */
-      .grid {
-        display: grid;
-        gap: 1.5rem;
-      }
-      
-      @media (min-width: 768px) {
-        .grid { grid-template-columns: repeat(2, 1fr); }
-      }
-      
-      @media (min-width: 1024px) {
-        .grid { grid-template-columns: repeat(3, 1fr); }
-      }
-      
-      /* Typography utilities */
-      h1, h2, h3, h4, h5, h6 {
-        font-weight: 600;
-        line-height: 1.2;
-        color: hsl(222.2 47.4% 11.2%);
-      }
-      
-      h1 { font-size: 2.25rem; }
-      h2 { font-size: 1.875rem; }
-      h3 { font-size: 1.5rem; }
-      h4 { font-size: 1.25rem; }
-      
-      p { color: hsl(215.4 16.3% 46.9%); }
       
       /* Loading states */
       .loading-skeleton { 
         background: linear-gradient(90deg, hsl(210 40% 96%) 25%, hsl(210 40% 92%) 50%, hsl(210 40% 96%) 75%);
         background-size: 200% 100%;
         animation: loading 1.5s infinite;
-        border-radius: 0.5rem;
       }
       
       @keyframes loading {
@@ -227,61 +83,11 @@
         100% { background-position: -200% 0; }
       }
       
-      /* Prevent layout shift */
-      img { max-width: 100%; height: auto; display: block; }
-      
-      /* Input critical styles */
-      input, select, textarea {
-        width: 100%;
-        padding: 0.5rem 1rem;
-        border: 1px solid hsl(214.3 31.8% 91.4%);
-        border-radius: 0.5rem;
-        font-family: inherit;
-        font-size: 1rem;
-        transition: all 0.2s;
-      }
-      
-      input:focus, select:focus, textarea:focus {
-        outline: 2px solid hsl(210 80% 28%);
-        outline-offset: 2px;
-      }
-      
-      /* Utility classes */
-      .flex { display: flex; }
-      .items-center { align-items: center; }
-      .justify-between { justify-content: space-between; }
-      .gap-4 { gap: 1rem; }
-      .mb-4 { margin-bottom: 1rem; }
-      .mt-4 { margin-top: 1rem; }
-      .text-center { text-align: center; }
-      
       /* Dark mode support */
       @media (prefers-color-scheme: dark) {
-        body { 
-          background: hsl(222.2 84% 4.9%);
-          color: hsl(210 40% 98%);
-        }
-        header { 
+        .header-container { 
           background: hsl(222.2 84% 4.9%);
           border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
-        }
-        nav a { color: hsl(210 40% 98%); }
-        nav a:hover { color: hsl(210 80% 55%); }
-        .hero-section, section[class*="hero"] {
-          background: linear-gradient(to bottom right, hsl(222.2 84% 4.9%), hsl(217.2 32.6% 17.5%));
-        }
-        .hero-section h1, section[class*="hero"] h1,
-        h1, h2, h3, h4, h5, h6 { color: hsl(210 40% 98%); }
-        .hero-section p, section[class*="hero"] p,
-        p { color: hsl(215 20.2% 65.1%); }
-        .card, [class*="card"] {
-          background: hsl(222.2 84% 4.9%);
-          border: 1px solid hsl(217.2 32.6% 17.5%);
-        }
-        input, select, textarea {
-          background: hsl(222.2 84% 4.9%);
-          border: 1px solid hsl(217.2 32.6% 17.5%);
-          color: hsl(210 40% 98%);
         }
         .loading-skeleton { 
           background: linear-gradient(90deg, hsl(217.2 32.6% 17.5%) 25%, hsl(215 20.2% 65.1%) 50%, hsl(217.2 32.6% 17.5%) 75%);

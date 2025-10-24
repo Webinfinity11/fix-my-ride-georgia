@@ -52,10 +52,6 @@ const SEOHead = ({
       <meta name="author" content="ავტოხელოსანი" />
       <meta name="language" content="ka" />
       
-      {/* Performance Hints */}
-      <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="https://kwozniwtygkdoagjegom.supabase.co" />
-      
       {/* Canonical URL */}
       <link rel="canonical" href={canonicalUrl} />
       
