@@ -293,36 +293,51 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
 
   // Fetch services on component mount
   useEffect(() => {
+    let mounted = true;
+    
     const loadServices = async () => {
-      console.log("🗺️ Map component loading services...");
+      if (!mounted) return;
       await fetchInitialData();
-      // Fetch all services with current filters
-      await applyFilters();
+      
+      if (!mounted) return;
+      // Fetch all services initially
+      await fetchServices({
+        searchTerm: "",
+        selectedCategory: "all",
+        selectedCity: null,
+        selectedDistrict: null,
+        selectedBrands: [],
+        onSiteOnly: false,
+        minRating: null,
+      });
     };
 
     loadServices();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+    return () => {
+      mounted = false;
+    };
   }, []); // Empty dependency array to run only once on mount
 
   // Apply filters when they change
   useEffect(() => {
     if (categories.length > 0) { // Only apply if data is loaded
-      applyFilters();
+      const timeoutId = setTimeout(() => {
+        fetchServices({
+          searchTerm: searchQuery,
+          selectedCategory,
+          selectedCity,
+          selectedDistrict: null,
+          selectedBrands: [],
+          onSiteOnly: false,
+          minRating: null,
+        });
+      }, 300);
+      
+      return () => clearTimeout(timeoutId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedCity]);
+  }, [selectedCategory, selectedCity, searchQuery, categories.length]);
 
-  // Search with delay (debounce)
-  useEffect(() => {
-    if (categories.length === 0) return; // Don't apply if data not loaded yet
-    
-    const timeoutId = setTimeout(() => {
-      applyFilters();
-    }, 500); // Apply search after 500ms delay
-
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
 
   useEffect(() => {
     if (!mapRef.current || map) return;
