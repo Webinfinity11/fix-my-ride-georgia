@@ -38,7 +38,7 @@ const Header = () => {
           <MobileMenu />
           <Link to="/" className="flex items-center" aria-label="FixUp Auto Service - მთავარი გვერდი">
             <OptimizedImage
-              src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
+              src="/lovable-uploads/logo-optimized.png"
               alt="FixUp Auto Service - ავტოსერვისების პლატფორმა"
               width={164}
               height={80}
