@@ -6,6 +6,7 @@ interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
   alt: string;
   className?: string;
   fallback?: string;
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
 export function OptimizedImage({
@@ -13,6 +14,7 @@ export function OptimizedImage({
   alt,
   className,
   fallback = '/placeholder.svg',
+  fetchPriority = 'auto',
   ...props
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -50,11 +52,14 @@ export function OptimizedImage({
     };
   }, []);
 
+  // For high priority images, load immediately without lazy loading
+  const shouldLazyLoad = fetchPriority !== 'high';
+
   return (
     <img
       ref={imgRef}
-      data-src={src}
-      src={fallback}
+      data-src={shouldLazyLoad ? src : undefined}
+      src={shouldLazyLoad ? fallback : src}
       alt={alt}
       className={cn(
         'transition-opacity duration-300',
@@ -62,7 +67,8 @@ export function OptimizedImage({
         error && 'opacity-50',
         className
       )}
-      loading="lazy"
+      loading={shouldLazyLoad ? 'lazy' : 'eager'}
+      fetchPriority={fetchPriority}
       onLoad={() => setIsLoaded(true)}
       onError={() => setError(true)}
       {...props}

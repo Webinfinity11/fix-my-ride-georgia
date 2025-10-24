@@ -5,20 +5,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
-    <!-- Enhanced Performance Optimizations -->
+    <!-- Critical Resource Hints for FCP Optimization -->
     <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://connect.facebook.net">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    
+    <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://a.tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://b.tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://c.tile.openstreetmap.org">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link rel="preload" href="/icons/service-pin.png" as="image" type="image/png">
+    
+    <!-- Preload Critical Assets -->
+    <link rel="preload" href="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png" as="image" type="image/png" fetchpriority="high">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" as="style">
+    
+    <!-- Optimized Font Loading -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" media="all">
+    
+    <!-- Deferred Leaflet CSS -->
     <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" as="style">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all';this.onload=null">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap"></noscript>
     
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="/icons/service-pin.png" />
@@ -28,19 +36,10 @@
     <!-- Google Site Verification -->
     <meta name="google-site-verification" content="5LPHwP2tb47OMfc-W_DYFGcLkj2AS8zZsosuoHE6cTI" />
     
-    <!-- Performance Optimizations -->
-    <link rel="preload" as="style" href="/src/index.css" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="/src/index.css"></noscript>
-    
-    <!-- Resource Hints for Better Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
-    <link rel="dns-prefetch" href="https://kwozniwtygkdoagjegom.supabase.co">
     
     <!-- Critical CSS Inline for Instant Rendering -->
     <style>
-      /* Critical above-the-fold styles */
+      /* Critical above-the-fold styles - Optimized for FCP */
       * { box-sizing: border-box; margin: 0; padding: 0; }
       html { scroll-behavior: smooth; }
       body { 
@@ -48,16 +47,35 @@
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        background: hsl(0 0% 100%);
       }
       #root { min-height: 100vh; display: flex; flex-direction: column; }
       
-      /* Header critical styles */
-      .header-container { 
-        background: hsl(210 50% 98%);
+      /* Header critical styles - Immediate paint */
+      header { 
+        background: hsl(0 0% 100%);
         border-bottom: 1px solid hsl(214.3 31.8% 91.4%);
+        height: 4rem;
+        display: flex;
+        align-items: center;
         position: sticky;
         top: 0;
         z-index: 50;
+      }
+      
+      @media (min-width: 768px) {
+        header { height: 5rem; }
+      }
+      
+      /* Logo critical styles */
+      header img {
+        height: 2rem;
+        width: auto;
+        object-fit: contain;
+      }
+      
+      @media (min-width: 768px) {
+        header img { height: 2.5rem; }
       }
       
       /* Button critical styles */
@@ -68,7 +86,19 @@
         border-radius: 0.5rem;
         border: none;
         cursor: pointer;
-        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+      
+      /* Hero section critical styles */
+      main { flex-grow: 1; }
+      
+      .hero-section {
+        padding: 4rem 1rem;
+        background: linear-gradient(to bottom right, hsl(210 40% 98%), hsl(0 0% 100%), hsl(214 100% 97%));
+      }
+      
+      @media (min-width: 1024px) {
+        .hero-section { padding: 6rem 1rem; }
       }
       
       /* Loading states */
@@ -83,9 +113,13 @@
         100% { background-position: -200% 0; }
       }
       
+      /* Prevent layout shift */
+      img { max-width: 100%; height: auto; }
+      
       /* Dark mode support */
       @media (prefers-color-scheme: dark) {
-        .header-container { 
+        body { background: hsl(222.2 84% 4.9%); }
+        header { 
           background: hsl(222.2 84% 4.9%);
           border-bottom: 1px solid hsl(217.2 32.6% 17.5%);
         }
