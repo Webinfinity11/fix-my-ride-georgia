@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -70,27 +70,103 @@ const ServicesDetail = () => {
   const [minRating, setMinRating] = useState<number | null>(
     searchParams.get("minRating") ? parseInt(searchParams.get("minRating")!) : null,
   );
+  console.log("🏁 ServicesDetail component mounted");
+  console.log("🔧 Initial filter states:", {
+    searchTerm,
+    selectedCategory,
+    selectedCity,
+    selectedDistrict,
+    selectedBrands,
+    onSiteOnly,
+    minRating,
+  });
 
-  // Memoized values
-  const hasActiveFilters = useMemo(
-    () =>
-      searchTerm ||
-      selectedCategory !== "all" ||
-      selectedCity ||
-      selectedDistrict ||
-      selectedBrands.length > 0 ||
-      onSiteOnly ||
+  // Initialize data on component mount
+  useEffect(() => {
+    console.log("🚀 Initializing component data...");
+    const initializeData = async () => {
+      await fetchInitialData();
+    };
+    initializeData();
+  }, []);
+
+  // Handle districts when city changes
+  useEffect(() => {
+    console.log("🏙️ City changed to:", selectedCity);
+    if (selectedCity === "თბილისი") {
+      fetchDistricts(selectedCity);
+    } else {
+      console.log("🧹 Clearing districts (city is not თბილისი)");
+      setSelectedDistrict(null);
+    }
+  }, [selectedCity, fetchDistricts]);
+
+  // Trigger search when any filter changes
+  useEffect(() => {
+    console.log("🔄 Filters changed, triggering search...");
+    console.log("📊 Current filter values:", {
+      searchTerm,
+      selectedCategory,
+      selectedCity,
+      selectedDistrict,
+      selectedBrands,
+      onSiteOnly,
       minRating,
-    [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating]
-  );
-
-  const availableCities = useMemo(() => cities.length > 0 ? cities : georgianCities, [cities]);
-  const availableDistricts = useMemo(
-    () => selectedCity === "თბილისი" ? (districts.length > 0 ? districts : tbilisiDistricts) : [],
-    [selectedCity, districts]
-  );
-
-  const sortedServices = useMemo(() => {
+    });
+    if (categories.length > 0) {
+      // Wait for initial data to load
+      console.log("✅ Categories loaded, performing search");
+      performSearch();
+    } else {
+      console.log("⏳ Waiting for categories to load...");
+    }
+  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories]);
+  const performSearch = async () => {
+    console.log("🔍 Performing search with current filters");
+    const filters = {
+      searchTerm: searchTerm.trim(),
+      selectedCategory,
+      selectedCity,
+      selectedDistrict,
+      selectedBrands,
+      onSiteOnly,
+      minRating,
+    };
+    console.log("📋 Search filters:", filters);
+    await fetchServices(filters);
+    updateURL();
+  };
+  const updateURL = () => {
+    console.log("🔗 Updating URL with current filters");
+    const params = new URLSearchParams();
+    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    if (selectedCategory !== "all") params.set("category", selectedCategory.toString());
+    if (selectedCity) params.set("city", selectedCity);
+    if (selectedDistrict) params.set("district", selectedDistrict);
+    if (selectedBrands.length > 0) params.set("brands", selectedBrands.join(","));
+    if (onSiteOnly) params.set("onSite", "true");
+    if (minRating) params.set("minRating", minRating.toString());
+    console.log("🔗 New URL params:", params.toString());
+    setSearchParams(params);
+  };
+  const handleResetFilters = async () => {
+    console.log("🧹 Resetting all filters");
+    setSearchTerm("");
+    setSelectedCategory("all");
+    setSelectedCity(null);
+    setSelectedDistrict(null);
+    setSelectedBrands([]);
+    setOnSiteOnly(false);
+    setMinRating(null);
+    setSearchParams({});
+    console.log("✅ Filters reset, search will trigger via useEffect");
+  };
+  const handleSearch = async () => {
+    console.log("🚀 Manual search button clicked");
+    await performSearch();
+  };
+  const sortServices = (services: any[]) => {
+    console.log("📊 Sorting services by:", sortBy);
     return [...services].sort((a, b) => {
       switch (sortBy) {
         case "newest":
@@ -113,92 +189,30 @@ const ServicesDetail = () => {
           return 0;
       }
     });
-  }, [services, sortBy]);
-
-  // Callbacks
-  const updateURL = useCallback(() => {
-    const params = new URLSearchParams();
-    if (searchTerm.trim()) params.set("q", searchTerm.trim());
-    if (selectedCategory !== "all") params.set("category", selectedCategory.toString());
-    if (selectedCity) params.set("city", selectedCity);
-    if (selectedDistrict) params.set("district", selectedDistrict);
-    if (selectedBrands.length > 0) params.set("brands", selectedBrands.join(","));
-    if (onSiteOnly) params.set("onSite", "true");
-    if (minRating) params.set("minRating", minRating.toString());
-    setSearchParams(params);
-  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, setSearchParams]);
-
-  const canSearch = useMemo(() => categories.length > 0, [categories.length]);
-
-  const performSearch = useCallback(async () => {
-    if (!canSearch) return;
-    
-    const filters = {
-      searchTerm: searchTerm.trim(),
-      selectedCategory,
-      selectedCity,
-      selectedDistrict,
-      selectedBrands,
-      onSiteOnly,
-      minRating,
-    };
-    await fetchServices(filters);
-    updateURL();
-  }, [canSearch, searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, fetchServices, updateURL]);
-
-  const handleResetFilters = useCallback(async () => {
-    setSearchTerm("");
-    setSelectedCategory("all");
-    setSelectedCity(null);
-    setSelectedDistrict(null);
-    setSelectedBrands([]);
-    setOnSiteOnly(false);
-    setMinRating(null);
-    setSearchParams({});
-  }, [setSearchParams]);
-
-  const handleSearch = useCallback(async () => {
-    await performSearch();
-  }, [performSearch]);
-
-  const loadMoreServices = useCallback(() => {
+  };
+  const loadMoreServices = () => {
+    console.log("📄 Loading more services");
     setVisibleServicesCount((prev) => prev + 12);
-  }, []);
-
-  // Initialize data on component mount
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
-
-  // Handle districts when city changes
-  useEffect(() => {
-    if (selectedCity === "თბილისი") {
-      fetchDistricts(selectedCity);
-    } else {
-      setSelectedDistrict(null);
-    }
-  }, [selectedCity, fetchDistricts]);
-
-  // Trigger search when filters change (with debouncing for searchTerm)
-  useEffect(() => {
-    if (categories.length === 0) return;
-    
-    const timeoutId = setTimeout(() => {
-      performSearch();
-    }, searchTerm ? 500 : 100);
-    
-    return () => clearTimeout(timeoutId);
-  }, [
-    searchTerm, 
-    selectedCategory, 
-    selectedCity, 
-    selectedDistrict, 
-    selectedBrands.join(','),
-    onSiteOnly, 
-    minRating,
-    performSearch
-  ]);
-
+  };
+  const hasActiveFilters =
+    searchTerm ||
+    selectedCategory !== "all" ||
+    selectedCity ||
+    selectedDistrict ||
+    selectedBrands.length > 0 ||
+    onSiteOnly ||
+    minRating;
+  const sortedServices = sortServices(services);
+  const availableCities = cities.length > 0 ? cities : georgianCities;
+  const availableDistricts = selectedCity === "თბილისი" ? (districts.length > 0 ? districts : tbilisiDistricts) : [];
+  console.log("📈 Render stats:", {
+    servicesCount: services.length,
+    sortedServicesCount: sortedServices.length,
+    loading,
+    hasActiveFilters,
+    categoriesCount: categories.length,
+    citiesCount: availableCities.length,
+  });
   return (
     <Layout>
       <div className="py-8">
