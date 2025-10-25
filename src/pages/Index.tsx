@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -12,13 +13,29 @@ import SEOHead from "@/components/seo/SEOHead";
 import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
-import { Search, TrendingUp, Zap, Shield, Users, Star, MapPin, ArrowRight, CheckCircle2, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
+import { 
+  Search, 
+  TrendingUp, 
+  Zap, 
+  Shield, 
+  Users, 
+  Star,
+  MapPin,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+  UserPlus,
+  Wrench,
+  Car
+} from "lucide-react";
+
 type ServiceCategory = {
   id: number;
   name: string;
   description: string | null;
   icon: string | null;
 };
+
 type FeaturedMechanic = {
   id: string;
   profiles: {
@@ -34,33 +51,30 @@ type FeaturedMechanic = {
 };
 
 // საქართველოს მთავარი ქალაქები
-const georgianCities = ["თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი", "ზუგდიდი", "ფოთი", "ხაშური", "სამტრედია", "ოზურგეთი"];
+const georgianCities = [
+  "თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი",
+  "ზუგდიდი", "ფოთი", "ხაშური", "სამტრედია", "ოზურგეთი"
+];
 
 // პოპულარული ძიებები
-const popularSearches = ["ძრავის შეკეთება", "ელექტროობა", "დიაგნოსტიკა", "ზეთის შეცვლა"];
+const popularSearches = [
+  "ძრავის შეკეთება", "ელექტროობა", "დიაგნოსტიკა", "ზეთის შეცვლა"
+];
 
 // სტატისტიკა
-const stats = [{
-  number: "2,500+",
-  label: "ხელოსანი",
-  icon: Users
-}, {
-  number: "15,000+",
-  label: "სერვისი",
-  icon: Zap
-}, {
-  number: "50,000+",
-  label: "მომხმარებელი",
-  icon: Shield
-}, {
-  number: "4.8★",
-  label: "საშუალო რეიტინგი",
-  icon: Star
-}];
+const stats = [
+  { number: "2,500+", label: "ხელოსანი", icon: Users },
+  { number: "15,000+", label: "სერვისი", icon: Zap },
+  { number: "50,000+", label: "მომხმარებელი", icon: Shield },
+  { number: "4.8★", label: "საშუალო რეიტინგი", icon: Star },
+];
+
 import { useSitemapAutoUpdate } from '@/hooks/useSitemapAutoUpdate';
+
 const Index = () => {
   // Initialize sitemap auto-update listener
   useSitemapAutoUpdate();
+  
   const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [featuredMechanics, setFeaturedMechanics] = useState<FeaturedMechanic[]>([]);
@@ -68,7 +82,7 @@ const Index = () => {
   const [districts, setDistricts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [mechanicsLoading, setMechanicsLoading] = useState(true);
-
+  
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
@@ -77,13 +91,20 @@ const Index = () => {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [onSiteOnly, setOnSiteOnly] = useState(false);
   const [minRating, setMinRating] = useState<number | null>(null);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         // Fetch all data in parallel to reduce critical request chain
-        const [categoriesResponse, mechanicsResponse, allCategoriesResponse] = await Promise.all([supabase.from("service_categories").select("*").order("id", {
-          ascending: true
-        }).limit(8), supabase.from("mechanic_profiles").select(`
+        const [categoriesResponse, mechanicsResponse, allCategoriesResponse] = await Promise.all([
+          supabase
+            .from("service_categories")
+            .select("*")
+            .order("id", { ascending: true })
+            .limit(8),
+          supabase
+            .from("mechanic_profiles")
+            .select(`
               id,
               specialization,
               rating,
@@ -95,13 +116,17 @@ const Index = () => {
                 city,
                 district
               )
-            `).gte("rating", 4.0).not("rating", "is", null).order("rating", {
-          ascending: false
-        }).order("review_count", {
-          ascending: false
-        }).limit(6), supabase.from("service_categories").select("*").order("name", {
-          ascending: true
-        })]);
+            `)
+            .gte("rating", 4.0)
+            .not("rating", "is", null)
+            .order("rating", { ascending: false })
+            .order("review_count", { ascending: false })
+            .limit(6),
+          supabase
+            .from("service_categories")
+            .select("*")
+            .order("name", { ascending: true })
+        ]);
 
         // Handle categories
         if (categoriesResponse.error) throw categoriesResponse.error;
@@ -113,6 +138,7 @@ const Index = () => {
 
         // Handle mechanics
         if (mechanicsResponse.error) throw mechanicsResponse.error;
+        
         if (mechanicsResponse.data && mechanicsResponse.data.length > 0) {
           const transformedMechanics: FeaturedMechanic[] = mechanicsResponse.data.map(mechanic => ({
             id: mechanic.id,
@@ -121,22 +147,28 @@ const Index = () => {
               last_name: mechanic.profiles.last_name,
               avatar_url: mechanic.profiles.avatar_url,
               city: mechanic.profiles.city,
-              district: mechanic.profiles.district
+              district: mechanic.profiles.district,
             },
             specialization: mechanic.specialization,
             rating: mechanic.rating,
-            review_count: mechanic.review_count
+            review_count: mechanic.review_count,
           }));
           setFeaturedMechanics(transformedMechanics);
         }
 
         // თბილისის უბნების fetch თუ თბილისია არჩეული
         if (selectedCity === "თბილისი") {
-          const tbilisiDistricts = ["ვაკე", "საბურთალო", "ვერე", "გლდანი", "ისანი", "ნაძალადევი", "ძველი თბილისი", "აბანოთუბანი", "ავლაბარი", "ჩუღურეთი", "სამგორი", "დიღომი", "ვაშლიჯვარი", "მთაწმინდა", "კრწანისი", "ავჭალა", "ლილო", "ორთაჭალა", "დიდუბე", "ფონიჭალა"];
+          const tbilisiDistricts = [
+            "ვაკე", "საბურთალო", "ვერე", "გლდანი", "ისანი", "ნაძალადევი",
+            "ძველი თბილისი", "აბანოთუბანი", "ავლაბარი", "ჩუღურეთი", "სამგორი",
+            "დიღომი", "ვაშლიჯვარი", "მთაწმინდა", "კრწანისი", "ავჭალა",
+            "ლილო", "ორთაჭალა", "დიდუბე", "ფონიჭალა"
+          ];
           setDistricts(tbilisiDistricts);
         } else {
           setDistricts([]);
         }
+
       } catch (error: any) {
         console.error("Error fetching data:", error);
         setFeaturedMechanics([]);
@@ -145,10 +177,13 @@ const Index = () => {
         setMechanicsLoading(false);
       }
     };
+
     fetchInitialData();
   }, [selectedCity]);
+
   const handleSearch = () => {
     const params = new URLSearchParams();
+    
     if (searchTerm) params.set("q", searchTerm);
     if (selectedCategory !== "all") params.set("category", selectedCategory.toString());
     if (selectedCity) params.set("city", selectedCity);
@@ -156,13 +191,16 @@ const Index = () => {
     if (selectedBrands.length > 0) params.set("brands", selectedBrands.join(","));
     if (onSiteOnly) params.set("onSite", "true");
     if (minRating) params.set("minRating", minRating.toString());
+    
     navigate(`/services?${params.toString()}`);
   };
+
   const handleQuickSearch = (query: string) => {
     const params = new URLSearchParams();
     params.set("q", query);
     navigate(`/services?${params.toString()}`);
   };
+
   const handleResetFilters = () => {
     setSearchTerm("");
     setSelectedCategory("all");
@@ -175,19 +213,33 @@ const Index = () => {
 
   // All categories state (now loaded in parallel with other data)
   const [allCategories, setAllCategories] = useState<ServiceCategory[]>([]);
+
   const canonicalUrl = generateCanonicalURL('home', {});
-  return <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
-      <SEOHead title={generateSEOTitle('home', {})} description={generateSEODescription('home', {})} keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup" url={canonicalUrl} canonical={canonicalUrl} type="website" />
+  
+  return (
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
+      <SEOHead
+        title={generateSEOTitle('home', {})}
+        description={generateSEODescription('home', {})}
+        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup"
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        type="website"
+      />
       
-      <OrganizationSchema name="ავტოხელოსანი" url="https://fixup.ge" description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა" contactPoint={{
-      contactType: "customer service",
-      email: "info@fixup.ge"
-    }} />
+      <OrganizationSchema 
+        name="ავტოხელოსანი"
+        url="https://fixup.ge"
+        description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა"
+        contactPoint={{
+          contactType: "customer service",
+          email: "info@fixup.ge"
+        }}
+      />
       
-      <BreadcrumbSchema items={[{
-      name: 'მთავარი',
-      url: 'https://fixup.ge/'
-    }]} />
+      <BreadcrumbSchema items={[
+        { name: 'მთავარი', url: 'https://fixup.ge/' }
+      ]} />
       <Header />
       
       <main className="flex-grow">
@@ -226,10 +278,17 @@ const Index = () => {
                   <span className="font-semibold text-gray-700">პოპულარული ძიებები</span>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2 lg:gap-3">
-                  {popularSearches.map(search => <Button key={search} variant="outline" onClick={() => handleQuickSearch(search)} className="text-sm lg:text-base rounded-full border-2 border-primary/20 hover:border-primary hover:bg-primary hover:text-white transition-all duration-200 bg-white/80 backdrop-blur-sm">
+                  {popularSearches.map((search) => (
+                    <Button
+                      key={search}
+                      variant="outline"
+                      onClick={() => handleQuickSearch(search)}
+                      className="text-sm lg:text-base rounded-full border-2 border-primary/20 hover:border-primary hover:bg-primary hover:text-white transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                    >
                       <Search className="h-4 w-4 mr-2" />
                       {search}
-                    </Button>)}
+                    </Button>
+                  ))}
                 </div>
               </div>
               
@@ -244,7 +303,27 @@ const Index = () => {
                       <h2 className="text-xl lg:text-2xl font-bold text-gray-900">დეტალური ძიება</h2>
                     </div>
                     
-                    <ModernServiceFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} categories={allCategories} selectedCity={selectedCity} setSelectedCity={setSelectedCity} cities={cities} selectedDistrict={selectedDistrict} setSelectedDistrict={setSelectedDistrict} districts={districts} selectedBrands={selectedBrands} setSelectedBrands={setSelectedBrands} onSiteOnly={onSiteOnly} setOnSiteOnly={setOnSiteOnly} minRating={minRating} setMinRating={setMinRating} onSearch={handleSearch} onResetFilters={handleResetFilters} />
+                    <ModernServiceFilters
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                      selectedCategory={selectedCategory}
+                      setSelectedCategory={setSelectedCategory}
+                      categories={allCategories}
+                      selectedCity={selectedCity}
+                      setSelectedCity={setSelectedCity}
+                      cities={cities}
+                      selectedDistrict={selectedDistrict}
+                      setSelectedDistrict={setSelectedDistrict}
+                      districts={districts}
+                      selectedBrands={selectedBrands}
+                      setSelectedBrands={setSelectedBrands}
+                      onSiteOnly={onSiteOnly}
+                      setOnSiteOnly={setOnSiteOnly}
+                      minRating={minRating}
+                      setMinRating={setMinRating}
+                      onSearch={handleSearch}
+                      onResetFilters={handleResetFilters}
+                    />
                   </div>
                 </div>
               </Card>
@@ -290,7 +369,8 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                {stats.map((stat, index) => <Card key={index} className="border-0 shadow-lg bg-white hover:shadow-xl transition-all duration-300">
+                {stats.map((stat, index) => (
+                  <Card key={index} className="border-0 shadow-lg bg-white hover:shadow-xl transition-all duration-300">
                     <CardContent className="p-4 lg:p-6 text-center">
                       <div className="flex items-center justify-center mb-3">
                         <div className="p-2 lg:p-3 bg-gradient-to-r from-primary to-blue-600 rounded-full">
@@ -302,7 +382,8 @@ const Index = () => {
                       </div>
                       <div className="text-sm lg:text-base text-gray-600 font-medium">{stat.label}</div>
                     </CardContent>
-                  </Card>)}
+                  </Card>
+                ))}
               </div>
             </div>
           </div>
@@ -392,16 +473,26 @@ const Index = () => {
               </p>
             </div>
             
-            {loading ? <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                {[...Array(8)].map((_, i) => <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
                     <CardContent className="p-4 lg:p-6 text-center">
                       <div className="h-12 w-12 lg:h-16 lg:w-16 bg-gray-200 rounded-full mb-4 mx-auto"></div>
                       <div className="h-5 lg:h-6 bg-gray-200 rounded mb-2"></div>
                       <div className="h-3 lg:h-4 bg-gray-200 rounded"></div>
                     </CardContent>
-                  </Card>)}
-              </div> : <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                {categories.map(category => <Card key={category.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white cursor-pointer overflow-hidden" onClick={() => navigate(`/services?category=${category.id}`)}>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                {categories.map((category) => (
+                  <Card 
+                    key={category.id} 
+                    className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white cursor-pointer overflow-hidden"
+                    onClick={() => navigate(`/services?category=${category.id}`)}
+                  >
                     <CardContent className="p-4 lg:p-6 text-center relative">
                       {/* Background Gradient */}
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -419,9 +510,11 @@ const Index = () => {
                           {category.name}
                         </h3>
                         
-                        {category.description && <p className="text-xs lg:text-sm text-gray-600 line-clamp-2">
+                        {category.description && (
+                          <p className="text-xs lg:text-sm text-gray-600 line-clamp-2">
                             {category.description}
-                          </p>}
+                          </p>
+                        )}
                         
                         {/* Hover Arrow */}
                         <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -429,8 +522,10 @@ const Index = () => {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>)}
-              </div>}
+                  </Card>
+                ))}
+              </div>
+            )}
             
             <div className="text-center mt-8 lg:mt-12">
               <Link to="/services">
@@ -444,11 +539,83 @@ const Index = () => {
         </section>
 
         {/* Recommended Mechanics */}
-        
+        <section className="py-12 lg:py-20 bg-gradient-to-br from-gray-50 to-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12 lg:mb-16">
+              <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                რეკომენდირებული ხელოსნები
+              </Badge>
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                ჩვენი საუკეთესო ხელოსნები
+              </h2>
+              <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
+                გაეცანით ხელოსნებს, რომლებმაც მოიპოვეს კლიენტების უმაღლესი შეფასება
+              </p>
+            </div>
+            
+            {mechanicsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
+                {[...Array(6)].map((_, i) => (
+                  <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
+                    <CardContent className="p-4 lg:p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="h-12 w-12 lg:h-16 lg:w-16 bg-gray-200 rounded-full"></div>
+                        <div className="flex-1">
+                          <div className="h-5 lg:h-6 bg-gray-200 rounded mb-2"></div>
+                          <div className="h-3 lg:h-4 bg-gray-200 rounded mb-2"></div>
+                          <div className="h-3 lg:h-4 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded"></div>
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : featuredMechanics.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
+                {featuredMechanics.map((mechanic) => (
+                  <MechanicCard 
+                    key={mechanic.id} 
+                    mechanic={mechanic}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 lg:py-12">
+                <div className="max-w-md mx-auto">
+                  <div className="p-4 bg-gray-100 rounded-full w-fit mx-auto mb-4">
+                    <Star className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg lg:text-xl font-semibold text-gray-700 mb-2">
+                    მალე დაემატება რეკომენდირებული ხელოსნები
+                  </h3>
+                  <p className="text-base lg:text-lg text-gray-500">
+                    ხელოსნები შეაფასდებიან მომხმარებლების მიერ რეიტინგის მიხედვით
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <div className="text-center">
+              <Link to="/search?tab=mechanics">
+                <Button size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                  ყველა ხელოსნის ნახვა
+                  <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
       
       <Footer />
       <MobileBottomNav />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
