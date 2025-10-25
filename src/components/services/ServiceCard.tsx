@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { SaveServiceButton } from "./SaveServiceButton";
-import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface ServiceType {
   id: number;
@@ -34,7 +33,7 @@ interface ServiceType {
     first_name: string;
     last_name: string;
     rating: number | null;
-    phone?: string | null;
+    phone_number?: string | null;
   };
 }
 
@@ -65,7 +64,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
   const handlePhoneClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!service.mechanic.phone) {
+    if (!service.mechanic.phone_number) {
       return;
     }
 
@@ -74,7 +73,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
       setShowPhone(true);
     } else {
       // Second click - make the call
-      window.location.href = `tel:${service.mechanic.phone}`;
+      window.location.href = `tel:${service.mechanic.phone_number}`;
     }
   };
 
@@ -122,11 +121,15 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
         <div className="relative overflow-hidden cursor-pointer image-container rounded-t-lg" onClick={handleViewDetails}>
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
-              <OptimizedImage
+              <img
                 src={mainPhoto}
                 alt={service.name}
+                width="300"
+                height="225"
+                loading={onMapFocus ? "eager" : "lazy"}
+                decoding="async"
+                fetchPriority={onMapFocus ? "high" : "auto"}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                fallback="/placeholder.svg"
               />
             </div>
           ) : (
@@ -196,7 +199,6 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
               size="sm"
               onClick={handleViewMechanic}
               className="text-primary hover:bg-primary/5"
-              aria-label={`${service.mechanic.first_name} ${service.mechanic.last_name}-ის პროფილის ნახვა`}
             >
               <ExternalLink className="w-3 h-3 mr-1" />
                პროფილი
@@ -235,15 +237,14 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
             />
             
             {/* Call Button */}
-            {service.mechanic.phone && (
+            {service.mechanic.phone_number && (
               <Button 
                 onClick={handlePhoneClick}
                 variant="outline"
                 className="flex-1 border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
-                aria-label={showPhone ? `დარეკვა ${service.mechanic.phone}` : "ტელეფონის ნომრის ნახვა"}
               >
                 <Phone className="w-4 h-4 mr-2" />
-                {showPhone ? formatPhoneNumber(service.mechanic.phone) : "დარეკვა"}
+                {showPhone ? formatPhoneNumber(service.mechanic.phone_number) : "დარეკვა"}
               </Button>
             )}
             
@@ -251,7 +252,6 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
             <Button 
               onClick={handleViewDetails} 
               className="flex-1 bg-primary hover:bg-primary-light transition-colors"
-              aria-label={`${service.name} სერვისის დეტალების ნახვა`}
             >
               დეტალების ნახვა
             </Button>

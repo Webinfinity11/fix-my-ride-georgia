@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -29,10 +29,6 @@ import {
   Shield,
   MessageCircle,
   Plus,
-  Home,
-  Map,
-  Sparkles,
-  Fuel,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -42,7 +38,7 @@ interface MobileDrawerMenuProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export const MobileDrawerMenu = React.memo(({ children, open, onOpenChange }: MobileDrawerMenuProps) => {
+export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerMenuProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -62,65 +58,25 @@ export const MobileDrawerMenu = React.memo(({ children, open, onOpenChange }: Mo
     onOpenChange?.(false);
   };
 
-  // Memoize navigation items for unauthenticated users
-  const publicNavItems = useMemo(() => [
-    { icon: Home, label: "მთავარი", path: "/" },
-    { icon: Wrench, label: "სერვისები", path: "/services" },
-    { icon: Map, label: "რუკა", path: "/map" },
-    { icon: Sparkles, label: "სამრეცხაო", path: "/laundries" },
-    { icon: Fuel, label: "საწვავი", path: "/fuel-importers" },
-    { icon: HelpCircle, label: "დახმარება", path: "/contact" },
-  ], []);
-
-  // If not logged in, show public navigation
+  // If not logged in, show login prompt
   if (!user) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerTrigger asChild>{children}</DrawerTrigger>
-        <DrawerContent className="h-[65vh] max-h-[calc(100vh-70px)] px-4 pb-20">
-          <DrawerHeader>
-            <DrawerTitle className="text-center">მენიუ</DrawerTitle>
+        <DrawerContent className="h-[50vh] px-4">
+          <DrawerHeader className="text-center">
+            <DrawerTitle>ავტორიზაცია საჭიროა</DrawerTitle>
+            <DrawerDescription>
+              გთხოვთ შეხვიდეთ სისტემაში ან დარეგისტრირდეთ
+            </DrawerDescription>
           </DrawerHeader>
-          
-          <div className="flex-1 overflow-y-auto py-4">
-            {/* Public Navigation */}
-            <div className="space-y-1 mb-4">
-              {publicNavItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.path}
-                    onClick={() => handleNavigation(item.path)}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
-                    aria-label={item.label}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <Separator className="my-4" />
-
-            {/* Authentication Actions */}
-            <div className="space-y-3">
-              <Button
-                onClick={() => handleNavigation('/login')}
-                className="w-full"
-                size="lg"
-              >
-                შესვლა
-              </Button>
-              <Button
-                onClick={() => handleNavigation('/register')}
-                variant="outline"
-                className="w-full"
-                size="lg"
-              >
-                რეგისტრაცია
-              </Button>
-            </div>
+          <div className="flex flex-col gap-3 px-4 py-6">
+            <Button onClick={() => handleNavigation('/login')} size="lg">
+              შესვლა
+            </Button>
+            <Button onClick={() => handleNavigation('/register')} variant="outline" size="lg">
+              რეგისტრაცია
+            </Button>
           </div>
         </DrawerContent>
       </Drawer>
@@ -152,7 +108,7 @@ export const MobileDrawerMenu = React.memo(({ children, open, onOpenChange }: Mo
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerContent className="h-[85vh] max-h-[calc(100vh-70px)] px-4 pb-20">
+      <DrawerContent className="h-[85vh] px-4">
         {/* Profile Header */}
         <DrawerHeader className="pb-2">
           <div className="flex items-center gap-3">
@@ -310,4 +266,4 @@ export const MobileDrawerMenu = React.memo(({ children, open, onOpenChange }: Mo
       </DrawerContent>
     </Drawer>
   );
-});
+};

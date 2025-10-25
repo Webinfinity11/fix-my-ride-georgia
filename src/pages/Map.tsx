@@ -291,46 +291,38 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
     });
   };
 
-  // Fetch services on component mount and handle filters
+  // Fetch services on component mount
   useEffect(() => {
-    let mounted = true;
-    let timeoutId: NodeJS.Timeout;
-    
     const loadServices = async () => {
-      if (!mounted) return;
-      
-      // Initial load
-      if (categories.length === 0) {
-        await fetchInitialData();
-        if (!mounted) return;
-      }
-      
-      // Fetch services with current filters (debounced if search query exists)
-      if (categories.length > 0) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(async () => {
-          if (!mounted) return;
-          await fetchServices({
-            searchTerm: searchQuery,
-            selectedCategory,
-            selectedCity,
-            selectedDistrict: null,
-            selectedBrands: [],
-            onSiteOnly: false,
-            minRating: null,
-          });
-        }, searchQuery ? 300 : 0);
-      }
+      console.log("🗺️ Map component loading services...");
+      await fetchInitialData();
+      // Fetch all services with current filters
+      await applyFilters();
     };
 
     loadServices();
-    
-    return () => {
-      mounted = false;
-      clearTimeout(timeoutId);
-    };
-  }, [selectedCategory, selectedCity, searchQuery, categories.length, fetchInitialData, fetchServices]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array to run only once on mount
 
+  // Apply filters when they change
+  useEffect(() => {
+    if (categories.length > 0) { // Only apply if data is loaded
+      applyFilters();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, selectedCity]);
+
+  // Search with delay (debounce)
+  useEffect(() => {
+    if (categories.length === 0) return; // Don't apply if data not loaded yet
+    
+    const timeoutId = setTimeout(() => {
+      applyFilters();
+    }, 500); // Apply search after 500ms delay
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   useEffect(() => {
     if (!mapRef.current || map) return;
