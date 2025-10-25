@@ -14,7 +14,14 @@ import {
   MessageCircle,
   CalendarCog,
   Bookmark,
+  ChevronDown,
 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const DashboardSidebar = () => {
   const { user, signOut } = useAuth();
@@ -31,105 +38,111 @@ const DashboardSidebar = () => {
       </div>
 
       <nav className="space-y-1">
-        <NavLink to="/dashboard" end className={navLinkClasses}>
-          <Settings size={18} />
-          <span className="text-sm md:text-base">მთავარი</span>
-        </NavLink>
+        <Accordion type="single" collapsible className="w-full" defaultValue="main">
+          <AccordionItem value="main" className="border-none">
+            <AccordionTrigger className="py-2 px-1 hover:no-underline text-sm font-semibold text-muted-foreground">
+              ძირითადი
+            </AccordionTrigger>
+            <AccordionContent className="space-y-1 pb-2">
+              <NavLink to="/dashboard" end className={navLinkClasses}>
+                <Settings size={18} />
+                <span className="text-sm md:text-base">მთავარი</span>
+              </NavLink>
 
-        <NavLink to="/dashboard/profile" className={navLinkClasses}>
-          <User size={18} />
-          <span className="text-sm md:text-base">პროფილი</span>
-        </NavLink>
+              <NavLink to="/dashboard/profile" className={navLinkClasses}>
+                <User size={18} />
+                <span className="text-sm md:text-base">პროფილი</span>
+              </NavLink>
 
-        {user?.role === "customer" && (
-          <NavLink to="/dashboard/cars" className={navLinkClasses}>
-            <Car size={18} />
-            <span className="text-sm md:text-base">ჩემი ავტომობილები</span>
-          </NavLink>
-        )}
+              {user?.role === "customer" && (
+                <NavLink to="/dashboard/cars" className={navLinkClasses}>
+                  <Car size={18} />
+                  <span className="text-sm md:text-base">ჩემი ავტომობილები</span>
+                </NavLink>
+              )}
 
-        {user?.role === "mechanic" && (
-          <NavLink 
-            to="/dashboard/services" 
-            className={({ isActive }) => {
-              // Also highlight this link when on add-service page
-              const isServicesPage = window.location.pathname === '/add-service' || isActive;
-              return `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
-                isServicesPage ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
-              }`;
-            }}
-          >
-            <Wrench size={18} />
-            <span className="text-sm md:text-base">სერვისები</span>
-          </NavLink>
-        )}
+              {user?.role === "mechanic" && (
+                <NavLink 
+                  to="/dashboard/services" 
+                  className={({ isActive }) => {
+                    const isServicesPage = window.location.pathname === '/add-service' || isActive;
+                    return `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
+                      isServicesPage ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
+                    }`;
+                  }}
+                >
+                  <Wrench size={18} />
+                  <span className="text-sm md:text-base">სერვისები</span>
+                </NavLink>
+              )}
 
-        <NavLink to="/dashboard/bookings" className={navLinkClasses}>
-          <Calendar size={18} />
-          <span className="text-sm md:text-base">ჯავშნები</span>
-        </NavLink>
+              <NavLink to="/dashboard/bookings" className={navLinkClasses}>
+                <Calendar size={18} />
+                <span className="text-sm md:text-base">ჯავშნები</span>
+              </NavLink>
 
-        {(user?.role === "customer" || user?.role === "mechanic") && (
-          <NavLink to="/dashboard/saved-services" className={navLinkClasses}>
-            <Bookmark size={18} />
-            <span className="text-sm md:text-base">შენახული სერვისები</span>
-          </NavLink>
-        )}
+              {(user?.role === "customer" || user?.role === "mechanic") && (
+                <NavLink to="/dashboard/saved-services" className={navLinkClasses}>
+                  <Bookmark size={18} />
+                  <span className="text-sm md:text-base">შენახული სერვისები</span>
+                </NavLink>
+              )}
+            </AccordionContent>
+          </AccordionItem>
 
-        {user?.role === "admin" && (
-          <>
-            <div className="border-t border-muted my-3 md:my-4"></div>
-            <div className="mb-2">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
+          {user?.role === "admin" && (
+            <AccordionItem value="admin" className="border-none">
+              <AccordionTrigger className="py-2 px-1 hover:no-underline text-sm font-semibold text-muted-foreground">
                 ადმინისტრაცია
-              </span>
-            </div>
-            
-            <NavLink to="/dashboard/admin" className={navLinkClasses}>
-              <Shield size={18} />
-              <span className="text-sm md:text-base">ადმინ პანელი</span>
-            </NavLink>
+              </AccordionTrigger>
+              <AccordionContent className="space-y-1 pb-2">
+                <NavLink to="/dashboard/admin" className={navLinkClasses}>
+                  <Shield size={18} />
+                  <span className="text-sm md:text-base">ადმინ პანელი</span>
+                </NavLink>
 
-            <NavLink to="/dashboard/admin/service-details" className={navLinkClasses}>
-              <Cog size={18} />
-              <span className="text-sm md:text-base">სერვისის დეტალები</span>
-            </NavLink>
+                <NavLink to="/dashboard/admin/service-details" className={navLinkClasses}>
+                  <Cog size={18} />
+                  <span className="text-sm md:text-base">სერვისის დეტალები</span>
+                </NavLink>
 
-            <NavLink to="/dashboard/admin/chat-management" className={navLinkClasses}>
-              <MessageCircle size={18} />
-              <span className="text-sm md:text-base">ჩატის მართვა</span>
-            </NavLink>
+                <NavLink to="/dashboard/admin/chat-management" className={navLinkClasses}>
+                  <MessageCircle size={18} />
+                  <span className="text-sm md:text-base">ჩატის მართვა</span>
+                </NavLink>
 
-            <NavLink to="/dashboard/admin/laundries" className={navLinkClasses}>
-              <Settings size={18} />
-              <span className="text-sm md:text-base">სამრეცხაოები</span>
-            </NavLink>
+                <NavLink to="/dashboard/admin/laundries" className={navLinkClasses}>
+                  <Settings size={18} />
+                  <span className="text-sm md:text-base">სამრეცხაოები</span>
+                </NavLink>
 
-            <NavLink to="/dashboard/admin/booking-management" className={navLinkClasses}>
-              <CalendarCog size={18} />
-              <span className="text-sm md:text-base">ჯავშნების მართვა</span>
-            </NavLink>
+                <NavLink to="/dashboard/admin/booking-management" className={navLinkClasses}>
+                  <CalendarCog size={18} />
+                  <span className="text-sm md:text-base">ჯავშნების მართვა</span>
+                </NavLink>
 
-            <NavLink to="/dashboard/admin/stats" className={navLinkClasses}>
-              <BarChart3 size={18} />
-              <span className="text-sm md:text-base">სტატისტიკა</span>
-            </NavLink>
+                <NavLink to="/dashboard/admin/stats" className={navLinkClasses}>
+                  <BarChart3 size={18} />
+                  <span className="text-sm md:text-base">სტატისტიკა</span>
+                </NavLink>
 
-            <NavLink to="/dashboard/admin/users" className={navLinkClasses}>
-              <Users size={18} />
-              <span className="text-sm md:text-base">მომხმარებლები</span>
-            </NavLink>
+                <NavLink to="/dashboard/admin/users" className={navLinkClasses}>
+                  <Users size={18} />
+                  <span className="text-sm md:text-base">მომხმარებლები</span>
+                </NavLink>
 
-            <NavLink to="/dashboard/admin/saved-services" className={navLinkClasses}>
-              <Bookmark size={18} />
-              <span className="text-sm md:text-base">შენახული სერვისები</span>
-            </NavLink>
-          </>
-        )}
+                <NavLink to="/dashboard/admin/saved-services" className={navLinkClasses}>
+                  <Bookmark size={18} />
+                  <span className="text-sm md:text-base">შენახული სერვისები</span>
+                </NavLink>
+              </AccordionContent>
+            </AccordionItem>
+          )}
+        </Accordion>
 
         <button
           onClick={() => signOut()}
-          className="flex w-full items-center gap-2 px-3 md:px-4 py-2 rounded-md text-destructive hover:bg-destructive/10 transition-colors"
+          className="flex w-full items-center gap-2 px-3 md:px-4 py-2 rounded-md text-destructive hover:bg-destructive/10 transition-colors mt-4"
         >
           <LogOut size={18} />
           <span className="text-sm md:text-base">გასვლა</span>
