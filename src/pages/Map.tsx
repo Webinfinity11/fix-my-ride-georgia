@@ -527,16 +527,16 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
         {/* Left Sidebar - Services List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
-            {/* Toggle Switch */}
+            {/* Toggle Switch - Desktop only */}
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'services' | 'laundries')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 h-12 md:h-10">
-                <TabsTrigger value="services" className="text-sm md:text-base gap-2">
-                  <Car className="w-4 h-4" />
-                  ავტოსერვისები
+              <TabsList className="grid w-full grid-cols-2 h-9">
+                <TabsTrigger value="services" className="text-xs gap-1.5">
+                  <Car className="w-3.5 h-3.5" />
+                  სერვისები
                 </TabsTrigger>
-                <TabsTrigger value="laundries" className="text-sm md:text-base gap-2">
-                  <Droplet className="w-4 h-4" />
-                  სამრეცხაოები
+                <TabsTrigger value="laundries" className="text-xs gap-1.5">
+                  <Droplet className="w-3.5 h-3.5" />
+                  სამრეცხაო
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -680,6 +680,26 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
               </div>
             </div>
           </div>
+
+          {/* Mobile Floating Toggle - Only visible on mobile */}
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'services' | 'laundries')} className="md:hidden fixed top-[80px] right-4 z-[1000]">
+            <TabsList className="grid grid-cols-2 h-11 bg-background shadow-lg border border-border">
+              <TabsTrigger 
+                value="services" 
+                className="text-xs gap-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200"
+              >
+                <Car className="w-4 h-4" />
+                სერვისები
+              </TabsTrigger>
+              <TabsTrigger 
+                value="laundries" 
+                className="text-xs gap-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200"
+              >
+                <Droplet className="w-4 h-4" />
+                სამრეცხაო
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
 
           {/* Map Container */}
           <div className="flex-1 relative z-0">
