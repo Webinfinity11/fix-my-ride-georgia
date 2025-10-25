@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { OptimizedImage } from "@/components/ui/optimized-image";
 import type { FuelImporter } from "@/hooks/useFuelImporters";
 
 interface FuelImporterCardProps {
@@ -61,11 +60,16 @@ const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
             </div>
             {importer.logo_url && (
               <div className="mt-3">
-                <OptimizedImage 
+                <img 
                   src={logoPath || importer.logo_url}
                   alt={`${importer.name} ლოგო`}
                   className="h-6 sm:h-8 w-auto object-contain"
-                  fallback={importer.logo_url}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== importer.logo_url) {
+                      target.src = importer.logo_url;
+                    }
+                  }}
                 />
               </div>
             )}
@@ -104,8 +108,6 @@ const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
                 className="w-full mt-3 text-sm"
                 onClick={() => setIsExpanded(!isExpanded)}
                 style={{ color: primaryColor }}
-                aria-expanded={isExpanded}
-                aria-label={isExpanded ? 'შეკეცვა' : `ყველა ფასის ნახვა (${fuelPrices.length})`}
               >
                 {isExpanded ? (
                   <>
