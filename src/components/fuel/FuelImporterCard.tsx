@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { OptimizedImage } from "@/components/ui/optimized-image";
 import type { FuelImporter } from "@/hooks/useFuelImporters";
 
 interface FuelImporterCardProps {
@@ -14,8 +13,10 @@ const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
   const INITIAL_DISPLAY_COUNT = 5;
 
   const fuelPrices = importer.fuelPrices || [];
-  const displayedFuelTypes = isExpanded ? fuelPrices : fuelPrices.slice(0, INITIAL_DISPLAY_COUNT);
   const hasMoreItems = fuelPrices.length > INITIAL_DISPLAY_COUNT;
+  const displayedPrices = isExpanded
+    ? fuelPrices
+    : fuelPrices.slice(0, INITIAL_DISPLAY_COUNT);
 
   // Connect company uses yellow header with black text/prices, others use blue
   const isConnect = importer.name === "Connect";
@@ -25,11 +26,16 @@ const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
   const isRompetrol = importer.name === "Rompetrol";
   const isSocar = importer.name === "Socar";
   const isWissol = importer.name === "Wissol";
+  const hasLogo = isConnect || isGulf || isLukoil || isPortal || isRompetrol || isSocar || isWissol;
 
-  const primaryColor = isConnect ? '#000000' : '#027bc7';
+  const primaryColor = isConnect ? '#000000' : '#027bc7'; // Black for Connect prices, blue for others
+  const gradientColor = isConnect ? '#ffdd00' : '#027bc7'; // Yellow for Connect header
+  const gradientEnd = isConnect ? '#ffc700' : '#0268a8';
+  const textColor = isConnect ? 'text-gray-900' : 'text-white';
+  const subtextColor = isConnect ? 'text-gray-700' : 'text-white/80';
 
   // Get logo path
-  const logoPath = (() => {
+  const getLogoPath = () => {
     if (isConnect) return '/fuel-company-logos/connect-main-logo.svg';
     if (isGulf) return '/fuel-company-logos/gulf-logo.png';
     if (isLukoil) return '/fuel-company-logos/lukoil-logo.png';
@@ -38,95 +44,112 @@ const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
     if (isSocar) return '/fuel-company-logos/socar-logo.svg';
     if (isWissol) return '/fuel-company-logos/wissol-logo.png';
     return null;
-  })();
+  };
 
   return (
-    <Card 
-      className="overflow-hidden hover:shadow-lg transition-shadow"
-      style={{ 
-        borderTop: `3px solid ${primaryColor}`,
-      }}
-    >
-      <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-          <div className="flex-1 w-full">
-            <div className="flex items-center justify-between sm:justify-start gap-3">
-              <CardTitle className="text-lg sm:text-xl">{importer.name}</CardTitle>
-              <div className="sm:hidden text-right">
-                <div className="text-xs text-muted-foreground">ტიპი</div>
-                <div className="text-xl font-bold" style={{ color: primaryColor }}>
-                  {displayedFuelTypes.length}
-                </div>
-              </div>
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      {/* Header with gradient background */}
+      <div className={`p-4 ${textColor}`} style={{ background: `linear-gradient(to right, ${gradientColor}, ${gradientEnd})` }}>
+        <div className="flex items-center gap-3">
+          {hasLogo && getLogoPath() && (
+            <div className="bg-white rounded-full p-3 flex items-center justify-center w-16 h-16 shrink-0">
+              <img
+                src={getLogoPath()}
+                alt={`${importer.name} logo`}
+                className={`h-10 w-10 object-contain ${isWissol ? 'rounded-md' : ''}`}
+              />
             </div>
-            {importer.logo_url && (
-              <div className="mt-3">
-                <OptimizedImage 
-                  src={logoPath || importer.logo_url}
-                  alt={`${importer.name} ლოგო`}
-                  className="h-6 sm:h-8 w-auto object-contain"
-                  fallback={importer.logo_url}
-                />
-              </div>
-            )}
-          </div>
-          <div className="hidden sm:block text-right">
-            <div className="text-xs text-muted-foreground mb-1">
-              სულ ტიპი
-            </div>
-            <div className="text-2xl font-bold" style={{ color: primaryColor }}>
-              {displayedFuelTypes.length}
-            </div>
+          )}
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold mb-1">{importer.name}</h3>
+            <p className={`text-sm ${subtextColor}`}>
+              {importer.totalFuelTypes ? `${importer.totalFuelTypes} საწვავის ტიპი` : ''}
+            </p>
           </div>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="pt-4">
+      {/* Fuel prices list */}
+      <div className="bg-white">
         {fuelPrices.length > 0 ? (
           <>
-            <div className="space-y-2">
-              {displayedFuelTypes.map((fuel, index) => (
+            <div className="divide-y divide-gray-100">
+              {displayedPrices.map((fuel, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
                 >
-                  <span className="text-sm font-medium">{fuel.fuelType}</span>
-                  <span className="text-lg font-bold" style={{ color: primaryColor }}>
+                  <span className="text-gray-700 font-medium">
+                    {fuel.fuelType}
+                  </span>
+                  <span className="font-bold text-lg" style={{ color: primaryColor }}>
                     {fuel.price.toFixed(2)} ₾
                   </span>
                 </div>
               ))}
             </div>
 
+            {/* Expand/Collapse button */}
             {hasMoreItems && (
-              <Button
-                variant="ghost"
-                className="w-full mt-3 text-sm"
-                onClick={() => setIsExpanded(!isExpanded)}
-                style={{ color: primaryColor }}
-                aria-expanded={isExpanded}
-                aria-label={isExpanded ? 'შეკეცვა' : `ყველა ფასის ნახვა (${fuelPrices.length})`}
-              >
-                {isExpanded ? (
-                  <>
-                    <ChevronUp className="w-4 h-4 mr-2" />
-                    შეკეცვა
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="w-4 h-4 mr-2" />
-                    ვრცლად ({fuelPrices.length - INITIAL_DISPLAY_COUNT} კიდევ)
-                  </>
-                )}
-              </Button>
+              <div className="border-t border-gray-100">
+                <Button
+                  variant="ghost"
+                  className="w-full py-3 text-sm hover:bg-gray-50"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  style={{ color: primaryColor }}
+                >
+                  {isExpanded ? (
+                    <>
+                      <ChevronUp className="w-4 h-4 mr-2" />
+                      შეკეცვა
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4 mr-2" />
+                      ვრცლად ({fuelPrices.length - INITIAL_DISPLAY_COUNT} დამატებითი)
+                    </>
+                  )}
+                </Button>
+              </div>
             )}
           </>
         ) : (
-          <div className="text-center py-6 text-muted-foreground text-sm">
-            ფასები ჯერ არ არის მითითებული
+          // Fallback: show old format if fuelPrices is not available
+          <div className="divide-y divide-gray-100">
+            {importer.super_ron_98_price && (
+              <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+                <span className="text-gray-700 font-medium">სუპერი RON 98</span>
+                <span className="font-bold text-lg" style={{ color: primaryColor }}>
+                  {importer.super_ron_98_price.toFixed(2)} ₾
+                </span>
+              </div>
+            )}
+            {importer.premium_ron_96_price && (
+              <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+                <span className="text-gray-700 font-medium">პრემიუმი RON 96</span>
+                <span className="font-bold text-lg" style={{ color: primaryColor }}>
+                  {importer.premium_ron_96_price.toFixed(2)} ₾
+                </span>
+              </div>
+            )}
+            {importer.regular_ron_93_price && (
+              <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+                <span className="text-gray-700 font-medium">რეგულარი RON 93</span>
+                <span className="font-bold text-lg" style={{ color: primaryColor }}>
+                  {importer.regular_ron_93_price.toFixed(2)} ₾
+                </span>
+              </div>
+            )}
+            {!importer.super_ron_98_price && !importer.premium_ron_96_price && !importer.regular_ron_93_price && (
+              <div className="px-4 py-8 text-center">
+                <p className="text-sm text-gray-500">
+                  ფასები ჯერ არ არის მითითებული
+                </p>
+              </div>
+            )}
           </div>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 };

@@ -116,16 +116,6 @@
     @apply opacity-100 translate-y-0;
   }
   
-  /* Touch Target Improvements */
-  button, a, [role="button"] {
-    @apply min-h-[44px] touch-manipulation;
-  }
-  
-  /* Focus Visible Improvements */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
-  }
-  
   /* Enhanced Button Styling */
   [type="button"],
   [type="reset"],
@@ -135,49 +125,13 @@
   }
   
   /* Enhanced Form Controls */
-  input:not([type="checkbox"]):not([type="radio"]), 
-  select, 
-  textarea {
-    @apply transition-all duration-300 min-h-[44px];
-  }
-  
-  input:focus,
-  select:focus,
-  textarea:focus {
-    @apply ring-2 ring-ring ring-offset-2;
+  input, select, textarea {
+    @apply transition-all duration-300;
   }
   
   /* Card Enhancements */
   .card {
     @apply transition-all duration-300 hover:shadow-md;
-  }
-  
-  /* Image Lazy Loading */
-  img[loading="lazy"] {
-    @apply bg-muted animate-pulse;
-  }
-  
-  img[loading="lazy"].loaded {
-    @apply animate-none;
-  }
-}
-
-/* Accessibility Utilities */
-@layer utilities {
-  /* Screen Reader Only */
-  .sr-only {
-    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
-    clip: rect(0, 0, 0, 0);
-  }
-  
-  /* Skip to Main Content */
-  .skip-link {
-    @apply absolute -top-full left-0 bg-primary text-primary-foreground px-4 py-2 z-[10000] rounded-br-lg;
-    transition: top 0.2s ease-in-out;
-  }
-  
-  .skip-link:focus {
-    @apply top-0;
   }
 }
 
@@ -188,51 +142,15 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted) / 0.5);
+  background: #f1f5f9;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
-}
-
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  :root {
-    --border: 214.3 31.8% 70%;
-  }
-  
-  .dark {
-    --border: 217.2 32.6% 30%;
-  }
-  
-  button, a, [role="button"] {
-    @apply border-2;
-  }
-}
-
-/* Reduced Motion Support */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Touch Feedback for Mobile */
-@media (hover: none) and (pointer: coarse) {
-  button:active,
-  a:active,
-  [role="button"]:active {
-    transform: scale(0.97);
-    transition: transform 0.1s ease;
-  }
+  background: #94a3b8;
 }
