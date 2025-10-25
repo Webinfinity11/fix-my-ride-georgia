@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/context/AuthContext";
 import ScrollToTop from "@/components/layout/ScrollToTop";
-import { InstallPWA } from "@/components/mobile/InstallPWA";
 import Index from "./pages/Index";
 import ServicesDetail from "./pages/ServicesDetail";
 import ServiceSearch from "./pages/ServiceSearch";
@@ -38,7 +37,6 @@ function App() {
       <HelmetProvider>
         <TooltipProvider>
           <Toaster />
-          <InstallPWA />
           <BrowserRouter>
             <ScrollToTop />
             <AuthProvider>

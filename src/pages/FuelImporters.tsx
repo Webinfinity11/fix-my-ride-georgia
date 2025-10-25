@@ -11,8 +11,6 @@ import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp } from "lucide-react
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { toast } from "sonner";
-import { usePullToRefresh } from "@/hooks/usePullToRefresh";
-import { PullToRefreshIndicator } from "@/components/mobile/PullToRefreshIndicator";
 
 const FuelImporters = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,15 +18,11 @@ const FuelImporters = () => {
   const { data: importers = [], isLoading, refetch, isRefetching } = useFuelImporters();
 
   const handleRefresh = async () => {
+    toast.loading("მონაცემები ახლდება...");
     await refetch();
+    toast.dismiss();
     toast.success("მონაცემები წარმატებით განახლდა");
   };
-
-  // Pull to refresh functionality
-  const { isPulling, pullDistance, isRefreshing } = usePullToRefresh({
-    onRefresh: handleRefresh,
-    threshold: 80,
-  });
 
   // Apply search filter
   const filteredImporters = importers.filter((importer) => {
@@ -53,12 +47,6 @@ const FuelImporters = () => {
         title="საწვავის იმპორტიორები - FixUp | აირჩიეთ საუკეთესო ფასი"
         description="იხილეთ საწვავის ყველა იმპორტიორის აქტუალური ფასები საქართველოში. სუპერი, პრემიუმი და რეგულარი საწვავის ფასების შედარება."
         keywords="საწვავი, ბენზინი, დიზელი, საწვავის ფასი, RON 98, RON 96, RON 93, საწვავის იმპორტიორები, საქართველო"
-      />
-
-      <PullToRefreshIndicator
-        pullDistance={pullDistance}
-        isRefreshing={isRefreshing}
-        threshold={80}
       />
 
       <FuelHero />
