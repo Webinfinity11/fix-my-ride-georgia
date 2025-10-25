@@ -41,7 +41,7 @@ function App() {
       <HelmetProvider>
         <TooltipProvider>
           <Toaster />
-          <InstallPWA />
+          {/* <InstallPWA /> - Temporarily disabled to fix Service Worker issues */}
           <BrowserRouter>
             <ScrollToTop />
             <AuthProvider>
