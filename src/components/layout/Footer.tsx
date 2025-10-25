@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Wrench, ArrowRight, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+import { Link } from 'react-router-dom';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Wrench, ArrowRight, Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Footer = () => {
   return (
@@ -25,7 +26,7 @@ const Footer = () => {
             </div>
           </div>
         </div> */}
-
+        
         {/* Main Footer */}
         <div className="py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-10">
@@ -38,34 +39,22 @@ const Footer = () => {
                 <span className="text-xl font-bold">FixUp</span>
               </Link>
               <p className="text-blue-100 mb-6 leading-relaxed">
-                პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს. იპოვეთ საუკეთესო ხელოსანი თქვენი
-                ავტომობილისთვის.
+                პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს. 
+                იპოვეთ საუკეთესო ხელოსანი თქვენი ავტომობილისთვის.
               </p>
               <div className="flex space-x-4">
-                <a
-                  href="#"
-                  className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-                  aria-label="Facebook-ის გვერდი"
-                >
+                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors" aria-label="Facebook-ის გვერდი">
                   <Facebook size={20} />
                 </a>
-                <a
-                  href="#"
-                  className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-                  aria-label="Instagram-ის გვერდი"
-                >
+                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors" aria-label="Instagram-ის გვერდი">
                   <Instagram size={20} />
                 </a>
-                <a
-                  href="#"
-                  className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-                  aria-label="Twitter-ის გვერდი"
-                >
+                <a href="#" className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors" aria-label="Twitter-ის გვერდი">
                   <Twitter size={20} />
                 </a>
               </div>
             </div>
-
+            
             {/* Quick Links */}
             <div className="col-span-1">
               <h3 className="text-lg font-semibold mb-6 flex items-center">
@@ -74,19 +63,13 @@ const Footer = () => {
               </h3>
               <ul className="space-y-3">
                 <li>
-                  <Link
-                    to="/mechanic"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
+                  <Link to="/mechanic" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     ხელოსნების ძიება
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/services"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
+                  <Link to="/services" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     სერვისები
                   </Link>
@@ -94,23 +77,17 @@ const Footer = () => {
                 <li>
                   <Link to="/about" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
-                    ჩვენ შესახებ
+                    ჩვენს შესახებ
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/contact"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
+                  <Link to="/contact" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     კონტაქტი
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/sitemap"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
+                  <Link to="/sitemap" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     საიტის რუკა
                   </Link>
@@ -123,7 +100,7 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-
+            
             {/* User Links */}
             <div className="col-span-1">
               <h3 className="text-lg font-semibold mb-6 flex items-center">
@@ -132,19 +109,13 @@ const Footer = () => {
               </h3>
               <ul className="space-y-3">
                 <li>
-                  <Link
-                    to="/register?type=mechanic"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
+                  <Link to="/register?type=mechanic" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     ხელოსნის რეგისტრაცია
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/register?type=customer"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
+                  <Link to="/register?type=customer" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     მომხმარებლის რეგისტრაცია
                   </Link>
@@ -156,17 +127,14 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/dashboard"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
+                  <Link to="/dashboard" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
                     <ArrowRight className="h-4 w-4 mr-2" />
                     პირადი კაბინეტი
                   </Link>
                 </li>
               </ul>
             </div>
-
+            
             {/* Contact Info */}
             <div className="col-span-1">
               <h3 className="text-lg font-semibold mb-6 flex items-center">
@@ -196,11 +164,11 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
+        
         <div className="border-t border-white/20 pt-8 pb-10 text-center text-blue-200">
           <p className="flex items-center justify-center gap-1 text-sm">
-            &copy; {new Date().getFullYear()} FixUp. შექმნილია
-            <Heart className="h-4 w-4 text-secondary mx-1" fill="currentColor" />
+            &copy; {new Date().getFullYear()} FixUp. შექმნილია 
+            <Heart className="h-4 w-4 text-secondary mx-1" fill="currentColor" /> 
             -ით. ყველა უფლება დაცულია.
           </p>
         </div>

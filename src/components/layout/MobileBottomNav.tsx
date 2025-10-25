@@ -1,15 +1,13 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu } from 'lucide-react';
-import { MobileDrawerMenu } from './MobileDrawerMenu';
+import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map } from 'lucide-react';
 
 const MobileBottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -55,66 +53,58 @@ const MobileBottomNav = () => {
       onClick: () => navigate('/chat')
     },
     {
-      icon: Menu,
-      label: 'Menu',
-      path: '',
-      onClick: () => setDrawerOpen(true),
-      isMenu: true
+      icon: User,
+      label: 'Profile',
+      path: '/dashboard',
+      onClick: () => navigate(user ? '/dashboard' : '/login')
     }
   ];
 
   return (
-    <>
-      <MobileDrawerMenu open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <span className="hidden" />
-      </MobileDrawerMenu>
-      
-      <div className="fixed bottom-0 left-0 right-0 z-[9999] md:hidden">
-        <div className="bg-background border-t border-border rounded-t-3xl shadow-lg">
-          <div className="flex items-center justify-around h-[70px] px-4">
-            {navItems.map((item, index) => {
-              const Icon = item.icon;
-              const active = !item.isCenter && !item.isMenu && isActive(item.path);
-              
-              if (item.isCenter) {
-                return (
-                  <button
-                    key={index}
-                    onClick={item.onClick}
-                    aria-label={!user ? 'კატეგორიები' : (user.role === 'mechanic' ? 'სერვისის დამატება' : 'მანქანის დამატება')}
-                    className="flex flex-col items-center justify-center w-14 h-14 bg-primary rounded-full shadow-lg transform -translate-y-2 transition-all duration-200 hover:opacity-90 active:scale-95"
-                  >
-                    <Icon className="h-6 w-6 text-primary-foreground" />
-                  </button>
-                );
-              }
-
+    <div className="fixed bottom-0 left-0 right-0 z-[9999] md:hidden">
+      <div className="bg-white border-t border-gray-200 rounded-t-3xl shadow-lg">
+        <div className="flex items-center justify-around h-[70px] px-4">
+          {navItems.map((item, index) => {
+            const Icon = item.icon;
+            const active = !item.isCenter && isActive(item.path);
+            
+            if (item.isCenter) {
               return (
                 <button
                   key={index}
                   onClick={item.onClick}
-                  className="flex flex-col items-center justify-center min-w-0 flex-1 py-2 transition-colors duration-200"
-                  aria-label={item.label}
+                  aria-label={!user ? 'კატეგორიები' : (user.role === 'mechanic' ? 'სერვისის დამატება' : 'მანქანის დამატება')}
+                  className="flex flex-col items-center justify-center w-14 h-14 bg-primary rounded-full shadow-lg transform -translate-y-2 transition-all duration-200 hover:bg-primary-dark active:scale-95"
                 >
-                  <Icon 
-                    className={`h-6 w-6 mb-1 transition-colors ${
-                      active ? 'text-primary' : 'text-muted-foreground'
-                    }`} 
-                  />
-                  <span 
-                    className={`text-xs font-medium transition-colors ${
-                      active ? 'text-primary' : 'text-muted-foreground'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
+                  <Icon className="h-6 w-6 text-white" />
                 </button>
               );
-            })}
-          </div>
+            }
+
+            return (
+              <button
+                key={index}
+                onClick={item.onClick}
+                className="flex flex-col items-center justify-center min-w-0 flex-1 py-2 transition-colors duration-200"
+              >
+                <Icon 
+                  className={`h-6 w-6 mb-1 ${
+                    active ? 'text-primary' : 'text-gray-400'
+                  }`} 
+                />
+                <span 
+                  className={`text-xs font-medium ${
+                    active ? 'text-primary' : 'text-gray-400'
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
