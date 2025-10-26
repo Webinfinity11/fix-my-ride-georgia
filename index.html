@@ -191,6 +191,21 @@
       })();
     </script>
     
+    <!-- Debug: Check React availability -->
+    <script>
+      console.log('=== React Debug Check ===');
+      console.log('window.React:', typeof window.React);
+      console.log('Will check again after modules load...');
+      
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          console.log('=== React Debug Check (after load) ===');
+          console.log('window.React:', window.React);
+          console.log('React.forwardRef:', window.React ? window.React.forwardRef : 'React is undefined!');
+        }, 100);
+      });
+    </script>
+    
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
