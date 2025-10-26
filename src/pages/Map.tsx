@@ -529,18 +529,12 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
             {/* Toggle Switch - Desktop only */}
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'services' | 'laundries')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 h-9 bg-muted">
-                <TabsTrigger 
-                  value="services" 
-                  className="text-xs gap-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
-                >
+              <TabsList className="grid w-full grid-cols-2 h-9">
+                <TabsTrigger value="services" className="text-xs gap-1.5">
                   <Car className="w-3.5 h-3.5" />
                   სერვისები
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="laundries" 
-                  className="text-xs gap-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
-                >
+                <TabsTrigger value="laundries" className="text-xs gap-1.5">
                   <Droplet className="w-3.5 h-3.5" />
                   სამრეცხაო
                 </TabsTrigger>
@@ -578,54 +572,33 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
 
             <div className="p-2 md:p-4">
               {(loading || laundriesLoading) ? (
-                <div className="text-center py-12 animate-fade-in">
-                  <div className="relative w-16 h-16 mx-auto mb-4">
-                    <div className="absolute inset-0 rounded-full border-4 border-muted"></div>
-                    <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-                  </div>
-                  <p className="text-sm text-muted-foreground font-medium">
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-gray-600">
                     {viewMode === 'services' ? 'სერვისები იტვირთება...' : 'სამრეცხაოები იტვირთება...'}
                   </p>
                 </div>
               ) : sortedFilteredItems.length === 0 ? (
-                <div className="text-center py-12 px-4 animate-fade-in">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                    {viewMode === 'services' ? (
-                      <Wrench className="w-10 h-10 text-muted-foreground" />
-                    ) : (
-                      <Droplet className="w-10 h-10 text-muted-foreground" />
-                    )}
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-2">
+                    {viewMode === 'services' ? <Wrench className="w-12 h-12 mx-auto" /> : <Droplet className="w-12 h-12 mx-auto" />}
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                  <p className="text-gray-600 mb-2">
                     {viewMode === 'services' ? 'სერვისები ვერ მოიძებნა' : 'სამრეცხაოები ვერ მოიძებნა'}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    სცადეთ სხვა ფილტრები ან საძიებო სიტყვები
                   </p>
-                  {activeFiltersCount > 0 && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={clearFilters}
-                      className="mx-auto"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      ფილტრების გასუფთავება
-                    </Button>
-                  )}
+                  <p className="text-gray-400 text-sm">სცადეთ ფილტრების შეცვლა</p>
                 </div>
               ) : (
                 <div className="space-y-2 md:space-y-4">
-                  {sortedFilteredItems.map((item, index) => (
+                  {sortedFilteredItems.map((item) => (
                     <div
                       key={`${item.type}-${item.id}`}
                       data-item-id={item.id}
-                      className={`transition-all duration-200 hover:scale-[1.01] touch-manipulation animate-fade-in ${
+                      className={`transition-all duration-200 touch-manipulation ${
                         selectedItem?.id === item.id 
                           ? "ring-2 ring-primary rounded-lg" 
                           : ""
                       }`}
-                      style={{ animationDelay: `${index * 30}ms` }}
                     >
                       {item.type === 'service' ? (
                         <ServiceCard 
@@ -710,17 +683,17 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
 
           {/* Mobile Floating Toggle - Only visible on mobile */}
           <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'services' | 'laundries')} className="md:hidden fixed top-[80px] right-4 z-[1000]">
-            <TabsList className="grid grid-cols-2 h-11 bg-background shadow-lg border border-border rounded-lg overflow-hidden">
+            <TabsList className="grid grid-cols-2 h-11 bg-background shadow-lg border border-border">
               <TabsTrigger 
                 value="services" 
-                className="text-xs gap-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 active:scale-95 touch-manipulation min-h-[44px]"
+                className="text-xs gap-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200"
               >
                 <Car className="w-4 h-4" />
                 სერვისები
               </TabsTrigger>
               <TabsTrigger 
                 value="laundries" 
-                className="text-xs gap-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 active:scale-95 touch-manipulation min-h-[44px]"
+                className="text-xs gap-1.5 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200"
               >
                 <Droplet className="w-4 h-4" />
                 სამრეცხაო
@@ -733,16 +706,9 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
             <div ref={mapRef} className="h-full w-full z-0" />
             
             {/* Map Info Overlay */}
-            <div className="absolute bottom-4 right-4 bg-background/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-border transition-all duration-200 hover:shadow-xl">
-              <div className="flex items-center gap-2">
-                {viewMode === 'services' ? (
-                  <Car className="w-4 h-4 text-primary" />
-                ) : (
-                  <Droplet className="w-4 h-4 text-primary" />
-                )}
-                <div className="text-xs text-foreground">
-                  <strong className="font-semibold">{itemsWithLocation.length}</strong> {viewMode === 'services' ? 'სერვისი' : 'სამრეცხაო'}
-                </div>
+            <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg shadow-lg">
+              <div className="text-xs text-gray-600">
+                <strong>{itemsWithLocation.length}</strong> {viewMode === 'services' ? 'სერვისი' : 'სამრეცხაო'}
               </div>
             </div>
           </div>
