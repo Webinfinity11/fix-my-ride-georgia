@@ -154,8 +154,20 @@ export default defineConfig(({ mode }) => ({
     // })
   ].filter(Boolean),
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react/jsx-runtime'],
-    force: true, // Force re-optimization
+    include: [
+      'react', 
+      'react-dom', 
+      'react/jsx-runtime',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-slot',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select',
+    ],
+    force: true, // Force re-optimization on every start
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
   resolve: {
     alias: {
@@ -163,6 +175,7 @@ export default defineConfig(({ mode }) => ({
       // Force single React instance
       "react": path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
+      "react/jsx-runtime": path.resolve(__dirname, "./node_modules/react/jsx-runtime"),
     },
     dedupe: ["react", "react-dom"],
   },
