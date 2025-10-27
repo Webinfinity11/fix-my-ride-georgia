@@ -1,5 +1,4 @@
 
-import * as React from "react";
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -42,7 +41,7 @@ function App() {
       <HelmetProvider>
         <TooltipProvider>
           <Toaster />
-          {/* <InstallPWA /> - Temporarily disabled to fix Service Worker issues */}
+          <InstallPWA />
           <BrowserRouter>
             <ScrollToTop />
             <AuthProvider>

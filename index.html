@@ -148,52 +148,8 @@
     <!-- End Google Tag Manager (noscript) -->
     
     <div id="root"></div>
-    
-    <!-- Service Worker Aggressive Cleanup Script -->
-    <script>
-      (function() {
-        // Aggressively unregister ALL service workers
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            const unregisterPromises = registrations.map(function(registration) {
-              console.log('Unregistering service worker:', registration.scope);
-              return registration.unregister();
-            });
-            
-            return Promise.all(unregisterPromises).then(function() {
-              console.log('All service workers unregistered');
-              
-              // Clear all caches after unregistering
-              if ('caches' in window) {
-                return caches.keys().then(function(cacheNames) {
-                  console.log('Found caches:', cacheNames);
-                  const deletionPromises = cacheNames.map(function(cacheName) {
-                    console.log('Deleting cache:', cacheName);
-                    return caches.delete(cacheName);
-                  });
-                  return Promise.all(deletionPromises);
-                });
-              }
-            }).then(function() {
-              console.log('All caches cleared');
-              
-              // Force reload from server if this is first load with cleanup
-              if (sessionStorage.getItem('sw_cleaned') !== 'true') {
-                sessionStorage.setItem('sw_cleaned', 'true');
-                console.log('Reloading page after cleanup...');
-                window.location.reload(true);
-              }
-            });
-          }).catch(function(error) {
-            console.error('Error during cleanup:', error);
-          });
-        }
-      })();
-    </script>
-    
-    <!-- React stub removed - no longer needed with proper package resolution -->
-
-    <!-- gpteng.co script removed - was causing share-modal.js addEventListener errors -->
+    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

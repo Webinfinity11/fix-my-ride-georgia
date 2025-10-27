@@ -224,7 +224,13 @@ const Index = () => {
               <div className="mb-10">
                 {/* Mobile Search Bar - Only visible on mobile */}
                 <div className="md:hidden mb-6">
-                  
+                  <MobileSearchBar
+                    placeholder="მოძებნეთ სერვისი ან ხელოსანი..."
+                    onSearch={(query) => {
+                      setSearchTerm(query);
+                      handleSearch();
+                    }}
+                  />
                 </div>
 
                 <div className="flex items-center justify-center gap-2 mb-4">

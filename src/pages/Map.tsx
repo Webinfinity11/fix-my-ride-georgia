@@ -1,20 +1,16 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useServices } from "@/hooks/useServices";
-import { useLaundries } from "@/hooks/useLaundries";
 import ServiceCard from "@/components/services/ServiceCard";
-import LaundryCard from "@/components/laundry/LaundryCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet } from "lucide-react";
+import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { Link, useNavigate } from "react-router-dom";
 import { createServiceSlug } from "@/utils/slugUtils";
-import { createLaundryMarkerHTML, createLaundryPopupHTML } from "@/utils/mapUtils";
 import "leaflet/dist/leaflet.css";
 
 // Add custom styles for markers
@@ -189,10 +185,9 @@ const getIconSVG = (categoryName: string | null) => {
 const Map = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<any>(null);
   const [map, setMap] = useState<any>(null);
   const mapRef = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<'services' | 'laundries'>('services');
   
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
@@ -208,49 +203,36 @@ const Map = () => {
     fetchInitialData,
     fetchServices,
   } = useServices();
-  
-  const { data: laundries, isLoading: laundriesLoading } = useLaundries();
 
-  // Unified display items based on view mode
-  const displayItems = useMemo(() => {
-    if (viewMode === 'services') {
-      return services
-        .filter((service) => {
-          const matchesSearch = searchQuery === "" || 
-            service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            service.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            service.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            service.mechanic?.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            service.mechanic?.last_name?.toLowerCase().includes(searchQuery.toLowerCase());
-          return matchesSearch;
-        })
-        .map(s => ({ ...s, type: 'service' as const }));
-    } else {
-      return (laundries || [])
-        .filter(l => l.latitude && l.longitude)
-        .filter((laundry) => {
-          const matchesSearch = searchQuery === "" ||
-            laundry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            laundry.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            laundry.address?.toLowerCase().includes(searchQuery.toLowerCase());
-          return matchesSearch;
-        })
-        .map(l => ({ ...l, type: 'laundry' as const }));
-    }
-  }, [viewMode, services, laundries, searchQuery]);
+  // Apply search filters only
+  const baseFilteredServices = services.filter((service) => {
+    // Search query filter
+    const matchesSearch = searchQuery === "" || 
+      service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      service.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      service.city?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      service.mechanic?.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      service.mechanic?.last_name?.toLowerCase().includes(searchQuery.toLowerCase());
 
-  // Apply viewport filter to sidebar items
-  const filteredItems = displayItems.filter((item) => {
-    const hasCoordinates = item.latitude && item.longitude;
+    return matchesSearch;
+  });
+
+  // Apply viewport filter only to sidebar services (and only show services with coordinates)
+  const filteredServices = baseFilteredServices.filter((service) => {
+    // Only show services that have coordinates (that have pins on map)
+    const hasCoordinates = service.latitude && service.longitude;
+    
+    // Map bounds filter - only show services visible on current map view
     const isInMapBounds = !mapBounds || !hasCoordinates || 
-      mapBounds.contains([item.latitude, item.longitude]);
+      mapBounds.contains([service.latitude, service.longitude]);
+
     return hasCoordinates && isInMapBounds;
   });
 
-  // Sort items to show selected item first
-  const sortedFilteredItems = [...filteredItems].sort((a, b) => {
-    if (selectedItem?.id === a.id) return -1;
-    if (selectedItem?.id === b.id) return 1;
+  // Sort services to show selected service first
+  const sortedFilteredServices = [...filteredServices].sort((a, b) => {
+    if (selectedService?.id === a.id) return -1;
+    if (selectedService?.id === b.id) return 1;
     return 0;
   });
 
@@ -268,25 +250,26 @@ const Map = () => {
     searchQuery !== ""
   ].filter(Boolean).length;
 
-  // Items with location for map markers
-  const itemsWithLocation = displayItems.filter(
-    (item) => item.latitude && item.longitude
+  // Filter services that have location data for map (use base filtered for map markers)
+  const servicesWithLocation = baseFilteredServices.filter(
+    (service) => service.latitude && service.longitude
   );
 
   // Default map center (Tbilisi, Georgia)
   // Tbilisi coordinates for initial map view
 const defaultCenter: [number, number] = [41.7151, 44.8271];
 
-  const handleMapFocus = (item: any) => {
-    setSelectedItem(item);
-    if (map && item.latitude && item.longitude) {
-      map.setView([item.latitude, item.longitude], 15);
+  const handleMapFocus = (service: any) => {
+    setSelectedService(service);
+    if (map && service.latitude && service.longitude) {
+      map.setView([service.latitude, service.longitude], 15);
       
-      // Find and open the popup for this item
+      // Find and open the popup for this service
       setTimeout(() => {
         map.eachLayer((layer: any) => {
           if (layer.options && layer.options.pane === 'markerPane') {
-            if (layer.getLatLng && layer.getLatLng().lat === item.latitude && layer.getLatLng().lng === item.longitude) {
+            // Check if this marker belongs to the selected service
+            if (layer.getLatLng && layer.getLatLng().lat === service.latitude && layer.getLatLng().lng === service.longitude) {
               layer.openPopup();
             }
           }
@@ -379,9 +362,9 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
     };
   }, []);
 
-  // Update markers when map or filtered items change
+  // Update markers when map or filtered services change
   useEffect(() => {
-    if (!map || !itemsWithLocation) return;
+    if (!map || !servicesWithLocation) return;
 
     const updateMarkers = async () => {
       try {
@@ -392,38 +375,43 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
           }
         });
 
-        // Only proceed if we have items
-        if (itemsWithLocation.length === 0) return;
+        // Only proceed if we have services
+        if (servicesWithLocation.length === 0) return;
 
-        // Add markers for items with location
+        // Add markers for services with location
         const L = await import('leaflet');
-        itemsWithLocation.forEach((item) => {
-          if (!item.latitude || !item.longitude) return;
+        servicesWithLocation.forEach((service) => {
+          if (!service.latitude || !service.longitude) return;
           
-          // Check if this item is selected
-          const isSelected = selectedItem?.id === item.id;
+          // Check if this service is selected
+          const isSelected = selectedService?.id === service.id;
           const size = isSelected ? 32 : 28;
           
-          let customIcon;
-          let popupContent;
+          // Generate proper service slug
+          const serviceSlug = createServiceSlug(service.id, service.name);
           
-          if (item.type === 'service') {
-            const serviceSlug = createServiceSlug(item.id, item.name);
-            customIcon = L.divIcon({
-              html: createCustomMarkerHTML(item, isSelected),
-              className: 'custom-div-icon',
-              iconSize: [size, size],
-              iconAnchor: [size/2, size/2],
-              popupAnchor: [0, -size/2]
-            });
-            
-            popupContent = `
+          // Create custom icon without shadow
+          const customIcon = L.divIcon({
+            html: createCustomMarkerHTML(service, isSelected),
+            className: 'custom-div-icon',
+            iconSize: [size, size],
+            iconAnchor: [size/2, size/2],
+            popupAnchor: [0, -size/2]
+          });
+          
+          const marker = L.marker([service.latitude, service.longitude], {
+            icon: customIcon
+          })
+            .addTo(map)
+            .bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
-                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px; color: #1a1a1a; line-height: 1.2;">${item.name}</h3>
+                <!-- Service Name -->
+                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px; color: #1a1a1a; line-height: 1.2;">${service.name}</h3>
                 
-                ${item.photos && item.photos.length > 0 ? 
-                  `<img src="${item.photos[0]}" 
-                        alt="${item.name}" 
+                <!-- Service Photo -->
+                ${service.photos && service.photos.length > 0 ? 
+                  `<img src="${service.photos[0]}" 
+                        alt="${service.name}" 
                         width="250" 
                         height="120"
                         loading="lazy"
@@ -437,17 +425,20 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
                    </div>`
                 }
                 
+                <!-- Short Description (2-3 lines max) -->
                 <p style="margin: 0 0 12px 0; color: #666; font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                  ${item.description || 'მოიცავს მანქანის შეკეთებას და მომსახურებას პროფესიონალური მექანიკოსების მიერ.'}
+                  ${service.description || 'მოიცავს მანქანის შეკეთებას და მომსახურებას პროფესიონალური მექანიკოსების მიერ.'}
                 </p>
                 
+                <!-- Address -->
                 <div style="margin: 0 0 12px 0; color: #555; font-size: 13px; display: flex; align-items: center; gap: 6px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: #0F4C81;">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                   </svg>
-                  <span>${item.address || (item.city && item.district ? `${item.city}, ${item.district}` : item.city || 'მისამართი მითითებული არ არის')}</span>
+                  <span>${service.address || (service.city && service.district ? `${service.city}, ${service.district}` : service.city || 'მისამართი მითითებული არ არის')}</span>
                 </div>
                 
+                <!-- View Details Button -->
                 <button onclick="window.location.href='/service/${serviceSlug}'" 
                         style="
                           width: 100%; 
@@ -466,30 +457,14 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
                   დეტალების ნახვა
                 </button>
               </div>
-            `;
-          } else {
-            // Laundry marker
-            customIcon = L.divIcon({
-              html: createLaundryMarkerHTML(item, isSelected),
-              className: 'custom-div-icon',
-              iconSize: [size, size],
-              iconAnchor: [size/2, size/2],
-              popupAnchor: [0, -size/2]
-            });
-            
-            popupContent = createLaundryPopupHTML(item);
-          }
-          
-          const marker = L.marker([item.latitude, item.longitude], {
-            icon: customIcon
-          })
-            .addTo(map)
-            .bindPopup(popupContent);
+            `);
 
-          // Handle marker click
+          // Handle marker click - open popup and move service to top of sidebar
           marker.on('click', () => {
-            setSelectedItem(item);
+            // Set selected service
+            setSelectedService(service);
             
+            // Move clicked service to top of the list by scrolling to top of sidebar
             requestAnimationFrame(() => {
               const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
               if (sidebarScrollContainer) {
@@ -501,7 +476,7 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
             });
           });
 
-          // Auto-open popup for selected item
+          // Auto-open popup for selected service
           if (isSelected) {
             setTimeout(() => {
               marker.openPopup();
@@ -514,7 +489,7 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
     };
 
     updateMarkers();
-  }, [map, itemsWithLocation, selectedItem]); // Depend on items and selected item
+  }, [map, searchQuery, services, selectedService]); // Depend on search query, services, and selected service
 
   return (
     <Layout>
@@ -527,26 +502,12 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
         {/* Left Sidebar - Services List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
-            {/* Toggle Switch */}
-            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'services' | 'laundries')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 h-12 md:h-10">
-                <TabsTrigger value="services" className="text-sm md:text-base gap-2">
-                  <Car className="w-4 h-4" />
-                  ავტოსერვისები
-                </TabsTrigger>
-                <TabsTrigger value="laundries" className="text-sm md:text-base gap-2">
-                  <Droplet className="w-4 h-4" />
-                  სამრეცხაოები
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 type="text"
-                placeholder={viewMode === 'services' ? 'სერვისების ძიება...' : 'სამრეცხაოების ძიება...'}
+                placeholder="სერვისების ძიება..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -557,13 +518,13 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
           
           <div className="flex-1 overflow-y-auto sidebar-scroll-container">
             {/* Results Header */}
-            {!loading && !laundriesLoading && (
+            {!loading && (
               <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
                 <p className="text-sm text-gray-600">
-                  <strong>{sortedFilteredItems.length}</strong> {viewMode === 'services' ? 'სერვისი' : 'სამრეცხაო'} ნაპოვნია
-                  {itemsWithLocation.length !== sortedFilteredItems.length && (
+                  <strong>{sortedFilteredServices.length}</strong> სერვისი ნაპოვნია
+                  {servicesWithLocation.length !== sortedFilteredServices.length && (
                     <span className="ml-2 text-xs">
-                      ({itemsWithLocation.length} რუკაზე)
+                      ({servicesWithLocation.length} რუკაზე)
                     </span>
                   )}
                 </p>
@@ -571,46 +532,40 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
             )}
 
             <div className="p-2 md:p-4">
-              {(loading || laundriesLoading) ? (
+              {loading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="mt-2 text-gray-600">
-                    {viewMode === 'services' ? 'სერვისები იტვირთება...' : 'სამრეცხაოები იტვირთება...'}
-                  </p>
+                  <p className="mt-2 text-gray-600">სერვისები იტვირთება...</p>
                 </div>
-              ) : sortedFilteredItems.length === 0 ? (
+              ) : sortedFilteredServices.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="text-gray-400 mb-2">
-                    {viewMode === 'services' ? <Wrench className="w-12 h-12 mx-auto" /> : <Droplet className="w-12 h-12 mx-auto" />}
+                    <Search className="w-12 h-12 mx-auto" />
                   </div>
-                  <p className="text-gray-600 mb-2">
-                    {viewMode === 'services' ? 'სერვისები ვერ მოიძებნა' : 'სამრეცხაოები ვერ მოიძებნა'}
-                  </p>
+                  <p className="text-gray-600 mb-2">სერვისები ვერ მოიძებნა</p>
                   <p className="text-gray-400 text-sm">სცადეთ ფილტრების შეცვლა</p>
                 </div>
               ) : (
                 <div className="space-y-2 md:space-y-4">
-                  {sortedFilteredItems.map((item) => (
+                  {sortedFilteredServices.map((service) => (
                     <div
-                      key={`${item.type}-${item.id}`}
-                      data-item-id={item.id}
+                      key={service.id}
+                      data-service-id={service.id}
                       className={`transition-all duration-200 touch-manipulation ${
-                        selectedItem?.id === item.id 
+                        selectedService?.id === service.id 
                           ? "ring-2 ring-primary rounded-lg" 
                           : ""
                       }`}
                     >
-                      {item.type === 'service' ? (
-                        <ServiceCard 
-                          service={item} 
-                          onMapFocus={() => handleMapFocus(item)}
-                        />
-                      ) : (
-                        <LaundryCard 
-                          laundry={item} 
-                          onViewDetails={() => handleMapFocus(item)}
-                        />
-                      )}
+                      <ServiceCard 
+                        service={service} 
+                        onMapFocus={() => {
+                          setSelectedService(service);
+                          if (map && service.latitude && service.longitude) {
+                            map.setView([service.latitude, service.longitude], 15);
+                          }
+                        }}
+                      />
                     </div>
                   ))}
                 </div>
@@ -625,43 +580,39 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
           <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[100]">
             <div className="p-2 md:p-3 overflow-x-auto">
               <div className="flex gap-2 md:gap-3 items-center" style={{minWidth: "fit-content"}}>
-                {/* Category Filter - Only show for services */}
-                {viewMode === 'services' && (
-                  <div className="flex-1 min-w-[150px] md:min-w-[200px]">
-                    <Select value={selectedCategory.toString()} onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}>
-                      <SelectTrigger className="h-8">
-                        <SelectValue placeholder="კატეგორია" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[9999]">
-                        <SelectItem value="all">ყველა კატეგორია</SelectItem>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+                {/* Category Filter */}
+                <div className="flex-1 min-w-[150px] md:min-w-[200px]">
+                  <Select value={selectedCategory.toString()} onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="კატეგორია" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[9999]">
+                      <SelectItem value="all">ყველა კატეგორია</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id.toString()}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                {/* City Filter - Only show for services */}
-                {viewMode === 'services' && (
-                  <div className="flex-1 min-w-[120px] md:min-w-[150px]">
-                    <Select value={selectedCity || "all_cities"} onValueChange={(value) => setSelectedCity(value === "all_cities" ? null : value)}>
-                      <SelectTrigger className="h-8">
-                        <SelectValue placeholder="ქალაქი" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[9999]">
-                        <SelectItem value="all_cities">ყველა ქალაქი</SelectItem>
-                        {cities.map((city) => (
-                          <SelectItem key={city} value={city}>
-                            {city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+                {/* City Filter */}
+                <div className="flex-1 min-w-[120px] md:min-w-[150px]">
+                  <Select value={selectedCity || "all_cities"} onValueChange={(value) => setSelectedCity(value === "all_cities" ? null : value)}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="ქალაქი" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[9999]">
+                      <SelectItem value="all_cities">ყველა ქალაქი</SelectItem>
+                      {cities.map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
 
 
@@ -688,7 +639,7 @@ const defaultCenter: [number, number] = [41.7151, 44.8271];
             {/* Map Info Overlay */}
             <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg shadow-lg">
               <div className="text-xs text-gray-600">
-                <strong>{itemsWithLocation.length}</strong> {viewMode === 'services' ? 'სერვისი' : 'სამრეცხაო'}
+                <strong>{servicesWithLocation.length}</strong> სერვისი
               </div>
             </div>
           </div>
