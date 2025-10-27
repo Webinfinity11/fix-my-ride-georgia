@@ -191,6 +191,45 @@
       })();
     </script>
     
+    <!-- Critical: React stub MUST load before any modules -->
+    <script>
+      (function() {
+        if (typeof window.React !== 'undefined') return;
+        
+        window.React = {
+          forwardRef: function(render) { return render; },
+          createElement: function(type, props, ...children) { 
+            return { type, props: props || {}, children }; 
+          },
+          Component: class Component { constructor(props) { this.props = props; } },
+          PureComponent: class PureComponent { constructor(props) { this.props = props; } },
+          Fragment: Symbol.for('react.fragment'),
+          createContext: function(defaultValue) { 
+            return { 
+              Provider: function() {}, 
+              Consumer: function() {},
+              _currentValue: defaultValue 
+            }; 
+          },
+          createRef: function() { return { current: null }; },
+          useEffect: function() {},
+          useState: function(initial) { return [initial, function() {}]; },
+          useRef: function(initial) { return { current: initial }; },
+          useMemo: function(fn) { return fn(); },
+          useCallback: function(fn) { return fn; },
+          useContext: function(context) { return context._currentValue; },
+          useReducer: function(reducer, initial) { return [initial, function() {}]; },
+          useLayoutEffect: function() {},
+          useImperativeHandle: function() {},
+          memo: function(component) { return component; },
+          lazy: function(fn) { return fn; },
+          Suspense: function() {},
+          StrictMode: function() {},
+          version: '18.0.0-stub'
+        };
+        console.log('React stub loaded');
+      })();
+    </script>
     
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
