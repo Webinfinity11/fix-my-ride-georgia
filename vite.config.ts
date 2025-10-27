@@ -90,9 +90,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [
-    react({
-      jsxRuntime: 'automatic',
-    }),
+    react(),
     mode === 'development' &&
     componentTagger(),
     // PWA temporarily disabled to fix Service Worker cache issues

@@ -191,46 +191,6 @@
       })();
     </script>
     
-    <!-- Early React stub to prevent forwardRef errors -->
-    <script>
-      // Inject React stub BEFORE any modules load
-      window.React = window.React || {
-        forwardRef: function(render) { 
-          return render; 
-        },
-        createElement: function(type, props) { 
-          return { type: type, props: props || {} }; 
-        },
-        Component: class Component {
-          constructor(props) { this.props = props; }
-        },
-        Fragment: Symbol.for('react.fragment'),
-        createContext: function(defaultValue) {
-          return { Provider: {}, Consumer: {} };
-        },
-        useEffect: function() {},
-        useState: function(initial) { return [initial, function() {}]; },
-        useRef: function(initial) { return { current: initial }; },
-        useMemo: function(fn) { return fn(); },
-        useCallback: function(fn) { return fn; },
-      };
-      console.log('✅ React stub injected early');
-    </script>
-    
-    <!-- Debug: Check React availability -->
-    <script>
-      console.log('=== React Debug Check ===');
-      console.log('window.React:', typeof window.React);
-      console.log('React.forwardRef:', typeof window.React.forwardRef);
-      
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          console.log('=== React Debug Check (after load) ===');
-          console.log('window.React:', window.React);
-          console.log('React.forwardRef:', window.React ? typeof window.React.forwardRef : 'React is undefined!');
-        }, 100);
-      });
-    </script>
     
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
