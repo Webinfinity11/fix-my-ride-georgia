@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import type { FuelImporter } from "@/hooks/useFuelImporters";
 
@@ -85,17 +92,56 @@ const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
         {fuelPrices.length > 0 ? (
           <>
             <div className="space-y-2">
-              {displayedFuelTypes.map((fuel, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <span className="text-sm font-medium">{fuel.fuelType}</span>
-                  <span className="text-lg font-bold" style={{ color: primaryColor }}>
-                    {fuel.price.toFixed(2)} ₾
-                  </span>
-                </div>
-              ))}
+              {displayedFuelTypes.map((fuel, index) => {
+                const hasEnglish = fuel.fuelTypeEnglish && fuel.fuelTypeEnglish !== fuel.fuelType;
+                const hasAbbreviation = fuel.abbreviation;
+                const hasSpecifications = fuel.specifications;
+
+                return (
+                  <div
+                    key={index}
+                    className="flex items-start justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors gap-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-medium">
+                          {hasEnglish ? fuel.fuelTypeEnglish : fuel.fuelType}
+                        </span>
+                        {hasAbbreviation && (
+                          <Badge variant="outline" className="text-xs">
+                            {fuel.abbreviation}
+                          </Badge>
+                        )}
+                      </div>
+                      {hasEnglish && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {fuel.fuelType}
+                        </div>
+                      )}
+                      {hasSpecifications && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground cursor-help">
+                                <Info className="w-3 h-3" />
+                                <span className="truncate">{fuel.specifications}</span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs">{fuel.specifications}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-lg font-bold whitespace-nowrap" style={{ color: primaryColor }}>
+                        {fuel.price.toFixed(2)} ₾
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {hasMoreItems && (

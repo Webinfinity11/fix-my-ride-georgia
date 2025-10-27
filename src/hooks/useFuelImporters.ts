@@ -2,7 +2,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
-import { getAllFuelPrices, type Company, type FuelPrice } from "@/services/fuelPricesApi";
+import {
+  getAllFuelPrices,
+  getCompanyPrices,
+  getSupportedCompanies,
+  RateLimitError,
+  type Company,
+  type FuelPrice,
+  type CompanyName,
+  type CompanyPricesOptions,
+} from "@/services/fuelPricesApi";
 
 type FuelImporterBase = Database["public"]["Tables"]["fuel_importers"]["Row"];
 type FuelImporterInsert = Database["public"]["Tables"]["fuel_importers"]["Insert"];
@@ -13,6 +22,10 @@ export type FuelImporter = FuelImporterBase & {
   fuelPrices?: FuelPrice[];
   totalFuelTypes?: number;
   lastUpdated?: string;
+  priceRange?: {
+    min: number;
+    max: number;
+  };
 };
 
 // Helper function to map fuel type names to price categories
@@ -71,37 +84,98 @@ const transformCompanyToImporter = (company: Company, index: number, timestamp: 
     created_by: null,
     // Additional fields for displaying all fuel types
     fuelPrices: company.fuelPrices,
-    totalFuelTypes: company.fuelPrices.length,
+    totalFuelTypes: company.totalFuelTypes || company.fuelPrices.length,
     lastUpdated: timestamp,
+    priceRange: company.priceRange,
   };
 };
 
-export const useFuelImporters = () => {
+// Options for useFuelImporters hook
+export interface UseFuelImportersOptions {
+  english?: boolean;
+  enableFallback?: boolean; // Enable Supabase fallback (default: true)
+}
+
+export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
+  const { english = true, enableFallback = true } = options;
+
   return useQuery({
-    queryKey: ["fuel-importers"],
+    queryKey: ["fuel-importers", { english }],
     queryFn: async () => {
       try {
-        // Fetch data from the Fuel Prices API
-        const response = await getAllFuelPrices();
-
-        // Transform API response to FuelImporter format
-        const importers = response.data.companies.map((company, index) =>
-          transformCompanyToImporter(company, index, response.timestamp)
+        // Fetch data from all companies using individual endpoints for better data
+        const companies = getSupportedCompanies();
+        const promises = companies.map((companyName) =>
+          getCompanyPrices(companyName, { english })
         );
+
+        const responses = await Promise.allSettled(promises);
+
+        // Process successful responses
+        const importers: FuelImporter[] = [];
+
+        responses.forEach((result, index) => {
+          if (result.status === "fulfilled") {
+            const response = result.value;
+
+            try {
+              const company: Company = {
+                name: response.data.company,
+                fuelPrices: response.data.fuelPrices,
+                totalFuelTypes: response.data.totalFuelTypes,
+                priceRange: response.data.priceRange,
+              };
+
+              const importer = transformCompanyToImporter(company, index, response.timestamp);
+              importers.push(importer);
+            } catch (transformError) {
+              console.error(`Failed to transform ${companies[index]}:`, transformError);
+            }
+          } else {
+            console.warn(`Failed to fetch ${companies[index]}:`, result.reason?.message || result.reason);
+          }
+        });
+
+        // If no companies were fetched successfully, throw error to trigger fallback
+        if (importers.length === 0) {
+          throw new Error("No fuel prices available from API");
+        }
 
         return importers;
       } catch (error) {
         console.error("Error fetching fuel prices from API:", error);
 
-        // Fallback to Supabase if API fails
-        const { data, error: supabaseError } = await supabase
-          .from("fuel_importers")
-          .select("*")
-          .order("name", { ascending: true });
+        // Handle rate limit errors specially
+        if (error instanceof RateLimitError) {
+          toast.error(`Rate limit exceeded. გთხოვთ სცადოთ ${error.retryAfter} წამში`);
+          throw error; // Re-throw to prevent fallback
+        }
 
-        if (supabaseError) throw supabaseError;
-        return data as FuelImporter[];
+        // Fallback to Supabase if API fails (and fallback is enabled)
+        if (enableFallback) {
+          console.log("Falling back to Supabase...");
+
+          const { data, error: supabaseError } = await supabase
+            .from("fuel_importers")
+            .select("*")
+            .order("name", { ascending: true });
+
+          if (supabaseError) throw supabaseError;
+          return data as FuelImporter[];
+        }
+
+        throw error;
       }
+    },
+    staleTime: 15 * 60 * 1000, // 15 minutes (matches API cache)
+    gcTime: 30 * 60 * 1000, // 30 minutes (previously cacheTime)
+    retry: (failureCount, error) => {
+      // Don't retry on rate limit errors
+      if (error instanceof RateLimitError) {
+        return false;
+      }
+      // Retry up to 2 times for other errors
+      return failureCount < 2;
     },
   });
 };

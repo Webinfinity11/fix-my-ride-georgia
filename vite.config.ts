@@ -10,6 +10,17 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
+      '/api/fuel-prices': {
+        target: 'https://fuel-prices-backend.onrender.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/fuel-prices/, '/api/fuel-prices'),
+      },
+      '/api/health': {
+        target: 'https://fuel-prices-backend.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      },
       '/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,

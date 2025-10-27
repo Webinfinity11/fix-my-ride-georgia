@@ -4,11 +4,12 @@ import FuelImporterCard from "@/components/fuel/FuelImporterCard";
 import FuelHero from "@/components/fuel/FuelHero";
 import FuelCalculator from "@/components/fuel/FuelCalculator";
 import FuelPriceHistory from "@/components/fuel/FuelPriceHistory";
+import FuelComparison from "@/components/fuel/FuelComparison";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FloatingActionButton } from "@/components/mobile/FloatingActionButton";
-import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp, Navigation } from "lucide-react";
+import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp, Navigation, ArrowUpDown } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { toast } from "sonner";
@@ -20,7 +21,7 @@ const FuelImporters = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const { data: importers = [], isLoading, refetch, isRefetching } = useFuelImporters();
+  const { data: importers = [], isLoading, refetch, isRefetching } = useFuelImporters({ english: true });
 
   const handleRefresh = async () => {
     await refetch();
@@ -77,18 +78,22 @@ const FuelImporters = () => {
         )}
 
         <Tabs defaultValue="prices" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="prices" className="flex items-center gap-2">
               <Fuel className="w-4 h-4" />
               <span className="hidden sm:inline">ფასები</span>
             </TabsTrigger>
-            <TabsTrigger value="calculator" className="flex items-center gap-2">
-              <Calculator className="w-4 h-4" />
-              <span className="hidden sm:inline">კალკულატორი</span>
+            <TabsTrigger value="comparison" className="flex items-center gap-2">
+              <ArrowUpDown className="w-4 h-4" />
+              <span className="hidden sm:inline">შედარება</span>
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               <span className="hidden sm:inline">ისტორია</span>
+            </TabsTrigger>
+            <TabsTrigger value="calculator" className="flex items-center gap-2">
+              <Calculator className="w-4 h-4" />
+              <span className="hidden sm:inline">კალკულატორი</span>
             </TabsTrigger>
           </TabsList>
 
@@ -161,12 +166,16 @@ const FuelImporters = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="calculator">
-            <FuelCalculator />
+          <TabsContent value="comparison">
+            <FuelComparison />
           </TabsContent>
 
           <TabsContent value="history">
             <FuelPriceHistory />
+          </TabsContent>
+
+          <TabsContent value="calculator">
+            <FuelCalculator />
           </TabsContent>
         </Tabs>
       </div>
