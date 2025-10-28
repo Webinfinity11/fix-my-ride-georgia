@@ -15,6 +15,8 @@ const FuelHero = () => {
           src={pageSettings.banner_url} 
           alt="საწვავის იმპორტიორები - სარეკლამო ბანერი"
           className="w-full h-auto rounded-lg shadow-md"
+          loading="eager"
+          style={{ minHeight: '200px', backgroundColor: '#f3f4f6' }}
         />
       </div>
     </div>

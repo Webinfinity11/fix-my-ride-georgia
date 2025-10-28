@@ -39,6 +39,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
             alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
             className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
             loading="lazy"
+            style={{ minHeight: '100%', backgroundColor: '#f3f4f6' }}
           />
         </div>
         
@@ -104,6 +105,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
                       : "opacity-70 hover:opacity-100"
                   }`}
                   loading="lazy"
+                  style={{ minHeight: '64px', backgroundColor: '#f3f4f6' }}
                 />
               </div>
             </div>

@@ -34,6 +34,8 @@ const LaundryCard = ({ laundry, onViewDetails }: LaundryCardProps) => {
             src={laundry.photos[0]}
             alt={laundry.name}
             className="w-full h-full object-cover transition-transform hover:scale-105"
+            loading="lazy"
+            style={{ minHeight: '160px', backgroundColor: '#f3f4f6' }}
             onError={(e) => {
               e.currentTarget.src = '/placeholder.svg';
             }}
