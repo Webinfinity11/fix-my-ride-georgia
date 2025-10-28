@@ -154,11 +154,7 @@
   
   /* Image Lazy Loading */
   img[loading="lazy"] {
-    @apply bg-muted animate-pulse;
-  }
-  
-  img[loading="lazy"].loaded {
-    @apply animate-none;
+    @apply bg-muted;
   }
 }
 
