@@ -267,26 +267,30 @@ const ServiceDetail = () => {
     return maskedPart + visiblePart;
   };
 
+  const trackPhoneView = async (serviceId: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from('service_phone_views')
+        .insert({
+          service_id: serviceId,
+          viewer_id: user?.id || null,
+          user_agent: navigator.userAgent
+        });
+
+      if (error) {
+        console.error('Error tracking phone view:', error);
+      }
+    } catch (err) {
+      console.error('Error tracking phone view:', err);
+    }
+  };
+
   const togglePhoneVisibility = async () => {
     // თუ ნომერი დამალულია და ვაპირებთ ჩვენებას, track phone view
-    if (!showFullPhone) {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        const { error } = await supabase
-          .from('service_phone_views')
-          .insert({
-            service_id: service.id,
-            viewer_id: user?.id || null,
-            user_agent: navigator.userAgent
-          });
-
-        if (error) {
-          console.error('Error tracking phone view:', error);
-        }
-      } catch (err) {
-        console.error('Error tracking phone view:', err);
-      }
+    if (!showFullPhone && service) {
+      await trackPhoneView(service.id);
     }
     
     setShowFullPhone(!showFullPhone);
@@ -463,11 +467,17 @@ const ServiceDetail = () => {
 
         <div className="grid grid-cols-2 gap-2">
           {service.mechanic.phone && (
-            <Button variant="outline" size="sm" asChild>
-              <a href={`tel:${service.mechanic.phone}`}>
-                <Phone className="h-4 w-4 mr-1" />
-                დარეკვა
-              </a>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={async (e) => {
+                e.preventDefault();
+                await trackPhoneView(service.id);
+                window.location.href = `tel:${service.mechanic.phone}`;
+              }}
+            >
+              <Phone className="h-4 w-4 mr-1" />
+              დარეკვა
             </Button>
           )}
           <SendMessageButton 
