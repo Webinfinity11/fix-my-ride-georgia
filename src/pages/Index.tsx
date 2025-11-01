@@ -14,6 +14,8 @@ import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/Structure
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { Search, TrendingUp, Zap, Shield, Users, Star, MapPin, ArrowRight, CheckCircle2, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
+import HomeCenterBanner from "@/components/banners/HomeCenterBanner";
+import MobileBanner from "@/components/banners/MobileBanner";
 type ServiceCategory = {
   id: number;
   name: string;
@@ -449,11 +451,15 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Banner Section - Desktop */}
+        <HomeCenterBanner />
+
         {/* Recommended Mechanics */}
         
       </main>
       
       <Footer />
+      <MobileBanner />
       <MobileBottomNav />
     </div>;
 };

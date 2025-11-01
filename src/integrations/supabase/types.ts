@@ -751,6 +751,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_mechanic_services_profiles"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "mechanic_services_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
@@ -1188,6 +1195,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_banners: {
+        Row: {
+          banner_url: string
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          link_url: string | null
+          position: string
+          updated_at: string | null
+        }
+        Insert: {
+          banner_url: string
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          link_url?: string | null
+          position: string
+          updated_at?: string | null
+        }
+        Update: {
+          banner_url?: string
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          link_url?: string | null
+          position?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       user_presence: {
         Row: {

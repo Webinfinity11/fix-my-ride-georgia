@@ -1,13 +1,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel } from "lucide-react";
+import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel, Megaphone } from "lucide-react";
 import SEOManagement from './SEOManagement';
 import SitemapManagement from './SitemapManagement';
 import { SavedServicesManagement } from './SavedServicesManagement';
 import FuelImporterManagement from './FuelImporterManagement';
 import AdminStats from './AdminStats';
 import ServicePhoneViewsStats from './ServicePhoneViewsStats';
+import BannerManagement from './BannerManagement';
 
 const AdminDashboard = () => {
   return (
@@ -20,7 +21,7 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-6 w-full max-w-5xl">
+        <TabsList className="grid grid-cols-7 w-full max-w-6xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             მიმოხილვა
@@ -44,6 +45,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="seo" className="flex items-center gap-2">
             <Search className="h-4 w-4" />
             SEO მართვა
+          </TabsTrigger>
+          <TabsTrigger value="banners" className="flex items-center gap-2">
+            <Megaphone className="h-4 w-4" />
+            რეკლამები
           </TabsTrigger>
         </TabsList>
 
@@ -90,6 +95,10 @@ const AdminDashboard = () => {
 
         <TabsContent value="seo" className="space-y-6">
           <SEOManagement />
+        </TabsContent>
+
+        <TabsContent value="banners" className="space-y-6">
+          <BannerManagement />
         </TabsContent>
       </Tabs>
     </div>
