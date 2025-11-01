@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveBanner } from "@/hooks/useSiteBanners";
@@ -6,8 +6,23 @@ import { useActiveBanner } from "@/hooks/useSiteBanners";
 const HomeCenterBanner = () => {
   const { data: banner } = useActiveBanner('home_center_desktop');
   const [isVisible, setIsVisible] = useState(true);
+  const [showBanner, setShowBanner] = useState(false);
 
-  if (!banner || !isVisible) return null;
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show banner after scrolling 100px
+      if (window.scrollY > 100) {
+        setShowBanner(true);
+      } else {
+        setShowBanner(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  if (!banner || !isVisible || !showBanner) return null;
 
   const handleClick = () => {
     if (banner.link_url) {
@@ -16,16 +31,16 @@ const HomeCenterBanner = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 hidden md:block">
-      <div className="relative max-w-[760px] mx-auto group">
+    <div className="hidden md:block fixed bottom-6 left-1/2 -translate-x-1/2 z-[9997] animate-in slide-in-from-bottom-5 duration-300">
+      <div className="relative max-w-[760px] group">
         <div 
-          className={`relative rounded-lg overflow-hidden shadow-md ${banner.link_url ? 'cursor-pointer' : ''}`}
+          className={`relative rounded-lg overflow-hidden shadow-lg ${banner.link_url ? 'cursor-pointer' : ''}`}
           onClick={handleClick}
         >
           <img 
             src={banner.banner_url} 
             alt="სარეკლამო ბანერი"
-            className="w-full h-[90px] object-cover"
+            className="w-[760px] h-[90px] object-cover"
             loading="lazy"
             style={{ minHeight: '90px', backgroundColor: '#f3f4f6' }}
           />
