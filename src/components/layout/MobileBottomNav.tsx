@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu } from 'lucide-react';
+import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu, X } from 'lucide-react';
 import { MobileDrawerMenu } from './MobileDrawerMenu';
 
 const MobileBottomNav = () => {
@@ -55,10 +55,10 @@ const MobileBottomNav = () => {
       onClick: () => navigate('/chat')
     },
     {
-      icon: Menu,
-      label: 'Menu',
+      icon: drawerOpen ? X : Menu,
+      label: drawerOpen ? 'დახურვა' : 'Menu',
       path: '',
-      onClick: () => setDrawerOpen(true),
+      onClick: () => setDrawerOpen(!drawerOpen),
       isMenu: true
     }
   ];
@@ -93,13 +93,15 @@ const MobileBottomNav = () => {
                 <button
                   key={index}
                   onClick={item.onClick}
-                  className="flex flex-col items-center justify-center min-w-0 flex-1 py-2 transition-colors duration-200"
+                  className={`flex flex-col items-center justify-center min-w-0 flex-1 py-2 transition-colors duration-200 ${
+                    item.isMenu ? 'relative z-[10001]' : ''
+                  }`}
                   aria-label={item.label}
                 >
                   <Icon 
-                    className={`h-6 w-6 mb-1 transition-colors ${
+                    className={`h-6 w-6 mb-1 transition-all duration-300 ${
                       active ? 'text-primary' : 'text-muted-foreground'
-                    }`} 
+                    } ${item.isMenu && drawerOpen ? 'rotate-90' : ''}`} 
                   />
                   <span 
                     className={`text-xs font-medium transition-colors ${
