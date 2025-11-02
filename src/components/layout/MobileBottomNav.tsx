@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu, X } from 'lucide-react';
+import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu } from 'lucide-react';
 import { MobileDrawerMenu } from './MobileDrawerMenu';
 
 const MobileBottomNav = () => {
@@ -55,10 +55,10 @@ const MobileBottomNav = () => {
       onClick: () => navigate('/chat')
     },
     {
-      icon: drawerOpen ? X : Menu,
-      label: drawerOpen ? 'დახურვა' : 'Menu',
+      icon: Menu,
+      label: 'Menu',
       path: '',
-      onClick: () => setDrawerOpen(!drawerOpen),
+      onClick: () => setDrawerOpen(true),
       isMenu: true
     }
   ];
@@ -69,7 +69,7 @@ const MobileBottomNav = () => {
         <span className="hidden" />
       </MobileDrawerMenu>
       
-      <div className="fixed bottom-0 left-0 right-0 z-[9999] md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-[99999] md:hidden">
         <div className="bg-background border-t border-border rounded-t-3xl shadow-lg">
           <div className="flex items-center justify-around h-[70px] px-4">
             {navItems.map((item, index) => {
@@ -93,15 +93,13 @@ const MobileBottomNav = () => {
                 <button
                   key={index}
                   onClick={item.onClick}
-                  className={`flex flex-col items-center justify-center min-w-0 flex-1 py-2 transition-colors duration-200 ${
-                    item.isMenu ? 'relative z-[10001]' : ''
-                  }`}
+                  className="flex flex-col items-center justify-center min-w-0 flex-1 py-2 transition-colors duration-200"
                   aria-label={item.label}
                 >
                   <Icon 
-                    className={`h-6 w-6 mb-1 transition-all duration-300 ${
+                    className={`h-6 w-6 mb-1 transition-colors ${
                       active ? 'text-primary' : 'text-muted-foreground'
-                    } ${item.isMenu && drawerOpen ? 'rotate-90' : ''}`} 
+                    }`} 
                   />
                   <span 
                     className={`text-xs font-medium transition-colors ${
