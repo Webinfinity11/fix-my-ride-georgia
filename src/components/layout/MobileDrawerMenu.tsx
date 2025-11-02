@@ -29,7 +29,14 @@ import {
   Shield,
   MessageCircle,
   Plus,
+  Home,
+  Map,
+  Droplet,
+  Fuel,
+  Phone,
+  Info,
 } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
 interface MobileDrawerMenuProps {
@@ -41,6 +48,18 @@ interface MobileDrawerMenuProps {
 export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerMenuProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  // Site menu items
+  const siteMenuItems = [
+    { icon: Home, label: 'მთავარი', path: '/' },
+    { icon: Wrench, label: 'სერვისები', path: '/services' },
+    { icon: Map, label: 'რუკა', path: '/map' },
+    { icon: Droplet, label: 'სამრეცხაო', path: '/laundries' },
+    { icon: Fuel, label: 'საწვავი', path: '/fuel-importers' },
+    { icon: MessageCircle, label: 'ჩატი', path: '/chat' },
+    { icon: Phone, label: 'კონტაქტი', path: '/contact' },
+    { icon: Info, label: 'ჩვენ შესახებ', path: '/about' },
+  ];
 
   const handleSignOut = async () => {
     try {
@@ -58,25 +77,41 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     onOpenChange?.(false);
   };
 
-  // If not logged in, show login prompt
+  // If not logged in, show login prompt with site menu
   if (!user) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerTrigger asChild>{children}</DrawerTrigger>
-        <DrawerContent className="h-[50vh] px-4">
-          <DrawerHeader className="text-center">
-            <DrawerTitle>ავტორიზაცია საჭიროა</DrawerTitle>
-            <DrawerDescription>
-              გთხოვთ შეხვიდეთ სისტემაში ან დარეგისტრირდეთ
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="flex flex-col gap-3 px-4 py-6">
+        <DrawerContent className="h-[75vh] px-4">
+          {/* Auth Buttons - Horizontal Layout */}
+          <div className="grid grid-cols-2 gap-3 p-4 border-b">
             <Button onClick={() => handleNavigation('/login')} size="lg">
               შესვლა
             </Button>
             <Button onClick={() => handleNavigation('/register')} variant="outline" size="lg">
               რეგისტრაცია
             </Button>
+          </div>
+
+          {/* Site Menu */}
+          <div className="flex-1 overflow-y-auto py-4">
+            <div className="px-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-4 py-2">
+                საიტის მენიუ
+              </p>
+              <div className="space-y-1">
+                {siteMenuItems.map((item) => (
+                  <button
+                    key={item.path}
+                    onClick={() => handleNavigation(item.path)}
+                    className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <item.icon className="h-5 w-5 text-muted-foreground" />
+                    <span className="font-medium">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </DrawerContent>
       </Drawer>
@@ -109,114 +144,147 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent className="h-[85vh] px-4">
-        {/* Profile Header */}
-        <DrawerHeader className="pb-2">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-14 w-14">
-              <AvatarFallback className="text-lg bg-primary text-primary-foreground">
-                {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 text-left">
-              <DrawerTitle className="text-lg">
-                {user.firstName} {user.lastName}
-              </DrawerTitle>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant={getRoleBadgeVariant()} className="text-xs">
-                  {getRoleLabel()}
-                </Badge>
-                {user.isVerified && (
-                  <Badge variant="outline" className="text-xs">
-                    ✓ დადასტურებული
+        
+        <Tabs defaultValue="site" className="flex flex-col h-full">
+          {/* Tabs Header */}
+          <TabsList className={`grid ${user.role === 'admin' ? 'grid-cols-3' : 'grid-cols-2'} w-full mt-4`}>
+            <TabsTrigger value="site">მენიუ</TabsTrigger>
+            <TabsTrigger value="profile">პროფილი</TabsTrigger>
+            {user.role === 'admin' && (
+              <TabsTrigger value="admin">ადმინი</TabsTrigger>
+            )}
+          </TabsList>
+
+          {/* Tab 1: Site Menu */}
+          <TabsContent value="site" className="flex-1 overflow-y-auto mt-2">
+            <div className="space-y-1 py-2">
+              {siteMenuItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavigation(item.path)}
+                  className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+                >
+                  <item.icon className="h-5 w-5 text-muted-foreground" />
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Tab 2: Profile Menu */}
+          <TabsContent value="profile" className="flex-1 overflow-y-auto mt-2">
+            {/* Profile Header */}
+            <div className="flex items-center gap-3 p-4 border-b mb-2">
+              <Avatar className="h-14 w-14">
+                <AvatarFallback className="text-lg bg-primary text-primary-foreground">
+                  {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <p className="font-semibold text-lg">
+                  {user.firstName} {user.lastName}
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={getRoleBadgeVariant()} className="text-xs">
+                    {getRoleLabel()}
                   </Badge>
-                )}
+                  {user.isVerified && (
+                    <Badge variant="outline" className="text-xs">✓ დადასტურებული</Badge>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto py-4">
-          {/* Main Navigation */}
-          <div className="space-y-1">
-            <button
-              onClick={() => handleNavigation('/dashboard')}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-            >
-              <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">Dashboard</span>
-            </button>
-
-            <button
-              onClick={() => handleNavigation('/dashboard/profile')}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-            >
-              <User className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">პროფილი</span>
-            </button>
-
-            {user.role === 'customer' && (
+            {/* Profile Navigation */}
+            <div className="space-y-1 py-2">
               <button
-                onClick={() => handleNavigation('/dashboard/cars')}
+                onClick={() => handleNavigation('/dashboard')}
                 className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
               >
-                <Car className="h-5 w-5 text-muted-foreground" />
-                <span className="font-medium">ჩემი მანქანები</span>
+                <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium">Dashboard</span>
               </button>
-            )}
 
-            {user.role === 'mechanic' && (
-              <>
+              <button
+                onClick={() => handleNavigation('/dashboard/profile')}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+              >
+                <User className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium">პროფილი</span>
+              </button>
+
+              {user.role === 'customer' && (
                 <button
-                  onClick={() => handleNavigation('/dashboard/services')}
+                  onClick={() => handleNavigation('/dashboard/cars')}
                   className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
                 >
-                  <Wrench className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">ჩემი სერვისები</span>
+                  <Car className="h-5 w-5 text-muted-foreground" />
+                  <span className="font-medium">ჩემი მანქანები</span>
                 </button>
-                <button
-                  onClick={() => handleNavigation('/add-service')}
-                  className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-                >
-                  <Plus className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">სერვისის დამატება</span>
-                </button>
-              </>
-            )}
+              )}
 
-            <button
-              onClick={() => handleNavigation('/dashboard/bookings')}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-            >
-              <Calendar className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">ჯავშნები</span>
-            </button>
+              {user.role === 'mechanic' && (
+                <>
+                  <button
+                    onClick={() => handleNavigation('/dashboard/services')}
+                    className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <Wrench className="h-5 w-5 text-muted-foreground" />
+                    <span className="font-medium">ჩემი სერვისები</span>
+                  </button>
+                  <button
+                    onClick={() => handleNavigation('/add-service')}
+                    className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <Plus className="h-5 w-5 text-muted-foreground" />
+                    <span className="font-medium">სერვისის დამატება</span>
+                  </button>
+                </>
+              )}
 
-            <button
-              onClick={() => handleNavigation('/dashboard/saved-services')}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-            >
-              <BookmarkCheck className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">შენახული სერვისები</span>
-            </button>
+              <button
+                onClick={() => handleNavigation('/dashboard/bookings')}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+              >
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium">ჯავშნები</span>
+              </button>
 
-            <button
-              onClick={() => handleNavigation('/chat')}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-            >
-              <MessageCircle className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">მესიჯები</span>
-            </button>
-          </div>
+              <button
+                onClick={() => handleNavigation('/dashboard/saved-services')}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+              >
+                <BookmarkCheck className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium">შენახული სერვისები</span>
+              </button>
 
-          <Separator className="my-4" />
+              <Separator className="my-4" />
 
-          {/* Admin Section */}
+              <button
+                onClick={() => handleNavigation('/dashboard/settings')}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+              >
+                <Settings className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium">პარამეტრები</span>
+              </button>
+
+              <button
+                onClick={() => handleNavigation('/contact')}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
+              >
+                <HelpCircle className="h-5 w-5 text-muted-foreground" />
+                <span className="font-medium">დახმარება</span>
+              </button>
+            </div>
+          </TabsContent>
+
+          {/* Tab 3: Admin Menu (only for admins) */}
           {user.role === 'admin' && (
-            <>
-              <div className="space-y-1">
+            <TabsContent value="admin" className="flex-1 overflow-y-auto mt-2">
+              <div className="space-y-1 py-2">
                 <div className="px-4 py-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    ადმინისტრირება
+                    ადმინისტრაციის პანელი
                   </p>
                 </div>
                 <button
@@ -224,45 +292,27 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
                   className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
                 >
                   <Shield className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">Admin Panel</span>
+                  <span className="font-medium">Admin Dashboard</span>
                 </button>
               </div>
-              <Separator className="my-4" />
-            </>
+            </TabsContent>
           )}
 
-          {/* Settings & Help */}
-          <div className="space-y-1">
-            <button
-              onClick={() => handleNavigation('/dashboard/settings')}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-            >
-              <Settings className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">პარამეტრები</span>
-            </button>
-
-            <button
-              onClick={() => handleNavigation('/contact')}
-              className="flex items-center gap-3 px-4 py-3 w-full text-left rounded-lg hover:bg-muted transition-colors"
-            >
-              <HelpCircle className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">დახმარება</span>
-            </button>
+          {/* Footer: Logout Button (outside tabs, always visible) */}
+          <div className="border-t mt-auto">
+            <div className="p-4">
+              <Button
+                onClick={handleSignOut}
+                variant="destructive"
+                className="w-full"
+                size="lg"
+              >
+                <LogOut className="h-5 w-5 mr-2" />
+                გამოსვლა
+              </Button>
+            </div>
           </div>
-        </div>
-
-        {/* Footer with Logout */}
-        <DrawerFooter className="pt-4 border-t">
-          <Button
-            onClick={handleSignOut}
-            variant="destructive"
-            className="w-full"
-            size="lg"
-          >
-            <LogOut className="h-5 w-5 mr-2" />
-            გამოსვლა
-          </Button>
-        </DrawerFooter>
+        </Tabs>
       </DrawerContent>
     </Drawer>
   );
