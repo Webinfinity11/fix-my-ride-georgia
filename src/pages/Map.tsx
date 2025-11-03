@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useServices } from "@/hooks/useServices";
+import { useLaundries } from "@/hooks/useLaundries";
 import ServiceCard from "@/components/services/ServiceCard";
+import LaundryCard from "@/components/laundry/LaundryCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
@@ -181,6 +184,7 @@ const Map = () => {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [map, setMap] = useState<any>(null);
   const mapRef = useRef<HTMLDivElement>(null);
+  const [viewMode, setViewMode] = useState<'services' | 'laundries'>('services');
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
@@ -195,6 +199,8 @@ const Map = () => {
     fetchInitialData,
     fetchServices
   } = useServices();
+
+  const { data: laundries = [], isLoading: laundriesLoading } = useLaundries();
 
   // Apply search filters only
   const baseFilteredServices = services.filter(service => {
@@ -458,56 +464,144 @@ const Map = () => {
       <SEOHead title="Services Map - Fix My Ride Georgia" description="Find car repair services near you on our interactive map. Browse mechanics and services by location in Georgia." />
       
       <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row">
-        {/* Left Sidebar - Services List (20% width on desktop, hidden on mobile) */}
+        {/* Left Sidebar - Services/Laundries List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input type="text" placeholder="სერვისების ძიება..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
+              <Input 
+                type="text" 
+                placeholder={viewMode === 'services' ? 'სერვისების ძიება...' : 'სამრეცხაოების ძიება...'} 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+                className="pl-10" 
+              />
             </div>
-
           </div>
           
           <div className="flex-1 overflow-y-auto sidebar-scroll-container">
             {/* Results Header */}
-            {!loading && <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
+            {!loading && !laundriesLoading && (
+              <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
                 <p className="text-sm text-gray-600">
-                  <strong>{sortedFilteredServices.length}</strong> სერვისი ნაპოვნია
-                  {servicesWithLocation.length !== sortedFilteredServices.length && <span className="ml-2 text-xs">
+                  <strong>
+                    {viewMode === 'services' ? sortedFilteredServices.length : (laundries?.length || 0)}
+                  </strong>{' '}
+                  {viewMode === 'services' ? 'სერვისი' : 'სამრეცხაო'} ნაპოვნია
+                  {viewMode === 'services' && servicesWithLocation.length !== sortedFilteredServices.length && (
+                    <span className="ml-2 text-xs">
                       ({servicesWithLocation.length} რუკაზე)
-                    </span>}
+                    </span>
+                  )}
                 </p>
-              </div>}
+              </div>
+            )}
 
             <div className="p-2 md:p-4">
-              {loading ? <div className="text-center py-8">
+              {loading || laundriesLoading ? (
+                <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="mt-2 text-gray-600">სერვისები იტვირთება...</p>
-                </div> : sortedFilteredServices.length === 0 ? <div className="text-center py-8">
-                  <div className="text-gray-400 mb-2">
-                    <Search className="w-12 h-12 mx-auto" />
+                  <p className="mt-2 text-gray-600">
+                    {viewMode === 'services' ? 'სერვისები' : 'სამრეცხაოები'} იტვირთება...
+                  </p>
+                </div>
+              ) : viewMode === 'services' ? (
+                // Services View
+                sortedFilteredServices.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-gray-400 mb-2">
+                      <Search className="w-12 h-12 mx-auto" />
+                    </div>
+                    <p className="text-gray-600 mb-2">სერვისები ვერ მოიძებნა</p>
+                    <p className="text-gray-400 text-sm">სცადეთ ფილტრების შეცვლა</p>
                   </div>
-                  <p className="text-gray-600 mb-2">სერვისები ვერ მოიძებნა</p>
-                  <p className="text-gray-400 text-sm">სცადეთ ფილტრების შეცვლა</p>
-                </div> : <div className="space-y-2 md:space-y-4">
-                  {sortedFilteredServices.map(service => <div key={service.id} data-service-id={service.id} className={`transition-all duration-200 touch-manipulation ${selectedService?.id === service.id ? "ring-2 ring-primary rounded-lg" : ""}`}>
-                      <ServiceCard service={service} onMapFocus={() => {
-                  setSelectedService(service);
-                  if (map && service.latitude && service.longitude) {
-                    map.setView([service.latitude, service.longitude], 15);
-                  }
-                }} />
-                    </div>)}
-                </div>}
+                ) : (
+                  <div className="space-y-2 md:space-y-4">
+                    {sortedFilteredServices.map(service => (
+                      <div 
+                        key={service.id} 
+                        data-service-id={service.id} 
+                        className={`transition-all duration-200 touch-manipulation ${selectedService?.id === service.id ? "ring-2 ring-primary rounded-lg" : ""}`}
+                      >
+                        <ServiceCard 
+                          service={service} 
+                          onMapFocus={() => {
+                            setSelectedService(service);
+                            if (map && service.latitude && service.longitude) {
+                              map.setView([service.latitude, service.longitude], 15);
+                            }
+                          }} 
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )
+              ) : (
+                // Laundries View
+                laundries?.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Search className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                    <p className="text-gray-600">სამრეცხაოები ვერ მოიძებნა</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 md:space-y-4">
+                    {laundries?.map(laundry => (
+                      <div key={laundry.id}>
+                        <LaundryCard 
+                          laundry={laundry}
+                          onViewDetails={() => {
+                            setSelectedService(null);
+                            if (map && laundry.latitude && laundry.longitude) {
+                              map.setView([laundry.latitude, laundry.longitude], 15);
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
 
         {/* Right Side - Map (80% width on desktop, full height on mobile) */}
         <div className="w-full md:w-4/5 h-full flex flex-col">
-          {/* Top Filters Bar */}
-          <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[50]">
+          {/* View Mode Toggle */}
+          <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[51] px-2 md:px-4 py-2 md:py-3">
+            <div className="flex items-center justify-between gap-3">
+              {/* Toggle Label & Switch */}
+              <div className="flex items-center gap-3 flex-1">
+                <div className="flex items-center gap-2 text-sm md:text-base font-medium text-gray-700">
+                  <Car className="w-5 h-5 text-primary" />
+                  <span className="hidden sm:inline">ავტოსერვისები</span>
+                  <span className="sm:hidden">სერვისები</span>
+                </div>
+                
+                <Switch
+                  checked={viewMode === 'laundries'}
+                  onCheckedChange={(checked) => setViewMode(checked ? 'laundries' : 'services')}
+                  aria-label="გადართვა სამრეცხაოებზე"
+                />
+                
+                <div className="flex items-center gap-2 text-sm md:text-base font-medium text-gray-700">
+                  <Droplet className="w-5 h-5 text-cyan-600" />
+                  <span className="hidden sm:inline">სამრეცხაოები</span>
+                  <span className="sm:hidden">რეცხვა</span>
+                </div>
+              </div>
+              
+              {/* Count Badge */}
+              <Badge variant="secondary" className="text-xs md:text-sm whitespace-nowrap">
+                {viewMode === 'services' ? filteredServices.length : (laundries?.length || 0)}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Top Filters Bar - Category & City (only for services) */}
+          {viewMode === 'services' && (
+            <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[50]">
             <div className="p-2 md:p-3 overflow-x-auto">
               <div className="flex gap-2 md:gap-3 items-center" style={{
               minWidth: "fit-content"
@@ -551,7 +645,8 @@ const Map = () => {
                   </Button>}
               </div>
             </div>
-          </div>
+            </div>
+          )}
 
           {/* Map Container */}
           <div className="flex-1 relative z-0">
