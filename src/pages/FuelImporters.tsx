@@ -54,8 +54,8 @@ const FuelImporters = () => {
   return (
     <Layout>
       <SEOHead
-        title="საწვავის იმპორტიორები - FixUp | აირჩიეთ საუკეთესო ფასი"
-        description="იხილეთ საწვავის ყველა იმპორტიორის აქტუალური ფასები საქართველოში. სუპერი, პრემიუმი და რეგულარი საწვავის ფასების შედარება."
+        title="საწვავის ფასები დღეს - FixUp | აირჩიეთ საუკეთესო ფასი"
+        description="იხილეთ საწვავის ფასები დღეს საქართველოში. სუპერი, პრემიუმი და რეგულარი საწვავის ფასების შედარება."
         keywords="საწვავი, ბენზინი, დიზელი, საწვავის ფასი, RON 98, RON 96, RON 93, საწვავის იმპორტიორები, საქართველო"
       />
 
@@ -68,6 +68,7 @@ const FuelImporters = () => {
       <FuelHero />
 
       <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">საწვავის ფასები დღეს</h1>
         {/* Statistics Header */}
         {!isLoading && importers.length > 0 && (
           <div className="mb-6">
