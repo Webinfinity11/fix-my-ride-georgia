@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
@@ -341,7 +341,7 @@ const Map = () => {
 
   // Update markers when map or filtered services change
   useEffect(() => {
-    if (!map || !servicesWithLocation) return;
+    if (!map) return;
     const updateMarkers = async () => {
       try {
         // Clear existing markers
@@ -351,32 +351,34 @@ const Map = () => {
           }
         });
 
-        // Only proceed if we have services
-        if (servicesWithLocation.length === 0) return;
-
-        // Add markers for services with location
         const L = await import('leaflet');
-        servicesWithLocation.forEach(service => {
-          if (!service.latitude || !service.longitude) return;
+        
+        if (viewMode === 'services') {
+          // Only proceed if we have services
+          if (servicesWithLocation.length === 0) return;
 
-          // Check if this service is selected
-          const isSelected = selectedService?.id === service.id;
-          const size = isSelected ? 32 : 28;
+          // Add markers for services with location
+          servicesWithLocation.forEach(service => {
+            if (!service.latitude || !service.longitude) return;
 
-          // Generate proper service slug
-          const serviceSlug = createServiceSlug(service.id, service.name);
+            // Check if this service is selected
+            const isSelected = selectedService?.id === service.id;
+            const size = isSelected ? 32 : 28;
 
-          // Create custom icon without shadow
-          const customIcon = L.divIcon({
-            html: createCustomMarkerHTML(service, isSelected),
-            className: 'custom-div-icon',
-            iconSize: [size, size],
-            iconAnchor: [size / 2, size / 2],
-            popupAnchor: [0, -size / 2]
-          });
-          const marker = L.marker([service.latitude, service.longitude], {
-            icon: customIcon
-          }).addTo(map).bindPopup(`
+            // Generate proper service slug
+            const serviceSlug = createServiceSlug(service.id, service.name);
+
+            // Create custom icon without shadow
+            const customIcon = L.divIcon({
+              html: createCustomMarkerHTML(service, isSelected),
+              className: 'custom-div-icon',
+              iconSize: [size, size],
+              iconAnchor: [size / 2, size / 2],
+              popupAnchor: [0, -size / 2]
+            });
+            const marker = L.marker([service.latitude, service.longitude], {
+              icon: customIcon
+            }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
                 <!-- Service Name -->
                 <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px; color: #1a1a1a; line-height: 1.2;">${service.name}</h3>
@@ -429,36 +431,87 @@ const Map = () => {
               </div>
             `);
 
-          // Handle marker click - open popup and move service to top of sidebar
-          marker.on('click', () => {
-            // Set selected service
-            setSelectedService(service);
+            // Handle marker click - open popup and move service to top of sidebar
+            marker.on('click', () => {
+              // Set selected service
+              setSelectedService(service);
 
-            // Move clicked service to top of the list by scrolling to top of sidebar
-            requestAnimationFrame(() => {
-              const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
-              if (sidebarScrollContainer) {
-                sidebarScrollContainer.scrollTo({
-                  top: 0,
-                  behavior: 'smooth'
-                });
-              }
+              // Move clicked service to top of the list by scrolling to top of sidebar
+              requestAnimationFrame(() => {
+                const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
+                if (sidebarScrollContainer) {
+                  sidebarScrollContainer.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });
+                }
+              });
             });
-          });
 
-          // Auto-open popup for selected service
-          if (isSelected) {
-            setTimeout(() => {
-              marker.openPopup();
-            }, 100);
-          }
-        });
+            // Auto-open popup for selected service
+            if (isSelected) {
+              setTimeout(() => {
+                marker.openPopup();
+              }, 100);
+            }
+          });
+        } else {
+          // Render laundries markers
+          const laundriesWithLocation = laundries.filter(
+            (laundry) => laundry.latitude && laundry.longitude
+          );
+          
+          laundriesWithLocation.forEach((laundry) => {
+            const size = 28;
+            const customIcon = L.divIcon({
+              html: `
+                <div style="
+                  width: ${size}px;
+                  height: ${size}px;
+                  background-color: #0891B2;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border: 3px solid white;
+                  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                  cursor: pointer;
+                ">
+                  <div style="color: white; font-size: 12px;">🚿</div>
+                </div>
+              `,
+              className: 'custom-div-icon',
+              iconSize: [size, size],
+              iconAnchor: [size/2, size/2],
+              popupAnchor: [0, -size/2]
+            });
+            
+            const marker = L.marker([laundry.latitude, laundry.longitude], {
+              icon: customIcon
+            }).addTo(map).bindPopup(`
+              <div style="max-width: 280px; min-width: 250px;">
+                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${laundry.name}</h3>
+                ${laundry.photos?.[0] ? 
+                  `<img src="${laundry.photos[0]}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : 
+                  `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🚿</div>`
+                }
+                ${laundry.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${laundry.description.substring(0, 120)}</p>` : ''}
+                ${laundry.address ? `<div style="margin-bottom: 12px;">📍 ${laundry.address}</div>` : ''}
+                ${laundry.contact_number ? 
+                  `<button onclick="window.open('tel:${laundry.contact_number}', '_self')" style="background: #0891B2; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
+                    📞 ${laundry.contact_number}
+                  </button>` : ''
+                }
+              </div>
+            `);
+          });
+        }
       } catch (error) {
         console.error('Error updating markers:', error);
       }
     };
     updateMarkers();
-  }, [map, searchQuery, services, selectedService]); // Depend on search query, services, and selected service
+  }, [map, viewMode, services, laundries, selectedService]);
 
   return <Layout>
       <SEOHead title="Services Map - Fix My Ride Georgia" description="Find car repair services near you on our interactive map. Browse mechanics and services by location in Georgia." />
@@ -569,31 +622,25 @@ const Map = () => {
         {/* Right Side - Map (80% width on desktop, full height on mobile) */}
         <div className="w-full md:w-4/5 h-full flex flex-col">
           {/* View Mode Toggle */}
-          <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[51] px-2 md:px-4 py-2 md:py-3">
+          <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[51] px-3 md:px-4 py-3 md:py-4">
             <div className="flex items-center justify-between gap-3">
-              {/* Toggle Label & Switch */}
-              <div className="flex items-center gap-3 flex-1">
-                <div className="flex items-center gap-2 text-sm md:text-base font-medium text-gray-700">
-                  <Car className="w-5 h-5 text-primary" />
-                  <span className="hidden sm:inline">ავტოსერვისები</span>
-                  <span className="sm:hidden">სერვისები</span>
-                </div>
-                
-                <Switch
-                  checked={viewMode === 'laundries'}
-                  onCheckedChange={(checked) => setViewMode(checked ? 'laundries' : 'services')}
-                  aria-label="გადართვა სამრეცხაოებზე"
-                />
-                
-                <div className="flex items-center gap-2 text-sm md:text-base font-medium text-gray-700">
-                  <Droplet className="w-5 h-5 text-cyan-600" />
-                  <span className="hidden sm:inline">სამრეცხაოები</span>
-                  <span className="sm:hidden">რეცხვა</span>
-                </div>
-              </div>
+              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'services' | 'laundries')} className="flex-1">
+                <TabsList className="grid w-full max-w-md grid-cols-2 h-11">
+                  <TabsTrigger value="services" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                    <Car className="w-4 h-4" />
+                    <span className="hidden sm:inline">ავტოსერვისები</span>
+                    <span className="sm:hidden">სერვისები</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="laundries" className="flex items-center gap-2 data-[state=active]:bg-cyan-600 data-[state=active]:text-white">
+                    <Droplet className="w-4 h-4" />
+                    <span className="hidden sm:inline">სამრეცხაოები</span>
+                    <span className="sm:hidden">რეცხვა</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
               
               {/* Count Badge */}
-              <Badge variant="secondary" className="text-xs md:text-sm whitespace-nowrap">
+              <Badge variant="secondary" className="text-xs md:text-sm whitespace-nowrap font-semibold">
                 {viewMode === 'services' ? filteredServices.length : (laundries?.length || 0)}
               </Badge>
             </div>
