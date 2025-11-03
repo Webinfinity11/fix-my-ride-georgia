@@ -82,7 +82,7 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerTrigger asChild>{children}</DrawerTrigger>
-        <DrawerContent className="h-[75vh] px-4 pb-[90px]">
+        <DrawerContent className="h-[75vh] px-4 pb-[15px]">
           {/* Auth Buttons - Horizontal Layout */}
           <div className="grid grid-cols-2 gap-3 p-4 border-b">
             <Button onClick={() => handleNavigation('/login')} size="lg">
@@ -143,7 +143,7 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerContent className="h-[80vh] px-4 pb-[90px]">
+      <DrawerContent className="h-[75vh] px-4 pb-[15px]">
         
         <Tabs defaultValue="site" className="flex flex-col h-full">
           {/* Tabs Header */}
