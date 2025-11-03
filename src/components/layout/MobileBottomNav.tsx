@@ -49,10 +49,10 @@ const MobileBottomNav = () => {
       isCenter: true
     },
     {
-      icon: MessageCircle,
-      label: 'საწვავი',
-      path: '/fuel-importers',
-      onClick: () => navigate('/fuel-importers')
+      icon: Fuel,
+      label: 'Chats',
+      path: '/chat',
+      onClick: () => navigate('/chat')
     },
     {
       icon: drawerOpen ? X : Menu,
