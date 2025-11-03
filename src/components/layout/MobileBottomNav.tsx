@@ -50,9 +50,9 @@ const MobileBottomNav = () => {
     },
     {
       icon: MessageCircle,
-      label: 'Chats',
-      path: '/chat',
-      onClick: () => navigate('/chat')
+      label: 'საწვავი',
+      path: '/fuel-importers',
+      onClick: () => navigate('/fuel-importers')
     },
     {
       icon: drawerOpen ? X : Menu,
