@@ -36,8 +36,7 @@ const FuelImporters = () => {
 
   // Apply search filter
   const filteredImporters = importers.filter((importer) => {
-    const matchesSearch = searchQuery === "" ||
-      importer.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = searchQuery === "" || importer.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
 
@@ -59,21 +58,21 @@ const FuelImporters = () => {
         keywords="საწვავი, ბენზინი, დიზელი, საწვავის ფასი, RON 98, RON 96, RON 93, საწვავის იმპორტიორები, საქართველო"
       />
 
-      <PullToRefreshIndicator
-        pullDistance={pullDistance}
-        isRefreshing={isRefreshing}
-        threshold={80}
-      />
+      <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} threshold={80} />
 
       <FuelHero />
 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">საწვავის ფასები დღეს</h1>
+        <h2 className="text-lg text-muted-foreground mb-6">
+                    შეარჩიეთ საწვავის ფასები ონლაინ, LIVE მონიტორინგი მთალი საქართველოს მასშტაბით        {" "}
+        </h2>
         {/* Statistics Header */}
         {!isLoading && importers.length > 0 && (
           <div className="mb-6">
             <div className="text-sm text-muted-foreground">
-              სულ {importers.length} კომპანია • {importers.reduce((sum, imp) => sum + (imp.totalFuelTypes || 0), 0)} საწვავის ტიპი
+              სულ {importers.length} კომპანია • {importers.reduce((sum, imp) => sum + (imp.totalFuelTypes || 0), 0)}{" "}
+              საწვავის ტიპი
             </div>
           </div>
         )}
@@ -113,20 +112,13 @@ const FuelImporters = () => {
                   />
                 </div>
 
-                <Button
-                  variant="outline"
-                  onClick={handleRefresh}
-                  disabled={isRefetching}
-                >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${isRefetching ? 'animate-spin' : ''}`} />
+                <Button variant="outline" onClick={handleRefresh} disabled={isRefetching}>
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isRefetching ? "animate-spin" : ""}`} />
                   განახლება
                 </Button>
 
                 {searchQuery && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setSearchQuery("")}
-                  >
+                  <Button variant="outline" onClick={() => setSearchQuery("")}>
                     <X className="w-4 h-4 mr-2" />
                     გასუფთავება
                   </Button>
@@ -144,16 +136,10 @@ const FuelImporters = () => {
                 <Fuel className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-xl font-semibold mb-2">კომპანია არ მოიძებნა</h3>
                 <p className="text-muted-foreground mb-4">
-                  {searchQuery
-                    ? "სცადეთ სხვა საძიებო ტერმინი"
-                    : "საწვავის იმპორტიორები ჯერ არ არის დამატებული"
-                  }
+                  {searchQuery ? "სცადეთ სხვა საძიებო ტერმინი" : "საწვავის იმპორტიორები ჯერ არ არის დამატებული"}
                 </p>
                 {searchQuery && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setSearchQuery("")}
-                  >
+                  <Button variant="outline" onClick={() => setSearchQuery("")}>
                     ყველა კომპანიის ნახვა
                   </Button>
                 )}
@@ -180,14 +166,10 @@ const FuelImporters = () => {
           </TabsContent>
         </Tabs>
       </div>
-      
+
       {/* Floating Action Button - Navigate to Map */}
       <div className="md:hidden">
-        <FloatingActionButton
-          icon={Navigation}
-          label="უახლოესი გასამართი"
-          onClick={() => navigate('/map')}
-        />
+        <FloatingActionButton icon={Navigation} label="უახლოესი გასამართი" onClick={() => navigate("/map")} />
       </div>
     </Layout>
   );
