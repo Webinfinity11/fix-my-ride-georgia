@@ -65,7 +65,7 @@ const FuelImporters = () => {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">საწვავის ფასები დღეს</h1>
         <h2 className="hidden md:block text-lg text-muted-foreground mb-6">
-                    შეარჩიეთ საწვავის ფასები ონლაინ, LIVE მონიტორინგი მთალი საქართველოს მასშტაბით        {" "}
+          შეარჩიეთ საწვავის ფასები ონლაინ, LIVE მონიტორინგი მთალი საქართველოს მასშტაბით        {" "}
         </h2>
         {/* Statistics Header */}
         {!isLoading && importers.length > 0 && (
