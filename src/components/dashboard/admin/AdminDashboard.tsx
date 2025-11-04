@@ -1,11 +1,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel, Megaphone } from "lucide-react";
+import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel, Megaphone, Award } from "lucide-react";
 import SEOManagement from './SEOManagement';
 import SitemapManagement from './SitemapManagement';
 import { SavedServicesManagement } from './SavedServicesManagement';
 import FuelImporterManagement from './FuelImporterManagement';
+import { AdminFuelBrands } from './AdminFuelBrands';
 import AdminStats from './AdminStats';
 import ServicePhoneViewsStats from './ServicePhoneViewsStats';
 import BannerManagement from './BannerManagement';
@@ -21,7 +22,7 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-7 w-full max-w-6xl">
+        <TabsList className="grid grid-cols-8 w-full max-w-6xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             მიმოხილვა
@@ -33,6 +34,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="fuel" className="flex items-center gap-2">
             <Fuel className="h-4 w-4" />
             საწვავი
+          </TabsTrigger>
+          <TabsTrigger value="brands" className="flex items-center gap-2">
+            <Award className="h-4 w-4" />
+            ბრენდები
           </TabsTrigger>
           <TabsTrigger value="saved" className="flex items-center gap-2">
             <Bookmark className="h-4 w-4" />
@@ -72,6 +77,10 @@ const AdminDashboard = () => {
 
         <TabsContent value="fuel" className="space-y-6">
           <FuelImporterManagement />
+        </TabsContent>
+
+        <TabsContent value="brands" className="space-y-6">
+          <AdminFuelBrands />
         </TabsContent>
 
         <TabsContent value="saved" className="space-y-6">

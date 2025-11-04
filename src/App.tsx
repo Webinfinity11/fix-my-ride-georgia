@@ -27,6 +27,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Laundries = lazy(() => import("./pages/Laundries"));
 const FuelImporters = lazy(() => import("./pages/FuelImporters"));
+const FuelBrands = lazy(() => import("./pages/FuelBrands"));
 const Mechanics = lazy(() => import("./pages/Mechanics"));
 const ServiceCategory = lazy(() => import("./pages/ServiceCategory"));
 const CategoryList = lazy(() => import("./pages/CategoryList"));
@@ -63,6 +64,7 @@ function App() {
                   <Route path="/map" element={<Map />} />
                   <Route path="/laundries" element={<Laundries />} />
                   <Route path="/fuel-importers" element={<FuelImporters />} />
+                  <Route path="/fuel-brands" element={<FuelBrands />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />

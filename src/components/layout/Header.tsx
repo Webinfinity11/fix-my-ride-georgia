@@ -66,7 +66,10 @@ const Header = () => {
             სამრეცხაო
           </Link>
           <Link to="/fuel-importers" className="text-gray-700 hover:text-primary transition-colors font-medium">
-            საწვავი
+            საწვავის ფასები
+          </Link>
+          <Link to="/fuel-brands" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            საწვავის ბრენდები
           </Link>
           <Link
             to="/chat"
