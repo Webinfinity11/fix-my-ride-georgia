@@ -455,6 +455,42 @@ export type Database = {
           },
         ]
       }
+      fuel_brands: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       fuel_importers: {
         Row: {
           created_at: string
@@ -511,6 +547,35 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      fuel_votes: {
+        Row: {
+          brand_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fuel_votes_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "fuel_brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       laundries: {
         Row: {
@@ -1294,6 +1359,16 @@ export type Database = {
         }[]
       }
       get_current_user_role: { Args: never; Returns: string }
+      get_fuel_brand_stats: {
+        Args: never
+        Returns: {
+          brand_id: string
+          brand_name: string
+          logo_url: string
+          vote_count: number
+          vote_percentage: number
+        }[]
+      }
       get_public_mechanic_info: {
         Args: { mechanic_id: string }
         Returns: {
@@ -1320,6 +1395,14 @@ export type Database = {
           is_verified: boolean
           last_name: string
           role: Database["public"]["Enums"]["user_role"]
+        }[]
+      }
+      get_user_vote: {
+        Args: { p_user_id: string }
+        Returns: {
+          brand_id: string
+          brand_name: string
+          voted_at: string
         }[]
       }
       is_admin: { Args: { user_id?: string }; Returns: boolean }
