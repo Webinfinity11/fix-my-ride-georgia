@@ -27,7 +27,7 @@ export const FuelBrandVotingBanner = () => {
   return (
     <>
       <div
-        className={`fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 transition-all duration-500 ${
+        className={`fixed bottom-6 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 transition-all duration-500 ${
           isVisible ? "translate-y-0 opacity-100" : "translate-y-32 opacity-0 pointer-events-none"
         }`}
       >
@@ -55,43 +55,24 @@ export const FuelBrandVotingBanner = () => {
 
             <div className="flex items-center gap-4">
               {topBrand.logo_url ? (
-                <img
-                  src={topBrand.logo_url}
-                  alt={topBrand.brand_name}
-                  className="w-12 h-12 object-contain"
-                />
+                <img src={topBrand.logo_url} alt={topBrand.brand_name} className="w-12 h-12 object-contain" />
               ) : (
-                <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-                  ⛽
-                </div>
+                <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">⛽</div>
               )}
               <div className="flex-1">
                 <p className="font-bold text-lg">{topBrand.brand_name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {topBrand.vote_count} ხმა
-                </p>
+                <p className="text-xs text-muted-foreground">{topBrand.vote_count} ხმა</p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-primary">
-                  {topBrand.vote_percentage}%
-                </p>
+                <p className="text-2xl font-bold text-primary">{topBrand.vote_percentage}%</p>
               </div>
             </div>
 
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setDialogOpen(true)}
-                className="flex-1"
-              >
+              <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)} className="flex-1">
                 სრული რეიტინგი
               </Button>
-              <Button
-                size="sm"
-                onClick={() => setDialogOpen(true)}
-                className="flex-1"
-              >
+              <Button size="sm" onClick={() => setDialogOpen(true)} className="flex-1">
                 ხმის მიცემა
               </Button>
             </div>
