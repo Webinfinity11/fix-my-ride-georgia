@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel, Megaphone, Award } from "lucide-react";
 import SEOManagement from './SEOManagement';
 import SitemapManagement from './SitemapManagement';
@@ -22,40 +23,43 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid grid-cols-8 w-full max-w-6xl">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            მიმოხილვა
-          </TabsTrigger>
-          <TabsTrigger value="users" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            მომხმარებლები
-          </TabsTrigger>
-          <TabsTrigger value="fuel" className="flex items-center gap-2">
-            <Fuel className="h-4 w-4" />
-            საწვავი
-          </TabsTrigger>
-          <TabsTrigger value="brands" className="flex items-center gap-2">
-            <Award className="h-4 w-4" />
-            ბრენდები
-          </TabsTrigger>
-          <TabsTrigger value="saved" className="flex items-center gap-2">
-            <Bookmark className="h-4 w-4" />
-            შენახული
-          </TabsTrigger>
-          <TabsTrigger value="system" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            სისტემა
-          </TabsTrigger>
-          <TabsTrigger value="seo" className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            SEO მართვა
-          </TabsTrigger>
-          <TabsTrigger value="banners" className="flex items-center gap-2">
-            <Megaphone className="h-4 w-4" />
-            რეკლამები
-          </TabsTrigger>
-        </TabsList>
+        <ScrollArea className="w-full">
+          <TabsList className="inline-flex h-10 w-full md:grid md:grid-cols-8 md:max-w-6xl">
+            <TabsTrigger value="overview" className="flex items-center gap-2 whitespace-nowrap">
+              <Activity className="h-4 w-4" />
+              მიმოხილვა
+            </TabsTrigger>
+            <TabsTrigger value="users" className="flex items-center gap-2 whitespace-nowrap">
+              <Users className="h-4 w-4" />
+              მომხმარებლები
+            </TabsTrigger>
+            <TabsTrigger value="fuel" className="flex items-center gap-2 whitespace-nowrap">
+              <Fuel className="h-4 w-4" />
+              საწვავი
+            </TabsTrigger>
+            <TabsTrigger value="brands" className="flex items-center gap-2 whitespace-nowrap">
+              <Award className="h-4 w-4" />
+              ბრენდები
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="flex items-center gap-2 whitespace-nowrap">
+              <Bookmark className="h-4 w-4" />
+              შენახული
+            </TabsTrigger>
+            <TabsTrigger value="system" className="flex items-center gap-2 whitespace-nowrap">
+              <Shield className="h-4 w-4" />
+              სისტემა
+            </TabsTrigger>
+            <TabsTrigger value="seo" className="flex items-center gap-2 whitespace-nowrap">
+              <Search className="h-4 w-4" />
+              SEO მართვა
+            </TabsTrigger>
+            <TabsTrigger value="banners" className="flex items-center gap-2 whitespace-nowrap">
+              <Megaphone className="h-4 w-4" />
+              რეკლამები
+            </TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
 
         <TabsContent value="overview" className="space-y-6">
           <AdminStats />
