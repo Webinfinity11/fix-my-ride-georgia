@@ -10,8 +10,8 @@ import { generateStructuredData, generateSEOTitle, generateSEODescription, gener
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { FloatingActionButton } from "@/components/mobile/FloatingActionButton";
-import { MapPin, PhoneCall } from "lucide-react";
+
+import { PhoneCall } from "lucide-react";
 import { toast } from "sonner";
 
 type ServiceCategory = {
@@ -156,14 +156,6 @@ const Services = () => {
       
       <Footer />
       
-      {/* Floating Action Button - Navigate to Map */}
-      <div className="md:hidden">
-        <FloatingActionButton
-          icon={MapPin}
-          label="რუკაზე ნახვა"
-          onClick={() => navigate('/map')}
-        />
-      </div>
     </div>
   );
 };

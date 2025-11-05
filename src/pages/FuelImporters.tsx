@@ -8,8 +8,8 @@ import FuelComparison from "@/components/fuel/FuelComparison";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FloatingActionButton } from "@/components/mobile/FloatingActionButton";
-import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp, Navigation, ArrowUpDown } from "lucide-react";
+
+import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp, ArrowUpDown } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { toast } from "sonner";
@@ -168,10 +168,6 @@ const FuelImporters = () => {
         </Tabs>
       </div>
 
-      {/* Floating Action Button - Navigate to Map */}
-      <div className="md:hidden">
-        <FloatingActionButton icon={Navigation} label="უახლოესი გასამართი" onClick={() => navigate("/map")} />
-      </div>
 
       {/* Fuel Brand Voting Banner */}
       <FuelBrandVotingBanner />
