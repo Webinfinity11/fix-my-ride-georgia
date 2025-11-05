@@ -199,8 +199,10 @@ const Map = () => {
     fetchInitialData,
     fetchServices
   } = useServices();
-
-  const { data: laundries = [], isLoading: laundriesLoading } = useLaundries();
+  const {
+    data: laundries = [],
+    isLoading: laundriesLoading
+  } = useLaundries();
 
   // Apply search filters only
   const baseFilteredServices = services.filter(service => {
@@ -350,9 +352,7 @@ const Map = () => {
             map.removeLayer(layer);
           }
         });
-
         const L = await import('leaflet');
-        
         if (viewMode === 'services') {
           // Only proceed if we have services
           if (servicesWithLocation.length === 0) return;
@@ -457,11 +457,8 @@ const Map = () => {
           });
         } else {
           // Render laundries markers
-          const laundriesWithLocation = laundries.filter(
-            (laundry) => laundry.latitude && laundry.longitude
-          );
-          
-          laundriesWithLocation.forEach((laundry) => {
+          const laundriesWithLocation = laundries.filter(laundry => laundry.latitude && laundry.longitude);
+          laundriesWithLocation.forEach(laundry => {
             const size = 28;
             const customIcon = L.divIcon({
               html: `
@@ -482,26 +479,20 @@ const Map = () => {
               `,
               className: 'custom-div-icon',
               iconSize: [size, size],
-              iconAnchor: [size/2, size/2],
-              popupAnchor: [0, -size/2]
+              iconAnchor: [size / 2, size / 2],
+              popupAnchor: [0, -size / 2]
             });
-            
             const marker = L.marker([laundry.latitude, laundry.longitude], {
               icon: customIcon
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
                 <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${laundry.name}</h3>
-                ${laundry.photos?.[0] ? 
-                  `<img src="${laundry.photos[0]}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : 
-                  `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🚿</div>`
-                }
+                ${laundry.photos?.[0] ? `<img src="${laundry.photos[0]}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🚿</div>`}
                 ${laundry.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${laundry.description.substring(0, 120)}</p>` : ''}
                 ${laundry.address ? `<div style="margin-bottom: 12px;">📍 ${laundry.address}</div>` : ''}
-                ${laundry.contact_number ? 
-                  `<button onclick="window.open('tel:${laundry.contact_number}', '_self')" style="background: #0891B2; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
+                ${laundry.contact_number ? `<button onclick="window.open('tel:${laundry.contact_number}', '_self')" style="background: #0891B2; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
                     📞 ${laundry.contact_number}
-                  </button>` : ''
-                }
+                  </button>` : ''}
               </div>
             `);
           });
@@ -512,7 +503,6 @@ const Map = () => {
     };
     updateMarkers();
   }, [map, viewMode, services, laundries, selectedService]);
-
   return <Layout>
       <SEOHead title="Services Map - Fix My Ride Georgia" description="Find car repair services near you on our interactive map. Browse mechanics and services by location in Georgia." />
       
@@ -523,98 +513,62 @@ const Map = () => {
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input 
-                type="text" 
-                placeholder={viewMode === 'services' ? 'სერვისების ძიება...' : 'სამრეცხაოების ძიება...'} 
-                value={searchQuery} 
-                onChange={e => setSearchQuery(e.target.value)} 
-                className="pl-10" 
-              />
+              <Input type="text" placeholder={viewMode === 'services' ? 'სერვისების ძიება...' : 'სამრეცხაოების ძიება...'} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
             </div>
           </div>
           
           <div className="flex-1 overflow-y-auto sidebar-scroll-container">
             {/* Results Header */}
-            {!loading && !laundriesLoading && (
-              <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
+            {!loading && !laundriesLoading && <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
                 <p className="text-sm text-gray-600">
                   <strong>
-                    {viewMode === 'services' ? sortedFilteredServices.length : (laundries?.length || 0)}
+                    {viewMode === 'services' ? sortedFilteredServices.length : laundries?.length || 0}
                   </strong>{' '}
                   {viewMode === 'services' ? 'სერვისი' : 'სამრეცხაო'} ნაპოვნია
-                  {viewMode === 'services' && servicesWithLocation.length !== sortedFilteredServices.length && (
-                    <span className="ml-2 text-xs">
+                  {viewMode === 'services' && servicesWithLocation.length !== sortedFilteredServices.length && <span className="ml-2 text-xs">
                       ({servicesWithLocation.length} რუკაზე)
-                    </span>
-                  )}
+                    </span>}
                 </p>
-              </div>
-            )}
+              </div>}
 
             <div className="p-2 md:p-4">
-              {loading || laundriesLoading ? (
-                <div className="text-center py-8">
+              {loading || laundriesLoading ? <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                   <p className="mt-2 text-gray-600">
                     {viewMode === 'services' ? 'სერვისები' : 'სამრეცხაოები'} იტვირთება...
                   </p>
-                </div>
-              ) : viewMode === 'services' ? (
-                // Services View
-                sortedFilteredServices.length === 0 ? (
-                  <div className="text-center py-8">
+                </div> : viewMode === 'services' ?
+            // Services View
+            sortedFilteredServices.length === 0 ? <div className="text-center py-8">
                     <div className="text-gray-400 mb-2">
                       <Search className="w-12 h-12 mx-auto" />
                     </div>
                     <p className="text-gray-600 mb-2">სერვისები ვერ მოიძებნა</p>
                     <p className="text-gray-400 text-sm">სცადეთ ფილტრების შეცვლა</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2 md:space-y-4">
-                    {sortedFilteredServices.map(service => (
-                      <div 
-                        key={service.id} 
-                        data-service-id={service.id} 
-                        className={`transition-all duration-200 touch-manipulation ${selectedService?.id === service.id ? "ring-2 ring-primary rounded-lg" : ""}`}
-                      >
-                        <ServiceCard 
-                          service={service} 
-                          onMapFocus={() => {
-                            setSelectedService(service);
-                            if (map && service.latitude && service.longitude) {
-                              map.setView([service.latitude, service.longitude], 15);
-                            }
-                          }} 
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )
-              ) : (
-                // Laundries View
-                laundries?.length === 0 ? (
-                  <div className="text-center py-8">
+                  </div> : <div className="space-y-2 md:space-y-4">
+                    {sortedFilteredServices.map(service => <div key={service.id} data-service-id={service.id} className={`transition-all duration-200 touch-manipulation ${selectedService?.id === service.id ? "ring-2 ring-primary rounded-lg" : ""}`}>
+                        <ServiceCard service={service} onMapFocus={() => {
+                  setSelectedService(service);
+                  if (map && service.latitude && service.longitude) {
+                    map.setView([service.latitude, service.longitude], 15);
+                  }
+                }} />
+                      </div>)}
+                  </div> :
+            // Laundries View
+            laundries?.length === 0 ? <div className="text-center py-8">
                     <Search className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                     <p className="text-gray-600">სამრეცხაოები ვერ მოიძებნა</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2 md:space-y-4">
-                    {laundries?.map(laundry => (
-                      <div key={laundry.id}>
-                        <LaundryCard 
-                          laundry={laundry}
-                          onViewDetails={() => {
-                            setSelectedService(null);
-                            if (map && laundry.latitude && laundry.longitude) {
-                              map.setView([laundry.latitude, laundry.longitude], 15);
-                            }
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )
-              )}
+                  </div> : <div className="space-y-2 md:space-y-4">
+                    {laundries?.map(laundry => <div key={laundry.id}>
+                        <LaundryCard laundry={laundry} onViewDetails={() => {
+                  setSelectedService(null);
+                  if (map && laundry.latitude && laundry.longitude) {
+                    map.setView([laundry.latitude, laundry.longitude], 15);
+                  }
+                }} />
+                      </div>)}
+                  </div>}
             </div>
           </div>
         </div>
@@ -622,9 +576,9 @@ const Map = () => {
         {/* Right Side - Map (80% width on desktop, full height on mobile) */}
         <div className="w-full md:w-4/5 h-full flex flex-col">
           {/* View Mode Toggle */}
-          <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[51] px-3 md:px-4 py-3 md:py-4">
+          <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[49] px-3 md:px-4 py-3 md:py-4">
             <div className="flex items-center justify-between gap-3">
-              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'services' | 'laundries')} className="flex-1">
+              <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'services' | 'laundries')} className="flex-1">
                 <TabsList className="grid w-full max-w-md grid-cols-2 h-11">
                   <TabsTrigger value="services" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     <Car className="w-4 h-4" />
@@ -641,14 +595,13 @@ const Map = () => {
               
               {/* Count Badge */}
               <Badge variant="secondary" className="text-xs md:text-sm whitespace-nowrap font-semibold">
-                {viewMode === 'services' ? filteredServices.length : (laundries?.length || 0)}
+                {viewMode === 'services' ? filteredServices.length : laundries?.length || 0}
               </Badge>
             </div>
           </div>
 
           {/* Top Filters Bar - Category & City (only for services) */}
-          {viewMode === 'services' && (
-            <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[50]">
+          {viewMode === 'services' && <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[50]">
             <div className="p-2 md:p-3 overflow-x-auto">
               <div className="flex gap-2 md:gap-3 items-center" style={{
               minWidth: "fit-content"
@@ -692,8 +645,7 @@ const Map = () => {
                   </Button>}
               </div>
             </div>
-            </div>
-          )}
+            </div>}
 
           {/* Map Container */}
           <div className="flex-1 relative z-0">
