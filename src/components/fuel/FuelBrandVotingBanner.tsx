@@ -27,7 +27,7 @@ export const FuelBrandVotingBanner = () => {
   return (
     <>
       <div
-        className={`fixed bottom-10 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 transition-all duration-500 ${
+        className={`fixed bottom-16 left-4 right-4 md:left-auto md:right-8 md:w-96 z-50 transition-all duration-500 ${
           isVisible ? "translate-y-0 opacity-100" : "translate-y-32 opacity-0 pointer-events-none"
         }`}
       >
