@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { PullToRefreshIndicator } from "@/components/mobile/PullToRefreshIndicator";
 import { useNavigate } from "react-router-dom";
+import { FuelBrandVotingBanner } from "@/components/fuel/FuelBrandVotingBanner";
 
 const FuelImporters = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -171,6 +172,9 @@ const FuelImporters = () => {
       <div className="md:hidden">
         <FloatingActionButton icon={Navigation} label="უახლოესი გასამართი" onClick={() => navigate("/map")} />
       </div>
+
+      {/* Fuel Brand Voting Banner */}
+      <FuelBrandVotingBanner />
     </Layout>
   );
 };
