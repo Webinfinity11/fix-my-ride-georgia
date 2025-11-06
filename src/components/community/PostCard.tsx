@@ -4,24 +4,57 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState } from 'react';
-import { CommunityPost } from '@/hooks/useCommunityPosts';
+import { CommunityPost, useToggleLike, useToggleSave } from '@/hooks/useCommunityPosts';
 import { formatDistanceToNow } from 'date-fns';
 import { ka } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 interface PostCardProps {
   post: CommunityPost;
-  onLike: () => void;
-  onSave: () => void;
-  onComment: () => void;
-  onReport: () => void;
   isAuthenticated: boolean;
+  onAuthRequired: () => void;
 }
 
-export function PostCard({ post, onLike, onSave, onComment, onReport, isAuthenticated }: PostCardProps) {
+export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProps) {
   const [showFullContent, setShowFullContent] = useState(false);
+  
+  const likeMutation = useToggleLike(post.post_id);
+  const saveMutation = useToggleSave(post.post_id);
   
   const contentLength = post.content?.length || 0;
   const shouldTruncate = contentLength > 200;
+  
+  const handleLike = () => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+    likeMutation.mutate();
+  };
+  
+  const handleSave = () => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+    saveMutation.mutate();
+  };
+  
+  const handleComment = () => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+    toast.info('კომენტარის ფუნქციონალი მალე დაემატება');
+  };
+  
+  const handleReport = () => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+    toast.info('რეპორტის ფუნქციონალი მალე დაემატება');
+  };
   
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -48,7 +81,7 @@ export function PostCard({ post, onLike, onSave, onComment, onReport, isAuthenti
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={onReport}
+            onClick={handleReport}
             className="h-8 w-8"
           >
             <MoreVertical className="h-4 w-4" />
@@ -114,7 +147,8 @@ export function PostCard({ post, onLike, onSave, onComment, onReport, isAuthenti
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={onLike}
+              onClick={handleLike}
+              disabled={likeMutation.isPending}
               className={`gap-1 ${post.is_liked ? 'text-destructive' : 'text-muted-foreground'} hover:text-destructive`}
             >
               <Heart className={`h-5 w-5 ${post.is_liked ? 'fill-current' : ''}`} />
@@ -123,7 +157,7 @@ export function PostCard({ post, onLike, onSave, onComment, onReport, isAuthenti
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={onComment}
+              onClick={handleComment}
               className="gap-1 text-muted-foreground hover:text-primary"
             >
               <MessageCircle className="h-5 w-5" />
@@ -133,7 +167,8 @@ export function PostCard({ post, onLike, onSave, onComment, onReport, isAuthenti
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={onSave}
+            onClick={handleSave}
+            disabled={saveMutation.isPending}
             className={`h-8 w-8 ${post.is_saved ? 'text-primary' : 'text-muted-foreground'} hover:text-primary`}
           >
             <Bookmark className={`h-5 w-5 ${post.is_saved ? 'fill-current' : ''}`} />

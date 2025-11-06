@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useCommunityPosts, useToggleLike, useToggleSave } from '@/hooks/useCommunityPosts';
+import { useState, useEffect } from 'react';
+import { useCommunityPosts } from '@/hooks/useCommunityPosts';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,8 +9,6 @@ import { AuthRequiredDialog } from '@/components/community/AuthRequiredDialog';
 import { Plus, TrendingUp, Clock, Loader2 } from 'lucide-react';
 import SEOHead from '@/components/seo/SEOHead';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
-import { toast } from 'sonner';
 
 export default function Community() {
   const [user, setUser] = useState<any>(null);
@@ -33,18 +31,16 @@ export default function Community() {
     return () => subscription.unsubscribe();
   }, []);
   
-  const requireAuth = (action: () => void) => {
-    if (!user) {
-      setPendingAction(() => action);
-      setAuthDialogOpen(true);
-      return false;
-    }
-    action();
-    return true;
+  const handleAuthRequired = () => {
+    setAuthDialogOpen(true);
   };
   
   const handleCreatePost = () => {
-    requireAuth(() => setCreateDialogOpen(true));
+    if (!user) {
+      setAuthDialogOpen(true);
+      return;
+    }
+    setCreateDialogOpen(true);
   };
   
   return (
@@ -91,22 +87,14 @@ export default function Community() {
           </div>
         ) : posts && posts.length > 0 ? (
           <div className="space-y-4">
-            {posts.map((post) => {
-              const likeMutation = useToggleLike(post.post_id);
-              const saveMutation = useToggleSave(post.post_id);
-              
-              return (
-                <PostCard 
-                  key={post.post_id}
-                  post={post}
-                  isAuthenticated={!!user}
-                  onLike={() => requireAuth(() => likeMutation.mutate())}
-                  onSave={() => requireAuth(() => saveMutation.mutate())}
-                  onComment={() => requireAuth(() => toast.info('კომენტარის ფუნქციონალი მალე დაემატება'))}
-                  onReport={() => requireAuth(() => toast.info('რეპორტის ფუნქციონალი მალე დაემატება'))}
-                />
-              );
-            })}
+            {posts.map((post) => (
+              <PostCard 
+                key={post.post_id}
+                post={post}
+                isAuthenticated={!!user}
+                onAuthRequired={handleAuthRequired}
+              />
+            ))}
           </div>
         ) : (
           <div className="text-center py-12 bg-muted/30 rounded-lg">
