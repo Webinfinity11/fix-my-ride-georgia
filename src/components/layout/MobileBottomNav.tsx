@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu, X, Fuel, Users } from 'lucide-react';
+import { Home, Search, Plus, MessageCircle, User, Car, Grid3x3, Map, Menu, X, Fuel } from 'lucide-react';
 import { MobileDrawerMenu } from './MobileDrawerMenu';
 
 const MobileBottomNav = () => {
@@ -49,10 +49,10 @@ const MobileBottomNav = () => {
       isCenter: true
     },
     {
-      icon: Users,
-      label: 'Community',
-      path: '/community',
-      onClick: () => navigate('/community')
+      icon: Fuel,
+      label: 'საწვავი',
+      path: '/fuel-brands',
+      onClick: () => navigate('/fuel-brands')
     },
     {
       icon: drawerOpen ? X : Menu,

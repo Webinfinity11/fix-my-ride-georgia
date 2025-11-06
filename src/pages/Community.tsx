@@ -37,9 +37,10 @@ export default function Community() {
     if (!user) {
       setPendingAction(() => action);
       setAuthDialogOpen(true);
-      return;
+      return false;
     }
     action();
+    return true;
   };
   
   const handleCreatePost = () => {
