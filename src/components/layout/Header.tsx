@@ -68,6 +68,9 @@ const Header = () => {
           <Link to="/fuel-importers" className="text-gray-700 hover:text-primary transition-colors font-medium">
             საწვავის ფასები
           </Link>
+          <Link to="/community" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            Community
+          </Link>
           <Link
             to="/chat"
             className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium"

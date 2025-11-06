@@ -384,6 +384,54 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          is_deleted: boolean | null
+          parent_id: string | null
+          post_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          parent_id?: string | null
+          post_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          parent_id?: string | null
+          post_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_messages: {
         Row: {
           assigned_to: string | null
@@ -921,6 +969,218 @@ export type Database = {
           },
         ]
       }
+      post_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_media: {
+        Row: {
+          created_at: string | null
+          id: string
+          media_type: string
+          media_url: string
+          post_id: string
+          thumbnail_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          media_type: string
+          media_url: string
+          post_id: string
+          thumbnail_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          media_type?: string
+          media_url?: string
+          post_id?: string
+          thumbnail_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_media_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_reports: {
+        Row: {
+          created_at: string | null
+          details: string | null
+          id: string
+          post_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["report_status"] | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: string | null
+          id?: string
+          post_id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: string | null
+          id?: string
+          post_id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_saves: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_saves_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          content: string | null
+          created_at: string | null
+          id: string
+          is_deleted: boolean | null
+          last_interacted_at: string | null
+          score: number | null
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          author_id: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          last_interacted_at?: string | null
+          score?: number | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          author_id?: string
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          last_interacted_at?: string | null
+          score?: number | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           apartment: string | null
@@ -1297,6 +1557,30 @@ export type Database = {
         }
         Relationships: []
       }
+      tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          slug: string
+          use_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          slug: string
+          use_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          use_count?: number | null
+        }
+        Relationships: []
+      }
       user_presence: {
         Row: {
           is_online: boolean | null
@@ -1322,6 +1606,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -1358,6 +1666,31 @@ export type Database = {
           total_services: number
         }[]
       }
+      get_community_feed: {
+        Args: {
+          filter_tag?: string
+          page_limit?: number
+          page_offset?: number
+          sort_by?: string
+        }
+        Returns: {
+          author_avatar: string
+          author_id: string
+          author_name: string
+          comment_count: number
+          content: string
+          created_at: string
+          is_liked: boolean
+          is_saved: boolean
+          like_count: number
+          media_type: string
+          media_url: string
+          post_id: string
+          score: number
+          tags: Json
+          thumbnail_url: string
+        }[]
+      }
       get_current_user_role: { Args: never; Returns: string }
       get_fuel_brand_stats: {
         Args: never
@@ -1367,6 +1700,26 @@ export type Database = {
           logo_url: string
           vote_count: number
           vote_percentage: number
+        }[]
+      }
+      get_post_details: {
+        Args: { post_uuid: string }
+        Returns: {
+          author_avatar: string
+          author_id: string
+          author_name: string
+          comment_count: number
+          content: string
+          created_at: string
+          is_liked: boolean
+          is_saved: boolean
+          like_count: number
+          media_type: string
+          media_url: string
+          post_id: string
+          tags: Json
+          thumbnail_url: string
+          view_count: number
         }[]
       }
       get_public_mechanic_info: {
@@ -1405,12 +1758,20 @@ export type Database = {
           voted_at: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_admin: { Args: { user_id?: string }; Returns: boolean }
       is_admin_or_self_or_public_mechanic: {
         Args: { profile_id: string }
         Returns: boolean
       }
       is_current_user_admin: { Args: never; Returns: boolean }
+      is_moderator_or_admin: { Args: { _user_id: string }; Returns: boolean }
       submit_contact_message: {
         Args: {
           p_email: string
@@ -1432,6 +1793,9 @@ export type Database = {
       }
     }
     Enums: {
+      app_role: "customer" | "mechanic" | "admin" | "moderator"
+      report_reason: "spam" | "offensive" | "personal" | "sensitive" | "other"
+      report_status: "pending" | "reviewed" | "hidden" | "deleted" | "dismissed"
       user_role: "customer" | "mechanic" | "admin"
     }
     CompositeTypes: {
@@ -1560,6 +1924,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["customer", "mechanic", "admin", "moderator"],
+      report_reason: ["spam", "offensive", "personal", "sensitive", "other"],
+      report_status: ["pending", "reviewed", "hidden", "deleted", "dismissed"],
       user_role: ["customer", "mechanic", "admin"],
     },
   },
