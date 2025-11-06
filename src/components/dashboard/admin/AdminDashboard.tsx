@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel, Megaphone, Award } from "lucide-react";
+import { BarChart3, Shield, Users, Activity, Search, Bookmark, Fuel, Megaphone, Award, MessageSquare } from "lucide-react";
 import SEOManagement from './SEOManagement';
 import SitemapManagement from './SitemapManagement';
 import { SavedServicesManagement } from './SavedServicesManagement';
@@ -11,6 +11,7 @@ import { AdminFuelBrands } from './AdminFuelBrands';
 import AdminStats from './AdminStats';
 import ServicePhoneViewsStats from './ServicePhoneViewsStats';
 import BannerManagement from './BannerManagement';
+import { AdminCommunity } from './AdminCommunity';
 
 const AdminDashboard = () => {
   return (
@@ -24,7 +25,7 @@ const AdminDashboard = () => {
 
       <Tabs defaultValue="overview" className="space-y-4">
         <ScrollArea className="w-full">
-          <TabsList className="inline-flex h-10 w-full md:grid md:grid-cols-8 md:max-w-6xl">
+          <TabsList className="inline-flex h-10 w-full md:grid md:grid-cols-9 md:max-w-6xl">
             <TabsTrigger value="overview" className="flex items-center gap-2 whitespace-nowrap">
               <Activity className="h-4 w-4" />
               მიმოხილვა
@@ -32,6 +33,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="users" className="flex items-center gap-2 whitespace-nowrap">
               <Users className="h-4 w-4" />
               მომხმარებლები
+            </TabsTrigger>
+            <TabsTrigger value="community" className="flex items-center gap-2 whitespace-nowrap">
+              <MessageSquare className="h-4 w-4" />
+              Community
             </TabsTrigger>
             <TabsTrigger value="fuel" className="flex items-center gap-2 whitespace-nowrap">
               <Fuel className="h-4 w-4" />
@@ -77,6 +82,10 @@ const AdminDashboard = () => {
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="community" className="space-y-6">
+          <AdminCommunity />
         </TabsContent>
 
         <TabsContent value="fuel" className="space-y-6">

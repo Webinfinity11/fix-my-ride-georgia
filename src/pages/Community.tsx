@@ -51,16 +51,16 @@ export default function Community() {
         keywords="community, გამოცდილება, ავტომობილი, ფოტო, ვიდეო"
       />
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-4 sm:py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Community</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold">Community</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
               გაიზიარე შენი გამოცდილება და ნახე სხვების სტორები
             </p>
           </div>
-          <Button onClick={handleCreatePost} className="gap-2">
+          <Button onClick={handleCreatePost} className="gap-2 w-full sm:w-auto">
             <Plus className="h-4 w-4" />
             ახალი პოსტი
           </Button>

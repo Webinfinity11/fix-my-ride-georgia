@@ -7,7 +7,8 @@ import { useState } from 'react';
 import { CommunityPost, useToggleLike, useToggleSave } from '@/hooks/useCommunityPosts';
 import { formatDistanceToNow } from 'date-fns';
 import { ka } from 'date-fns/locale';
-import { toast } from 'sonner';
+import { CommentList } from './CommentList';
+import { ReportDialog } from './ReportDialog';
 
 interface PostCardProps {
   post: CommunityPost;
@@ -17,6 +18,8 @@ interface PostCardProps {
 
 export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProps) {
   const [showFullContent, setShowFullContent] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   
   const likeMutation = useToggleLike(post.post_id);
   const saveMutation = useToggleSave(post.post_id);
@@ -45,7 +48,7 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
       onAuthRequired();
       return;
     }
-    toast.info('კომენტარის ფუნქციონალი მალე დაემატება');
+    setShowComments(!showComments);
   };
   
   const handleReport = () => {
@@ -53,7 +56,7 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
       onAuthRequired();
       return;
     }
-    toast.info('რეპორტის ფუნქციონალი მალე დაემატება');
+    setShowReport(true);
   };
   
   return (
@@ -143,7 +146,7 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
         
         {/* Actions */}
         <div className="flex items-center justify-between pt-3 border-t">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button 
               variant="ghost" 
               size="sm"
@@ -151,17 +154,17 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
               disabled={likeMutation.isPending}
               className={`gap-1 ${post.is_liked ? 'text-destructive' : 'text-muted-foreground'} hover:text-destructive`}
             >
-              <Heart className={`h-5 w-5 ${post.is_liked ? 'fill-current' : ''}`} />
-              <span className="text-sm font-medium">{post.like_count}</span>
+              <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${post.is_liked ? 'fill-current' : ''}`} />
+              <span className="text-xs sm:text-sm font-medium">{post.like_count}</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm"
               onClick={handleComment}
-              className="gap-1 text-muted-foreground hover:text-primary"
+              className={`gap-1 ${showComments ? 'text-primary' : 'text-muted-foreground'} hover:text-primary`}
             >
-              <MessageCircle className="h-5 w-5" />
-              <span className="text-sm font-medium">{post.comment_count}</span>
+              <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="text-xs sm:text-sm font-medium">{post.comment_count}</span>
             </Button>
           </div>
           <Button 
@@ -171,10 +174,26 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
             disabled={saveMutation.isPending}
             className={`h-8 w-8 ${post.is_saved ? 'text-primary' : 'text-muted-foreground'} hover:text-primary`}
           >
-            <Bookmark className={`h-5 w-5 ${post.is_saved ? 'fill-current' : ''}`} />
+            <Bookmark className={`h-4 w-4 sm:h-5 sm:w-5 ${post.is_saved ? 'fill-current' : ''}`} />
           </Button>
         </div>
+        
+        {/* Comments Section */}
+        {showComments && (
+          <CommentList 
+            postId={post.post_id} 
+            isAuthenticated={isAuthenticated}
+            onAuthRequired={onAuthRequired}
+          />
+        )}
       </CardContent>
+      
+      {/* Report Dialog */}
+      <ReportDialog 
+        postId={post.post_id}
+        open={showReport}
+        onOpenChange={setShowReport}
+      />
     </Card>
   );
 }
