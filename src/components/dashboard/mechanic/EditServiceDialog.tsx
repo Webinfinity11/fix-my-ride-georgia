@@ -9,6 +9,7 @@ import {
 import ServiceForm from "@/components/forms/ServiceForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { VIPRequestCard } from "./VIPRequestCard";
 
 interface Service {
   id: number;
@@ -96,13 +97,21 @@ const EditServiceDialog = ({ service, open, onOpenChange, onServiceUpdated }: Ed
         <DialogHeader>
           <DialogTitle>სერვისის რედაქტირება</DialogTitle>
         </DialogHeader>
-        <div className="mt-4">
+        <div className="mt-4 space-y-6">
           <ServiceForm
             service={formService}
             categories={categories}
             onSubmit={handleSubmit}
             onCancel={handleCancel}
           />
+          
+          {/* VIP Request Section */}
+          <div className="border-t pt-6">
+            <VIPRequestCard 
+              serviceId={service.id}
+              serviceName={service.name}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

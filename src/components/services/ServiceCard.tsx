@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { SaveServiceButton } from "./SaveServiceButton";
+import { VIPBadge } from "./VIPBadge";
+import { VIPPlanType } from "@/hooks/useVIPRequests";
 
 interface ServiceType {
   id: number;
@@ -23,6 +25,9 @@ interface ServiceType {
   rating: number | null;
   review_count: number | null;
   photos: string[] | null;
+  vip_status?: VIPPlanType | null;
+  vip_until?: string | null;
+  is_vip_active?: boolean;
   category: {
     id: number;
     name: string;
@@ -150,18 +155,23 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
         <div className="p-4 space-y-3">
           {/* Header - Title is now clickable */}
           <div className="space-y-2">
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-2">
               <h3 
-                className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
+                className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer flex-1"
                 onClick={handleViewDetails}
               >
                 {service.name}
               </h3>
-              {service.category && (
-                <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
-                  {service.category.name}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {service.vip_status && (
+                  <VIPBadge vipStatus={service.vip_status} size="sm" />
+                )}
+                {service.category && (
+                  <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
+                    {service.category.name}
+                  </Badge>
+                )}
+              </div>
             </div>
 
             {service.description && (
