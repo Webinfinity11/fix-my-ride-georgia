@@ -11,3 +11,4 @@ verify_jwt = false
 
 [functions.expire-vip-services]
 verify_jwt = false
+schedule = "0 0 * * *"
