@@ -15,6 +15,7 @@ import {
   CalendarCog,
   Bookmark,
   ChevronDown,
+  Crown,
 } from "lucide-react";
 import {
   Accordion,
@@ -119,6 +120,11 @@ const DashboardSidebar = () => {
                 <NavLink to="/dashboard/admin/booking-management" className={navLinkClasses}>
                   <CalendarCog size={18} />
                   <span className="text-sm md:text-base">ჯავშნების მართვა</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/vip-management" className={navLinkClasses}>
+                  <Crown size={18} />
+                  <span className="text-sm md:text-base">VIP მოთხოვნები</span>
                 </NavLink>
 
                 <NavLink to="/dashboard/admin/stats" className={navLinkClasses}>

@@ -6,8 +6,7 @@ import Layout from "@/components/layout/Layout";
 import ServiceForm from "@/components/forms/ServiceForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-// Temporarily disabled - VIP system not yet migrated
-// import { VIPRequestCard } from "@/components/dashboard/mechanic/VIPRequestCard";
+import { VIPRequestCard } from "@/components/dashboard/mechanic/VIPRequestCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Sparkles } from "lucide-react";
@@ -155,7 +154,6 @@ const AddService = () => {
                 </p>
               </div>
 
-              {/* Temporarily disabled - VIP system not yet migrated
               <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <Sparkles className="text-primary mt-1" size={24} />
@@ -171,7 +169,6 @@ const AddService = () => {
                   </div>
                 </div>
               </div>
-              */}
 
               <div className="flex justify-end gap-3">
                 <Button

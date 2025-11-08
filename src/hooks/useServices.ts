@@ -134,7 +134,7 @@ export const useServices = () => {
     
     try {
       console.log("🚀 Attempting main query...");
-      let query = supabase
+      let query = (supabase as any)
         .from("mechanic_services")
         .select(`
           id,
@@ -158,6 +158,9 @@ export const useServices = () => {
           photos,
           category_id,
           mechanic_id,
+          vip_status,
+          vip_until,
+          is_vip_active,
           service_categories(id, name)
         `)
         .eq("is_active", true);
@@ -211,7 +214,7 @@ export const useServices = () => {
 
       // Now fetch mechanic profiles separately
       console.log("👨‍🔧 Fetching mechanic profiles...");
-      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))];
+      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))] as string[];
       
       const { data: mechanicsData, error: mechanicsError } = await supabase
         .from("profiles")
@@ -261,9 +264,9 @@ export const useServices = () => {
           rating: service.rating,
           review_count: service.review_count,
           photos: service.photos || [],
-          vip_status: null,
-          vip_until: null,
-          is_vip_active: false,
+          vip_status: (service as any).vip_status || null,
+          vip_until: (service as any).vip_until || null,
+          is_vip_active: (service as any).is_vip_active || false,
           category: category ? {
             id: category.id,
             name: category.name
