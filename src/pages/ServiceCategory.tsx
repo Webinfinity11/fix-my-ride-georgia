@@ -196,6 +196,9 @@ const ServiceCategory = () => {
           rating: service.rating,
           review_count: service.review_count,
           photos: service.photos || [],
+          vip_status: null,
+          vip_until: null,
+          is_vip_active: false,
           category: categoryData ? {
             id: categoryData.id,
             name: categoryData.name

@@ -56,7 +56,7 @@ type ServiceCategoryType = {
 interface ServiceFormProps {
   service?: ServiceType | null;
   categories: ServiceCategoryType[];
-  onSubmit: () => void;
+  onSubmit: (serviceId?: number) => void;
   onCancel: () => void;
 }
 
@@ -186,16 +186,18 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
 
         if (error) throw error;
         toast.success("სერვისი წარმატებით განახლდა");
+        onSubmit();
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("mechanic_services")
-          .insert([serviceData]);
+          .insert([serviceData])
+          .select()
+          .single();
 
         if (error) throw error;
         toast.success("სერვისი წარმატებით დაემატა");
+        onSubmit(data?.id);
       }
-
-      onSubmit();
     } catch (error: any) {
       toast.error(`შეცდომა: ${error.message}`);
     } finally {

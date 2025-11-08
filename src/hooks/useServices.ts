@@ -23,6 +23,9 @@ export type ServiceType = {
   rating: number | null;
   review_count: number | null;
   photos: string[] | null;
+  vip_status: 'vip' | 'super_vip' | null;
+  vip_until: string | null;
+  is_vip_active: boolean;
   category: {
     id: number;
     name: string;
@@ -155,6 +158,9 @@ export const useServices = () => {
           photos,
           category_id,
           mechanic_id,
+          vip_status,
+          vip_until,
+          is_vip_active,
           service_categories(id, name)
         `)
         .eq("is_active", true);
@@ -258,6 +264,9 @@ export const useServices = () => {
           rating: service.rating,
           review_count: service.review_count,
           photos: service.photos || [],
+          vip_status: service.vip_status || null,
+          vip_until: service.vip_until || null,
+          is_vip_active: service.is_vip_active || false,
           category: category ? {
             id: category.id,
             name: category.name
@@ -324,7 +333,21 @@ export const useServices = () => {
         );
       }
 
-      console.log("✅ Final transformed services:", transformedServices);
+      // Sort services: Super VIP > VIP > Regular (each sorted by rating)
+      transformedServices.sort((a, b) => {
+        // First, sort by VIP status
+        if (a.vip_status === 'super_vip' && b.vip_status !== 'super_vip') return -1;
+        if (a.vip_status !== 'super_vip' && b.vip_status === 'super_vip') return 1;
+        if (a.vip_status === 'vip' && !b.vip_status) return -1;
+        if (!a.vip_status && b.vip_status === 'vip') return 1;
+        
+        // Within same VIP tier, sort by rating
+        const aRating = a.rating || 0;
+        const bRating = b.rating || 0;
+        return bRating - aRating;
+      });
+
+      console.log("✅ Final transformed and sorted services:", transformedServices);
       setServices(transformedServices);
       
     } catch (error: any) {

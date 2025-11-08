@@ -6,6 +6,10 @@ import Layout from "@/components/layout/Layout";
 import ServiceForm from "@/components/forms/ServiceForm";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { VIPRequestCard } from "@/components/dashboard/mechanic/VIPRequestCard";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, Sparkles } from "lucide-react";
 
 type ServiceCategoryType = {
   id: number;
@@ -18,6 +22,9 @@ const AddService = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategoryType[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [newServiceId, setNewServiceId] = useState<number | null>(null);
+  const [newServiceName, setNewServiceName] = useState<string>("");
 
   useEffect(() => {
     console.log('🏁 AddService page loaded, auth state:', { 
@@ -70,10 +77,28 @@ const AddService = () => {
     }
   };
 
-  const handleFormSubmit = () => {
-    console.log('✅ Service added successfully');
-    toast.success("სერვისი წარმატებით დაემატა!");
-    navigate("/dashboard/services");
+  const handleFormSubmit = async (serviceId?: number) => {
+    console.log('✅ Service added successfully', serviceId);
+    
+    if (serviceId) {
+      // Fetch service name
+      try {
+        const { data } = await supabase
+          .from("mechanic_services")
+          .select("name")
+          .eq("id", serviceId)
+          .single();
+        
+        setNewServiceId(serviceId);
+        setNewServiceName(data?.name || "");
+        setShowSuccessDialog(true);
+      } catch (error) {
+        console.error("Error fetching service name:", error);
+        navigate("/dashboard/services");
+      }
+    } else {
+      navigate("/dashboard/services");
+    }
   };
 
   const handleCancel = () => {
@@ -110,6 +135,56 @@ const AddService = () => {
           />
         </div>
       </div>
+
+      {/* Success Dialog with VIP Request Option */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <CheckCircle className="text-green-500" size={28} />
+              სერვისი წარმატებით დაემატა!
+            </DialogTitle>
+          </DialogHeader>
+          
+          {newServiceId && (
+            <div className="space-y-6 py-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <p className="text-foreground">
+                  თქვენი სერვისი <span className="font-semibold">{newServiceName}</span> წარმატებით დაემატა და ხელმისაწვდომია მომხმარებლებისთვის.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="text-primary mt-1" size={24} />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-2">გსურთ VIP სტატუსის მოთხოვნა?</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      VIP სერვისები ჩანს პირველ ადგილებზე და იძლევა მეტ ხილვადობას. შეგიძლიათ მოითხოვოთ VIP ან Super VIP სტატუსი ამ სერვისისთვის.
+                    </p>
+                    <VIPRequestCard 
+                      serviceId={newServiceId} 
+                      serviceName={newServiceName}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowSuccessDialog(false);
+                    navigate("/dashboard/services");
+                  }}
+                >
+                  დასრულება
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
