@@ -158,9 +158,6 @@ export const useServices = () => {
           photos,
           category_id,
           mechanic_id,
-          vip_status,
-          vip_until,
-          is_vip_active,
           service_categories(id, name)
         `)
         .eq("is_active", true);
@@ -264,9 +261,9 @@ export const useServices = () => {
           rating: service.rating,
           review_count: service.review_count,
           photos: service.photos || [],
-          vip_status: service.vip_status || null,
-          vip_until: service.vip_until || null,
-          is_vip_active: service.is_vip_active || false,
+          vip_status: null,
+          vip_until: null,
+          is_vip_active: false,
           category: category ? {
             id: category.id,
             name: category.name
