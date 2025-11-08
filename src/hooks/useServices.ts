@@ -282,6 +282,24 @@ export const useServices = () => {
         };
       });
 
+      // Check for expired VIP on client-side
+      transformedServices = transformedServices.map(service => {
+        if (service.vip_until && service.is_vip_active) {
+          const expirationDate = new Date(service.vip_until);
+          const now = new Date();
+          
+          if (expirationDate < now) {
+            // VIP expired - mark as inactive
+            return {
+              ...service,
+              is_vip_active: false,
+            };
+          }
+        }
+        
+        return service;
+      });
+
       // Enhanced client-side search filtering
       if (filters.searchTerm && filters.searchTerm.trim()) {
         const searchLower = filters.searchTerm.toLowerCase().trim();
@@ -333,18 +351,22 @@ export const useServices = () => {
         );
       }
 
-      // Sort services: Super VIP > VIP > Regular (each sorted by rating)
+      // Sort services with VIP prioritization (only active VIP)
       transformedServices.sort((a, b) => {
-        // First, sort by VIP status
-        if (a.vip_status === 'super_vip' && b.vip_status !== 'super_vip') return -1;
-        if (a.vip_status !== 'super_vip' && b.vip_status === 'super_vip') return 1;
-        if (a.vip_status === 'vip' && !b.vip_status) return -1;
-        if (!a.vip_status && b.vip_status === 'vip') return 1;
+        // Only consider active VIP
+        const aIsVIP = a.is_vip_active && a.vip_status;
+        const bIsVIP = b.is_vip_active && b.vip_status;
         
-        // Within same VIP tier, sort by rating
-        const aRating = a.rating || 0;
-        const bRating = b.rating || 0;
-        return bRating - aRating;
+        // Super VIP services go first
+        if (aIsVIP && a.vip_status === 'super_vip' && (!bIsVIP || b.vip_status !== 'super_vip')) return -1;
+        if (bIsVIP && b.vip_status === 'super_vip' && (!aIsVIP || a.vip_status !== 'super_vip')) return 1;
+        
+        // Regular VIP services go next
+        if (aIsVIP && a.vip_status === 'vip' && !bIsVIP) return -1;
+        if (bIsVIP && b.vip_status === 'vip' && !aIsVIP) return 1;
+        
+        // Within each tier, sort by rating
+        return (b.rating || 0) - (a.rating || 0);
       });
 
       console.log("✅ Final transformed and sorted services:", transformedServices);

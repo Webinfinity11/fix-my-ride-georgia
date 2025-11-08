@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.serve-sitemap]
 verify_jwt = false
+
+[functions.expire-vip-services]
+verify_jwt = false

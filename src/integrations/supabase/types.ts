@@ -780,6 +780,7 @@ export type Database = {
           estimated_hours: number | null
           id: number
           is_active: boolean | null
+          is_vip_active: boolean | null
           latitude: number | null
           longitude: number | null
           mechanic_id: string
@@ -794,6 +795,8 @@ export type Database = {
           slug_is_manual: boolean | null
           updated_at: string
           videos: string[] | null
+          vip_status: Database["public"]["Enums"]["vip_plan_type"] | null
+          vip_until: string | null
           working_days: string[] | null
           working_hours_end: string | null
           working_hours_start: string | null
@@ -812,6 +815,7 @@ export type Database = {
           estimated_hours?: number | null
           id?: number
           is_active?: boolean | null
+          is_vip_active?: boolean | null
           latitude?: number | null
           longitude?: number | null
           mechanic_id: string
@@ -826,6 +830,8 @@ export type Database = {
           slug_is_manual?: boolean | null
           updated_at?: string
           videos?: string[] | null
+          vip_status?: Database["public"]["Enums"]["vip_plan_type"] | null
+          vip_until?: string | null
           working_days?: string[] | null
           working_hours_end?: string | null
           working_hours_start?: string | null
@@ -844,6 +850,7 @@ export type Database = {
           estimated_hours?: number | null
           id?: number
           is_active?: boolean | null
+          is_vip_active?: boolean | null
           latitude?: number | null
           longitude?: number | null
           mechanic_id?: string
@@ -858,6 +865,8 @@ export type Database = {
           slug_is_manual?: boolean | null
           updated_at?: string
           videos?: string[] | null
+          vip_status?: Database["public"]["Enums"]["vip_plan_type"] | null
+          vip_until?: string | null
           working_days?: string[] | null
           working_hours_end?: string | null
           working_hours_start?: string | null
@@ -1631,12 +1640,92 @@ export type Database = {
         }
         Relationships: []
       }
+      vip_requests: {
+        Row: {
+          admin_message: string | null
+          approved_duration_days: number | null
+          created_at: string | null
+          id: string
+          mechanic_id: string
+          message: string | null
+          rejection_reason: string | null
+          requested_at: string
+          requested_plan: Database["public"]["Enums"]["vip_plan_type"]
+          reviewed_at: string | null
+          reviewed_by: string | null
+          service_id: number
+          status: Database["public"]["Enums"]["vip_request_status"]
+          updated_at: string | null
+          vip_ends_at: string | null
+          vip_starts_at: string | null
+        }
+        Insert: {
+          admin_message?: string | null
+          approved_duration_days?: number | null
+          created_at?: string | null
+          id?: string
+          mechanic_id: string
+          message?: string | null
+          rejection_reason?: string | null
+          requested_at?: string
+          requested_plan: Database["public"]["Enums"]["vip_plan_type"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_id: number
+          status?: Database["public"]["Enums"]["vip_request_status"]
+          updated_at?: string | null
+          vip_ends_at?: string | null
+          vip_starts_at?: string | null
+        }
+        Update: {
+          admin_message?: string | null
+          approved_duration_days?: number | null
+          created_at?: string | null
+          id?: string
+          mechanic_id?: string
+          message?: string | null
+          rejection_reason?: string | null
+          requested_at?: string
+          requested_plan?: Database["public"]["Enums"]["vip_plan_type"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_id?: number
+          status?: Database["public"]["Enums"]["vip_request_status"]
+          updated_at?: string | null
+          vip_ends_at?: string | null
+          vip_starts_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vip_requests_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vip_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vip_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       current_user_is_admin: { Args: never; Returns: boolean }
+      expire_vip_services: { Args: never; Returns: number }
       generate_unique_laundry_slug: {
         Args: { base_name: string; exclude_id?: number }
         Returns: string
@@ -1797,6 +1886,13 @@ export type Database = {
       report_reason: "spam" | "offensive" | "personal" | "sensitive" | "other"
       report_status: "pending" | "reviewed" | "hidden" | "deleted" | "dismissed"
       user_role: "customer" | "mechanic" | "admin"
+      vip_plan_type: "vip" | "super_vip"
+      vip_request_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "need_info"
+        | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1928,6 +2024,14 @@ export const Constants = {
       report_reason: ["spam", "offensive", "personal", "sensitive", "other"],
       report_status: ["pending", "reviewed", "hidden", "deleted", "dismissed"],
       user_role: ["customer", "mechanic", "admin"],
+      vip_plan_type: ["vip", "super_vip"],
+      vip_request_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "need_info",
+        "expired",
+      ],
     },
   },
 } as const

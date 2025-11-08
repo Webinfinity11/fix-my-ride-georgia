@@ -210,6 +210,7 @@ const MechanicServices = () => {
     return {
       date: expirationDate.toLocaleDateString('ka-GE'),
       daysLeft: daysLeft > 0 ? daysLeft : 0,
+      isExpired: daysLeft <= 0,
     };
   };
 
@@ -610,7 +611,7 @@ const VIPRequestSection = ({
 }: { 
   service: Service; 
   onRequestVIP: (service: Service, plan: VIPPlanType) => void;
-  formatVIPExpiration: (vipUntil: string | null) => { date: string; daysLeft: number } | null;
+  formatVIPExpiration: (vipUntil: string | null) => { date: string; daysLeft: number; isExpired: boolean } | null;
 }) => {
   const { data: existingRequest, isLoading } = useServiceVIPRequest(service.id);
 
@@ -625,23 +626,45 @@ const VIPRequestSection = ({
   // Case 1: Active VIP
   if (service.is_vip_active && service.vip_status) {
     const expiration = formatVIPExpiration(service.vip_until);
+    
+    // Show warning if less than 3 days left
+    const showWarning = expiration && expiration.daysLeft > 0 && expiration.daysLeft <= 3;
+    
     return (
-      <div className="mb-4 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+      <div className={`mb-4 p-3 rounded-lg border ${
+        showWarning 
+          ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-300 dark:border-orange-700'
+          : 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border-yellow-200 dark:border-yellow-800'
+      }`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <VIPBadge vipStatus={service.vip_status} size="sm" />
             {expiration && (
-              <span className="text-xs text-muted-foreground">
+              <span className={`text-xs ${
+                showWarning 
+                  ? 'text-orange-700 dark:text-orange-300'
+                  : 'text-muted-foreground'
+              }`}>
                 {expiration.daysLeft > 0 ? `${expiration.daysLeft} დღე დარჩა` : "ამოიწურა"}
               </span>
             )}
           </div>
           {expiration && (
-            <span className="text-xs text-muted-foreground">
+            <span className={`text-xs ${
+              showWarning 
+                ? 'text-orange-700 dark:text-orange-300'
+                : 'text-muted-foreground'
+            }`}>
               ვადა: {expiration.date}
             </span>
           )}
         </div>
+        {showWarning && (
+          <p className="text-xs text-orange-600 dark:text-orange-400 mt-2 font-medium flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            VIP სტატუსი მალე ამოიწურება
+          </p>
+        )}
       </div>
     );
   }
