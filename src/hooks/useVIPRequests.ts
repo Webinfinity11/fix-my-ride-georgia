@@ -241,15 +241,14 @@ export function useApproveVIPRequest() {
         throw new Error('მოთხოვნის განახლება ვერ მოხერხდა');
       }
 
-      // Update service with VIP status
+      // Update service with VIP status using database function (bypasses RLS)
       const { error: serviceError } = await (supabase as any)
-        .from('mechanic_services')
-        .update({
-          vip_status: request.requested_plan,
-          vip_until: vipEndsAt?.toISOString() || null,
-          is_vip_active: true,
-        })
-        .eq('id', request.service_id);
+        .rpc('update_service_vip_status', {
+          p_service_id: request.service_id,
+          p_vip_status: request.requested_plan,
+          p_vip_until: vipEndsAt?.toISOString() || null,
+          p_is_vip_active: true,
+        });
 
       if (serviceError) {
         console.error('Failed to update service VIP status:', serviceError);

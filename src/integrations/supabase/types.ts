@@ -1872,6 +1872,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_service_vip_status: {
+        Args: {
+          p_is_vip_active: boolean
+          p_service_id: number
+          p_vip_status: Database["public"]["Enums"]["vip_plan_type"]
+          p_vip_until: string
+        }
+        Returns: undefined
+      }
       user_can_access_room: {
         Args: { room_id: string; user_id: string }
         Returns: boolean

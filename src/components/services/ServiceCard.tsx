@@ -163,7 +163,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
                 {service.name}
               </h3>
               <div className="flex items-center gap-2 flex-shrink-0">
-                {service.vip_status && (
+                {service.is_vip_active && service.vip_status && (
                   <VIPBadge vipStatus={service.vip_status} size="sm" />
                 )}
                 {service.category && (
