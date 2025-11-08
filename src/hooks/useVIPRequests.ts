@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
+// NOTE: Once Supabase types regenerate after migration, these will be available from Database types
 export type VIPPlanType = 'vip' | 'super_vip';
 export type VIPRequestStatus = 'pending' | 'approved' | 'rejected' | 'need_info' | 'expired';
 
@@ -53,9 +54,13 @@ export function useServiceVIPRequest(serviceId: number) {
         .limit(1)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching VIP request:', error);
+        throw error;
+      }
       return data as VIPRequest | null;
     },
+    enabled: !!serviceId,
   });
 }
 
@@ -69,8 +74,34 @@ export function useCreateVIPRequest() {
       plan: VIPPlanType; 
       message?: string;
     }) => {
+      // Validation
+      if (!params.serviceId || params.serviceId <= 0) {
+        throw new Error('არასწორი სერვისის ID');
+      }
+
+      if (!params.plan || !['vip', 'super_vip'].includes(params.plan)) {
+        throw new Error('აირჩიეთ VIP პაკეტი');
+      }
+
+      if (params.message && params.message.length > 500) {
+        throw new Error('შეტყობინება ძალიან გრძელია (მაქს. 500 სიმბოლო)');
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('არ ხართ ავტორიზებული');
+
+      // Check for existing pending request
+      const { data: existingRequest } = await (supabase as any)
+        .from('vip_requests')
+        .select('id, status')
+        .eq('service_id', params.serviceId)
+        .eq('mechanic_id', user.id)
+        .in('status', ['pending', 'need_info'])
+        .maybeSingle();
+
+      if (existingRequest) {
+        throw new Error('თქვენ უკვე გაქვთ აქტიური VIP მოთხოვნა ამ სერვისისთვის');
+      }
 
       const { data, error } = await (supabase as any)
         .from('vip_requests')
@@ -84,15 +115,21 @@ export function useCreateVIPRequest() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('VIP request creation error:', error);
+        throw new Error(error.message || 'მოთხოვნის შექმნა ვერ მოხერხდა');
+      }
+      
       return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['vip-request', variables.serviceId] });
-      toast.success('VIP მოთხოვნა წარმატებით გაიგზავნა!');
+      queryClient.invalidateQueries({ queryKey: ['mechanic-services'] });
+      toast.success('✅ VIP მოთხოვნა წარმატებით გაიგზავნა!');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'მოთხოვნის გაგზავნა ვერ მოხერხდა');
+    onError: (error: Error) => {
+      console.error('VIP request mutation error:', error);
+      toast.error(error.message || 'მოთხოვნის გაგზავნა ვერ მოხერხდა. გთხოვთ სცადოთ თავიდან.');
     },
   });
 }
@@ -126,7 +163,10 @@ export function useAllVIPRequests(status?: VIPRequestStatus) {
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching admin VIP requests:', error);
+        throw error;
+      }
       return data as VIPRequest[];
     },
   });
@@ -142,17 +182,40 @@ export function useApproveVIPRequest() {
       durationDays: number | null; 
       message?: string;
     }) => {
+      if (!params.requestId) {
+        throw new Error('არასწორი მოთხოვნის ID');
+      }
+
+      if (params.durationDays !== null && params.durationDays <= 0) {
+        throw new Error('ხანგრძლივობა უნდა იყოს დადებითი რიცხვი');
+      }
+
+      if (params.message && params.message.length > 500) {
+        throw new Error('შეტყობინება ძალიან გრძელია (მაქს. 500 სიმბოლო)');
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('არ ხართ ავტორიზებული');
 
       // Get the request details
       const { data: request, error: fetchError } = await (supabase as any)
         .from('vip_requests')
-        .select('service_id, requested_plan')
+        .select('service_id, requested_plan, status')
         .eq('id', params.requestId)
         .single();
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        console.error('Failed to fetch VIP request:', fetchError);
+        throw new Error('მოთხოვნის მოძიება ვერ მოხერხდა');
+      }
+
+      if (!request) {
+        throw new Error('მოთხოვნა ვერ მოიძებნა');
+      }
+
+      if (request.status !== 'pending' && request.status !== 'need_info') {
+        throw new Error('მოთხოვნა უკვე დამუშავებულია');
+      }
 
       const now = new Date();
       const vipEndsAt = params.durationDays 
@@ -173,7 +236,10 @@ export function useApproveVIPRequest() {
         })
         .eq('id', params.requestId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Failed to update VIP request:', updateError);
+        throw new Error('მოთხოვნის განახლება ვერ მოხერხდა');
+      }
 
       // Update service with VIP status
       const { error: serviceError } = await (supabase as any)
@@ -185,16 +251,22 @@ export function useApproveVIPRequest() {
         })
         .eq('id', request.service_id);
 
-      if (serviceError) throw serviceError;
+      if (serviceError) {
+        console.error('Failed to update service VIP status:', serviceError);
+        throw new Error('სერვისის განახლება ვერ მოხერხდა');
+      }
 
       return { requestId: params.requestId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-vip-requests'] });
-      toast.success('VIP მოთხოვნა დამტკიცდა!');
+      queryClient.invalidateQueries({ queryKey: ['mechanic-services'] });
+      queryClient.invalidateQueries({ queryKey: ['services'] });
+      toast.success('✅ VIP მოთხოვნა დამტკიცდა!');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'დამტკიცება ვერ მოხერხდა');
+    onError: (error: Error) => {
+      console.error('VIP approval error:', error);
+      toast.error(error.message || 'დამტკიცება ვერ მოხერხდა. გთხოვთ სცადოთ თავიდან.');
     },
   });
 }
@@ -208,6 +280,18 @@ export function useRejectVIPRequest() {
       requestId: string; 
       reason: string;
     }) => {
+      if (!params.requestId) {
+        throw new Error('არასწორი მოთხოვნის ID');
+      }
+
+      if (!params.reason || params.reason.trim().length === 0) {
+        throw new Error('გთხოვთ მიუთითოთ უარყოფის მიზეზი');
+      }
+
+      if (params.reason.length > 500) {
+        throw new Error('უარყოფის მიზეზი ძალიან გრძელია (მაქს. 500 სიმბოლო)');
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('არ ხართ ავტორიზებული');
 
@@ -221,15 +305,20 @@ export function useRejectVIPRequest() {
         })
         .eq('id', params.requestId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('VIP rejection error:', error);
+        throw new Error('უარყოფა ვერ მოხერხდა');
+      }
+      
       return { requestId: params.requestId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-vip-requests'] });
-      toast.success('VIP მოთხოვნა უარყოფილია');
+      toast.success('❌ VIP მოთხოვნა უარყოფილია');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'უარყოფა ვერ მოხერხდა');
+    onError: (error: Error) => {
+      console.error('VIP rejection error:', error);
+      toast.error(error.message || 'უარყოფა ვერ მოხერხდა. გთხოვთ სცადოთ თავიდან.');
     },
   });
 }
@@ -243,6 +332,18 @@ export function useRequestVIPInfo() {
       requestId: string; 
       message: string;
     }) => {
+      if (!params.requestId) {
+        throw new Error('არასწორი მოთხოვნის ID');
+      }
+
+      if (!params.message || params.message.trim().length === 0) {
+        throw new Error('გთხოვთ მიუთითოთ შეტყობინება');
+      }
+
+      if (params.message.length > 500) {
+        throw new Error('შეტყობინება ძალიან გრძელია (მაქს. 500 სიმბოლო)');
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('არ ხართ ავტორიზებული');
 
@@ -256,15 +357,20 @@ export function useRequestVIPInfo() {
         })
         .eq('id', params.requestId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('VIP info request error:', error);
+        throw new Error('მოთხოვნა ვერ მოხერხდა');
+      }
+      
       return { requestId: params.requestId };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-vip-requests'] });
-      toast.success('შეტყობინება გაიგზავნა');
+      toast.success('ℹ️ დამატებითი ინფორმაციის მოთხოვნა გაიგზავნა');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'გაგზავნა ვერ მოხერხდა');
+    onError: (error: Error) => {
+      console.error('VIP info request error:', error);
+      toast.error(error.message || 'მოთხოვნა ვერ მოხერხდა. გთხოვთ სცადოთ თავიდან.');
     },
   });
 }
