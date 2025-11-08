@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createServiceSlug } from "@/utils/slugUtils";
-import { Plus, Edit, Trash2, Eye, Star, MapPin, Clock, CreditCard, Banknote, ChevronDown, Filter } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Star, MapPin, Clock, CreditCard, Banknote, ChevronDown, Filter, Crown, Zap, AlertCircle, Info } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useServiceVIPRequest, useCreateVIPRequest, VIPPlanType } from "@/hooks/useVIPRequests";
+import { VIPBadge } from "@/components/services/VIPBadge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +22,15 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import EditServiceDialog from "./EditServiceDialog";
 
 interface Service {
@@ -38,6 +49,9 @@ interface Service {
   is_active: boolean;
   rating: number | null;
   review_count: number | null;
+  vip_status: VIPPlanType | null;
+  vip_until: string | null;
+  is_vip_active: boolean | null;
   category: {
     id: number;
     name: string;
@@ -55,6 +69,10 @@ const MechanicServices = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [vipDialogOpen, setVipDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<VIPPlanType | null>(null);
+  const [vipMessage, setVipMessage] = useState("");
 
   const fetchServices = async () => {
     // Get current user session
@@ -81,6 +99,9 @@ const MechanicServices = () => {
         is_active,
         rating,
         review_count,
+        vip_status,
+        vip_until,
+        is_vip_active,
         service_categories (
           id,
           name
@@ -92,7 +113,7 @@ const MechanicServices = () => {
     if (error) throw error;
     
     // Transform the data to match our Service interface
-    return (data || []).map(service => ({
+    return (data || []).map((service: any) => ({
       ...service,
       category: Array.isArray(service.service_categories) 
         ? service.service_categories[0] 
@@ -146,6 +167,50 @@ const MechanicServices = () => {
 
   const handleServiceUpdated = () => {
     refetch();
+  };
+
+  const createRequest = useCreateVIPRequest();
+
+  const handleOpenVipDialog = (service: Service, plan: VIPPlanType) => {
+    setSelectedService(service);
+    setSelectedPlan(plan);
+    setVipMessage("");
+    setVipDialogOpen(true);
+  };
+
+  const handleSubmitVipRequest = async () => {
+    if (!selectedService || !selectedPlan) return;
+
+    try {
+      await createRequest.mutateAsync({
+        serviceId: selectedService.id,
+        plan: selectedPlan,
+        message: vipMessage || undefined,
+      });
+
+      toast.success("VIP მოთხოვნა წარმატებით გაიგზავნა!");
+      setVipDialogOpen(false);
+      setSelectedService(null);
+      setSelectedPlan(null);
+      setVipMessage("");
+      refetch();
+    } catch (error: any) {
+      console.error("VIP request error:", error);
+      toast.error(error.message || "მოთხოვნის გაგზავნა ვერ მოხერხდა");
+    }
+  };
+
+  const formatVIPExpiration = (vipUntil: string | null) => {
+    if (!vipUntil) return null;
+    
+    const expirationDate = new Date(vipUntil);
+    const now = new Date();
+    const daysLeft = Math.ceil((expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    
+    return {
+      date: expirationDate.toLocaleDateString('ka-GE'),
+      daysLeft: daysLeft > 0 ? daysLeft : 0,
+    };
   };
 
   const filteredServices = services.filter(service => {
@@ -425,6 +490,13 @@ const MechanicServices = () => {
                   </div>
                 )}
 
+                {/* VIP Section */}
+                <VIPRequestSection 
+                  service={service}
+                  onRequestVIP={handleOpenVipDialog}
+                  formatVIPExpiration={formatVIPExpiration}
+                />
+
                 <div className="flex gap-2">
                   <Link to={`/service/${createServiceSlug(service.id, service.name)}`} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full">
@@ -460,6 +532,205 @@ const MechanicServices = () => {
         onOpenChange={setIsEditDialogOpen}
         onServiceUpdated={handleServiceUpdated}
       />
+
+      {/* VIP Request Dialog */}
+      <Dialog open={vipDialogOpen} onOpenChange={setVipDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>VIP მოთხოვნის გაგზავნა</DialogTitle>
+            <DialogDescription>
+              სერვისი: {selectedService?.name}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                variant={selectedPlan === "vip" ? "default" : "outline"}
+                onClick={() => setSelectedPlan("vip")}
+                className="h-auto flex flex-col items-center gap-2 py-4"
+              >
+                <Crown className="w-6 h-6" />
+                <div>
+                  <div className="font-semibold">VIP</div>
+                  <div className="text-xs text-muted-foreground">პრიორიტეტული ჩვენება</div>
+                </div>
+              </Button>
+
+              <Button
+                variant={selectedPlan === "super_vip" ? "default" : "outline"}
+                onClick={() => setSelectedPlan("super_vip")}
+                className="h-auto flex flex-col items-center gap-2 py-4"
+              >
+                <Zap className="w-6 h-6" />
+                <div>
+                  <div className="font-semibold">Super VIP</div>
+                  <div className="text-xs text-muted-foreground">მაქსიმალური ხილვადობა</div>
+                </div>
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">შეტყობინება (არასავალდებულო)</label>
+              <Textarea
+                value={vipMessage}
+                onChange={(e) => setVipMessage(e.target.value)}
+                placeholder="დაწერეთ დამატებითი ინფორმაცია..."
+                rows={3}
+                maxLength={500}
+              />
+              <p className="text-xs text-muted-foreground">
+                {vipMessage.length}/500 სიმბოლო
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setVipDialogOpen(false)}>
+              გაუქმება
+            </Button>
+            <Button 
+              onClick={handleSubmitVipRequest}
+              disabled={!selectedPlan || createRequest.isPending}
+            >
+              {createRequest.isPending ? "იგზავნება..." : "გაგზავნა"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+// VIP Request Section Component
+const VIPRequestSection = ({ 
+  service, 
+  onRequestVIP, 
+  formatVIPExpiration 
+}: { 
+  service: Service; 
+  onRequestVIP: (service: Service, plan: VIPPlanType) => void;
+  formatVIPExpiration: (vipUntil: string | null) => { date: string; daysLeft: number } | null;
+}) => {
+  const { data: existingRequest, isLoading } = useServiceVIPRequest(service.id);
+
+  if (isLoading) {
+    return (
+      <div className="mb-4 p-3 bg-muted/30 rounded-lg animate-pulse">
+        <div className="h-4 bg-muted rounded w-3/4"></div>
+      </div>
+    );
+  }
+
+  // Case 1: Active VIP
+  if (service.is_vip_active && service.vip_status) {
+    const expiration = formatVIPExpiration(service.vip_until);
+    return (
+      <div className="mb-4 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <VIPBadge vipStatus={service.vip_status} size="sm" />
+            {expiration && (
+              <span className="text-xs text-muted-foreground">
+                {expiration.daysLeft > 0 ? `${expiration.daysLeft} დღე დარჩა` : "ამოიწურა"}
+              </span>
+            )}
+          </div>
+          {expiration && (
+            <span className="text-xs text-muted-foreground">
+              ვადა: {expiration.date}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Case 2: Pending Request
+  if (existingRequest && existingRequest.status === 'pending') {
+    return (
+      <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div className="flex items-center gap-2">
+          <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              VIP მოთხოვნა მოლოდინში
+            </p>
+            <p className="text-xs text-blue-700 dark:text-blue-300">
+              გეგმა: {existingRequest.requested_plan === 'vip' ? 'VIP' : 'Super VIP'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Case 3: Need More Info
+  if (existingRequest && existingRequest.status === 'need_info') {
+    return (
+      <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+        <div className="flex items-start gap-2">
+          <Info className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+              საჭიროა დამატებითი ინფორმაცია
+            </p>
+            {existingRequest.admin_message && (
+              <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                ადმინი: {existingRequest.admin_message}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Case 4: Rejected
+  if (existingRequest && existingRequest.status === 'rejected') {
+    return (
+      <div className="mb-4 p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
+        <div className="flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-red-900 dark:text-red-100">
+              VIP მოთხოვნა უარყოფილია
+            </p>
+            {existingRequest.rejection_reason && (
+              <p className="text-xs text-red-700 dark:text-red-300 mt-1">
+                მიზეზი: {existingRequest.rejection_reason}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Case 5: No VIP - Show Request Buttons
+  return (
+    <div className="mb-4 p-3 bg-muted/30 rounded-lg border border-border">
+      <p className="text-sm font-medium mb-2">VIP სტატუსი</p>
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onRequestVIP(service, 'vip')}
+          className="flex-1"
+        >
+          <Crown className="w-4 h-4 mr-1" />
+          VIP
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onRequestVIP(service, 'super_vip')}
+          className="flex-1"
+        >
+          <Zap className="w-4 h-4 mr-1" />
+          Super VIP
+        </Button>
+      </div>
     </div>
   );
 };
