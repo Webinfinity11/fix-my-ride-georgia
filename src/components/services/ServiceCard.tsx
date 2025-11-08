@@ -59,16 +59,16 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
   const handleViewMechanic = (e: React.MouseEvent) => {
     e.stopPropagation();
     const mechanicSlug = createMechanicSlug(
-      service.mechanic.display_id || 0, 
-      service.mechanic.first_name, 
-      service.mechanic.last_name
+      service.mechanic.display_id || 0,
+      service.mechanic.first_name,
+      service.mechanic.last_name,
     );
     navigate(`/mechanic/${mechanicSlug}`);
   };
 
   const handlePhoneClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     if (!service.mechanic.phone_number) {
       return;
     }
@@ -95,8 +95,8 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
 
   const formatPhoneNumber = (phone: string) => {
     // Format Georgian phone numbers nicely
-    if (phone.startsWith('+995')) {
-      return phone.replace('+995', '+995 ').replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    if (phone.startsWith("+995")) {
+      return phone.replace("+995", "+995 ").replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, "$1 $2 $3 $4");
     }
     return phone;
   };
@@ -109,10 +109,10 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
     // Only trigger map focus if clicking on the card background (not on interactive elements)
     const target = e.target as HTMLElement;
     if (
-      !target.closest('button') && 
-      !target.closest('h3') && 
+      !target.closest("button") &&
+      !target.closest("h3") &&
       !target.closest('[role="button"]') &&
-      !target.closest('.image-container') &&
+      !target.closest(".image-container") &&
       onMapFocus
     ) {
       onMapFocus();
@@ -123,7 +123,21 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
     <Card className="group border-primary/20 hover:border-primary/40 transition-all duration-200 hover:shadow-lg rounded-lg">
       <CardContent className="p-0" onClick={handleCardClick}>
         {/* Main Photo or Placeholder */}
-        <div className="relative overflow-hidden cursor-pointer image-container rounded-t-lg" onClick={handleViewDetails}>
+        <div
+          className="relative overflow-hidden cursor-pointer image-container rounded-t-lg"
+          onClick={handleViewDetails}
+        >
+          {/* VIP badge wrapper: ყოველთვის ჩასადგომია აქ ფოტოს თავზე */}
+          {service.is_vip_active && service.vip_status && (
+            <div
+              className="absolute top-2 right-2 z-20 pointer-events-auto"
+              // დამატებითი სტილები: შეგიძლიათ შეცვალოთ padding და backdrop
+            >
+              {/* size="sm" ან "xs" — შენს VIPBadge-ის იმპლემენტაციაზეა დამოკიდებული */}
+              <VIPBadge vipStatus={service.vip_status} size="sm" />
+            </div>
+          )}
+
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
               <img
@@ -134,7 +148,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                style={{ minHeight: '225px', backgroundColor: '#f3f4f6' }}
+                style={{ minHeight: "225px", backgroundColor: "#f3f4f6" }}
               />
             </div>
           ) : (
@@ -142,12 +156,8 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
               <div className="text-primary/30 mb-2">
                 <ImageOff size={48} />
               </div>
-              <div className="text-primary/60 text-sm font-medium">
-                Fixup.ge
-              </div>
-              <div className="text-primary/40 text-xs mt-1">
-                სერვისის ფოტო
-              </div>
+              <div className="text-primary/60 text-sm font-medium">Fixup.ge</div>
+              <div className="text-primary/40 text-xs mt-1">სერვისის ფოტო</div>
             </div>
           )}
         </div>
@@ -156,16 +166,14 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
           {/* Header - Title is now clickable */}
           <div className="space-y-2">
             <div className="flex items-start justify-between gap-2">
-              <h3 
+              <h3
                 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer flex-1"
                 onClick={handleViewDetails}
               >
                 {service.name}
               </h3>
               <div className="flex items-center gap-2 flex-shrink-0">
-                {service.is_vip_active && service.vip_status && (
-                  <VIPBadge vipStatus={service.vip_status} size="sm" />
-                )}
+                {/* აქ VIP ბეიჯი აღარ ჩანს — რადგან გადავიტანეთ ფოტოზე */}
                 {service.category && (
                   <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
                     {service.category.name}
@@ -174,13 +182,9 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
               </div>
             </div>
 
-            {service.description && (
-              <p className="text-sm text-gray-600 line-clamp-2">
-                {service.description}
-              </p>
-            )}
+            {service.description && <p className="text-sm text-gray-600 line-clamp-2">{service.description}</p>}
           </div>
-          
+
           {/* Location */}
           <div className="flex items-start text-sm text-gray-600">
             <MapPin className="w-4 h-4 mr-1 text-primary flex-shrink-0 mt-0.5" />
@@ -197,21 +201,14 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
                 {service.mechanic.rating && (
                   <div className="flex items-center space-x-1">
                     <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                    <span className="text-xs text-gray-600">
-                      {service.mechanic.rating.toFixed(1)}
-                    </span>
+                    <span className="text-xs text-gray-600">{service.mechanic.rating.toFixed(1)}</span>
                   </div>
                 )}
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleViewMechanic}
-              className="text-primary hover:bg-primary/5"
-            >
+            <Button variant="ghost" size="sm" onClick={handleViewMechanic} className="text-primary hover:bg-primary/5">
               <ExternalLink className="w-3 h-3 mr-1" />
-               პროფილი
+              პროფილი
             </Button>
           </div>
 
@@ -240,15 +237,11 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
           {/* Action Buttons */}
           <div className="flex gap-2">
             {/* Save Button */}
-            <SaveServiceButton 
-              serviceId={service.id}
-              size="icon"
-              showText={false}
-            />
-            
+            <SaveServiceButton serviceId={service.id} size="icon" showText={false} />
+
             {/* Call Button */}
             {service.mechanic.phone_number && (
-              <Button 
+              <Button
                 onClick={handlePhoneClick}
                 variant="outline"
                 className="flex-1 border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
@@ -257,12 +250,9 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
                 {showPhone ? formatPhoneNumber(service.mechanic.phone_number) : "დარეკვა"}
               </Button>
             )}
-            
+
             {/* Details Button */}
-            <Button 
-              onClick={handleViewDetails} 
-              className="flex-1 bg-primary hover:bg-primary-light transition-colors"
-            >
+            <Button onClick={handleViewDetails} className="flex-1 bg-primary hover:bg-primary-light transition-colors">
               დეტალების ნახვა
             </Button>
           </div>
