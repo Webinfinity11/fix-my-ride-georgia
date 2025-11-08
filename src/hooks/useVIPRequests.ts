@@ -28,7 +28,7 @@ export interface VIPRequest {
     city: string | null;
     district: string | null;
   };
-  profiles?: {
+  mechanic?: {
     first_name: string;
     last_name: string;
     email: string;
@@ -148,7 +148,7 @@ export function useAllVIPRequests(status?: VIPRequestStatus) {
             city,
             district
           ),
-          profiles (
+          mechanic:profiles!vip_requests_mechanic_id_fkey (
             first_name,
             last_name,
             email,

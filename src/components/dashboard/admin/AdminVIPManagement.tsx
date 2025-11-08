@@ -152,7 +152,7 @@ export function AdminVIPManagement() {
                               </h4>
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <User className="h-3 w-3" />
-                                {request.profiles?.first_name} {request.profiles?.last_name}
+                                {request.mechanic?.first_name} {request.mechanic?.last_name}
                               </div>
                               {request.mechanic_services?.city && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -185,14 +185,14 @@ export function AdminVIPManagement() {
                           
                           {/* Contact Info */}
                           <div className="flex items-center gap-4 text-sm flex-wrap">
-                            {request.profiles?.email && (
+                            {request.mechanic?.email && (
                               <span className="text-muted-foreground">
-                                📧 {request.profiles.email}
+                                📧 {request.mechanic.email}
                               </span>
                             )}
-                            {request.profiles?.phone && (
+                            {request.mechanic?.phone && (
                               <span className="text-muted-foreground">
-                                📞 {request.profiles.phone}
+                                📞 {request.mechanic.phone}
                               </span>
                             )}
                           </div>
