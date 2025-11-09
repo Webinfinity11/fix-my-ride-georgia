@@ -41,10 +41,10 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Fetch all active services with proper slug data
+    // Fetch all active services with VIP status for priority calculation
     const { data: services, error: servicesError } = await supabase
       .from('mechanic_services')
-      .select('id, name, slug, updated_at')
+      .select('id, name, slug, updated_at, is_vip_active, vip_status')
       .eq('is_active', true)
       .order('id')
 
@@ -64,12 +64,13 @@ serve(async (req) => {
       throw categoriesError
     }
 
-    // Fetch verified mechanics with display_id and names for proper URL slugs
+    // Fetch verified mechanics with rating for priority calculation
     const { data: mechanics, error: mechanicsError } = await supabase
       .from('mechanic_profiles')
       .select(`
         id, 
         display_id,
+        rating,
         profiles!inner(role, is_verified, first_name, last_name)
       `)
       .eq('profiles.role', 'mechanic')
@@ -144,7 +145,7 @@ serve(async (req) => {
 
   <!-- Real service pages with proper slugs -->`
 
-    // Add real service pages - only services that exist with proper slug format
+    // Add real service pages with VIP priority logic
     services?.forEach(service => {
       let serviceUrl
       
@@ -160,12 +161,22 @@ serve(async (req) => {
       
       const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate
       
+      // VIP Priority Logic: Super VIP (0.95) > VIP (0.85) > Regular (0.75)
+      const priority = service.is_vip_active && service.vip_status === 'super_vip' 
+        ? '0.95' 
+        : service.is_vip_active && service.vip_status === 'vip' 
+        ? '0.85' 
+        : '0.75';
+      
+      // VIP services update more frequently
+      const changefreq = service.is_vip_active ? 'daily' : 'weekly';
+      
       sitemapXml += `
   <url>
     <loc>https://fixup.ge/service/${serviceUrl}</loc>
     <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
   </url>`
     })
 
@@ -197,7 +208,7 @@ serve(async (req) => {
 
   <!-- Real mechanic pages -->`
 
-    // Add verified mechanic pages using display_id-slug format with safe profile access
+    // Add verified mechanic pages with rating-based priority
     mechanics?.forEach(mechanic => {
       // Safely access profile data with fallback
       const profile = mechanic.profiles?.[0]
@@ -207,18 +218,25 @@ serve(async (req) => {
       const mechanicSlug = georgianToLatin(fullName)
       const mechanicUrl = mechanicSlug ? `${mechanic.display_id}-${mechanicSlug}` : mechanic.display_id
       
+      // Get rating from mechanic_profiles relation
+      const rating = mechanic.profiles?.[0]?.mechanic_profiles?.[0]?.rating || 0
+      
+      // High-rated mechanics (4.5+) get higher priority
+      const mechanicPriority = rating >= 4.5 ? '0.85' : rating >= 4.0 ? '0.75' : '0.65'
+      const bookingPriority = rating >= 4.5 ? '0.75' : rating >= 4.0 ? '0.65' : '0.55'
+      
       sitemapXml += `
   <url>
     <loc>https://fixup.ge/mechanic/${mechanicUrl}</loc>
     <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <changefreq>weekly</changefreq>
+    <priority>${mechanicPriority}</priority>
   </url>
   <url>
     <loc>https://fixup.ge/book/${mechanicUrl}</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>${bookingPriority}</priority>
   </url>`
     })
 

@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import SEOHead from "@/components/seo/SEOHead";
 import ServiceCard from "@/components/services/ServiceCard";
 import { supabase } from "@/integrations/supabase/client";
+import { CollectionPageSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { generateStructuredData } from "@/utils/seoUtils";
 import { getCategoryFromSlug, createCategorySlug, createSlug } from "@/utils/slugUtils";
 import { ServiceType } from "@/hooks/useServices";
 
@@ -277,34 +277,36 @@ const ServiceCategory = () => {
     );
   }
 
-  const structuredData = {
-    ...generateStructuredData('Service', {
-      name: category.name,
-      description: category.description,
-      category: category.name
-    }),
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: `${category.name} სერვისები`,
-      itemListElement: services.map(service => ({
-        '@type': 'Offer',
-        name: service.name,
-        description: service.description,
-        price: service.price_from,
-        priceCurrency: 'GEL'
-      }))
-    }
-  };
+  // Breadcrumb data
+  const breadcrumbItems = [
+    { name: 'მთავარი', url: 'https://fixup.ge/' },
+    { name: 'კატეგორიები', url: 'https://fixup.ge/category' },
+    { name: category.name, url: `https://fixup.ge/category/${createCategorySlug(category.name)}` }
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title={`${category.name} - ავტოსერვისები`}
-        description={`${category.description || `იპოვეთ საუკეთესო ${category.name} სერვისები საქართველოში. გამოცდილი მექანიკოსები, მაღალი ხარისხის მომსახურება.`}`}
-        keywords={`${category.name}, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო`}
+        title={`${category.name} - ${services.length} სერვისი საქართველოში`}
+        description={category.description || `იპოვეთ საუკეთესო ${category.name} სერვისები საქართველოში. ${services.length}+ დადასტურებული ხელოსანი, მაღალი ხარისხის მომსახურება, სამართლიანი ფასები.`}
+        keywords={`${category.name}, ავტოსერვისი, მექანიკოსი, ${category.name} ფასები, ${category.name} თბილისი, ${category.name} ბათუმი, ავტომობილის რემონტი`}
         url={`https://fixup.ge/category/${createCategorySlug(category.name)}`}
-        structuredData={structuredData}
       />
+
+      {/* CollectionPage Schema for category */}
+      <CollectionPageSchema
+        name={`${category.name} სერვისები`}
+        description={category.description || `იპოვეთ საუკეთესო ${category.name} სერვისები საქართველოში`}
+        numberOfItems={services.length}
+        itemList={services.slice(0, 20).map(service => ({
+          name: service.name,
+          url: `https://fixup.ge/service/${service.id}-${createSlug(service.name)}`,
+          image: service.photos?.[0],
+          price: service.price_from || undefined
+        }))}
+      />
+
+      <BreadcrumbSchema items={breadcrumbItems} />
       
       <Header />
       

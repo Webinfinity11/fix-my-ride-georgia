@@ -36,7 +36,8 @@ import Layout from "@/components/layout/Layout";
 import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
-import { ServiceSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { ServiceSchema, BreadcrumbSchema, ProductSchema, FAQSchema } from "@/components/seo/StructuredData";
+import { generateServiceOGImage } from "@/utils/ogImageGenerator";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
 import { SaveServiceButton } from "@/components/services/SaveServiceButton";
@@ -605,18 +606,74 @@ const ServiceDetail = () => {
     );
   };
 
+  // Generate FAQ data for schema
+  const serviceFAQs = [
+    {
+      question: `რა არის ${service.name}-ის ფასი?`,
+      answer: formatPrice(service.price_from, service.price_to) || 'ფასი შეთანხმებით'
+    },
+    {
+      question: `რამდენი დრო სჭირდება ${service.name}-ს?`,
+      answer: service.estimated_hours ? `დაახლოებით ${service.estimated_hours} საათი` : 'დრო შეთანხმებით'
+    },
+    {
+      question: `სად მდებარეობს ${service.name} სერვისი?`,
+      answer: `${service.city}${service.district ? `, ${service.district} რაიონი` : ''}${service.address ? `, ${service.address}` : ''}`
+    },
+    ...(service.on_site_service ? [{
+      question: 'არის თუ არა ადგილზე მომსახურება?',
+      answer: 'დიახ, ხელოსანი შეასრულებს სამუშაოს თქვენი მისამართით.'
+    }] : []),
+    {
+      question: `რა გადახდის მეთოდებს იღებს ${service.mechanic.first_name} ${service.mechanic.last_name}?`,
+      answer: [
+        service.accepts_cash_payment ? 'ნაღდი' : null,
+        service.accepts_card_payment ? 'საბანკო ბარათი' : null
+      ].filter(Boolean).join(', ') || 'ნაღდი გადახდა'
+    }
+  ];
+
   return (
     <Layout>
         <SEOHead
           title={pageTitle}
           description={pageDescription}
           keywords={seoData?.meta_keywords || `${service.name}, ავტოსერვისი, ${service.city}, ${service.mechanic.first_name} ${service.mechanic.last_name}, მექანიკოსი`}
-          image={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
+          image={generateServiceOGImage(service)}
           url={canonicalUrl}
           canonical={canonicalUrl}
           type="article"
         />
         
+        {/* Rich Product Schema for better Google Rich Results */}
+        <ProductSchema
+          name={service.name}
+          description={service.description || `${service.name} - პროფესიონალური ავტოსერვისი ${service.city}-ში`}
+          image={service.photos || undefined}
+          brand="ავტოხელოსანი"
+          category={service.category?.name}
+          offers={{
+            price: service.price_from || "შეთანხმებით",
+            priceCurrency: "GEL",
+            availability: "InStock",
+            seller: {
+              name: `${service.mechanic.first_name} ${service.mechanic.last_name}`,
+              telephone: service.mechanic.phone || undefined,
+              address: service.address ? {
+                "@type": "PostalAddress",
+                addressLocality: service.city,
+                addressRegion: service.district,
+                streetAddress: service.address
+              } : undefined
+            }
+          }}
+          aggregateRating={service.rating ? {
+            ratingValue: service.rating,
+            reviewCount: service.review_count || 0
+          } : undefined}
+        />
+        
+        {/* Service Schema for compatibility */}
         <ServiceSchema
           name={service.name}
           description={service.description || `${service.name} - ავტოსერვისი`}
@@ -641,6 +698,9 @@ const ServiceDetail = () => {
             reviewCount: service.review_count || 0
           } : undefined}
         />
+        
+        {/* FAQ Schema for common questions */}
+        <FAQSchema faqs={serviceFAQs} />
         
         <BreadcrumbSchema items={breadcrumbItems} />
 

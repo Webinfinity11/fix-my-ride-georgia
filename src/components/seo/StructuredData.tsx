@@ -65,6 +65,11 @@ interface LocalBusinessSchemaProps {
     ratingValue: number;
     reviewCount: number;
   };
+  geo?: {
+    latitude: number;
+    longitude: number;
+  };
+  openingHours?: string[];
 }
 
 export const LocalBusinessSchema = ({
@@ -73,11 +78,13 @@ export const LocalBusinessSchema = ({
   telephone,
   url,
   priceRange = "$$",
-  rating
+  rating,
+  geo,
+  openingHours
 }: LocalBusinessSchemaProps) => {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": "AutomotiveRepairShop",
     "@id": url,
     name,
     address: {
@@ -88,6 +95,14 @@ export const LocalBusinessSchema = ({
     telephone,
     url,
     priceRange,
+    ...(geo && {
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: geo.latitude,
+        longitude: geo.longitude
+      }
+    }),
+    ...(openingHours && { openingHours }),
     ...(rating && {
       aggregateRating: {
         "@type": "AggregateRating",
@@ -168,6 +183,272 @@ export const ServiceSchema = ({
         worstRating: 1
       }
     })
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
+  );
+};
+
+// NEW: Product Schema for Services
+interface ProductSchemaProps {
+  name: string;
+  description: string;
+  image?: string[];
+  brand?: string;
+  offers: {
+    price: string | number;
+    priceCurrency?: string;
+    availability?: string;
+    seller?: {
+      name: string;
+      telephone?: string;
+      address?: any;
+    };
+  };
+  aggregateRating?: {
+    ratingValue: number;
+    reviewCount: number;
+  };
+  category?: string;
+}
+
+export const ProductSchema = ({
+  name,
+  description,
+  image,
+  brand = "ავტოხელოსანი",
+  offers,
+  aggregateRating,
+  category
+}: ProductSchemaProps) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    ...(image && image.length > 0 && { image }),
+    brand: {
+      "@type": "Brand",
+      name: brand
+    },
+    ...(category && { category }),
+    offers: {
+      "@type": "Offer",
+      price: offers.price || "შეთანხმებით",
+      priceCurrency: offers.priceCurrency || "GEL",
+      availability: `https://schema.org/${offers.availability || "InStock"}`,
+      ...(offers.seller && {
+        seller: {
+          "@type": "Person",
+          ...offers.seller
+        }
+      })
+    },
+    ...(aggregateRating && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: aggregateRating.ratingValue,
+        reviewCount: aggregateRating.reviewCount,
+        bestRating: 5,
+        worstRating: 1
+      }
+    })
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
+  );
+};
+
+// NEW: Review Schema
+interface ReviewSchemaProps {
+  reviews: Array<{
+    author: string;
+    rating: number;
+    reviewBody: string;
+    datePublished: string;
+  }>;
+}
+
+export const ReviewSchema = ({ reviews }: ReviewSchemaProps) => {
+  const schemas = reviews.map(review => ({
+    "@context": "https://schema.org",
+    "@type": "Review",
+    author: {
+      "@type": "Person",
+      name: review.author
+    },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: review.rating,
+      bestRating: 5,
+      worstRating: 1
+    },
+    reviewBody: review.reviewBody,
+    datePublished: review.datePublished
+  }));
+
+  return (
+    <Helmet>
+      {schemas.map((schema, index) => (
+        <script key={index} type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      ))}
+    </Helmet>
+  );
+};
+
+// NEW: FAQ Schema
+interface FAQSchemaProps {
+  faqs: Array<{
+    question: string;
+    answer: string;
+  }>;
+}
+
+export const FAQSchema = ({ faqs }: FAQSchemaProps) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(faq => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer
+      }
+    }))
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
+  );
+};
+
+// NEW: Person Schema
+interface PersonSchemaProps {
+  name: string;
+  jobTitle?: string;
+  url?: string;
+  image?: string;
+  telephone?: string;
+  address?: {
+    addressLocality: string;
+    addressRegion?: string;
+    addressCountry?: string;
+  };
+  worksFor?: {
+    name: string;
+    url: string;
+  };
+  aggregateRating?: {
+    ratingValue: number;
+    reviewCount: number;
+  };
+}
+
+export const PersonSchema = ({
+  name,
+  jobTitle = "ავტოხელოსანი",
+  url,
+  image,
+  telephone,
+  address,
+  worksFor = { name: "ავტოხელოსანი", url: "https://fixup.ge" },
+  aggregateRating
+}: PersonSchemaProps) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name,
+    jobTitle,
+    ...(url && { url }),
+    ...(image && { image }),
+    ...(telephone && { telephone }),
+    ...(address && {
+      address: {
+        "@type": "PostalAddress",
+        ...address,
+        addressCountry: address.addressCountry || "GE"
+      }
+    }),
+    worksFor: {
+      "@type": "Organization",
+      ...worksFor
+    },
+    ...(aggregateRating && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: aggregateRating.ratingValue,
+        reviewCount: aggregateRating.reviewCount,
+        bestRating: 5,
+        worstRating: 1
+      }
+    })
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
+  );
+};
+
+// NEW: CollectionPage Schema
+interface CollectionPageSchemaProps {
+  name: string;
+  description: string;
+  numberOfItems: number;
+  itemList: Array<{
+    name: string;
+    url: string;
+    image?: string;
+    price?: number;
+  }>;
+}
+
+export const CollectionPageSchema = ({
+  name,
+  description,
+  numberOfItems,
+  itemList
+}: CollectionPageSchemaProps) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name,
+    description,
+    numberOfItems,
+    hasPart: itemList.map((item, index) => ({
+      "@type": "Product",
+      position: index + 1,
+      name: item.name,
+      url: item.url,
+      ...(item.image && { image: item.image }),
+      ...(item.price && {
+        offers: {
+          "@type": "Offer",
+          price: item.price,
+          priceCurrency: "GEL"
+        }
+      })
+    }))
   };
 
   return (

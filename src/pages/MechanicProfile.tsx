@@ -15,6 +15,10 @@ import { useAuth } from "@/context/AuthContext";
 // Fixed: removed useChat dependency
 import MechanicReviews from "@/components/reviews/MechanicReviews";
 import { extractMechanicDisplayId, createMechanicSlug } from "@/utils/slugUtils";
+import SEOHead from "@/components/seo/SEOHead";
+import { PersonSchema, LocalBusinessSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
+import { generateMechanicOGImage } from "@/utils/ogImageGenerator";
 
 type MechanicType = {
   id: string;
@@ -508,8 +512,102 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     );
   }
   
+  // SEO data
+  const pageTitle = generateSEOTitle('mechanic', {
+    name: `${mechanic.profile.first_name} ${mechanic.profile.last_name}`,
+    city: mechanic.profile.city,
+    rating: mechanic.mechanic_profile.rating,
+    specialization: mechanic.mechanic_profile.specialization
+  });
+
+  const pageDescription = generateSEODescription('mechanic', {
+    name: `${mechanic.profile.first_name} ${mechanic.profile.last_name}`,
+    city: mechanic.profile.city,
+    rating: mechanic.mechanic_profile.rating,
+    review_count: mechanic.mechanic_profile.review_count,
+    specialization: mechanic.mechanic_profile.specialization,
+    experience_years: mechanic.mechanic_profile.experience_years
+  });
+
+  const canonicalUrl = generateCanonicalURL('mechanic', {
+    display_id: mechanic.display_id,
+    first_name: mechanic.profile.first_name,
+    last_name: mechanic.profile.last_name
+  });
+
+  // Breadcrumb items
+  const breadcrumbItems = [
+    { name: 'მთავარი', url: 'https://fixup.ge/' },
+    { name: 'ხელოსნები', url: 'https://fixup.ge/mechanic' },
+    { name: `${mechanic.profile.first_name} ${mechanic.profile.last_name}`, url: canonicalUrl }
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={pageTitle}
+        description={pageDescription}
+        keywords={`${mechanic.profile.first_name} ${mechanic.profile.last_name}, ავტოხელოსანი, მექანიკოსი, ${mechanic.profile.city}, ${mechanic.mechanic_profile.specialization || 'ავტოსერვისი'}`}
+        image={generateMechanicOGImage({
+          first_name: mechanic.profile.first_name,
+          last_name: mechanic.profile.last_name,
+          city: mechanic.profile.city,
+          rating: mechanic.mechanic_profile.rating || undefined,
+          review_count: mechanic.mechanic_profile.review_count,
+          specialization: mechanic.mechanic_profile.specialization || undefined,
+          is_verified: mechanic.profile.is_verified
+        })}
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        type="profile"
+      />
+
+      {/* Person Schema for mechanic */}
+      <PersonSchema
+        name={`${mechanic.profile.first_name} ${mechanic.profile.last_name}`}
+        jobTitle={mechanic.mechanic_profile.specialization || "ავტოხელოსანი"}
+        url={canonicalUrl}
+        telephone={mechanic.profile.phone}
+        address={{
+          addressLocality: mechanic.profile.city,
+          addressRegion: mechanic.profile.district,
+          addressCountry: "GE"
+        }}
+        aggregateRating={mechanic.mechanic_profile.rating ? {
+          ratingValue: mechanic.mechanic_profile.rating,
+          reviewCount: mechanic.mechanic_profile.review_count
+        } : undefined}
+      />
+
+      {/* LocalBusiness Schema if mechanic has physical location */}
+      {mechanic.profile.street && (
+        <LocalBusinessSchema
+          name={`${mechanic.profile.first_name} ${mechanic.profile.last_name} - ავტოსერვისი`}
+          address={{
+            streetAddress: mechanic.profile.street,
+            addressLocality: mechanic.profile.city,
+            addressRegion: mechanic.profile.district,
+            addressCountry: "GE"
+          }}
+          telephone={mechanic.profile.phone}
+          url={canonicalUrl}
+          priceRange="$$"
+          rating={mechanic.mechanic_profile.rating ? {
+            ratingValue: mechanic.mechanic_profile.rating,
+            reviewCount: mechanic.mechanic_profile.review_count
+          } : undefined}
+          openingHours={
+            mechanic.mechanic_profile.working_hours 
+              ? [typeof mechanic.mechanic_profile.working_hours === 'string' 
+                  ? mechanic.mechanic_profile.working_hours 
+                  : "Mo-Fr 09:00-18:00"]
+              : ["Mo-Fr 09:00-18:00"]
+          }
+        />
+      )}
+
+      <BreadcrumbSchema items={breadcrumbItems} />
+
       <Header />
       
       {/* Hero section with mechanic info */}
