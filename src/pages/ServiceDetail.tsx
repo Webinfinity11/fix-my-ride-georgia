@@ -376,24 +376,25 @@ const ServiceDetail = () => {
     );
   }
 
-      const pageTitle = seoData?.meta_title || generateSEOTitle('service', {
-        name: service.name,
-        city: service.city,
-        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` }
-      });
-      
-      const pageDescription = seoData?.meta_description || generateSEODescription('service', {
-        name: service.name,
-        city: service.city,
-        mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` },
-        rating: service.rating,
-        description: service.description
-      });
+  // SEO metadata
+  const pageTitle = seoData?.meta_title || generateSEOTitle('service', {
+    name: service.name,
+    city: service.city,
+    mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` }
+  });
+  
+  const pageDescription = seoData?.meta_description || generateSEODescription('service', {
+    name: service.name,
+    city: service.city,
+    mechanic: { name: `${service.mechanic.first_name} ${service.mechanic.last_name}` },
+    rating: service.rating,
+    description: service.description
+  });
 
-      const canonicalUrl = generateCanonicalURL('service', {
-        id: service.id,
-        name: service.name
-      });
+  const canonicalUrl = generateCanonicalURL('service', {
+    id: service.id,
+    name: service.name
+  });
 
   // Generate breadcrumb items for SEO
   const breadcrumbItems = [
