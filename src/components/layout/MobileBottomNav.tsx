@@ -18,13 +18,7 @@ const MobileBottomNav = () => {
   };
 
   const handleAddClick = () => {
-    if (!user) {
-      navigate("/services");
-    } else if (user.role === "mechanic") {
-      navigate("/add-service");
-    } else {
-      navigate("/dashboard/cars");
-    }
+    navigate("/services");
   };
 
   const navItems = [
