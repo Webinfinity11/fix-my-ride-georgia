@@ -8,14 +8,18 @@ import {
   LogOut,
   Settings,
   Shield,
-  BarChart3,
   Users,
   Cog,
   MessageCircle,
   CalendarCog,
   Bookmark,
-  ChevronDown,
   Crown,
+  MessageSquare,
+  Fuel,
+  Award,
+  Search,
+  Megaphone,
+  MapIcon,
 } from "lucide-react";
 import {
   Accordion,
@@ -99,7 +103,7 @@ const DashboardSidebar = () => {
               <AccordionContent className="space-y-1 pb-2">
                 <NavLink to="/dashboard/admin" className={navLinkClasses}>
                   <Shield size={18} />
-                  <span className="text-sm md:text-base">ადმინ პანელი</span>
+                  <span className="text-sm md:text-base">მიმოხილვა</span>
                 </NavLink>
 
                 <NavLink to="/dashboard/admin/service-details" className={navLinkClasses}>
@@ -124,12 +128,22 @@ const DashboardSidebar = () => {
 
                 <NavLink to="/dashboard/admin/vip-management" className={navLinkClasses}>
                   <Crown size={18} />
-                  <span className="text-sm md:text-base">VIP მოთხოვნები</span>
+                  <span className="text-sm md:text-base">VIP მართვა</span>
                 </NavLink>
 
-                <NavLink to="/dashboard/admin/stats" className={navLinkClasses}>
-                  <BarChart3 size={18} />
-                  <span className="text-sm md:text-base">სტატისტიკა</span>
+                <NavLink to="/dashboard/admin/community" className={navLinkClasses}>
+                  <MessageSquare size={18} />
+                  <span className="text-sm md:text-base">Community მართვა</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/fuel-importers" className={navLinkClasses}>
+                  <Fuel size={18} />
+                  <span className="text-sm md:text-base">საწვავის იმპორტიორები</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/fuel-brands" className={navLinkClasses}>
+                  <Award size={18} />
+                  <span className="text-sm md:text-base">საწვავის ბრენდები</span>
                 </NavLink>
 
                 <NavLink to="/dashboard/admin/users" className={navLinkClasses}>
@@ -139,7 +153,22 @@ const DashboardSidebar = () => {
 
                 <NavLink to="/dashboard/admin/saved-services" className={navLinkClasses}>
                   <Bookmark size={18} />
-                  <span className="text-sm md:text-base">შენახული სერვისები</span>
+                  <span className="text-sm md:text-base">შენახული სერვისების მართვა</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/seo" className={navLinkClasses}>
+                  <Search size={18} />
+                  <span className="text-sm md:text-base">SEO მართვა</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/banners" className={navLinkClasses}>
+                  <Megaphone size={18} />
+                  <span className="text-sm md:text-base">რეკლამების მართვა</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/sitemap" className={navLinkClasses}>
+                  <MapIcon size={18} />
+                  <span className="text-sm md:text-base">Sitemap მართვა</span>
                 </NavLink>
               </AccordionContent>
             </AccordionItem>

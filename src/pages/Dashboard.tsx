@@ -19,6 +19,12 @@ import LaundryManagement from "@/components/dashboard/admin/LaundryManagement";
 import BookingManagement from "@/components/dashboard/admin/BookingManagement";
 import SavedServicesManagement from "@/components/dashboard/admin/SavedServicesManagement";
 import { AdminVIPManagement } from "@/components/dashboard/admin/AdminVIPManagement";
+import { AdminCommunity } from "@/components/dashboard/admin/AdminCommunity";
+import FuelImporterManagement from "@/components/dashboard/admin/FuelImporterManagement";
+import { AdminFuelBrands } from "@/components/dashboard/admin/AdminFuelBrands";
+import SEOManagement from "@/components/dashboard/admin/SEOManagement";
+import BannerManagement from "@/components/dashboard/admin/BannerManagement";
+import SitemapManagement from "@/components/dashboard/admin/SitemapManagement";
 import { CustomerSavedServices } from "@/components/dashboard/customer/CustomerSavedServices";
 import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicSavedServices";
 import { Header } from "@/components/layout/Header";
@@ -230,10 +236,30 @@ const Dashboard = () => {
                   }
                 />
                 <Route
-                  path="/admin/stats"
+                  path="/admin/community"
                   element={
                     user.role === "admin" ? (
-                      <AdminDashboard />
+                      <AdminCommunity />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/fuel-importers"
+                  element={
+                    user.role === "admin" ? (
+                      <FuelImporterManagement />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/fuel-brands"
+                  element={
+                    user.role === "admin" ? (
+                      <AdminFuelBrands />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )
@@ -254,6 +280,36 @@ const Dashboard = () => {
                   element={
                     user.role === "admin" ? (
                       <SavedServicesManagement />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/seo"
+                  element={
+                    user.role === "admin" ? (
+                      <SEOManagement />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/banners"
+                  element={
+                    user.role === "admin" ? (
+                      <BannerManagement />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/sitemap"
+                  element={
+                    user.role === "admin" ? (
+                      <SitemapManagement />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )
