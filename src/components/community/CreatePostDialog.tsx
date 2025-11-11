@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { X, Image as ImageIcon, Video, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { X, Image as ImageIcon, Video, Loader2, Hash } from 'lucide-react';
 import { useCreatePost } from '@/hooks/useCommunityPosts';
+import { usePopularTags } from '@/hooks/usePopularTags';
 import { toast } from 'sonner';
 
 interface CreatePostDialogProps {
@@ -21,6 +24,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   
   const createPost = useCreatePost();
+  const { data: popularTags } = usePopularTags();
   
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && tagInput.trim() && tags.length < 5) {
@@ -35,6 +39,12 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
   
   const handleRemoveTag = (index: number) => {
     setTags(tags.filter((_, i) => i !== index));
+  };
+
+  const handleAddPopularTag = (tagName: string) => {
+    if (!tags.includes(tagName) && tags.length < 5) {
+      setTags([...tags, tagName]);
+    }
   };
   
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,12 +117,14 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
           
           {/* Tags */}
           <div>
+            <Label>თაგები (მაქსიმუმ 5)</Label>
             <Input
-              placeholder="თაგები (Enter-ით დამატება, მაქს 5)"
+              placeholder="თაგები (Enter-ით დამატება)"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleAddTag}
               disabled={tags.length >= 5}
+              className="mt-2"
             />
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
@@ -125,6 +137,31 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
                     />
                   </Badge>
                 ))}
+              </div>
+            )}
+
+            {popularTags && popularTags.length > 0 && (
+              <div className="mt-3">
+                <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Hash className="h-3 w-3" />
+                  პოპულარული თაგები:
+                </Label>
+                <ScrollArea className="w-full mt-2">
+                  <div className="flex flex-wrap gap-2">
+                    {popularTags.map((tag) => (
+                      <Badge
+                        key={tag.id}
+                        variant="outline"
+                        className={`cursor-pointer hover:bg-primary/10 transition-colors ${
+                          tags.includes(tag.name) ? 'bg-primary/20 border-primary' : ''
+                        }`}
+                        onClick={() => handleAddPopularTag(tag.name)}
+                      >
+                        #{tag.name} ({tag.use_count})
+                      </Badge>
+                    ))}
+                  </div>
+                </ScrollArea>
               </div>
             )}
           </div>

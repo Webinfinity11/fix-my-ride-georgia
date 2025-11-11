@@ -1,14 +1,32 @@
-import { Heart, MessageCircle, Bookmark, MoreVertical } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
-import { CommunityPost, useToggleLike, useToggleSave } from '@/hooks/useCommunityPosts';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Heart, MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ka } from 'date-fns/locale';
+import { CommunityPost, useToggleLike, useToggleSave, useDeletePost } from '@/hooks/useCommunityPosts';
 import { CommentList } from './CommentList';
 import { ReportDialog } from './ReportDialog';
+import { EditPostDialog } from './EditPostDialog';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PostCardProps {
   post: CommunityPost;
@@ -20,9 +38,19 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
   const [showFullContent, setShowFullContent] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   
   const likeMutation = useToggleLike(post.post_id);
   const saveMutation = useToggleSave(post.post_id);
+  const deletePost = useDeletePost();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id || null);
+    });
+  }, []);
   
   const contentLength = post.content?.length || 0;
   const shouldTruncate = contentLength > 200;
@@ -58,6 +86,24 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
     }
     setShowReport(true);
   };
+
+  const handleEdit = () => {
+    setShowEdit(true);
+  };
+
+  const handleDelete = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = () => {
+    deletePost.mutate(post.post_id, {
+      onSuccess: () => {
+        setShowDeleteDialog(false);
+      }
+    });
+  };
+
+  const isAuthor = currentUserId === post.author_id;
   
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -81,14 +127,33 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
               </div>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleReport}
-            className="h-8 w-8"
-          >
-            <MoreVertical className="h-4 w-4" />
-          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {isAuthor ? (
+                <>
+                  <DropdownMenuItem onClick={handleEdit}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    რედაქტირება
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDelete} className="text-destructive">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    წაშლა
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onClick={handleReport}>
+                  <Flag className="mr-2 h-4 w-4" />
+                  რეპორტი
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         {/* Content */}
@@ -188,12 +253,37 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
         )}
       </CardContent>
       
-      {/* Report Dialog */}
       <ReportDialog 
-        postId={post.post_id}
         open={showReport}
         onOpenChange={setShowReport}
+        postId={post.post_id}
       />
+
+      <EditPostDialog
+        open={showEdit}
+        onOpenChange={setShowEdit}
+        post={post}
+      />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>დარწმუნებული ხარ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ეს მოქმედება ვერ გაუქმდება. პოსტი სამუდამოდ წაიშლება.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>გაუქმება</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              წაშლა
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

@@ -151,6 +151,56 @@ export function useCreateComment() {
   });
 }
 
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ postId, content, tags }: { postId: string; content: string; tags?: string[] }) => {
+      const { data, error } = await supabase.functions.invoke('community-action', {
+        body: { 
+          action: 'update_post',
+          data: { postId, content, tags }
+        }
+      });
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community-posts'] });
+      toast.success('პოსტი წარმატებით განახლდა');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'პოსტის განახლება ვერ მოხერხდა');
+    }
+  });
+}
+
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      const { data, error } = await supabase.functions.invoke('community-action', {
+        body: { 
+          action: 'delete_post',
+          data: { postId }
+        }
+      });
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community-posts'] });
+      toast.success('პოსტი წაშლილია');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'პოსტის წაშლა ვერ მოხერხდა');
+    }
+  });
+}
+
 export function useReportPost() {
   return useMutation({
     mutationFn: async ({ postId, reason, details }: { postId: string; reason: string; details?: string }) => {

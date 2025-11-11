@@ -6,8 +6,10 @@ const rateLimits = new Map<string, { count: number; resetAt: number }>();
 
 const RATE_LIMITS = {
   create_post: { max: 5, window: 600000 }, // 5 per 10 min
-  comment: { max: 10, window: 600000 }, // 10 per 10 min
-  like: { max: 60, window: 600000 }, // 60 per 10 min
+  update_post: { max: 10, window: 600000 },
+  delete_post: { max: 5, window: 600000 },
+  comment: { max: 10, window: 600000 },
+  like: { max: 60, window: 600000 },
   save: { max: 60, window: 600000 },
   report: { max: 5, window: 600000 },
 };
@@ -73,6 +75,12 @@ Deno.serve(async (req) => {
       case 'create_post':
         result = await createPost(supabaseClient, user.id, data);
         break;
+      case 'update_post':
+        result = await updatePost(supabaseClient, user.id, data);
+        break;
+      case 'delete_post':
+        result = await deletePost(supabaseClient, user.id, data);
+        break;
       case 'like':
         result = await toggleLike(supabaseClient, user.id, data.postId);
         break;
@@ -94,6 +102,7 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
+    console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -104,7 +113,6 @@ Deno.serve(async (req) => {
 async function createPost(supabase: any, userId: string, data: any) {
   const { content, mediaUrl, mediaType, thumbnailUrl, tags } = data;
   
-  // Insert post
   const { data: post, error: postError } = await supabase
     .from('posts')
     .insert({ author_id: userId, content })
@@ -113,7 +121,6 @@ async function createPost(supabase: any, userId: string, data: any) {
     
   if (postError) throw postError;
   
-  // Add media if provided
   if (mediaUrl) {
     await supabase.from('post_media').insert({
       post_id: post.id,
@@ -123,12 +130,10 @@ async function createPost(supabase: any, userId: string, data: any) {
     });
   }
   
-  // Add tags
   if (tags && tags.length > 0) {
     for (const tagName of tags) {
       const tagSlug = tagName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
       
-      // Get or create tag
       let { data: tag } = await supabase
         .from('tags')
         .select('id')
@@ -147,7 +152,6 @@ async function createPost(supabase: any, userId: string, data: any) {
         tag = newTag;
       }
       
-      // Link tag to post
       if (tag) {
         await supabase.from('post_tags').insert({
           post_id: post.id,
@@ -158,6 +162,85 @@ async function createPost(supabase: any, userId: string, data: any) {
   }
   
   return { success: true, postId: post.id };
+}
+
+async function updatePost(supabase: any, userId: string, data: any) {
+  const { postId, content, tags } = data;
+  
+  const { data: post } = await supabase
+    .from('posts')
+    .select('author_id')
+    .eq('id', postId)
+    .single();
+    
+  if (!post || post.author_id !== userId) {
+    throw new Error('Unauthorized: You can only edit your own posts');
+  }
+  
+  const { error: updateError } = await supabase
+    .from('posts')
+    .update({ content, updated_at: new Date().toISOString() })
+    .eq('id', postId);
+    
+  if (updateError) throw updateError;
+    
+  if (tags) {
+    await supabase.from('post_tags').delete().eq('post_id', postId);
+    
+    for (const tagName of tags) {
+      const tagSlug = tagName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+      
+      let { data: tag } = await supabase
+        .from('tags')
+        .select('id')
+        .eq('slug', tagSlug)
+        .single();
+      
+      if (!tag) {
+        const { data: newTag } = await supabase
+          .from('tags')
+          .insert({ 
+            name: tagName.toLowerCase(),
+            slug: tagSlug
+          })
+          .select()
+          .single();
+        tag = newTag;
+      }
+      
+      if (tag) {
+        await supabase.from('post_tags').insert({
+          post_id: postId,
+          tag_id: tag.id,
+        });
+      }
+    }
+  }
+  
+  return { success: true };
+}
+
+async function deletePost(supabase: any, userId: string, data: any) {
+  const { postId } = data;
+  
+  const { data: post } = await supabase
+    .from('posts')
+    .select('author_id')
+    .eq('id', postId)
+    .single();
+    
+  if (!post || post.author_id !== userId) {
+    throw new Error('Unauthorized: You can only delete your own posts');
+  }
+  
+  const { error } = await supabase
+    .from('posts')
+    .update({ is_deleted: true })
+    .eq('id', postId);
+    
+  if (error) throw error;
+    
+  return { success: true };
 }
 
 async function toggleLike(supabase: any, userId: string, postId: string) {
