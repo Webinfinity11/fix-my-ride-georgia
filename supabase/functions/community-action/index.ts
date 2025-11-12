@@ -40,7 +40,14 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Create client with service role for bypassing RLS
     const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
+    // Create separate client with user's JWT for authentication check
+    const supabaseAuth = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
@@ -50,7 +57,7 @@ Deno.serve(async (req) => {
       }
     );
 
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
     
     if (userError || !user) {
       return new Response(
