@@ -87,10 +87,17 @@ const DashboardSidebar = () => {
               </NavLink>
 
               {(user?.role === "customer" || user?.role === "mechanic") && (
-                <NavLink to="/dashboard/saved-services" className={navLinkClasses}>
-                  <Bookmark size={18} />
-                  <span className="text-sm md:text-base">შენახული სერვისები</span>
-                </NavLink>
+                <>
+                  <NavLink to="/dashboard/saved-services" className={navLinkClasses}>
+                    <Bookmark size={18} />
+                    <span className="text-sm md:text-base">შენახული სერვისები</span>
+                  </NavLink>
+                  
+                  <NavLink to="/dashboard/saved-posts" className={navLinkClasses}>
+                    <MessageSquare size={18} />
+                    <span className="text-sm md:text-base">შენახული პოსტები</span>
+                  </NavLink>
+                </>
               )}
             </AccordionContent>
           </AccordionItem>

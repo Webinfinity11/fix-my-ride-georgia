@@ -131,11 +131,11 @@ export function useCreateComment() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
+    mutationFn: async ({ postId, content, parentId }: { postId: string; content: string; parentId?: string }) => {
       const { data, error } = await supabase.functions.invoke('community-action', {
         body: { 
           action: 'comment', 
-          data: { postId, content } 
+          data: { postId, content, parentId } 
         },
       });
       if (error) throw error;

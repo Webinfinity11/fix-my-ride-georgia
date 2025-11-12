@@ -1,14 +1,12 @@
-import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Send, Trash2 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { ka } from 'date-fns/locale';
+import { Loader2, Send } from 'lucide-react';
 import { useCreateComment } from '@/hooks/useCommunityPosts';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { CommentItem } from './CommentItem';
 
 interface Comment {
   id: string;
@@ -18,6 +16,7 @@ interface Comment {
   author_avatar: string | null;
   created_at: string;
   is_deleted: boolean;
+  parent_id: string | null;
 }
 
 interface CommentListProps {
@@ -29,7 +28,14 @@ interface CommentListProps {
 export function CommentList({ postId, isAuthenticated, onAuthRequired }: CommentListProps) {
   const [commentText, setCommentText] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id || null);
+    });
+  }, []);
   
   const createComment = useCreateComment();
   
@@ -64,7 +70,8 @@ export function CommentList({ postId, isAuthenticated, onAuthRequired }: Comment
           author_name: profile ? `${profile.first_name} ${profile.last_name}`.trim() : 'User',
           author_avatar: profile?.avatar_url || null,
           created_at: comment.created_at,
-          is_deleted: comment.is_deleted
+          is_deleted: comment.is_deleted,
+          parent_id: comment.parent_id
         };
       }) as Comment[];
     },
@@ -87,7 +94,7 @@ export function CommentList({ postId, isAuthenticated, onAuthRequired }: Comment
     try {
       await createComment.mutateAsync({
         postId,
-        content: commentText.trim()
+        content: commentText.trim(),
       });
       setCommentText('');
       queryClient.invalidateQueries({ queryKey: ['comments', postId] });
@@ -158,38 +165,14 @@ export function CommentList({ postId, isAuthenticated, onAuthRequired }: Comment
       ) : comments && comments.length > 0 ? (
         <div className="space-y-3">
           {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3 p-3 rounded-lg bg-muted/30">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={comment.author_avatar || undefined} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                  {comment.author_name?.[0]?.toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-sm">{comment.author_name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.created_at), { 
-                        addSuffix: true,
-                        locale: ka 
-                      })}
-                    </span>
-                  </div>
-                  {isAuthenticated && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => handleDelete(comment.id)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  )}
-                </div>
-                <p className="text-sm mt-1 whitespace-pre-wrap break-words">{comment.content}</p>
-              </div>
-            </div>
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              postId={postId}
+              isAuthenticated={isAuthenticated}
+              currentUserId={currentUserId}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       ) : (

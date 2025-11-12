@@ -27,6 +27,7 @@ import BannerManagement from "@/components/dashboard/admin/BannerManagement";
 import SitemapManagement from "@/components/dashboard/admin/SitemapManagement";
 import { CustomerSavedServices } from "@/components/dashboard/customer/CustomerSavedServices";
 import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicSavedServices";
+import { CustomerSavedPosts } from "@/components/dashboard/customer/CustomerSavedPosts";
 import { Header } from "@/components/layout/Header";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { toast } from "sonner";
@@ -168,6 +169,18 @@ const Dashboard = () => {
                       <CustomerSavedServices />
                     ) : user.role === "mechanic" ? (
                       <MechanicSavedServices />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                
+                {/* Saved Posts Route */}
+                <Route
+                  path="/saved-posts"
+                  element={
+                    user.role === "customer" || user.role === "mechanic" ? (
+                      <CustomerSavedPosts />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

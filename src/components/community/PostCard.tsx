@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Heart, MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2, Share2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ka } from 'date-fns/locale';
 import { CommunityPost, useToggleLike, useToggleSave, useDeletePost } from '@/hooks/useCommunityPosts';
@@ -27,6 +27,7 @@ import { CommentList } from './CommentList';
 import { ReportDialog } from './ReportDialog';
 import { EditPostDialog } from './EditPostDialog';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface PostCardProps {
   post: CommunityPost;
@@ -77,6 +78,26 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
       return;
     }
     setShowComments(!showComments);
+  };
+
+  const handleShare = async () => {
+    const postUrl = `${window.location.origin}/community?post=${post.post_id}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${post.author_name}-ის პოსტი`,
+          text: post.content?.substring(0, 100) || 'გაზიარება',
+          url: postUrl,
+        });
+      } catch (error) {
+        // User cancelled or error
+      }
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(postUrl);
+      toast.success('ბმული დაკოპირდა');
+    }
   };
   
   const handleReport = () => {
@@ -230,6 +251,14 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
             >
               <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="text-xs sm:text-sm font-medium">{post.comment_count}</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleShare}
+              className="gap-1 text-muted-foreground hover:text-primary"
+            >
+              <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
           <Button 
