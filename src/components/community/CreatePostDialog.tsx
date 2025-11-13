@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { X, Image as ImageIcon, Video, Loader2, Hash } from 'lucide-react';
 import { useCreatePost } from '@/hooks/useCommunityPosts';
 import { usePopularTags } from '@/hooks/usePopularTags';
+import { RichTextEditor } from './RichTextEditor';
 import { toast } from 'sonner';
 
 interface CreatePostDialogProps {
@@ -102,18 +102,11 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
         
         <div className="space-y-4">
           {/* Content */}
-          <Textarea
-            placeholder="რას ფიქრობ? (მაქს. 1000 სიმბოლო)"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            maxLength={1000}
-            className="min-h-[120px] resize-none"
+          <RichTextEditor
+            content={content}
+            onChange={setContent}
+            placeholder="რას ფიქრობ?"
           />
-          
-          {/* Character count */}
-          <div className="text-xs text-muted-foreground text-right">
-            {content.length}/1000
-          </div>
           
           {/* Tags */}
           <div>

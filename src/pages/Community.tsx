@@ -3,13 +3,14 @@ import { useCommunityPosts } from '@/hooks/useCommunityPosts';
 import { usePopularTags } from '@/hooks/usePopularTags';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PostCard } from '@/components/community/PostCard';
 import { CreatePostDialog } from '@/components/community/CreatePostDialog';
 import { AuthRequiredDialog } from '@/components/community/AuthRequiredDialog';
-import { Plus, TrendingUp, Clock, Loader2, Hash } from 'lucide-react';
+import { Plus, TrendingUp, Clock, Loader2, Hash, Search } from 'lucide-react';
 import SEOHead from '@/components/seo/SEOHead';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -17,12 +18,25 @@ export default function Community() {
   const [user, setUser] = useState<any>(null);
   const [sortBy, setSortBy] = useState<'latest' | 'top'>('latest');
   const [selectedTag, setSelectedTag] = useState<string | undefined>();
+  const [searchQuery, setSearchQuery] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   
   const { data: posts, isLoading } = useCommunityPosts(sortBy, selectedTag);
   const { data: popularTags } = usePopularTags();
+
+  // Filter posts by search query
+  const filteredPosts = posts?.filter((post) => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    const matchesContent = post.content?.toLowerCase().includes(query);
+    const matchesAuthor = post.author_name?.toLowerCase().includes(query);
+    const matchesTags = post.tags?.some((tag) => tag.name.toLowerCase().includes(query));
+    
+    return matchesContent || matchesAuthor || matchesTags;
+  });
   
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -85,6 +99,19 @@ export default function Community() {
           </TabsList>
         </Tabs>
 
+        {/* Search */}
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="ძებნა პოსტებში, ავტორებში, თაგებში..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
         {/* Tag Filter */}
         {popularTags && popularTags.length > 0 && (
           <div className="mb-6">
@@ -121,9 +148,9 @@ export default function Community() {
           <div className="flex justify-center py-12">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
           </div>
-        ) : posts && posts.length > 0 ? (
+        ) : filteredPosts && filteredPosts.length > 0 ? (
           <div className="space-y-4">
-            {posts.map((post) => (
+            {filteredPosts.map((post) => (
               <PostCard 
                 key={post.post_id}
                 post={post}
@@ -131,6 +158,12 @@ export default function Community() {
                 onAuthRequired={handleAuthRequired}
               />
             ))}
+          </div>
+        ) : searchQuery ? (
+          <div className="text-center py-12 bg-muted/30 rounded-lg">
+            <p className="text-muted-foreground text-lg">
+              ძიებით "{searchQuery}" ვერაფერი მოიძებნა
+            </p>
           </div>
         ) : (
           <div className="text-center py-12 bg-muted/30 rounded-lg">

@@ -19,14 +19,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Heart, MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2, Share2 } from 'lucide-react';
+import { MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2, Share2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ka } from 'date-fns/locale';
-import { CommunityPost, useToggleLike, useToggleSave, useDeletePost } from '@/hooks/useCommunityPosts';
+import { CommunityPost, useToggleSave, useDeletePost } from '@/hooks/useCommunityPosts';
+import { useToggleReaction } from '@/hooks/useReactions';
 import { CommentList } from './CommentList';
 import { ReportDialog } from './ReportDialog';
 import { EditPostDialog } from './EditPostDialog';
 import { ImageGalleryModal } from './ImageGalleryModal';
+import { PostReactions } from './PostReactions';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -44,26 +46,55 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [reactions, setReactions] = useState<any[]>([]);
   
-  const likeMutation = useToggleLike(post.post_id);
   const saveMutation = useToggleSave(post.post_id);
   const deletePost = useDeletePost();
+  const toggleReaction = useToggleReaction();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUserId(session?.user?.id || null);
     });
+    
+    // Fetch reactions
+    fetchReactions();
   }, []);
+
+  const fetchReactions = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const { data, error } = await supabase
+      .from('reactions')
+      .select('reaction_type, user_id')
+      .eq('post_id', post.post_id);
+    
+    if (!error && data) {
+      const grouped = ['like', 'funny', 'fire', 'helpful'].map(type => ({
+        type,
+        count: data.filter(r => r.reaction_type === type).length,
+        userReacted: session?.user ? data.some(r => r.reaction_type === type && r.user_id === session.user.id) : false,
+      }));
+      setReactions(grouped);
+    }
+  };
   
   const contentLength = post.content?.length || 0;
   const shouldTruncate = contentLength > 200;
   
-  const handleLike = () => {
+  const handleReaction = (reactionType: string) => {
     if (!isAuthenticated) {
       onAuthRequired();
       return;
     }
-    likeMutation.mutate();
+    toggleReaction.mutate(
+      { postId: post.post_id, reactionType: reactionType as any },
+      {
+        onSuccess: () => {
+          fetchReactions();
+        }
+      }
+    );
   };
   
   const handleSave = () => {
@@ -182,9 +213,10 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
         {/* Content */}
         {post.content && (
           <div className="mb-3">
-            <p className={`text-foreground whitespace-pre-wrap ${!showFullContent && shouldTruncate ? 'line-clamp-3' : ''}`}>
-              {post.content}
-            </p>
+            <div 
+              className={`prose prose-sm max-w-none ${!showFullContent && shouldTruncate ? 'line-clamp-3' : ''}`}
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
             {shouldTruncate && (
               <Button 
                 variant="link" 
@@ -235,17 +267,12 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
         
         {/* Actions */}
         <div className="flex items-center justify-between pt-3 border-t">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={handleLike}
-              disabled={likeMutation.isPending}
-              className={`gap-1 ${post.is_liked ? 'text-destructive' : 'text-muted-foreground'} hover:text-destructive`}
-            >
-              <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${post.is_liked ? 'fill-current' : ''}`} />
-              <span className="text-xs sm:text-sm font-medium">{post.like_count}</span>
-            </Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <PostReactions 
+              reactions={reactions}
+              onReact={handleReaction}
+              disabled={toggleReaction.isPending}
+            />
             <Button 
               variant="ghost" 
               size="sm"

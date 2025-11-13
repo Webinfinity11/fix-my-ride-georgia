@@ -12,6 +12,7 @@ const RATE_LIMITS = {
   like: { max: 60, window: 600000 },
   save: { max: 60, window: 600000 },
   report: { max: 5, window: 600000 },
+  reaction: { max: 100, window: 600000 },
 };
 
 function checkRateLimit(userId: string, action: keyof typeof RATE_LIMITS): boolean {
@@ -99,6 +100,9 @@ Deno.serve(async (req) => {
         break;
       case 'report':
         result = await reportPost(supabaseClient, user.id, data);
+        break;
+      case 'reaction':
+        result = await toggleReaction(supabaseClient, user.id, data);
         break;
       default:
         throw new Error('Invalid action');
@@ -318,4 +322,33 @@ async function reportPost(supabase: any, userId: string, data: any) {
   if (error) throw error;
   
   return { success: true, message: 'მადლობა, მოდერატორი განიხილავს შეტყობინებას' };
+}
+
+async function toggleReaction(supabase: any, userId: string, data: any) {
+  const { postId, reactionType } = data;
+  
+  const validReactions = ['like', 'funny', 'fire', 'helpful'];
+  if (!validReactions.includes(reactionType)) {
+    throw new Error('Invalid reaction type');
+  }
+  
+  const { data: existing } = await supabase
+    .from('reactions')
+    .select('id')
+    .eq('post_id', postId)
+    .eq('user_id', userId)
+    .eq('reaction_type', reactionType)
+    .single();
+    
+  if (existing) {
+    await supabase.from('reactions').delete().eq('id', existing.id);
+    return { success: true, reacted: false };
+  } else {
+    await supabase.from('reactions').insert({ 
+      post_id: postId, 
+      user_id: userId,
+      reaction_type: reactionType
+    });
+    return { success: true, reacted: true };
+  }
 }

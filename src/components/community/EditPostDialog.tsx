@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { X, Loader2 } from 'lucide-react';
 import { useUpdatePost } from '@/hooks/useCommunityPosts';
 import { CommunityPost } from '@/hooks/useCommunityPosts';
+import { RichTextEditor } from './RichTextEditor';
 
 interface EditPostDialogProps {
   open: boolean;
@@ -64,17 +64,11 @@ export function EditPostDialog({ open, onOpenChange, post }: EditPostDialogProps
         <div className="space-y-4">
           <div>
             <Label htmlFor="edit-content">შინაარსი</Label>
-            <Textarea
-              id="edit-content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+            <RichTextEditor
+              content={content}
+              onChange={setContent}
               placeholder="რას ფიქრობ?"
-              className="min-h-[120px] mt-2"
-              maxLength={2000}
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              {content.length}/2000 სიმბოლო
-            </p>
           </div>
 
           <div>
