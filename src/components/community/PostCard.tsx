@@ -26,6 +26,7 @@ import { CommunityPost, useToggleLike, useToggleSave, useDeletePost } from '@/ho
 import { CommentList } from './CommentList';
 import { ReportDialog } from './ReportDialog';
 import { EditPostDialog } from './EditPostDialog';
+import { ImageGalleryModal } from './ImageGalleryModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -41,6 +42,7 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
   const [showReport, setShowReport] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   
   const likeMutation = useToggleLike(post.post_id);
@@ -203,8 +205,9 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
               <img 
                 src={post.media_url} 
                 alt="Post media" 
-                className="w-full h-auto object-cover max-h-[500px]"
+                className="w-full h-auto object-cover max-h-[500px] cursor-pointer hover:opacity-95 transition-opacity"
                 loading="lazy"
+                onClick={() => setShowGallery(true)}
               />
             ) : (
               <video 
@@ -313,6 +316,15 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {post.media_type === 'image' && post.media_url && (
+        <ImageGalleryModal
+          images={[post.media_url]}
+          isOpen={showGallery}
+          onClose={() => setShowGallery(false)}
+          initialIndex={0}
+        />
+      )}
     </Card>
   );
 }
