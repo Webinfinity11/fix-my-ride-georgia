@@ -155,11 +155,47 @@ export function useUpdatePost() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ postId, content, tags }: { postId: string; content: string; tags?: string[] }) => {
+    mutationFn: async ({ 
+      postId, 
+      content, 
+      tags, 
+      mediaFile, 
+      removeMedia 
+    }: { 
+      postId: string; 
+      content: string; 
+      tags?: string[]; 
+      mediaFile?: File;
+      removeMedia?: boolean;
+    }) => {
+      let mediaUrl, mediaType;
+      
+      // Upload media if provided
+      if (mediaFile) {
+        const fileExt = mediaFile.name.split('.').pop();
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) throw new Error('Not authenticated');
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('community-media')
+          .upload(`${user.id}/${fileName}`, mediaFile);
+          
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('community-media')
+          .getPublicUrl(uploadData.path);
+          
+        mediaUrl = publicUrl;
+        mediaType = mediaFile.type.startsWith('video') ? 'video' : 'image';
+      }
+      
       const { data, error } = await supabase.functions.invoke('community-action', {
         body: { 
           action: 'update_post',
-          data: { postId, content, tags }
+          data: { postId, content, tags, mediaUrl, mediaType, removeMedia }
         }
       });
       

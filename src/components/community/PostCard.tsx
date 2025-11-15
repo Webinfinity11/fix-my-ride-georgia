@@ -40,12 +40,12 @@ interface PostCardProps {
 
 export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProps) {
   const [showFullContent, setShowFullContent] = useState(false);
-  const [showComments, setShowComments] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [reactions, setReactions] = useState<any[]>([]);
   
   const saveMutation = useToggleSave(post.post_id);
@@ -53,8 +53,18 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
   const toggleReaction = useToggleReaction();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setCurrentUserId(session?.user?.id || null);
+      
+      // Check if user is admin
+      if (session?.user?.id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        setIsAdmin(profile?.role === 'admin');
+      }
     });
     
     // Fetch reactions
@@ -105,13 +115,6 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
     saveMutation.mutate();
   };
   
-  const handleComment = () => {
-    if (!isAuthenticated) {
-      onAuthRequired();
-      return;
-    }
-    setShowComments(!showComments);
-  };
 
   const handleShare = async () => {
     const postUrl = `${window.location.origin}/community?post=${post.post_id}`;
@@ -189,18 +192,19 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {isAuthor ? (
-                <>
-                  <DropdownMenuItem onClick={handleEdit}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    რედაქტირება
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleDelete} className="text-destructive">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    წაშლა
-                  </DropdownMenuItem>
-                </>
-              ) : (
+              {isAuthor && (
+                <DropdownMenuItem onClick={handleEdit}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  რედაქტირება
+                </DropdownMenuItem>
+              )}
+              {(isAuthor || isAdmin) && (
+                <DropdownMenuItem onClick={handleDelete} className="text-destructive">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  წაშლა
+                </DropdownMenuItem>
+              )}
+              {!isAuthor && (
                 <DropdownMenuItem onClick={handleReport}>
                   <Flag className="mr-2 h-4 w-4" />
                   რეპორტი
@@ -276,8 +280,7 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={handleComment}
-              className={`gap-1 ${showComments ? 'text-primary' : 'text-muted-foreground'} hover:text-primary`}
+              className="gap-1 text-muted-foreground"
             >
               <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="text-xs sm:text-sm font-medium">{post.comment_count}</span>
@@ -302,14 +305,13 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
           </Button>
         </div>
         
-        {/* Comments Section */}
-        {showComments && (
-          <CommentList 
+        {/* Comments Section - Always Visible */}
+        <CommentList
             postId={post.post_id} 
             isAuthenticated={isAuthenticated}
             onAuthRequired={onAuthRequired}
+            initialLimit={3}
           />
-        )}
       </CardContent>
       
       <ReportDialog 

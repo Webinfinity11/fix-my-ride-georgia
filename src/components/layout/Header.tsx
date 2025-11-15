@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Settings, Plus, MessageCircle, Map } from "lucide-react";
+import { LogOut, User, Settings, Plus, Users, Map } from "lucide-react";
 import { toast } from "sonner";
 import { MobileMenu } from "./MobileMenu";
 
@@ -69,11 +69,11 @@ const Header = () => {
             საწვავის ფასები
           </Link>
           <Link
-            to="/chat"
+            to="/community"
             className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium"
           >
-            <MessageCircle className="h-4 w-4" />
-            <span>ჩატი</span>
+            <Users className="h-4 w-4" />
+            <span>გამოცდილება</span>
           </Link>
         </nav>
 

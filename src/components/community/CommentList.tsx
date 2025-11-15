@@ -23,11 +23,12 @@ interface CommentListProps {
   postId: string;
   isAuthenticated: boolean;
   onAuthRequired: () => void;
+  initialLimit?: number;
 }
 
-export function CommentList({ postId, isAuthenticated, onAuthRequired }: CommentListProps) {
+export function CommentList({ postId, isAuthenticated, onAuthRequired, initialLimit = 3 }: CommentListProps) {
   const [commentText, setCommentText] = useState('');
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -75,7 +76,7 @@ export function CommentList({ postId, isAuthenticated, onAuthRequired }: Comment
         };
       }) as Comment[];
     },
-    enabled: isExpanded
+    enabled: true // Always fetch
   });
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,76 +120,66 @@ export function CommentList({ postId, isAuthenticated, onAuthRequired }: Comment
     }
   };
   
-  if (!isExpanded) {
-    return (
-      <Button 
-        variant="ghost" 
-        size="sm"
-        onClick={() => setIsExpanded(true)}
-        className="w-full mt-2"
-      >
-        კომენტარების ნახვა
-      </Button>
-    );
-  }
+  const displayedComments = showAll ? comments : comments?.slice(0, initialLimit);
+  const hasMore = comments && comments.length > initialLimit;
   
   return (
-    <div className="mt-4 space-y-4 border-t pt-4">
-      {/* Comment Form */}
-      <form onSubmit={handleSubmit} className="flex gap-2">
+    <div className="mt-4 pt-4 border-t">
+      {/* Comment Form - Always Visible */}
+      <form onSubmit={handleSubmit} className="mb-4">
         <Textarea
-          placeholder="დაწერეთ კომენტარი..."
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
-          maxLength={500}
-          className="min-h-[60px] resize-none"
-          disabled={createComment.isPending}
+          placeholder={isAuthenticated ? "დაწერე კომენტარი..." : "კომენტარისთვის საჭიროა ავტორიზაცია"}
+          disabled={!isAuthenticated}
+          className="min-h-[80px]"
         />
-        <Button 
-          type="submit" 
-          size="icon"
-          disabled={createComment.isPending || !commentText.trim()}
+        <Button
+          type="submit"
+          disabled={!commentText.trim() || createComment.isPending || !isAuthenticated}
+          className="mt-2"
         >
-          {createComment.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
+          {createComment.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Send className="mr-2 h-4 w-4" />
+          გაგზავნა
         </Button>
       </form>
       
       {/* Comments List */}
       {isLoading ? (
         <div className="flex justify-center py-4">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
         </div>
       ) : comments && comments.length > 0 ? (
-        <div className="space-y-3">
-          {comments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              postId={postId}
-              isAuthenticated={isAuthenticated}
-              currentUserId={currentUserId}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+        <>
+          <div className="space-y-4">
+            {displayedComments?.map((comment) => (
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                postId={postId}
+                currentUserId={currentUserId}
+                onDelete={handleDelete}
+                isAuthenticated={isAuthenticated}
+              />
+            ))}
+          </div>
+          
+          {hasMore && !showAll && (
+            <Button
+              variant="ghost"
+              onClick={() => setShowAll(true)}
+              className="w-full mt-4"
+            >
+              ყველა კომენტარის ნახვა ({comments.length})
+            </Button>
+          )}
+        </>
       ) : (
-        <p className="text-center text-sm text-muted-foreground py-4">
-          კომენტარები ჯერ არაა
+        <p className="text-sm text-muted-foreground text-center py-4">
+          პირველი იყავი ვინც დააკომენტარებს
         </p>
       )}
-      
-      <Button 
-        variant="ghost" 
-        size="sm"
-        onClick={() => setIsExpanded(false)}
-        className="w-full"
-      >
-        დამალვა
-      </Button>
     </div>
   );
 }

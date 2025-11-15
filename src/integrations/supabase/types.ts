@@ -1775,6 +1775,15 @@ export type Database = {
         Args: { input_text: string }
         Returns: string
       }
+      get_active_tags: {
+        Args: { tag_limit?: number }
+        Returns: {
+          id: string
+          name: string
+          slug: string
+          use_count: number
+        }[]
+      }
       get_admin_stats: {
         Args: never
         Returns: {

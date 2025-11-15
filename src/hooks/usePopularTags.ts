@@ -12,11 +12,9 @@ export function usePopularTags(limit = 15) {
   return useQuery({
     queryKey: ['popular-tags', limit],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('tags')
-        .select('id, name, slug, use_count')
-        .order('use_count', { ascending: false })
-        .limit(limit);
+      const { data, error } = await supabase.rpc('get_active_tags', {
+        tag_limit: limit
+      });
       
       if (error) throw error;
       return data as PopularTag[];
