@@ -176,7 +176,7 @@ async function createPost(supabase: any, userId: string, data: any) {
 }
 
 async function updatePost(supabase: any, userId: string, data: any) {
-  const { postId, content, tags } = data;
+  const { postId, content, tags, mediaUrl, mediaType, removeMedia } = data;
   
   const { data: post } = await supabase
     .from('posts')
@@ -194,6 +194,18 @@ async function updatePost(supabase: any, userId: string, data: any) {
     .eq('id', postId);
     
   if (updateError) throw updateError;
+  
+  // Handle media changes
+  if (removeMedia) {
+    await supabase.from('post_media').delete().eq('post_id', postId);
+  } else if (mediaUrl) {
+    await supabase.from('post_media').delete().eq('post_id', postId);
+    await supabase.from('post_media').insert({
+      post_id: postId,
+      media_url: mediaUrl,
+      media_type: mediaType,
+    });
+  }
     
   if (tags) {
     await supabase.from('post_tags').delete().eq('post_id', postId);
