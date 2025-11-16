@@ -27,25 +27,6 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
   const createPost = useCreatePost();
   const { data: popularTags } = usePopularTags();
 
-  // Prevent body scroll when dialog is open on mobile
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.width = "100%";
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
-    };
-  }, [open]);
-
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && tagInput.trim() && tags.length < 5) {
       e.preventDefault();
@@ -122,9 +103,9 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[650px] p-0 gap-0 h-[100dvh] sm:h-auto sm:max-h-[85vh] flex flex-col overflow-hidden">
+      <DialogContent className="sm:max-w-[650px] h-[95vh] sm:h-auto sm:max-h-[85vh] p-0 gap-0 flex flex-col">
         {/* Fixed Header */}
-        <DialogHeader className="shrink-0 px-4 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 border-b bg-background">
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 border-b bg-background shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
               <Sparkles className="h-4 sm:h-5 w-4 sm:w-5 text-primary" />
@@ -136,12 +117,12 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
           </div>
         </DialogHeader>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5">
-            {/* Content Editor - WITH MAX HEIGHT */}
+        {/* Scrollable Content */}
+        <ScrollArea className="flex-1 px-4 sm:px-6">
+          <div className="py-4 sm:py-5 space-y-4 sm:space-y-5">
+            {/* Content Editor */}
             <div className="space-y-2">
-              <div className="max-h-[200px] sm:max-h-[300px] overflow-y-auto border rounded-md">
+              <div className="min-h-[120px] max-h-[200px] sm:max-h-[300px] overflow-y-auto border rounded-md p-3">
                 <RichTextEditor
                   content={content}
                   onChange={setContent}
@@ -150,7 +131,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
               </div>
             </div>
 
-            {/* Media Preview - WITH MAX HEIGHT */}
+            {/* Media Preview */}
             {mediaPreview && (
               <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-muted/30 border border-border group">
                 {mediaFile?.type.startsWith("image") ? (
@@ -281,7 +262,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
                     <Sparkles className="h-3.5 w-3.5" />
                     პოპულარული თაგები
                   </Label>
-                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                  <div className="flex flex-wrap gap-2">
                     {popularTags.map((tag) => (
                       <Badge
                         key={tag.id}
@@ -303,10 +284,10 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
               )}
             </div>
           </div>
-        </div>
+        </ScrollArea>
 
-        {/* Fixed Footer with Submit Button */}
-        <div className="shrink-0 px-4 sm:px-6 py-3 sm:py-4 border-t bg-background shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
+        {/* Fixed Footer */}
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t bg-background shrink-0">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
