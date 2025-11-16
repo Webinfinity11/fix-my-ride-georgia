@@ -54,11 +54,8 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     { icon: Home, label: "მთავარი", path: "/" },
     { icon: Wrench, label: "სერვისები", path: "/services" },
     { icon: Map, label: "რუკა", path: "/map" },
-    { icon: Droplet, label: "სამრეცხაო", path: "/laundries" },
     { icon: Fuel, label: "საწვავის ფასები", path: "/fuel-importers" },
-    { icon: Fuel, label: "საწვავის ბრენდები", path: "/fuel-brands" },
     { icon: User, label: "community", path: "/community" },
-    { icon: MessageCircle, label: "ჩატი", path: "/chat" },
     { icon: Phone, label: "კონტაქტი", path: "/contact" },
     { icon: Info, label: "ჩვენ შესახებ", path: "/about" },
   ];
