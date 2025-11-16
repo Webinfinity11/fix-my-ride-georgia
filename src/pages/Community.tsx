@@ -26,7 +26,7 @@ export default function Community() {
   const { data: posts, isLoading } = useCommunityPosts(sortBy, selectedTag);
   const { data: popularTags } = usePopularTags();
 
-  // Filter posts by search query
+  // Filter posts by search query and sort pinned first
   const filteredPosts = posts?.filter((post) => {
     if (!searchQuery.trim()) return true;
     
@@ -36,6 +36,11 @@ export default function Community() {
     const matchesTags = post.tags?.some((tag) => tag.name.toLowerCase().includes(query));
     
     return matchesContent || matchesAuthor || matchesTags;
+  }).sort((a, b) => {
+    // Pinned posts first
+    if (a.is_pinned && !b.is_pinned) return -1;
+    if (!a.is_pinned && b.is_pinned) return 1;
+    return 0;
   });
   
   useEffect(() => {

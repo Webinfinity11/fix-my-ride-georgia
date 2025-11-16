@@ -104,6 +104,9 @@ Deno.serve(async (req) => {
       case 'reaction':
         result = await toggleReaction(supabaseClient, user.id, data);
         break;
+      case 'pin':
+        result = await pinPost(supabaseClient, user.id, data);
+        break;
       default:
         throw new Error('Invalid action');
     }
@@ -363,4 +366,20 @@ async function toggleReaction(supabase: any, userId: string, data: any) {
     });
     return { success: true, reacted: true };
   }
+}
+
+async function pinPost(supabaseClient: any, userId: string, data: any) {
+  const { postId, isPinned } = data;
+
+  const { error } = await supabaseClient
+    .from('posts')
+    .update({ 
+      is_pinned: isPinned,
+      pinned_at: isPinned ? new Date().toISOString() : null,
+      pinned_by: isPinned ? userId : null
+    })
+    .eq('id', postId);
+
+  if (error) throw error;
+  return { success: true };
 }

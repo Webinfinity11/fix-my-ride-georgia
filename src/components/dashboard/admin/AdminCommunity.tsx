@@ -15,10 +15,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Trash2, Eye, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
+import { Trash2, Eye, AlertTriangle, CheckCircle, Loader2, Pin, PinOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 import { ka } from 'date-fns/locale';
+import { useTogglePin } from '@/hooks/useCommunityPosts';
 
 interface Post {
   id: string;
@@ -28,6 +29,7 @@ interface Post {
   is_deleted: boolean;
   like_count: number;
   comment_count: number;
+  is_pinned: boolean;
 }
 
 interface Report {
@@ -45,6 +47,7 @@ export function AdminCommunity() {
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const queryClient = useQueryClient();
+  const togglePinMutation = useTogglePin();
   
   const { data: posts, isLoading: postsLoading } = useQuery({
     queryKey: ['admin-posts'],
@@ -75,7 +78,8 @@ export function AdminCommunity() {
           created_at: post.created_at,
           is_deleted: post.is_deleted,
           like_count: 0,
-          comment_count: 0
+          comment_count: 0,
+          is_pinned: post.is_pinned || false
         };
       }) as Post[];
     }
