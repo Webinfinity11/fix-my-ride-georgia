@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -75,29 +74,34 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Noto Sans Georgian', sans-serif;
+    font-family: "Noto Sans Georgian", sans-serif;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-medium tracking-tight;
   }
-  
+
   h1 {
     @apply text-3xl md:text-4xl;
   }
-  
+
   h2 {
     @apply text-2xl md:text-3xl;
   }
-  
+
   h3 {
     @apply text-xl md:text-2xl;
   }
-  
+
   h4 {
     @apply text-lg md:text-xl;
   }
-  
+
   a {
     @apply transition-colors duration-200;
   }
@@ -107,25 +111,27 @@
   .section-padding {
     @apply py-16 md:py-24;
   }
-  
+
   .animate-fade-in {
     @apply opacity-0 translate-y-4 transition-all duration-500 ease-out;
   }
-  
+
   .animate-fade-in.appear {
     @apply opacity-100 translate-y-0;
   }
-  
+
   /* Touch Target Improvements */
-  button, a, [role="button"] {
-    @apply min-h-[44px] touch-manipulation;
+  button,
+  a,
+  [role="button"] {
+    @apply min-h-[12px] touch-manipulation;
   }
-  
+
   /* Focus Visible Improvements */
   *:focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
-  
+
   /* Enhanced Button Styling */
   [type="button"],
   [type="reset"],
@@ -133,25 +139,25 @@
   button {
     @apply transition-all duration-300;
   }
-  
+
   /* Enhanced Form Controls */
-  input:not([type="checkbox"]):not([type="radio"]), 
-  select, 
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
   textarea {
     @apply transition-all duration-300 min-h-[44px];
   }
-  
+
   input:focus,
   select:focus,
   textarea:focus {
     @apply ring-2 ring-ring ring-offset-2;
   }
-  
+
   /* Card Enhancements */
   .card {
     @apply transition-all duration-300 hover:shadow-md;
   }
-  
+
   /* Image Lazy Loading */
   img[loading="lazy"] {
     @apply bg-muted;
@@ -165,13 +171,13 @@
     @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
     clip: rect(0, 0, 0, 0);
   }
-  
+
   /* Skip to Main Content */
   .skip-link {
     @apply absolute -top-full left-0 bg-primary text-primary-foreground px-4 py-2 z-[10000] rounded-br-lg;
     transition: top 0.2s ease-in-out;
   }
-  
+
   .skip-link:focus {
     @apply top-0;
   }
@@ -214,7 +220,8 @@
   @apply italic;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   @apply my-2 ml-4;
 }
 
@@ -246,13 +253,24 @@
   @apply border-l-4 border-primary pl-4 italic my-2;
 }
 
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
   @apply font-semibold text-foreground mt-4 mb-2;
 }
 
-.prose h1 { @apply text-2xl; }
-.prose h2 { @apply text-xl; }
-.prose h3 { @apply text-lg; }
+.prose h1 {
+  @apply text-2xl;
+}
+.prose h2 {
+  @apply text-xl;
+}
+.prose h3 {
+  @apply text-lg;
+}
 
 /* Tiptap Editor Placeholder */
 .ProseMirror p.is-editor-empty:first-child::before {
@@ -272,12 +290,14 @@
   :root {
     --border: 214.3 31.8% 70%;
   }
-  
+
   .dark {
     --border: 217.2 32.6% 30%;
   }
-  
-  button, a, [role="button"] {
+
+  button,
+  a,
+  [role="button"] {
     @apply border-2;
   }
 }
