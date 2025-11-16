@@ -21,11 +21,9 @@ interface ReportDialogProps {
 
 const REPORT_REASONS = [
   { value: 'spam', label: 'სპამი' },
-  { value: 'harassment', label: 'შეურაცხყოფა/ჰარასმენტი' },
-  { value: 'hate_speech', label: 'სიძულვილის ენა' },
-  { value: 'violence', label: 'ძალადობა' },
-  { value: 'misinformation', label: 'არასწორი ინფორმაცია' },
-  { value: 'inappropriate', label: 'შეუსაბამო კონტენტი' },
+  { value: 'offensive', label: 'შეურაცხმყოფელი კონტენტი' },
+  { value: 'personal', label: 'პერსონალური შეტევა' },
+  { value: 'sensitive', label: 'მგრძნობიარე კონტენტი' },
   { value: 'other', label: 'სხვა' },
 ];
 
