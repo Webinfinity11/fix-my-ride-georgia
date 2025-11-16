@@ -95,21 +95,21 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0">
-        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4 border-b">
+      <DialogContent className="sm:max-w-[600px] h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4 border-b shrink-0">
           <DialogTitle>ახალი პოსტი</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 px-4 sm:px-6">
-          <div className="space-y-4 py-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
+          <div className="space-y-4">
             {/* Content */}
             <div>
               <div className="relative">
-                <ScrollArea className="max-h-[300px] w-full rounded-md border">
+                <div className="max-h-[300px] overflow-y-auto w-full rounded-md border">
                   <div className="p-3">
                     <RichTextEditor content={content} onChange={setContent} placeholder="რას ფიქრობ?" />
                   </div>
-                </ScrollArea>
+                </div>
               </div>
             </div>
 
@@ -226,10 +226,10 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
               )}
             </div>
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Submit Button - Fixed at bottom */}
-        <div className="px-4 sm:px-6 py-4 border-t bg-background">
+        <div className="px-4 sm:px-6 py-4 border-t bg-background shrink-0">
           <Button
             onClick={handleSubmit}
             disabled={createPost.isPending || (!content.trim() && !mediaFile)}
