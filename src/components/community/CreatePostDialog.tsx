@@ -95,7 +95,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] h-[80vh] sm:h-auto sm:max-h-[80vh] flex flex-col p-0 gap-0">
+      <DialogContent className="sm:max-w-[600px] h-[70vh] sm:h-auto sm:max-h-[70vh] flex flex-col p-0 gap-0">
         <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4 border-b shrink-0">
           <DialogTitle>ახალი პოსტი</DialogTitle>
         </DialogHeader>
