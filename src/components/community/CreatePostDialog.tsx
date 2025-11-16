@@ -104,7 +104,13 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
           <div className="space-y-4 py-4">
             {/* Content */}
             <div>
-              <RichTextEditor content={content} onChange={setContent} placeholder="რას ფიქრობ?" />
+              <div className="relative">
+                <ScrollArea className="max-h-[300px] w-full rounded-md border">
+                  <div className="p-3">
+                    <RichTextEditor content={content} onChange={setContent} placeholder="რას ფიქრობ?" />
+                  </div>
+                </ScrollArea>
+              </div>
             </div>
 
             {/* Tags */}
