@@ -18,6 +18,9 @@ export interface CommunityPost {
   is_saved: boolean;
   created_at: string;
   score: number;
+  is_pinned?: boolean;
+  pinned_at?: string | null;
+  pinned_by?: string | null;
 }
 
 export function useCommunityPosts(sortBy: 'latest' | 'top' = 'latest', tag?: string) {
@@ -255,5 +258,32 @@ export function useReportPost() {
     onError: (error: Error) => {
       toast.error(error.message || 'რეპორტის გაგზავნა ვერ მოხერხდა');
     },
+  });
+}
+
+export function useTogglePin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ postId, isPinned }: { postId: string; isPinned: boolean }) => {
+      const { data, error } = await supabase.functions.invoke('community-action', {
+        body: {
+          action: 'pin',
+          data: { postId, isPinned }
+        }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] });
+      toast.success('პოსტი წარმატებით განახლდა');
+    },
+    onError: (error: any) => {
+      toast.error('დაფიქსირდა შეცდომა');
+      console.error('Error toggling pin:', error);
+    }
   });
 }

@@ -19,10 +19,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2, Share2 } from 'lucide-react';
+import { MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2, Share2, Pin, PinOff } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ka } from 'date-fns/locale';
-import { CommunityPost, useToggleSave, useDeletePost } from '@/hooks/useCommunityPosts';
+import { CommunityPost, useToggleSave, useDeletePost, useTogglePin } from '@/hooks/useCommunityPosts';
 import { useToggleReaction } from '@/hooks/useReactions';
 import { CommentList } from './CommentList';
 import { ReportDialog } from './ReportDialog';
@@ -51,6 +51,7 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
   const saveMutation = useToggleSave(post.post_id);
   const deletePost = useDeletePost();
   const toggleReaction = useToggleReaction();
+  const togglePinMutation = useTogglePin();
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -183,6 +184,12 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
                 })}
               </div>
             </div>
+            {post.is_pinned && (
+              <Badge variant="secondary" className="gap-1 ml-2">
+                <Pin className="h-3 w-3" />
+                აპინული
+              </Badge>
+            )}
           </div>
 
           <DropdownMenu>
@@ -192,6 +199,24 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => togglePinMutation.mutate({
+                  postId: post.post_id,
+                  isPinned: !post.is_pinned
+                })}>
+                  {post.is_pinned ? (
+                    <>
+                      <PinOff className="mr-2 h-4 w-4" />
+                      გაუქმება
+                    </>
+                  ) : (
+                    <>
+                      <Pin className="mr-2 h-4 w-4" />
+                      აპინვა
+                    </>
+                  )}
+                </DropdownMenuItem>
+              )}
               {isAuthor && (
                 <DropdownMenuItem onClick={handleEdit}>
                   <Pencil className="mr-2 h-4 w-4" />

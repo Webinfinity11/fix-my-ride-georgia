@@ -1161,7 +1161,10 @@ export type Database = {
           created_at: string | null
           id: string
           is_deleted: boolean | null
+          is_pinned: boolean | null
           last_interacted_at: string | null
+          pinned_at: string | null
+          pinned_by: string | null
           score: number | null
           updated_at: string | null
           view_count: number | null
@@ -1172,7 +1175,10 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_deleted?: boolean | null
+          is_pinned?: boolean | null
           last_interacted_at?: string | null
+          pinned_at?: string | null
+          pinned_by?: string | null
           score?: number | null
           updated_at?: string | null
           view_count?: number | null
@@ -1183,12 +1189,23 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_deleted?: boolean | null
+          is_pinned?: boolean | null
           last_interacted_at?: string | null
+          pinned_at?: string | null
+          pinned_by?: string | null
           score?: number | null
           updated_at?: string | null
           view_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "posts_pinned_by_fkey"
+            columns: ["pinned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
