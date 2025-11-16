@@ -69,7 +69,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
 
     try {
       await createPost.mutateAsync({
-        content: content.trim() || undefined,
+        content: content.trim() || "", // შეცვალე undefined-დან empty string-ზე
         tags,
         mediaFile: mediaFile || undefined,
       });
