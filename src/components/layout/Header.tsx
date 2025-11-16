@@ -73,7 +73,7 @@ const Header = () => {
             className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium"
           >
             <Users className="h-4 w-4" />
-            <span>გამოცდილება</span>
+            <span>community</span>
           </Link>
         </nav>
 
