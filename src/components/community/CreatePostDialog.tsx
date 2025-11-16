@@ -138,7 +138,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto overscroll-contain">
-          <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 pb-24 sm:pb-6">
+          <div className="px-4 sm:px-6 py-3 sm:py-5 space-y-3 sm:space-y-5 pb-20 sm:pb-6">
             {/* Content Editor */}
             <div className="space-y-2">
               <RichTextEditor
@@ -155,10 +155,10 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
                   <img
                     src={mediaPreview}
                     alt="Preview"
-                    className="w-full object-cover max-h-[300px] sm:max-h-[400px]"
+                    className="w-full object-contain max-h-[250px] sm:max-h-[400px] bg-muted/10"
                   />
                 ) : (
-                  <video src={mediaPreview} controls className="w-full max-h-[300px] sm:max-h-[400px]" playsInline />
+                  <video src={mediaPreview} controls className="w-full max-h-[250px] sm:max-h-[400px] bg-muted/10" playsInline />
                 )}
                 <Button
                   type="button"
@@ -279,24 +279,26 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
                     <Sparkles className="h-3.5 w-3.5" />
                     პოპულარული თაგები
                   </Label>
-                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                    {popularTags.map((tag) => (
-                      <Badge
-                        key={tag.id}
-                        variant="outline"
-                        className={`cursor-pointer transition-all duration-200 text-xs sm:text-sm ${
-                          tags.includes(tag.name)
-                            ? "bg-primary/15 border-primary text-primary"
-                            : "hover:bg-muted hover:border-primary/30"
-                        }`}
-                        onClick={() => handleAddPopularTag(tag.name)}
-                      >
-                        <Hash className="h-3 w-3 mr-0.5" />
-                        {tag.name}
-                        <span className="ml-1.5 text-xs opacity-60">{tag.use_count}</span>
-                      </Badge>
-                    ))}
-                  </div>
+                  <ScrollArea className="w-full">
+                    <div className="flex sm:flex-wrap gap-2 pb-2 sm:pb-0 sm:max-h-32 sm:overflow-y-auto">
+                      {popularTags.map((tag) => (
+                        <Badge
+                          key={tag.id}
+                          variant="outline"
+                          className={`cursor-pointer transition-all duration-200 text-xs sm:text-sm whitespace-nowrap ${
+                            tags.includes(tag.name)
+                              ? "bg-primary/15 border-primary text-primary"
+                              : "hover:bg-muted hover:border-primary/30"
+                          }`}
+                          onClick={() => handleAddPopularTag(tag.name)}
+                        >
+                          <Hash className="h-3 w-3 mr-0.5" />
+                          {tag.name}
+                          <span className="ml-1.5 text-xs opacity-60">{tag.use_count}</span>
+                        </Badge>
+                      ))}
+                    </div>
+                  </ScrollArea>
                 </div>
               )}
             </div>
@@ -304,11 +306,11 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
         </div>
 
         {/* Fixed Footer with Submit Button */}
-        <div className="shrink-0 fixed sm:relative bottom-0 left-0 right-0 px-4 sm:px-6 py-3 sm:py-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] sm:shadow-none z-50">
+        <div className="shrink-0 fixed sm:relative bottom-0 left-0 right-0 px-4 sm:px-6 py-3 sm:py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-[0_-8px_16px_-4px_rgba(0,0,0,0.15)] sm:shadow-none z-50">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
-            className="w-full h-11 sm:h-12 text-base font-semibold shadow-sm hover:shadow-md transition-all"
+            className="w-full h-12 sm:h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
             size="lg"
           >
             {createPost.isPending ? (
