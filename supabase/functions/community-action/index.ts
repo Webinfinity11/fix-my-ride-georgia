@@ -13,6 +13,7 @@ const RATE_LIMITS = {
   save: { max: 60, window: 600000 },
   report: { max: 5, window: 600000 },
   reaction: { max: 100, window: 600000 },
+  pin: { max: 20, window: 600000 }, // 20 per 10 min for admins
 };
 
 function checkRateLimit(userId: string, action: keyof typeof RATE_LIMITS): boolean {
@@ -371,9 +372,20 @@ async function toggleReaction(supabase: any, userId: string, data: any) {
 async function pinPost(supabaseClient: any, userId: string, data: any) {
   const { postId, isPinned } = data;
 
+  // Check if user is admin
+  const { data: profile, error: profileError } = await supabaseClient
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+
+  if (profileError || !profile || profile.role !== 'admin') {
+    throw new Error('Unauthorized: Only admins can pin/unpin posts');
+  }
+
   const { error } = await supabaseClient
     .from('posts')
-    .update({ 
+    .update({
       is_pinned: isPinned,
       pinned_at: isPinned ? new Date().toISOString() : null,
       pinned_by: isPinned ? userId : null
