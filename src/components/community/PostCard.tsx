@@ -1,313 +1,384 @@
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, Image as ImageIcon, Video, Loader2, Hash, Sparkles } from "lucide-react";
-import { useCreatePost } from "@/hooks/useCommunityPosts";
-import { usePopularTags } from "@/hooks/usePopularTags";
-import { RichTextEditor } from "./RichTextEditor";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { MessageCircle, Bookmark, Flag, MoreVertical, Pencil, Trash2, Share2, Pin, PinOff } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { ka } from 'date-fns/locale';
+import { CommunityPost, useToggleSave, useDeletePost, useTogglePin } from '@/hooks/useCommunityPosts';
+import { useToggleReaction } from '@/hooks/useReactions';
+import { CommentList } from './CommentList';
+import { ReportDialog } from './ReportDialog';
+import { EditPostDialog } from './EditPostDialog';
+import { ImageGalleryModal } from './ImageGalleryModal';
+import { PostReactions } from './PostReactions';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-interface CreatePostDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+interface PostCardProps {
+  post: CommunityPost;
+  isAuthenticated: boolean;
+  onAuthRequired: () => void;
 }
 
-export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) {
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
-  const [mediaPreview, setMediaPreview] = useState<string | null>(null);
-  const [showTagsSection, setShowTagsSection] = useState(false);
+export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProps) {
+  const [showFullContent, setShowFullContent] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [reactions, setReactions] = useState<any[]>([]);
+  
+  const saveMutation = useToggleSave(post.post_id);
+  const deletePost = useDeletePost();
+  const toggleReaction = useToggleReaction();
+  const togglePinMutation = useTogglePin();
 
-  const createPost = useCreatePost();
-  const { data: popularTags } = usePopularTags();
-
-  const handleAddTag = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && tagInput.trim() && tags.length < 5) {
-      e.preventDefault();
-      const newTag = tagInput.trim();
-      if (!tags.includes(newTag)) {
-        setTags([...tags, newTag]);
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id || null);
+      
+      // Check if user is admin
+      if (session?.user?.id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        setIsAdmin(profile?.role === 'admin');
       }
-      setTagInput("");
+    });
+    
+    // Fetch reactions
+    fetchReactions();
+  }, []);
+
+  const fetchReactions = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const { data, error } = await supabase
+      .from('reactions')
+      .select('reaction_type, user_id')
+      .eq('post_id', post.post_id);
+    
+    if (!error && data) {
+      const grouped = ['like', 'funny', 'fire', 'helpful'].map(type => ({
+        type,
+        count: data.filter(r => r.reaction_type === type).length,
+        userReacted: session?.user ? data.some(r => r.reaction_type === type && r.user_id === session.user.id) : false,
+      }));
+      setReactions(grouped);
     }
   };
-
-  const handleRemoveTag = (index: number) => {
-    setTags(tags.filter((_, i) => i !== index));
-  };
-
-  const handleAddPopularTag = (tagName: string) => {
-    if (!tags.includes(tagName) && tags.length < 5) {
-      setTags([...tags, tagName]);
-    }
-  };
-
-  const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("ფაილის ზომა არ უნდა აღემატებოდეს 10MB-ს");
-        return;
-      }
-
-      setMediaFile(file);
-      setMediaPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!content?.trim() && !mediaFile) {
-      toast.error("დაამატეთ ტექსტი ან მედია");
+  
+  const contentLength = post.content?.length || 0;
+  const shouldTruncate = contentLength > 200;
+  
+  const handleReaction = (reactionType: string) => {
+    if (!isAuthenticated) {
+      onAuthRequired();
       return;
     }
+    toggleReaction.mutate(
+      { postId: post.post_id, reactionType: reactionType as any },
+      {
+        onSuccess: () => {
+          fetchReactions();
+        }
+      }
+    );
+  };
+  
+  const handleSave = () => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
+    }
+    saveMutation.mutate();
+  };
+  
 
-    try {
-      await createPost.mutateAsync({
-        content: content.trim() || undefined,
-        tags,
-        mediaFile: mediaFile || undefined,
-      });
-
-      setContent("");
-      setTags([]);
-      setMediaFile(null);
-      setMediaPreview(null);
-      setTagInput("");
-      setShowTagsSection(false);
-      onOpenChange(false);
-    } catch (error: any) {
-      // Error already handled in hook
+  const handleShare = async () => {
+    const postUrl = `${window.location.origin}/community?post=${post.post_id}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${post.author_name}-ის პოსტი`,
+          text: post.content?.substring(0, 100) || 'გაზიარება',
+          url: postUrl,
+        });
+      } catch (error) {
+        // User cancelled or error
+      }
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(postUrl);
+      toast.success('ბმული დაკოპირდა');
     }
   };
-
-  const handleClose = () => {
-    if (mediaPreview) {
-      URL.revokeObjectURL(mediaPreview);
+  
+  const handleReport = () => {
+    if (!isAuthenticated) {
+      onAuthRequired();
+      return;
     }
-    setContent("");
-    setTags([]);
-    setMediaFile(null);
-    setMediaPreview(null);
-    setTagInput("");
-    setShowTagsSection(false);
-    onOpenChange(false);
+    setShowReport(true);
   };
 
-  const isSubmitDisabled = createPost.isPending || (!content.trim() && !mediaFile);
+  const handleEdit = () => {
+    setShowEdit(true);
+  };
 
+  const handleDelete = () => {
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = () => {
+    deletePost.mutate(post.post_id, {
+      onSuccess: () => {
+        setShowDeleteDialog(false);
+      }
+    });
+  };
+
+  const isAuthor = currentUserId === post.author_id;
+  
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[650px] h-[95vh] sm:h-auto sm:max-h-[85vh] p-0 gap-0 flex flex-col">
-        {/* Fixed Header */}
-        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 border-b bg-background shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-              <Sparkles className="h-4 sm:h-5 w-4 sm:w-5 text-primary" />
-              ახალი პოსტი
-            </DialogTitle>
-            <Button variant="ghost" size="icon" className="h-8 w-8 sm:hidden" onClick={handleClose}>
-              <X className="h-5 w-5" />
+    <Card className="hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        {/* Author Header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarImage src={post.author_avatar || undefined} />
+              <AvatarFallback className="bg-primary/10 text-primary">
+                {post.author_name?.[0]?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-semibold text-foreground">{post.author_name}</div>
+              <div className="text-sm text-muted-foreground">
+                {formatDistanceToNow(new Date(post.created_at), { 
+                  addSuffix: true,
+                  locale: ka 
+                })}
+              </div>
+            </div>
+            {post.is_pinned && (
+              <Badge variant="secondary" className="gap-1 ml-2">
+                <Pin className="h-3 w-3" />
+                აპინული
+              </Badge>
+            )}
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => togglePinMutation.mutate({
+                  postId: post.post_id,
+                  isPinned: !post.is_pinned
+                })}>
+                  {post.is_pinned ? (
+                    <>
+                      <PinOff className="mr-2 h-4 w-4" />
+                      გაუქმება
+                    </>
+                  ) : (
+                    <>
+                      <Pin className="mr-2 h-4 w-4" />
+                      აპინვა
+                    </>
+                  )}
+                </DropdownMenuItem>
+              )}
+              {isAuthor && (
+                <DropdownMenuItem onClick={handleEdit}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  რედაქტირება
+                </DropdownMenuItem>
+              )}
+              {(isAuthor || isAdmin) && (
+                <DropdownMenuItem onClick={handleDelete} className="text-destructive">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  წაშლა
+                </DropdownMenuItem>
+              )}
+              {!isAuthor && (
+                <DropdownMenuItem onClick={handleReport}>
+                  <Flag className="mr-2 h-4 w-4" />
+                  რეპორტი
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        {/* Content */}
+        {post.content && (
+          <div className="mb-3">
+            <div 
+              className={`prose prose-sm max-w-none ${!showFullContent && shouldTruncate ? 'line-clamp-3' : ''}`}
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+            {shouldTruncate && (
+              <Button 
+                variant="link" 
+                size="sm" 
+                onClick={() => setShowFullContent(!showFullContent)}
+                className="p-0 h-auto font-normal"
+              >
+                {showFullContent ? 'ნაკლების ნახვა' : 'მეტის ნახვა'}
+              </Button>
+            )}
+          </div>
+        )}
+        
+        {/* Media */}
+        {post.media_url && (
+          <div className="mb-3 rounded-lg overflow-hidden bg-muted">
+            {post.media_type === 'image' ? (
+              <img 
+                src={post.media_url} 
+                alt="Post media" 
+                className="w-full h-auto object-cover max-h-[500px] cursor-pointer hover:opacity-95 transition-opacity"
+                loading="lazy"
+                onClick={() => setShowGallery(true)}
+              />
+            ) : (
+              <video 
+                src={post.media_url} 
+                controls 
+                preload="metadata"
+                className="w-full h-auto max-h-[500px]"
+              >
+                თქვენი ბრაუზერი არ აწვდის ვიდეოს.
+              </video>
+            )}
+          </div>
+        )}
+        
+        {/* Tags */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {post.tags.map(tag => (
+              <Badge key={tag.id} variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                #{tag.name}
+              </Badge>
+            ))}
+          </div>
+        )}
+        
+        {/* Actions */}
+        <div className="flex items-center justify-between pt-3 border-t">
+          <div className="flex items-center gap-2 flex-wrap">
+            <PostReactions 
+              reactions={reactions}
+              onReact={handleReaction}
+              disabled={toggleReaction.isPending}
+            />
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="gap-1 text-muted-foreground"
+            >
+              <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="text-xs sm:text-sm font-medium">{post.comment_count}</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleShare}
+              className="gap-1 text-muted-foreground hover:text-primary"
+            >
+              <Share2 className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
-        </DialogHeader>
-
-        {/* Scrollable Content */}
-        <ScrollArea className="flex-1 px-4 sm:px-6">
-          <div className="py-4 sm:py-5 space-y-4 sm:space-y-5">
-            {/* Content Editor */}
-            <div className="space-y-2">
-              <div className="min-h-[120px] max-h-[200px] sm:max-h-[300px] overflow-y-auto border rounded-md p-3">
-                <RichTextEditor
-                  content={content}
-                  onChange={setContent}
-                  placeholder="რას ფიქრობ? გაგვიზიარე შენი აზრი..."
-                />
-              </div>
-            </div>
-
-            {/* Media Preview */}
-            {mediaPreview && (
-              <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-muted/30 border border-border group">
-                {mediaFile?.type.startsWith("image") ? (
-                  <img
-                    src={mediaPreview}
-                    alt="Preview"
-                    className="w-full object-cover max-h-[200px] sm:max-h-[300px]"
-                  />
-                ) : (
-                  <video src={mediaPreview} controls className="w-full max-h-[200px] sm:max-h-[300px]" playsInline />
-                )}
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 h-8 w-8 sm:h-10 sm:w-10 shadow-lg"
-                  onClick={() => {
-                    if (mediaPreview) {
-                      URL.revokeObjectURL(mediaPreview);
-                    }
-                    setMediaFile(null);
-                    setMediaPreview(null);
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-
-            {/* Media Upload Buttons */}
-            {!mediaFile && (
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById("image-upload")?.click()}
-                  className="border-dashed hover:border-primary/50 hover:bg-primary/5 h-10 sm:h-9"
-                >
-                  <ImageIcon className="h-4 w-4 mr-2" />
-                  <span className="hidden xs:inline">ფოტოს დამატება</span>
-                  <span className="xs:hidden">ფოტო</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById("video-upload")?.click()}
-                  className="border-dashed hover:border-primary/50 hover:bg-primary/5 h-10 sm:h-9"
-                >
-                  <Video className="h-4 w-4 mr-2" />
-                  <span className="hidden xs:inline">ვიდეოს დამატება</span>
-                  <span className="xs:hidden">ვიდეო</span>
-                </Button>
-                <input
-                  id="image-upload"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="hidden"
-                  onChange={handleMediaChange}
-                />
-                <input
-                  id="video-upload"
-                  type="file"
-                  accept="video/mp4,video/webm"
-                  className="hidden"
-                  onChange={handleMediaChange}
-                />
-              </div>
-            )}
-
-            {/* Tags Toggle Button - Mobile */}
-            <div className="sm:hidden">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setShowTagsSection(!showTagsSection)}
-                className="w-full border-dashed h-10"
-              >
-                <Hash className="h-4 w-4 mr-2" />
-                თაგები {tags.length > 0 && `(${tags.length})`}
-              </Button>
-            </div>
-
-            {/* Tags Section */}
-            <div className={`space-y-3 ${showTagsSection ? "block" : "hidden sm:block"}`}>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  <Hash className="h-4 w-4 text-primary" />
-                  თაგები
-                  <span className="text-xs text-muted-foreground font-normal">(მაქსიმუმ 5)</span>
-                </Label>
-                <Input
-                  placeholder="თაგის დასახელება (Enter)"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleAddTag}
-                  disabled={tags.length >= 5}
-                  className="border-dashed focus:border-solid h-10 sm:h-9"
-                />
-              </div>
-
-              {/* Selected Tags */}
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-3 rounded-lg bg-muted/30 border">
-                  {tags.map((tag, i) => (
-                    <Badge
-                      key={i}
-                      variant="secondary"
-                      className="gap-1.5 px-2.5 sm:px-3 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-colors text-xs sm:text-sm"
-                    >
-                      <Hash className="h-3 w-3" />
-                      {tag}
-                      <X
-                        className="h-3.5 w-3.5 cursor-pointer hover:text-destructive transition-colors ml-1"
-                        onClick={() => handleRemoveTag(i)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-              {/* Popular Tags */}
-              {popularTags && popularTags.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    პოპულარული თაგები
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {popularTags.map((tag) => (
-                      <Badge
-                        key={tag.id}
-                        variant="outline"
-                        className={`cursor-pointer transition-all duration-200 text-xs sm:text-sm ${
-                          tags.includes(tag.name)
-                            ? "bg-primary/15 border-primary text-primary"
-                            : "hover:bg-muted hover:border-primary/30"
-                        }`}
-                        onClick={() => handleAddPopularTag(tag.name)}
-                      >
-                        <Hash className="h-3 w-3 mr-0.5" />
-                        {tag.name}
-                        <span className="ml-1.5 text-xs opacity-60">{tag.use_count}</span>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </ScrollArea>
-
-        {/* Fixed Footer */}
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t bg-background shrink-0">
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitDisabled}
-            className="w-full h-11 sm:h-12 text-base font-semibold shadow-sm hover:shadow-md transition-all"
-            size="lg"
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={handleSave}
+            disabled={saveMutation.isPending}
+            className={`h-8 w-8 ${post.is_saved ? 'text-primary' : 'text-muted-foreground'} hover:text-primary`}
           >
-            {createPost.isPending ? (
-              <>
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                იტვირთება...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-5 w-5 mr-2" />
-                გამოქვეყნება
-              </>
-            )}
+            <Bookmark className={`h-4 w-4 sm:h-5 sm:w-5 ${post.is_saved ? 'fill-current' : ''}`} />
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+        
+        {/* Comments Section - Always Visible */}
+        <CommentList
+            postId={post.post_id} 
+            isAuthenticated={isAuthenticated}
+            onAuthRequired={onAuthRequired}
+            initialLimit={3}
+          />
+      </CardContent>
+      
+      <ReportDialog 
+        open={showReport}
+        onOpenChange={setShowReport}
+        postId={post.post_id}
+      />
+
+      <EditPostDialog
+        open={showEdit}
+        onOpenChange={setShowEdit}
+        post={post}
+      />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>დარწმუნებული ხარ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ეს მოქმედება ვერ გაუქმდება. პოსტი სამუდამოდ წაიშლება.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>გაუქმება</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              წაშლა
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {post.media_type === 'image' && post.media_url && (
+        <ImageGalleryModal
+          images={[post.media_url]}
+          isOpen={showGallery}
+          onClose={() => setShowGallery(false)}
+          initialIndex={0}
+        />
+      )}
+    </Card>
   );
 }
