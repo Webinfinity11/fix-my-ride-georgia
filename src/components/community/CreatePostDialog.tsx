@@ -138,7 +138,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
 
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto overscroll-contain">
-          <div className="px-4 sm:px-6 py-3 sm:py-5 space-y-3 sm:space-y-5 pb-20 sm:pb-6">
+          <div className="px-4 sm:px-6 py-3 sm:py-5 space-y-3 sm:space-y-5 pb-6 sm:pb-6">
             {/* Content Editor */}
             <div className="space-y-2">
               <RichTextEditor
@@ -306,7 +306,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
         </div>
 
         {/* Fixed Footer with Submit Button */}
-        <div className="shrink-0 fixed sm:relative bottom-0 left-0 right-0 px-4 sm:px-6 py-3 sm:py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-[0_-8px_16px_-4px_rgba(0,0,0,0.15)] sm:shadow-none z-50">
+        <div className="shrink-0 fixed sm:relative bottom-[70px] sm:bottom-0 left-0 right-0 px-4 sm:px-6 py-3 sm:py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-[0_-8px_16px_-4px_rgba(0,0,0,0.15)] sm:shadow-none z-[100000]">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
