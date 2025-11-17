@@ -25,7 +25,16 @@ const ResetPassword = () => {
     const { error } = await resetPassword(email);
 
     if (error) {
-      toast.error(`შეცდომა: ${error.message}`);
+      // Handle specific error cases with Georgian messages
+      let errorMessage = "შეცდომა დაფიქსირდა";
+
+      if (error.message.includes("Invalid") || error.message.includes("not found")) {
+        errorMessage = "არასწორი ელ-ფოსტის მისამართი ან მომხმარებელი არ არსებობს";
+      } else if (error.message.includes("rate limit")) {
+        errorMessage = "ძალიან ბევრი მცდელობა. გთხოვთ სცადოთ რამდენიმე წუთში";
+      }
+
+      toast.error(errorMessage);
     } else {
       setIsSubmitted(true);
       toast.success("პაროლის აღდგენის ინსტრუქცია გამოგზავნილია თქვენს ელ-ფოსტაზე!");

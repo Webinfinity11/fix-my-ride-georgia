@@ -48,7 +48,18 @@ const UpdatePassword = () => {
     const { error } = await updatePassword(form.password);
 
     if (error) {
-      toast.error(`პაროლის განახლება ვერ მოხერხდა: ${error.message}`);
+      // Handle specific error cases with Georgian messages
+      let errorMessage = "პაროლის განახლება ვერ მოხერხდა";
+
+      if (error.message.includes("New password should be different")) {
+        errorMessage = "ახალი პაროლი უნდა განსხვავდებოდეს ძველი პაროლისგან";
+      } else if (error.message.includes("Password should be at least")) {
+        errorMessage = "პაროლი უნდა შეიცავდეს მინიმუმ 6 სიმბოლოს";
+      } else if (error.message.includes("Invalid")) {
+        errorMessage = "არასწორი ან ვადაგასული ლინკი. გთხოვთ თავიდან მოითხოვოთ პაროლის აღდგენა";
+      }
+
+      toast.error(errorMessage);
     } else {
       toast.success("პაროლი წარმატებით განახლდა!");
       setTimeout(() => {
@@ -136,9 +147,14 @@ const UpdatePassword = () => {
 
             <div className="mt-6">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>მინიშნება:</strong> გამოიყენეთ ძლიერი პაროლი, რომელიც შეიცავს ასოებს, ციფრებს და სპეციალურ სიმბოლოებს.
+                <p className="text-sm text-blue-800 mb-2">
+                  <strong>მინიშნება:</strong> გამოიყენეთ ძლიერი პაროლი, რომელიც:
                 </p>
+                <ul className="text-sm text-blue-800 list-disc list-inside space-y-1">
+                  <li>განსხვავდება თქვენი ძველი პაროლისგან</li>
+                  <li>შეიცავს მინიმუმ 6 სიმბოლოს</li>
+                  <li>სასურველია შეიცავდეს ასოებს, ციფრებს და სპეციალურ სიმბოლოებს</li>
+                </ul>
               </div>
             </div>
           </div>
