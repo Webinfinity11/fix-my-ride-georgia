@@ -11,6 +11,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any | null }>;
   signUp: (email: string, password: string, userData: Partial<User>) => Promise<{ error: any | null, data: any | null }>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: any | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: any | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -256,6 +258,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ user: null, initialized: true, loading: false });
   };
 
+  const resetPassword = async (email: string) => {
+    console.log('🔑 Requesting password reset for:', email);
+    setState(prev => ({ ...prev, loading: true }));
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/update-password`,
+    });
+    setState(prev => ({ ...prev, loading: false }));
+    if (error) {
+      console.error('❌ Password reset error:', error);
+    } else {
+      console.log('✅ Password reset email sent');
+    }
+    return { error };
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    console.log('🔑 Updating password');
+    setState(prev => ({ ...prev, loading: true }));
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    setState(prev => ({ ...prev, loading: false }));
+    if (error) {
+      console.error('❌ Password update error:', error);
+    } else {
+      console.log('✅ Password updated successfully');
+    }
+    return { error };
+  };
+
   const value = {
     session,
     user: state.user,
@@ -264,6 +296,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     signOut,
+    resetPassword,
+    updatePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

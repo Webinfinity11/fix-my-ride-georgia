@@ -19,6 +19,8 @@ const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const AddService = lazy(() => import("./pages/AddService"));
 const Book = lazy(() => import("./pages/Book"));
@@ -70,6 +72,8 @@ function App() {
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/update-password" element={<UpdatePassword />} />
                   <Route path="/dashboard/*" element={<Dashboard />} />
                   <Route path="/add-service" element={<AddService />} />
                   <Route path="/book" element={<Book />} />
