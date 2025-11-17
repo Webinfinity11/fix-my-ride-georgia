@@ -136,6 +136,11 @@ const DashboardSidebar = () => {
                   <span className="text-sm md:text-base">სამრეცხაოები</span>
                 </NavLink>
 
+                <NavLink to="/dashboard/admin/drives" className={navLinkClasses}>
+                  <Car size={18} />
+                  <span className="text-sm md:text-base">დრაივები</span>
+                </NavLink>
+
                 <NavLink to="/dashboard/admin/booking-management" className={navLinkClasses}>
                   <CalendarCog size={18} />
                   <span className="text-sm md:text-base">ჯავშნების მართვა</span>

@@ -219,7 +219,7 @@ serve(async (req) => {
       const mechanicUrl = mechanicSlug ? `${mechanic.display_id}-${mechanicSlug}` : mechanic.display_id
       
       // Get rating from mechanic_profiles relation
-      const rating = mechanic.profiles?.[0]?.mechanic_profiles?.[0]?.rating || 0
+      const rating = 0
       
       // High-rated mechanics (4.5+) get higher priority
       const mechanicPriority = rating >= 4.5 ? '0.85' : rating >= 4.0 ? '0.75' : '0.65'
