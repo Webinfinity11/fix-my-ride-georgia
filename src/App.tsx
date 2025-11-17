@@ -36,6 +36,8 @@ const ServiceCategory = lazy(() => import("./pages/ServiceCategory"));
 const CategoryList = lazy(() => import("./pages/CategoryList"));
 const Map = lazy(() => import("./pages/Map"));
 const SitemapXML = lazy(() => import("./pages/SitemapXML"));
+const Vacancies = lazy(() => import("./pages/Vacancies"));
+const VacancyDetail = lazy(() => import("./pages/VacancyDetail"));
 
 const queryClient = new QueryClient();
 
@@ -69,6 +71,8 @@ function App() {
                   <Route path="/fuel-importers" element={<FuelImporters />} />
                   <Route path="/fuel-brands" element={<FuelBrands />} />
                   <Route path="/community" element={<Community />} />
+                  <Route path="/vacancies" element={<Vacancies />} />
+                  <Route path="/vacancy/:id" element={<VacancyDetail />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />

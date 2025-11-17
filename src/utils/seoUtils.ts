@@ -249,6 +249,8 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
       return `${data.name} - ავტოსერვისები საქართველოში | ავტოხელოსანი`;
     case 'services':
       return `ავტოსერვისები - იპოვეთ საუკეთესო ხელოსანი | ავტოხელოსანი`;
+    case 'vacancies':
+      return `სამუშაო ვაკანსიები - ავტოსერვისი | ავტოხელოსანი`;
     case 'home':
       return `ავტოხელოსანი - საქართველოს #1 ავტოსერვისების პლატფორმა`;
     default:
@@ -336,6 +338,8 @@ export const generateSEODescription = (pageType: string, data: any, customDescri
       return `${data.name} - იპოვეთ საუკეთესო ხელოსნები ${data.name}-ის სფეროში საქართველოში. ხარისხიანი სერვისი, მიმდინარე ფასები, დადასტურებული ხელოსნები.`;
     case 'services':
       return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. 2500+ ხელოსანი, 15000+ სერვისი, 4.8★ საშუალო რეიტინგი. ჯავშანი ახლავე!`;
+    case 'vacancies':
+      return `იპოვეთ სამუშაო ავტოსერვისის სფეროში. ხელოსნები ეძებენ კვალიფიციურ თანამშრომლებს. მიმდინარე ვაკანსიები საქართველოს მასშტაბით.`;
     case 'home':
       return `საქართველოს უდიდესი ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში. სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
     default:
@@ -356,6 +360,8 @@ export const generateCanonicalURL = (pageType: string, data: any) => {
       return `${baseUrl}/category/${data.slug || createCategorySlug(data.name)}`;
     case 'services':
       return `${baseUrl}/services`;
+    case 'vacancies':
+      return `${baseUrl}/vacancies`;
     case 'home':
       return baseUrl;
     default:

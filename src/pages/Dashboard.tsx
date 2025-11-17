@@ -10,6 +10,7 @@ import CustomerProfile from "@/components/dashboard/customer/CustomerProfile";
 import MechanicProfile from "@/components/dashboard/mechanic/MechanicProfile";
 import CustomerCars from "@/components/dashboard/customer/CustomerCars";
 import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
+import MechanicVacancies from "@/components/dashboard/mechanic/MechanicVacancies";
 import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
 import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
 import AdminUsers from "@/components/dashboard/admin/AdminUsers";
@@ -145,6 +146,16 @@ const Dashboard = () => {
                   element={
                     user.role === "mechanic" ? (
                       <MechanicServices />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/vacancies"
+                  element={
+                    user.role === "mechanic" ? (
+                      <MechanicVacancies />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

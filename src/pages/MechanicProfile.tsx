@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Wrench, FileCheck, Car, MessageCircle } from "lucide-react";
+import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Wrench, FileCheck, Car, MessageCircle, Briefcase } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -79,6 +79,14 @@ type ReviewType = {
   images: string[] | null;
 };
 
+type VacancyType = {
+  id: number;
+  title: string;
+  description: string | null;
+  created_at: string;
+  is_active: boolean | null;
+};
+
 // Add the booking prop to the component props
 interface MechanicProfileProps {
   booking?: boolean;
@@ -92,6 +100,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
   const [mechanic, setMechanic] = useState<MechanicType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
   const [certificates, setCertificates] = useState<CertificateType[]>([]);
+  const [vacancies, setVacancies] = useState<VacancyType[]>([]);
   const [loading, setLoading] = useState(true);
   
   // If the component is in booking mode, update the active tab to services
@@ -228,10 +237,21 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
           .select("*")
           .eq("mechanic_id", mechanicData.id)
           .order("issue_date", { ascending: false });
-        
+
         if (certificatesError) throw certificatesError;
         setCertificates(certificatesData || []);
-        
+
+        // Fetch vacancies (only active ones for public view)
+        const { data: vacanciesData, error: vacanciesError } = await supabase
+          .from("mechanic_vacancies")
+          .select("*")
+          .eq("mechanic_id", mechanicData.id)
+          .eq("is_active", true)
+          .order("created_at", { ascending: false });
+
+        if (vacanciesError) throw vacanciesError;
+        setVacancies(vacanciesData || []);
+
       } catch (error) {
         console.error("Error fetching mechanic data:", error);
         toast.error("ხელოსნის მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");
@@ -240,7 +260,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         setLoading(false);
       }
     };
-    
+
     fetchMechanicData();
   }, [id, navigate]);
   
@@ -790,8 +810,9 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
               <div className="bg-white rounded-lg shadow overflow-hidden">
                 <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
                   <div className="px-6 pt-6 border-b">
-                    <TabsList className="grid grid-cols-3">
+                    <TabsList className="grid grid-cols-4">
                       <TabsTrigger value="services">სერვისები</TabsTrigger>
+                      <TabsTrigger value="vacancies">ვაკანსიები</TabsTrigger>
                       <TabsTrigger value="about">შესახებ</TabsTrigger>
                       <TabsTrigger value="reviews">შეფასებები</TabsTrigger>
                     </TabsList>
@@ -863,7 +884,48 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
                       </div>
                     )}
                   </TabsContent>
-                  
+
+                  <TabsContent value="vacancies" className="p-6">
+                    {vacancies.length > 0 ? (
+                      <div className="space-y-6">
+                        {vacancies.map((vacancy) => (
+                          <div
+                            key={vacancy.id}
+                            className="border-b border-gray-100 last:border-0 pb-5 last:pb-0 group cursor-pointer hover:bg-muted/50 rounded-lg p-4 -m-4 transition-colors"
+                            onClick={() => navigate(`/vacancy/${vacancy.id}`)}
+                          >
+                            <div className="flex items-start gap-3 mb-2">
+                              <Briefcase className="h-5 w-5 text-primary mt-1" />
+                              <div className="flex-1">
+                                <h4 className="text-lg font-medium group-hover:text-primary transition-colors">
+                                  {vacancy.title}
+                                </h4>
+                                <p className="text-xs text-muted-foreground">
+                                  გამოქვეყნდა: {format(new Date(vacancy.created_at), "dd MMM, yyyy")}
+                                </p>
+                              </div>
+                            </div>
+                            {vacancy.description && (
+                              <p className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap line-clamp-3">
+                                {vacancy.description}
+                              </p>
+                            )}
+                            <div className="mt-3 text-sm text-primary font-medium group-hover:underline">
+                              დეტალურად ნახვა →
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Briefcase className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-muted-foreground">
+                          ამ ხელოსანს ამჟამად არ აქვს აქტიური ვაკანსიები
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+
                   <TabsContent value="about" className="p-6">
                     <h3 className="text-lg font-semibold mb-4">ჩემს შესახებ</h3>
                     <p className="text-muted-foreground mb-6">

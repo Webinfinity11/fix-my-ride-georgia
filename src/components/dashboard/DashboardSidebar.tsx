@@ -20,6 +20,7 @@ import {
   Search,
   Megaphone,
   MapIcon,
+  Briefcase,
 } from "lucide-react";
 import {
   Accordion,
@@ -67,18 +68,25 @@ const DashboardSidebar = () => {
               )}
 
               {user?.role === "mechanic" && (
-                <NavLink 
-                  to="/dashboard/services" 
-                  className={({ isActive }) => {
-                    const isServicesPage = window.location.pathname === '/add-service' || isActive;
-                    return `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
-                      isServicesPage ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
-                    }`;
-                  }}
-                >
-                  <Wrench size={18} />
-                  <span className="text-sm md:text-base">სერვისები</span>
-                </NavLink>
+                <>
+                  <NavLink
+                    to="/dashboard/services"
+                    className={({ isActive }) => {
+                      const isServicesPage = window.location.pathname === '/add-service' || isActive;
+                      return `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
+                        isServicesPage ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
+                      }`;
+                    }}
+                  >
+                    <Wrench size={18} />
+                    <span className="text-sm md:text-base">სერვისები</span>
+                  </NavLink>
+
+                  <NavLink to="/dashboard/vacancies" className={navLinkClasses}>
+                    <Briefcase size={18} />
+                    <span className="text-sm md:text-base">ვაკანსიები</span>
+                  </NavLink>
+                </>
               )}
 
               <NavLink to="/dashboard/bookings" className={navLinkClasses}>
