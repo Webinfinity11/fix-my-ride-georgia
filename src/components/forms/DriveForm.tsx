@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import PhotoUpload from "./PhotoUpload";
 import VideoUpload from "./VideoUpload";
-import SimpleMapLocationPicker from "./SimpleMapLocationPicker";
+import LocationMapPicker from "./LocationMapPicker";
 import type { Database } from "@/integrations/supabase/types";
 
 type DriveInsert = Database["public"]["Tables"]["drives"]["Insert"];
@@ -98,7 +98,7 @@ export const DriveForm = ({ onSubmit, initialData, isLoading }: DriveFormProps) 
 
       <div className="space-y-2">
         <Label>ლოკაცია რუკაზე *</Label>
-        <SimpleMapLocationPicker
+        <LocationMapPicker
           latitude={location?.lat}
           longitude={location?.lng}
           onLocationChange={handleLocationChange}
