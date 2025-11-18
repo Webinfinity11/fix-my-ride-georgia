@@ -654,9 +654,9 @@ const ServiceDetail = () => {
           brand="ავტოხელოსანი"
           category={service.category?.name}
           offers={{
-            price: service.price_from || "შეთანხმებით",
+            price: service.price_from || undefined,
             priceCurrency: "GEL",
-            availability: "InStock",
+            availability: service.price_from ? "InStock" : "PreOrder",
             seller: {
               name: `${service.mechanic.first_name} ${service.mechanic.last_name}`,
               telephone: service.mechanic.phone || undefined,
@@ -668,9 +668,9 @@ const ServiceDetail = () => {
               } : undefined
             }
           }}
-          aggregateRating={service.rating ? {
+          aggregateRating={service.rating && service.review_count ? {
             ratingValue: service.rating,
-            reviewCount: service.review_count || 0
+            reviewCount: service.review_count
           } : undefined}
         />
         
@@ -690,13 +690,13 @@ const ServiceDetail = () => {
           }}
           areaServed={service.city}
           offers={{
-            price: service.price_from || "Price on request",
+            price: service.price_from || undefined,
             priceCurrency: "GEL",
-            availability: "InStock"
+            availability: service.price_from ? "InStock" : "PreOrder"
           }}
-          aggregateRating={service.rating ? {
+          aggregateRating={service.rating && service.review_count ? {
             ratingValue: service.rating,
-            reviewCount: service.review_count || 0
+            reviewCount: service.review_count
           } : undefined}
         />
         
