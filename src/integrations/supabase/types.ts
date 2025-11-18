@@ -52,6 +52,39 @@ export type Database = {
           },
         ]
       }
+      auto_leads: {
+        Row: {
+          id: string
+          full_name: string
+          phone: string
+          comment: string | null
+          lead_type: string
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          full_name: string
+          phone: string
+          comment?: string | null
+          lead_type: string
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          full_name?: string
+          phone?: string
+          comment?: string | null
+          lead_type?: string
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       booking_settings: {
         Row: {
           auto_confirm_bookings: boolean

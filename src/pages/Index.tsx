@@ -13,7 +13,7 @@ import SEOHead from "@/components/seo/SEOHead";
 import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
-import { Search, TrendingUp, Zap, Shield, Users, Star, MapPin, ArrowRight, CheckCircle2, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
+import { Search, TrendingUp, Zap, Shield, Users, Star, MapPin, ArrowRight, CheckCircle2, Sparkles, UserPlus, Wrench, Car, DollarSign, FileText } from "lucide-react";
 import HomeCenterBanner from "@/components/banners/HomeCenterBanner";
 import MobileBanner from "@/components/banners/MobileBanner";
 type ServiceCategory = {
@@ -383,7 +383,89 @@ const Index = () => {
             </div>
           </div>
         </section>
-        
+
+        {/* Auto Services Cards Section */}
+        <section className="py-12 lg:py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
+                  <Star className="h-4 w-4 mr-2" />
+                  დამატებითი სერვისები
+                </Badge>
+                <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                  ყველა სერვისი ერთ პლატფორმაზე
+                </h2>
+                <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
+                  ავტომობილთან დაკავშირებული ყველა სერვისი ხელმისაწვდომია ჩვენთან
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                {/* Leasing Card */}
+                <Card
+                  className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-green-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/leasing")}
+                >
+                  <CardContent className="p-6 lg:p-8 text-center">
+                    <div className="p-4 lg:p-6 bg-green-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
+                      <DollarSign className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
+                    </div>
+                    <h3 className="text-xl lg:text-2xl font-bold text-green-900 mb-3">ავტოლიზინგები</h3>
+                    <p className="text-sm lg:text-base text-green-700 mb-6">
+                      მიიღეთ თქვენი საოცნებო მანქანა მოქნილი გადახდის პირობებით
+                    </p>
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                      გაიგე მეტი
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Dealers Card */}
+                <Card
+                  className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/dealers")}
+                >
+                  <CardContent className="p-6 lg:p-8 text-center">
+                    <div className="p-4 lg:p-6 bg-blue-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
+                      <Car className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
+                    </div>
+                    <h3 className="text-xl lg:text-2xl font-bold text-blue-900 mb-3">ავტოდილერები</h3>
+                    <p className="text-sm lg:text-base text-blue-700 mb-6">
+                      ოფიციალური დილერები და ფართო არჩევანი ავტომობილებისა
+                    </p>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                      გაიგე მეტი
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Insurance Card */}
+                <Card
+                  className="border-0 shadow-xl bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/insurance")}
+                >
+                  <CardContent className="p-6 lg:p-8 text-center">
+                    <div className="p-4 lg:p-6 bg-purple-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
+                      <Shield className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
+                    </div>
+                    <h3 className="text-xl lg:text-2xl font-bold text-purple-900 mb-3">დაზღვევა</h3>
+                    <p className="text-sm lg:text-base text-purple-700 mb-6">
+                      დააზღვიეთ თქვენი ავტომობილი საუკეთესო პირობებით
+                    </p>
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      გაიგე მეტი
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Our Services Section - Redesigned */}
         <section className="py-12 lg:py-20 bg-white">
           <div className="container mx-auto px-4">

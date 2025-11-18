@@ -26,6 +26,7 @@ import { AdminFuelBrands } from "@/components/dashboard/admin/AdminFuelBrands";
 import SEOManagement from "@/components/dashboard/admin/SEOManagement";
 import BannerManagement from "@/components/dashboard/admin/BannerManagement";
 import SitemapManagement from "@/components/dashboard/admin/SitemapManagement";
+import AdminLeads from "@/components/dashboard/admin/AdminLeads";
 import { CustomerSavedServices } from "@/components/dashboard/customer/CustomerSavedServices";
 import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicSavedServices";
 import { CustomerSavedPosts } from "@/components/dashboard/customer/CustomerSavedPosts";
@@ -339,7 +340,17 @@ const Dashboard = () => {
                     )
                   }
                 />
-                
+                <Route
+                  path="/admin/leads"
+                  element={
+                    user.role === "admin" ? (
+                      <AdminLeads />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </div>

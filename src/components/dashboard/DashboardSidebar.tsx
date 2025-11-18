@@ -21,6 +21,7 @@ import {
   Megaphone,
   MapIcon,
   Briefcase,
+  FileText,
 } from "lucide-react";
 import {
   Accordion,
@@ -184,6 +185,11 @@ const DashboardSidebar = () => {
                 <NavLink to="/dashboard/admin/sitemap" className={navLinkClasses}>
                   <MapIcon size={18} />
                   <span className="text-sm md:text-base">Sitemap მართვა</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/leads" className={navLinkClasses}>
+                  <FileText size={18} />
+                  <span className="text-sm md:text-base">ლიდების მართვა</span>
                 </NavLink>
               </AccordionContent>
             </AccordionItem>

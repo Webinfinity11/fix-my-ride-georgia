@@ -38,6 +38,9 @@ const Map = lazy(() => import("./pages/Map"));
 const SitemapXML = lazy(() => import("./pages/SitemapXML"));
 const Vacancies = lazy(() => import("./pages/Vacancies"));
 const VacancyDetail = lazy(() => import("./pages/VacancyDetail"));
+const Leasing = lazy(() => import("./pages/Leasing"));
+const Dealers = lazy(() => import("./pages/Dealers"));
+const Insurance = lazy(() => import("./pages/Insurance"));
 
 const queryClient = new QueryClient();
 
@@ -73,6 +76,9 @@ function App() {
                   <Route path="/community" element={<Community />} />
                   <Route path="/vacancies" element={<Vacancies />} />
                   <Route path="/vacancy/:id" element={<VacancyDetail />} />
+                  <Route path="/leasing" element={<Leasing />} />
+                  <Route path="/dealers" element={<Dealers />} />
+                  <Route path="/insurance" element={<Insurance />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />

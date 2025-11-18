@@ -251,6 +251,12 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
       return `ავტოსერვისები - იპოვეთ საუკეთესო ხელოსანი | ავტოხელოსანი`;
     case 'vacancies':
       return `სამუშაო ვაკანსიები - ავტოსერვისი | ავტოხელოსანი`;
+    case 'leasing':
+      return `ავტოლიზინგი - მიიღეთ მანქანა მოქნილი გადახდის პირობებით | ავტოხელოსანი`;
+    case 'dealers':
+      return `ავტოდილერები - ოფიციალური დილერები საქართველოში | ავტოხელოსანი`;
+    case 'insurance':
+      return `ავტოდაზღვევა - დააზღვიეთ თქვენი მანქანა საუკეთესო პირობებით | ავტოხელოსანი`;
     case 'home':
       return `ავტოხელოსანი - საქართველოს #1 ავტოსერვისების პლატფორმა`;
     default:
@@ -340,6 +346,12 @@ export const generateSEODescription = (pageType: string, data: any, customDescri
       return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. 2500+ ხელოსანი, 15000+ სერვისი, 4.8★ საშუალო რეიტინგი. ჯავშანი ახლავე!`;
     case 'vacancies':
       return `იპოვეთ სამუშაო ავტოსერვისის სფეროში. ხელოსნები ეძებენ კვალიფიციურ თანამშრომლებს. მიმდინარე ვაკანსიები საქართველოს მასშტაბით.`;
+    case 'leasing':
+      return `ავტომობილის ლიზინგი საქართველოში. მოქნილი გადახდის გრაფიკი, სწრაფი დამტკიცება, მინიმალური დოკუმენტაცია. დატოვეთ განაცხადი ახლავე!`;
+    case 'dealers':
+      return `ოფიციალური ავტოდილერები საქართველოში. ახალი და მეორადი ავტომობილები. ფართო არჩევანი, უსაფრთხო გარიგება, კონკურენტული ფასები.`;
+    case 'insurance':
+      return `ავტომობილის დაზღვევა საქართველოში. სრული და ნაწილობრივი დაზღვევა, ოპტიმალური ფასები, სწრაფი რეგისტრაცია. წამყვანი სადაზღვევო კომპანიები.`;
     case 'home':
       return `საქართველოს უდიდესი ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში. სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
     default:
@@ -362,6 +374,12 @@ export const generateCanonicalURL = (pageType: string, data: any) => {
       return `${baseUrl}/services`;
     case 'vacancies':
       return `${baseUrl}/vacancies`;
+    case 'leasing':
+      return `${baseUrl}/leasing`;
+    case 'dealers':
+      return `${baseUrl}/dealers`;
+    case 'insurance':
+      return `${baseUrl}/insurance`;
     case 'home':
       return baseUrl;
     default:
