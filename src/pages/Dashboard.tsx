@@ -33,6 +33,7 @@ import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicS
 import { CustomerSavedPosts } from "@/components/dashboard/customer/CustomerSavedPosts";
 import { Header } from "@/components/layout/Header";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
+import MechanicMobileHeader from "@/components/dashboard/mechanic/MechanicMobileHeader";
 import { toast } from "sonner";
 
 const Dashboard = () => {
@@ -110,7 +111,10 @@ const Dashboard = () => {
         <div className="hidden md:block">
           <Header />
         </div>
-        
+
+        {/* Mobile Header for Mechanic - only show on mobile */}
+        {user.role === "mechanic" && <MechanicMobileHeader />}
+
         <main className="flex-grow flex bg-muted py-4 md:py-8 pb-[70px] md:pb-8">
           <div className="container mx-auto px-2 md:px-4 flex flex-col md:flex-row gap-3 md:gap-6">
             {/* Desktop Sidebar - only show on desktop */}
