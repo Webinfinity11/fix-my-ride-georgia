@@ -41,7 +41,7 @@ const Header = () => {
               alt="FixUp Auto Service"
               width="164"
               height="80"
-              fetchpriority="high"
+              fetchPriority="high"
               className="h-8 md:h-10 w-auto object-contain"
             />
           </Link>

@@ -536,6 +536,54 @@ export type Database = {
           },
         ]
       }
+      drives: {
+        Row: {
+          address: string | null
+          contact_number: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: number
+          latitude: number | null
+          longitude: number
+          name: string
+          photos: string[] | null
+          slug: string | null
+          updated_at: string
+          videos: string[] | null
+        }
+        Insert: {
+          address?: string | null
+          contact_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: number
+          latitude?: number | null
+          longitude: number
+          name: string
+          photos?: string[] | null
+          slug?: string | null
+          updated_at?: string
+          videos?: string[] | null
+        }
+        Update: {
+          address?: string | null
+          contact_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: number
+          latitude?: number | null
+          longitude?: number
+          name?: string
+          photos?: string[] | null
+          slug?: string | null
+          updated_at?: string
+          videos?: string[] | null
+        }
+        Relationships: []
+      }
       fuel_brands: {
         Row: {
           created_at: string | null
@@ -930,31 +978,31 @@ export type Database = {
       }
       mechanic_vacancies: {
         Row: {
-          created_at: string
+          created_at: string | null
           description: string | null
           id: number
           is_active: boolean | null
           mechanic_id: string
           title: string
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           id?: number
           is_active?: boolean | null
           mechanic_id: string
           title: string
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           id?: number
           is_active?: boolean | null
           mechanic_id?: string
           title?: string
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -1846,6 +1894,10 @@ export type Database = {
     Functions: {
       current_user_is_admin: { Args: never; Returns: boolean }
       expire_vip_services: { Args: never; Returns: number }
+      generate_unique_drive_slug: {
+        Args: { base_name: string; exclude_id?: number }
+        Returns: string
+      }
       generate_unique_laundry_slug: {
         Args: { base_name: string; exclude_id?: number }
         Returns: string

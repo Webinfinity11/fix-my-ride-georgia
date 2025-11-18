@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -34,6 +34,23 @@ const SimpleMapLocationPicker = ({
   
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [map, setMap] = useState<L.Map | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const mountedRef = useRef(false);
+
+  // Delay map rendering to ensure dialog is fully mounted
+  useEffect(() => {
+    mountedRef.current = true;
+    const timer = setTimeout(() => {
+      if (mountedRef.current) {
+        setIsReady(true);
+      }
+    }, 100);
+
+    return () => {
+      mountedRef.current = false;
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     console.log("🗺️ Position useEffect triggered", { latitude, longitude });
@@ -66,10 +83,22 @@ const SimpleMapLocationPicker = ({
 
   console.log("🗺️ Rendering map with center:", center, "position:", position);
 
+  if (!isReady) {
+    return (
+      <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20 flex items-center justify-center bg-muted relative z-10" style={{ zIndex: 1 }}>
+        <div className="flex flex-col items-center gap-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="text-sm text-muted-foreground">რუკის ჩატვირთვა...</p>
+        </div>
+      </div>
+    );
+  }
+
   try {
     return (
       <div className="h-64 w-full rounded-lg overflow-hidden border border-primary/20 relative z-10" style={{ zIndex: 1 }}>
         <MapContainer
+          key="map-container"
           center={center}
           zoom={13}
           style={{ height: "100%", width: "100%", zIndex: 1 }}

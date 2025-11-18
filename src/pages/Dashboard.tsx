@@ -17,6 +17,7 @@ import AdminUsers from "@/components/dashboard/admin/AdminUsers";
 import ServiceManagement from "@/components/dashboard/admin/ServiceManagement";
 import ChatManagement from "@/components/dashboard/admin/ChatManagement";
 import LaundryManagement from "@/components/dashboard/admin/LaundryManagement";
+import { DriveManagement } from "@/components/dashboard/admin/DriveManagement";
 import BookingManagement from "@/components/dashboard/admin/BookingManagement";
 import SavedServicesManagement from "@/components/dashboard/admin/SavedServicesManagement";
 import { AdminVIPManagement } from "@/components/dashboard/admin/AdminVIPManagement";
@@ -235,6 +236,16 @@ const Dashboard = () => {
                   element={
                     user.role === "admin" ? (
                       <LaundryManagement />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/drives"
+                  element={
+                    user.role === "admin" ? (
+                      <DriveManagement />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )
