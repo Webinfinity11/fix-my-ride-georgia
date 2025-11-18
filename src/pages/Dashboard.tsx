@@ -28,6 +28,7 @@ import SEOManagement from "@/components/dashboard/admin/SEOManagement";
 import BannerManagement from "@/components/dashboard/admin/BannerManagement";
 import SitemapManagement from "@/components/dashboard/admin/SitemapManagement";
 import AdminLeads from "@/components/dashboard/admin/AdminLeads";
+import { BlogManagement } from "@/components/dashboard/admin/BlogManagement";
 import { CustomerSavedServices } from "@/components/dashboard/customer/CustomerSavedServices";
 import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicSavedServices";
 import { CustomerSavedPosts } from "@/components/dashboard/customer/CustomerSavedPosts";

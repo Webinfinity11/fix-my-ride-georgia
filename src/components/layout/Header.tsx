@@ -78,6 +78,9 @@ const Header = () => {
             <Users className="h-4 w-4" />
             <span>community</span>
           </Link>
+          <Link to="/blog" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            ბლოგი
+          </Link>
         </nav>
 
         {/* Auth Section */}

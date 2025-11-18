@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import {
   User,
   Car,
+  PenSquare,
   Wrench,
   Calendar,
   LogOut,

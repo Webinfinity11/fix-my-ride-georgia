@@ -23,6 +23,8 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const UpdatePassword = lazy(() => import("./pages/UpdatePassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const AddService = lazy(() => import("./pages/AddService"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Book = lazy(() => import("./pages/Book"));
 const MechanicProfile = lazy(() => import("./pages/MechanicProfile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -80,6 +82,8 @@ function App() {
                   <Route path="/dealers" element={<Dealers />} />
                   <Route path="/insurance" element={<Insurance />} />
                   <Route path="/chat" element={<Chat />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:slug" element={<BlogPost />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
