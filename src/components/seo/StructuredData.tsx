@@ -151,6 +151,11 @@ export const ServiceSchema = ({
   offers,
   aggregateRating
 }: ServiceSchemaProps) => {
+  // Validate price for Service schema
+  const hasValidPrice = offers?.price && 
+    typeof offers.price === 'number' && 
+    offers.price > 0;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -169,12 +174,17 @@ export const ServiceSchema = ({
     ...(offers && {
       offers: {
         "@type": "Offer",
-        price: offers.price || "Price on request",
-        priceCurrency: offers.priceCurrency || "GEL",
-        availability: offers.availability || "InStock"
+        // Only include price if valid
+        ...(hasValidPrice && {
+          price: offers.price,
+          priceCurrency: offers.priceCurrency || "GEL"
+        }),
+        availability: hasValidPrice 
+          ? `https://schema.org/${offers.availability || "InStock"}`
+          : "https://schema.org/PreOrder"
       }
     }),
-    ...(aggregateRating && {
+    ...(aggregateRating && aggregateRating.reviewCount > 0 && {
       aggregateRating: {
         "@type": "AggregateRating",
         ratingValue: aggregateRating.ratingValue,
@@ -226,6 +236,11 @@ export const ProductSchema = ({
   aggregateRating,
   category
 }: ProductSchemaProps) => {
+  // Validate price - must be a valid number for Google
+  const hasValidPrice = offers.price && 
+    typeof offers.price === 'number' && 
+    offers.price > 0;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -239,9 +254,15 @@ export const ProductSchema = ({
     ...(category && { category }),
     offers: {
       "@type": "Offer",
-      price: offers.price || "შეთანხმებით",
-      priceCurrency: offers.priceCurrency || "GEL",
-      availability: `https://schema.org/${offers.availability || "InStock"}`,
+      // Only include price if it's a valid number
+      ...(hasValidPrice && {
+        price: offers.price,
+        priceCurrency: offers.priceCurrency || "GEL"
+      }),
+      // Set proper availability based on price
+      availability: hasValidPrice 
+        ? `https://schema.org/${offers.availability || "InStock"}`
+        : "https://schema.org/PreOrder",
       ...(offers.seller && {
         seller: {
           "@type": "Person",
@@ -249,7 +270,7 @@ export const ProductSchema = ({
         }
       })
     },
-    ...(aggregateRating && {
+    ...(aggregateRating && aggregateRating.reviewCount > 0 && {
       aggregateRating: {
         "@type": "AggregateRating",
         ratingValue: aggregateRating.ratingValue,

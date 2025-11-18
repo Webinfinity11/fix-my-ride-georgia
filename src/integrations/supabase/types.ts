@@ -54,33 +54,33 @@ export type Database = {
       }
       auto_leads: {
         Row: {
-          id: string
-          full_name: string
-          phone: string
           comment: string | null
-          lead_type: string
-          status: string
           created_at: string
+          full_name: string
+          id: string
+          lead_type: string
+          phone: string
+          status: string | null
           updated_at: string
         }
         Insert: {
-          id?: string
-          full_name: string
-          phone: string
           comment?: string | null
-          lead_type: string
-          status?: string
           created_at?: string
+          full_name: string
+          id?: string
+          lead_type: string
+          phone: string
+          status?: string | null
           updated_at?: string
         }
         Update: {
-          id?: string
-          full_name?: string
-          phone?: string
           comment?: string | null
-          lead_type?: string
-          status?: string
           created_at?: string
+          full_name?: string
+          id?: string
+          lead_type?: string
+          phone?: string
+          status?: string | null
           updated_at?: string
         }
         Relationships: []
