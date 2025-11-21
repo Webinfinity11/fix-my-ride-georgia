@@ -6,6 +6,7 @@ import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { BlogHero } from '@/components/blog/BlogHero';
 import { Skeleton } from '@/components/ui/skeleton';
+import Layout from '@/components/layout/Layout';
 import {
   Pagination,
   PaginationContent,
@@ -37,7 +38,7 @@ export default function Blog() {
   const paginatedPosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   return (
-    <>
+    <Layout>
       <Helmet>
         <title>ბლოგი | FixUp - ავტოსერვისების სამყარო</title>
         <meta 
@@ -48,7 +49,7 @@ export default function Blog() {
         <link rel="canonical" href={`${window.location.origin}/blog`} />
       </Helmet>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-8 md:py-12">
         {/* Hero Section */}
         {featuredPost && (
           <div className="mb-16">
@@ -131,6 +132,6 @@ export default function Blog() {
           </>
         )}
       </div>
-    </>
+    </Layout>
   );
 }

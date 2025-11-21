@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import Layout from '@/components/layout/Layout';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -58,25 +59,29 @@ export default function BlogPost() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <Skeleton className="h-8 w-2/3 mb-4" />
-        <Skeleton className="h-4 w-1/3 mb-8" />
-        <Skeleton className="aspect-[16/9] w-full mb-8" />
-        <Skeleton className="h-4 w-full mb-2" />
-        <Skeleton className="h-4 w-full mb-2" />
-        <Skeleton className="h-4 w-3/4" />
-      </div>
+      <Layout>
+        <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
+          <Skeleton className="h-8 w-2/3 mb-4" />
+          <Skeleton className="h-4 w-1/3 mb-8" />
+          <Skeleton className="aspect-[16/9] w-full mb-8" />
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+      </Layout>
     );
   }
 
   if (!post) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold mb-4">სტატია ვერ მოიძებნა</h1>
-        <Link to="/blog">
-          <Button>დაბრუნება ბლოგზე</Button>
-        </Link>
-      </div>
+      <Layout>
+        <div className="container mx-auto px-4 py-8 md:py-12 text-center">
+          <h1 className="text-2xl font-bold mb-4">სტატია ვერ მოიძებნა</h1>
+          <Link to="/blog">
+            <Button>დაბრუნება ბლოგზე</Button>
+          </Link>
+        </div>
+      </Layout>
     );
   }
 
@@ -106,7 +111,7 @@ export default function BlogPost() {
   };
 
   return (
-    <>
+    <Layout>
       <Helmet>
         <title>{post.meta_title || post.title} | FixUp ბლოგი</title>
         <meta name="description" content={post.meta_description || post.excerpt || ''} />
@@ -128,7 +133,7 @@ export default function BlogPost() {
         </script>
       </Helmet>
 
-      <article className="container mx-auto px-4 py-12 max-w-4xl">
+      <article className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
         {/* Breadcrumb */}
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
@@ -228,6 +233,6 @@ export default function BlogPost() {
           </>
         )}
       </article>
-    </>
+    </Layout>
   );
 }
