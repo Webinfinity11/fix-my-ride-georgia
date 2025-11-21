@@ -35,6 +35,10 @@ import {
   Fuel,
   Phone,
   Info,
+  Sparkles,
+  Briefcase,
+  Users,
+  FileText,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -54,10 +58,13 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     { icon: Home, label: "მთავარი", path: "/" },
     { icon: Wrench, label: "სერვისები", path: "/services" },
     { icon: Map, label: "რუკა", path: "/map" },
+    { icon: Sparkles, label: "სამრეცხაო", path: "/laundries" },
+    { icon: Briefcase, label: "ვაკანსიები", path: "/vacancies" },
     { icon: Fuel, label: "საწვავის ფასები", path: "/fuel-importers" },
-    { icon: User, label: "community", path: "/community" },
-    { icon: Phone, label: "კონტაქტი", path: "/contact" },
+    { icon: Users, label: "community", path: "/community" },
+    { icon: FileText, label: "ბლოგი", path: "/blog" },
     { icon: Info, label: "ჩვენ შესახებ", path: "/about" },
+    { icon: Phone, label: "კონტაქტი", path: "/contact" },
   ];
 
   const handleSignOut = async () => {

@@ -82,6 +82,18 @@ serve(async (req) => {
       throw mechanicsError
     }
 
+    // Fetch published blog posts
+    const { data: blogPosts, error: blogPostsError } = await supabase
+      .from('blog_posts')
+      .select('slug, updated_at, view_count')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+
+    if (blogPostsError) {
+      console.error('Error fetching blog posts:', blogPostsError)
+      throw blogPostsError
+    }
+
     // Generate sitemap XML with real, indexable URLs only
     const currentDate = new Date().toISOString().split('T')[0]
     
@@ -141,6 +153,12 @@ serve(async (req) => {
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/blog</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
   </url>
 
   <!-- Real service pages with proper slugs -->`
@@ -241,6 +259,26 @@ serve(async (req) => {
     })
 
     sitemapXml += `
+
+  <!-- Real blog posts -->`
+
+    // Add blog posts with view-based priority
+    blogPosts?.forEach(post => {
+      const lastmod = post.updated_at ? new Date(post.updated_at).toISOString().split('T')[0] : currentDate
+      
+      // Popular posts (1000+ views) get higher priority
+      const priority = (post.view_count || 0) >= 1000 ? '0.80' : (post.view_count || 0) >= 500 ? '0.75' : '0.70'
+      
+      sitemapXml += `
+  <url>
+    <loc>https://fixup.ge/blog/${post.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${priority}</priority>
+  </url>`
+    })
+
+    sitemapXml += `
 </urlset>`
 
     // Generate sitemap-index.xml
@@ -283,16 +321,17 @@ serve(async (req) => {
       throw indexUploadError
     }
 
-    const staticUrls = 9 // Updated count for static pages
+    const staticUrls = 10 // Updated count for static pages (including /blog)
     const serviceUrls = services?.length || 0
     const categoryUrls = (categories?.length || 0) * 2 // Both /category and /services routes
     const mechanicUrls = (mechanics?.length || 0) * 2 // Both /mechanic and /book routes
-    const totalUrls = staticUrls + serviceUrls + categoryUrls + mechanicUrls
+    const blogUrls = blogPosts?.length || 0
+    const totalUrls = staticUrls + serviceUrls + categoryUrls + mechanicUrls + blogUrls
     
     console.log(`Focused sitemap generated successfully:`)
     console.log(`- sitemap.xml with ${totalUrls} real URLs`)
     console.log(`- Only indexable content included`)
-    console.log(`Breakdown: ${staticUrls} static, ${serviceUrls} services, ${categoryUrls} categories, ${mechanicUrls} mechanics`)
+    console.log(`Breakdown: ${staticUrls} static, ${serviceUrls} services, ${categoryUrls} categories, ${mechanicUrls} mechanics, ${blogUrls} blog posts`)
 
     return new Response(JSON.stringify({ 
       success: true, 
@@ -303,6 +342,7 @@ serve(async (req) => {
         services: serviceUrls,
         categories: categoryUrls,
         mechanics: mechanicUrls,
+        blog: blogUrls,
         totalUrls
       }
     }), {

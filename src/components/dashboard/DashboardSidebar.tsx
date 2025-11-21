@@ -197,6 +197,11 @@ const DashboardSidebar = () => {
                   <FileText size={18} />
                   <span className="text-sm md:text-base">ლიდების მართვა</span>
                 </NavLink>
+
+                <NavLink to="/dashboard/admin/blog" className={navLinkClasses}>
+                  <PenSquare size={18} />
+                  <span className="text-sm md:text-base">ბლოგი</span>
+                </NavLink>
               </AccordionContent>
             </AccordionItem>
           )}

@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Menu, Home, Wrench, Info, Phone, Map, Droplet, Sparkles, Briefcase } from 'lucide-react';
+import { Menu, Home, Wrench, Info, Phone, Map, Droplet, Sparkles, Briefcase, Users, FileText } from 'lucide-react';
 
 export const MobileMenu = () => {
   return (
@@ -72,9 +72,25 @@ export const MobileMenu = () => {
               <Droplet className="h-5 w-5" />
               <span>საწვავი</span>
             </Link>
+
+            <Link
+              to="/community"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
+            >
+              <Users className="h-5 w-5" />
+              <span>community</span>
+            </Link>
+
+            <Link
+              to="/blog"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
+            >
+              <FileText className="h-5 w-5" />
+              <span>ბლოგი</span>
+            </Link>
             
             <Link 
-              to="/about" 
+              to="/about"
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
             >
               <Info className="h-5 w-5" />

@@ -366,6 +366,17 @@ const Dashboard = () => {
                     )
                   }
                 />
+                
+                <Route
+                  path="/admin/blog"
+                  element={
+                    user.role === "admin" ? (
+                      <BlogManagement />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
 
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
