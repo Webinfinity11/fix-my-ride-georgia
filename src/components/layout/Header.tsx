@@ -62,9 +62,6 @@ const Header = () => {
             <Map className="h-4 w-4" />
             <span>რუკა</span>
           </Link>
-          <Link to="/laundries" className="text-gray-700 hover:text-primary transition-colors font-medium">
-            სამრეცხაო
-          </Link>
           <Link to="/vacancies" className="text-gray-700 hover:text-primary transition-colors font-medium">
             ვაკანსიები
           </Link>
