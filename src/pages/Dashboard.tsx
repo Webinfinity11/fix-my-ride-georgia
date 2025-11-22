@@ -28,6 +28,7 @@ import SEOManagement from "@/components/dashboard/admin/SEOManagement";
 import BannerManagement from "@/components/dashboard/admin/BannerManagement";
 import SitemapManagement from "@/components/dashboard/admin/SitemapManagement";
 import AdminLeads from "@/components/dashboard/admin/AdminLeads";
+import AdminRequests from "@/components/dashboard/admin/AdminRequests";
 import { BlogManagement } from "@/components/dashboard/admin/BlogManagement";
 import { CustomerSavedServices } from "@/components/dashboard/customer/CustomerSavedServices";
 import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicSavedServices";
@@ -356,16 +357,26 @@ const Dashboard = () => {
                     )
                   }
                 />
-                <Route
-                  path="/admin/leads"
-                  element={
-                    user.role === "admin" ? (
-                      <AdminLeads />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
-                  }
-                />
+                  <Route
+                    path="/admin/leads"
+                    element={
+                      user.role === "admin" ? (
+                        <AdminLeads />
+                      ) : (
+                        <Navigate to="/dashboard" replace />
+                      )
+                    }
+                  />
+                  <Route
+                    path="/admin/requests"
+                    element={
+                      user.role === "admin" ? (
+                        <AdminRequests />
+                      ) : (
+                        <Navigate to="/dashboard" replace />
+                      )
+                    }
+                  />
                 
                 <Route
                   path="/admin/blog"

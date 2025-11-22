@@ -41,31 +41,40 @@ export function LeadForm({ leadType, title, description, onSuccess }: LeadFormPr
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
+    console.log('🚀 Form submission started');
+    console.log('📝 Form values:', values);
+    console.log('🏷️ Lead type:', leadType);
+    
     try {
-      const { error } = await supabase.from("auto_leads").insert({
+      const { data, error } = await supabase.from("auto_leads").insert({
         full_name: values.full_name,
         phone: values.phone,
         comment: values.comment || null,
         lead_type: leadType,
         status: "new",
-      });
+      }).select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        throw error;
+      }
 
+      console.log('✅ Insert successful, data:', data);
       setIsSuccess(true);
       toast.success("თქვენი განაცხადი წარმატებით გაიგზავნა!", {
         description: "ჩვენი მენეჯერი მალე დაგიკავშირდებათ",
       });
 
       form.reset();
-      onSuccess?.();
-
-      // Reset success state after 3 seconds
+      
+      // Reset success state after 2 seconds and call onSuccess
       setTimeout(() => {
+        console.log('🔄 Resetting success state and calling onSuccess');
         setIsSuccess(false);
-      }, 3000);
+        onSuccess?.();
+      }, 2000);
     } catch (error: any) {
-      console.error("Error submitting lead:", error);
+      console.error("❌ Error submitting lead:", error);
       toast.error("დაფიქსირდა შეცდომა", {
         description: "გთხოვთ სცადოთ მოგვიანებით",
       });
