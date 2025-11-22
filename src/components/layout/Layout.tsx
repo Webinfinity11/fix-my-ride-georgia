@@ -3,14 +3,15 @@ import { Header } from "./Header";
 import Footer from "./Footer";
 import MobileBottomNav from "./MobileBottomNav";
 import { SkipToContent } from "@/components/accessibility/SkipToContent";
-import { KeyboardShortcutsHelp } from "@/components/accessibility/KeyboardShortcutsHelp";
+import { AddListingFAB } from "./AddListingFAB";
+
 interface LayoutProps {
   children: React.ReactNode;
 }
-const Layout = ({
-  children
-}: LayoutProps) => {
-  return <div className="min-h-screen flex flex-col">
+
+const Layout = ({ children }: LayoutProps) => {
+  return (
+    <div className="min-h-screen flex flex-col">
       <SkipToContent />
       
       <Header />
@@ -19,6 +20,9 @@ const Layout = ({
       </main>
       <Footer />
       <MobileBottomNav />
-    </div>;
+      <AddListingFAB />
+    </div>
+  );
 };
+
 export default Layout;

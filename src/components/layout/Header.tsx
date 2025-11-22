@@ -45,6 +45,12 @@ const Header = () => {
               className="h-8 md:h-10 w-auto object-contain"
             />
           </Link>
+          {/* Mobile Add Listing Button */}
+          <Link to="/add-listing" className="lg:hidden">
+            <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
+              <Plus className="h-5 w-5" />
+            </Button>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}

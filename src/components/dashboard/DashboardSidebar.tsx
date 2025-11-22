@@ -23,6 +23,7 @@ import {
   MapIcon,
   Briefcase,
   FileText,
+  Mail,
 } from "lucide-react";
 import {
   Accordion,
@@ -30,9 +31,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { useNewLeadsCount } from "@/hooks/useAutoLeads";
 
 const DashboardSidebar = () => {
   const { user, signOut } = useAuth();
+  const { data: newLeadsCount = 0 } = useNewLeadsCount();
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
@@ -193,14 +197,21 @@ const DashboardSidebar = () => {
                   <span className="text-sm md:text-base">Sitemap მართვა</span>
                 </NavLink>
 
-                <NavLink to="/dashboard/admin/leads" className={navLinkClasses}>
-                  <FileText size={18} />
-                  <span className="text-sm md:text-base">ლიდების მართვა</span>
-                </NavLink>
-
                 <NavLink to="/dashboard/admin/blog" className={navLinkClasses}>
                   <PenSquare size={18} />
                   <span className="text-sm md:text-base">ბლოგი</span>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/leads" className={navLinkClasses}>
+                  <Mail size={18} />
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-sm md:text-base">ლიდები</span>
+                    {newLeadsCount > 0 && (
+                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
+                        {newLeadsCount}
+                      </Badge>
+                    )}
+                  </div>
                 </NavLink>
               </AccordionContent>
             </AccordionItem>
