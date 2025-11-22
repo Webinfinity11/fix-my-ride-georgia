@@ -20,12 +20,13 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface LeadFormProps {
-  leadType: "leasing" | "dealers" | "insurance";
+  leadType: "leasing" | "dealers" | "insurance" | "service" | "drive" | "laundry" | "vacancy";
   title: string;
   description?: string;
+  onSuccess?: () => void;
 }
 
-export function LeadForm({ leadType, title, description }: LeadFormProps) {
+export function LeadForm({ leadType, title, description, onSuccess }: LeadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -57,6 +58,7 @@ export function LeadForm({ leadType, title, description }: LeadFormProps) {
       });
 
       form.reset();
+      onSuccess?.();
 
       // Reset success state after 3 seconds
       setTimeout(() => {

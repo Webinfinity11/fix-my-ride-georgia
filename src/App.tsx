@@ -43,6 +43,7 @@ const VacancyDetail = lazy(() => import("./pages/VacancyDetail"));
 const Leasing = lazy(() => import("./pages/Leasing"));
 const Dealers = lazy(() => import("./pages/Dealers"));
 const Insurance = lazy(() => import("./pages/Insurance"));
+const AddListing = lazy(() => import("./pages/AddListing"));
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,7 @@ function App() {
                   <Route path="/leasing" element={<Leasing />} />
                   <Route path="/dealers" element={<Dealers />} />
                   <Route path="/insurance" element={<Insurance />} />
+                  <Route path="/add-listing" element={<AddListing />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
