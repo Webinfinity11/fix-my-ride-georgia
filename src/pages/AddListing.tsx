@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Wrench, Car, Sparkles, Briefcase } from "lucide-react";
 import { LeadForm } from "@/components/forms/LeadForm";
 import SEOHead from "@/components/seo/SEOHead";
@@ -126,6 +126,8 @@ const AddListing = () => {
       {/* Lead Form Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
+          <DialogTitle className="sr-only">{getFormTitle()}</DialogTitle>
+          <DialogDescription className="sr-only">{getFormDescription()}</DialogDescription>
           <LeadForm
             leadType={selectedType}
             title={getFormTitle()}
