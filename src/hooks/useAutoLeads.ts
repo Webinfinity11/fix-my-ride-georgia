@@ -28,6 +28,72 @@ export const useAutoLeads = () => {
   });
 };
 
+// Old leads (leasing, dealers, insurance)
+export const useOldLeads = () => {
+  return useQuery({
+    queryKey: ["old-leads"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("auto_leads")
+        .select("*")
+        .in("lead_type", ["leasing", "dealers", "insurance"])
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as AutoLead[];
+    },
+  });
+};
+
+export const useOldLeadsCount = () => {
+  return useQuery({
+    queryKey: ["old-leads-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("auto_leads")
+        .select("*", { count: "exact", head: true })
+        .in("lead_type", ["leasing", "dealers", "insurance"])
+        .eq("status", "new");
+
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+};
+
+// New requests (service, drive, laundry, vacancy)
+export const useRequests = () => {
+  return useQuery({
+    queryKey: ["requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("auto_leads")
+        .select("*")
+        .in("lead_type", ["service", "drive", "laundry", "vacancy"])
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as AutoLead[];
+    },
+  });
+};
+
+export const useNewRequestsCount = () => {
+  return useQuery({
+    queryKey: ["new-requests-count"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("auto_leads")
+        .select("*", { count: "exact", head: true })
+        .in("lead_type", ["service", "drive", "laundry", "vacancy"])
+        .eq("status", "new");
+
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+};
+
 export const useUpdateLeadStatus = () => {
   const queryClient = useQueryClient();
 

@@ -47,8 +47,9 @@ const Header = () => {
           </Link>
           {/* Mobile Add Listing Button */}
           <Link to="/add-listing" className="lg:hidden">
-            <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-              <Plus className="h-5 w-5" />
+            <Button variant="default" size="sm" className="h-9 px-3 gap-1">
+              <Plus className="h-4 w-4" />
+              <span className="text-sm font-medium">დამატება</span>
             </Button>
           </Link>
         </div>

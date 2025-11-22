@@ -32,11 +32,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { useNewLeadsCount } from "@/hooks/useAutoLeads";
+import { useOldLeadsCount, useNewRequestsCount } from "@/hooks/useAutoLeads";
 
 const DashboardSidebar = () => {
   const { user, signOut } = useAuth();
-  const { data: newLeadsCount = 0 } = useNewLeadsCount();
+  const { data: oldLeadsCount = 0 } = useOldLeadsCount();
+  const { data: newRequestsCount = 0 } = useNewRequestsCount();
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
@@ -206,9 +207,21 @@ const DashboardSidebar = () => {
                   <Mail size={18} />
                   <div className="flex items-center gap-2 flex-1">
                     <span className="text-sm md:text-base">ლიდები</span>
-                    {newLeadsCount > 0 && (
+                    {oldLeadsCount > 0 && (
                       <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
-                        {newLeadsCount}
+                        {oldLeadsCount}
+                      </Badge>
+                    )}
+                  </div>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/requests" className={navLinkClasses}>
+                  <FileText size={18} />
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-sm md:text-base">მოთხოვნები</span>
+                    {newRequestsCount > 0 && (
+                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
+                        {newRequestsCount}
                       </Badge>
                     )}
                   </div>
