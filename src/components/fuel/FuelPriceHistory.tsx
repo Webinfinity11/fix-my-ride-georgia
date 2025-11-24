@@ -147,24 +147,24 @@ const FuelPriceHistory = () => {
 
         {/* Price Trend Indicator */}
         {priceTrend && (
-          <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-muted rounded-lg">
             <div className="flex items-center gap-2">
               {priceTrend.direction === "up" && (
-                <TrendingUp className="w-5 h-5 text-red-500" />
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
               )}
               {priceTrend.direction === "down" && (
-                <TrendingDown className="w-5 h-5 text-green-500" />
+                <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
               )}
               {priceTrend.direction === "stable" && (
-                <Minus className="w-5 h-5 text-muted-foreground" />
+                <Minus className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
               )}
-              <span className="text-sm font-medium">
+              <span className="text-xs sm:text-sm font-medium">
                 {priceTrend.direction === "up" && "ზრდა"}
                 {priceTrend.direction === "down" && "კლება"}
                 {priceTrend.direction === "stable" && "სტაბილური"}
               </span>
             </div>
-            <div className="text-sm">
+            <div className="text-xs sm:text-sm">
               <span
                 className={
                   priceTrend.direction === "up"
@@ -177,48 +177,49 @@ const FuelPriceHistory = () => {
                 {priceTrend.amount > 0 ? "+" : ""}
                 {priceTrend.amount.toFixed(2)} GEL ({priceTrend.percentage.toFixed(1)}%)
               </span>
-              <span className="text-muted-foreground ml-2">შერჩეულ პერიოდში</span>
+              <span className="text-muted-foreground ml-1 sm:ml-2">შერჩეულ პერიოდში</span>
             </div>
           </div>
         )}
 
         {/* Chart */}
-        <div className="h-[400px] w-full">
+        <div className="h-[300px] sm:h-[350px] md:h-[400px] w-full">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-primary" />
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <AlertCircle className="w-12 h-12 text-destructive mb-4" />
-              <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 text-destructive mb-2 sm:mb-4" />
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 ისტორიული მონაცემების ჩატვირთვისას მოხდა შეცდომა
               </p>
             </div>
           ) : chartData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <TrendingUp className="w-12 h-12 text-muted-foreground/40 mb-4" />
-              <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <TrendingUp className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground/40 mb-2 sm:mb-4" />
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 ისტორიული მონაცემები არ არის ხელმისაწვდომი
               </p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis
                   dataKey="date"
-                  className="text-xs"
-                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                  interval="preserveStartEnd"
+                  tickMargin={8}
                 />
                 <YAxis
-                  className="text-xs"
-                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                  width={40}
                   label={{
-                    value: "ფასი (GEL)",
+                    value: "ფასი",
                     angle: -90,
                     position: "insideLeft",
-                    style: { fill: "hsl(var(--muted-foreground))" },
+                    style: { fill: "hsl(var(--muted-foreground))", fontSize: 11 },
                   }}
                 />
                 <Tooltip
@@ -226,18 +227,19 @@ const FuelPriceHistory = () => {
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "8px",
+                    fontSize: "12px",
                   }}
-                  labelStyle={{ color: "hsl(var(--foreground))" }}
+                  labelStyle={{ color: "hsl(var(--foreground))", fontSize: "12px" }}
                 />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: "12px" }} />
                 <Line
                   type="monotone"
                   dataKey="price"
                   name="ფასი (GEL)"
                   stroke="hsl(var(--primary))"
                   strokeWidth={2}
-                  dot={{ fill: "hsl(var(--primary))", r: 4 }}
-                  activeDot={{ r: 6 }}
+                  dot={{ fill: "hsl(var(--primary))", r: 3 }}
+                  activeDot={{ r: 5 }}
                 />
               </LineChart>
             </ResponsiveContainer>

@@ -33,14 +33,14 @@ const ServiceStats = ({
   const activePercentage = totalServices > 0 ? (activeServices / totalServices) * 100 : 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
       <Card className="border-primary/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">ჯამური სერვისები</CardTitle>
-          <Wrench className="h-4 w-4 text-primary" />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 sm:pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium">ჯამური სერვისები</CardTitle>
+          <Wrench className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{totalServices}</div>
+          <div className="text-xl sm:text-2xl font-bold">{totalServices}</div>
           <div className="flex items-center gap-2 mt-1">
             <Badge variant="secondary" className="bg-green-100 text-green-800">
               {activeServices} აქტიური
@@ -58,12 +58,12 @@ const ServiceStats = ({
       </Card>
 
       <Card className="border-primary/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">ჯამური ბრონირება</CardTitle>
-          <Calendar className="h-4 w-4 text-blue-600" />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 sm:pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium">ჯამური ბრონირება</CardTitle>
+          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{totalBookings}</div>
+          <div className="text-xl sm:text-2xl font-bold">{totalBookings}</div>
           {completedBookings > 0 && (
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary" className="bg-blue-100 text-blue-800">
@@ -78,12 +78,12 @@ const ServiceStats = ({
       </Card>
 
       <Card className="border-primary/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">საშუალო რეიტინგი</CardTitle>
-          <Star className="h-4 w-4 text-yellow-500" />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 sm:pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium">საშუალო რეიტინგი</CardTitle>
+          <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
+          <div className="text-xl sm:text-2xl font-bold">
             {avgRating > 0 ? avgRating.toFixed(1) : "—"}
           </div>
           <div className="flex items-center gap-1 mt-1">
@@ -105,12 +105,12 @@ const ServiceStats = ({
       </Card>
 
       <Card className="border-primary/20">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">ნახვები</CardTitle>
-          <Eye className="h-4 w-4 text-purple-600" />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 sm:pb-2">
+          <CardTitle className="text-xs sm:text-sm font-medium">ნახვები</CardTitle>
+          <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-purple-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{totalViews}</div>
+          <div className="text-xl sm:text-2xl font-bold">{totalViews}</div>
           <div className="flex items-center text-xs text-muted-foreground mt-2">
             <TrendingUp className="h-3 w-3 mr-1" />
             პროფილის ნახვები
