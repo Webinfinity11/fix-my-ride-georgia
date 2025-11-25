@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { DollarSign, Car, Shield } from "lucide-react";
 
 interface ServicePageNavigationProps {
-  currentPage: 'leasing' | 'dealers' | 'insurance';
+  currentPage: "leasing" | "dealers" | "insurance";
 }
 
 export function ServicePageNavigation({ currentPage }: ServicePageNavigationProps) {
@@ -12,28 +12,28 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
 
   const services = [
     {
-      id: 'leasing',
-      label: 'ლიზინგი',
-      path: '/leasing',
+      id: "leasing",
+      label: "ლიზინგი",
+      path: "/leasing",
       icon: DollarSign,
-      color: 'from-green-500 to-green-600',
-      hoverColor: 'hover:from-green-600 hover:to-green-700',
+      color: "from-green-500 to-green-600",
+      hoverColor: "hover:from-green-600 hover:to-green-700",
     },
     {
-      id: 'dealers',
-      label: 'დილერები',
-      path: '/dealers',
+      id: "dealers",
+      label: "დილერები",
+      path: "/dealers",
       icon: Car,
-      color: 'from-blue-500 to-blue-600',
-      hoverColor: 'hover:from-blue-600 hover:to-blue-700',
+      color: "from-blue-500 to-blue-600",
+      hoverColor: "hover:from-blue-600 hover:to-blue-700",
     },
     {
-      id: 'insurance',
-      label: 'დაზღვევა',
-      path: '/insurance',
+      id: "insurance",
+      label: "დაზღვევა",
+      path: "/insurance",
       icon: Shield,
-      color: 'from-purple-500 to-purple-600',
-      hoverColor: 'hover:from-purple-600 hover:to-purple-700',
+      color: "from-purple-500 to-purple-600",
+      hoverColor: "hover:from-purple-600 hover:to-purple-700",
     },
   ];
 
@@ -51,10 +51,11 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
             size="lg"
             className={`
               flex-shrink-0
-              min-w-[120px] sm:min-w-[160px]
-              ${isActive
-                ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
-                : 'border-2 hover:border-primary/50'
+              min-w-[120px] sm:min-w-[130px]
+              ${
+                isActive
+                  ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
+                  : "border-2 hover:border-primary/50"
               }
               transition-all duration-200
             `}
