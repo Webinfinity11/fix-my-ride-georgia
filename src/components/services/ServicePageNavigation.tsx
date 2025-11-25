@@ -51,13 +51,17 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
             size="lg"
             className={`
               flex-shrink-0
-              min-w-[50px] sm:min-w-[130px]
+              min-w-[100px] sm:min-w-[140px] md:min-w-[160px]
+              px-3 sm:px-4 md:px-6
+              py-2.5 sm:py-3
               ${
                 isActive
                   ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
                   : "border-2 hover:border-primary/50"
               }
               transition-all duration-200
+              touch-manipulation
+              active:scale-95
             `}
           >
             <Icon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
