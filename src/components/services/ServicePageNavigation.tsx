@@ -51,7 +51,7 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
             size="lg"
             className={`
               flex-shrink-0
-              min-w-[120px] sm:min-w-[130px]
+              min-w-[50px] sm:min-w-[130px]
               ${
                 isActive
                   ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
