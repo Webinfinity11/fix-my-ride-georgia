@@ -38,7 +38,7 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
   ];
 
   return (
-    <div className="flex flex-row gap-2 sm:gap-3 lg:gap-4 justify-center items-center mb-8 lg:mb-12 overflow-x-auto pb-2">
+    <div className="flex flex-row gap-2 sm:gap-3 lg:gap-4 justify-start sm:justify-center items-center mb-8 lg:mb-12 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
       {services.map((service) => {
         const Icon = service.icon;
         const isActive = currentPage === service.id;
@@ -51,7 +51,8 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
             size="lg"
             className={`
               flex-shrink-0
-              min-w-[100px] sm:min-w-[140px] md:min-w-[160px]
+              snap-center
+              min-w-[110px] sm:min-w-[140px] md:min-w-[160px]
               px-3 sm:px-4 md:px-6
               py-2.5 sm:py-3
               ${
@@ -65,7 +66,7 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
             `}
           >
             <Icon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-            <span className="text-sm sm:text-base">{service.label}</span>
+            <span className="text-xs sm:text-base">{service.label}</span>
           </Button>
         );
       })}
