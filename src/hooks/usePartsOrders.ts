@@ -53,14 +53,11 @@ export const useCreatePartsOrder = () => {
 
   return useMutation({
     mutationFn: async (order: Omit<PartsOrder, "id" | "created_at" | "updated_at" | "status">) => {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("parts_orders")
-        .insert([order])
-        .select()
-        .single();
+        .insert([order]);
 
       if (error) throw error;
-      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["parts-orders"] });
