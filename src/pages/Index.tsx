@@ -29,9 +29,11 @@ import {
   Car,
   DollarSign,
   FileText,
+  Package,
 } from "lucide-react";
 import HomeCenterBanner from "@/components/banners/HomeCenterBanner";
 import MobileBanner from "@/components/banners/MobileBanner";
+import { OrderPartDialog } from "@/components/parts/OrderPartDialog";
 type ServiceCategory = {
   id: number;
   name: string;
@@ -97,6 +99,7 @@ const Index = () => {
   // Initialize sitemap auto-update listener
   useSitemapAutoUpdate();
   const navigate = useNavigate();
+  const [orderPartDialogOpen, setOrderPartDialogOpen] = useState(false);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [featuredMechanics, setFeaturedMechanics] = useState<FeaturedMechanic[]>([]);
   const [cities, setCities] = useState<string[]>(georgianCities);
@@ -309,28 +312,25 @@ const Index = () => {
                 </p>
               </div>
 
-              {/* Popular Searches */}
-              <div className="mb-10">
-                {/* Mobile Search Bar - Only visible on mobile */}
-                <div className="md:hidden mb-6"></div>
-
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <span className="font-semibold text-gray-700">პოპულარული ძიებები</span>
-                </div>
-                <div className="flex flex-wrap justify-center gap-2 lg:gap-3">
-                  {popularSearches.map((search) => (
-                    <Button
-                      key={search}
-                      variant="outline"
-                      onClick={() => handleQuickSearch(search)}
-                      className="text-sm lg:text-base rounded-full border-2 border-primary/20 hover:border-primary hover:bg-primary hover:text-white transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                    >
-                      <Search className="h-4 w-4 mr-2" />
-                      {search}
-                    </Button>
-                  ))}
-                </div>
+              {/* Order Parts Button */}
+              <div className="mb-10 flex justify-center">
+                <button
+                  onClick={() => setOrderPartDialogOpen(true)}
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  <div className="absolute top-2 right-2">
+                    <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-semibold text-orange-600 shadow-sm">
+                      NEW
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 text-white">
+                    <Package className="h-8 w-8" />
+                    <div className="text-left">
+                      <h3 className="text-xl font-bold">შეუკვეთე ნაწილი</h3>
+                      <p className="text-sm opacity-90">სწრაფი და მარტივი</p>
+                    </div>
+                  </div>
+                </button>
               </div>
 
               {/* Advanced Search Form */}
@@ -680,6 +680,7 @@ const Index = () => {
       <Footer />
       <MobileBanner />
       <MobileBottomNav />
+      <OrderPartDialog open={orderPartDialogOpen} onOpenChange={setOrderPartDialogOpen} />
     </div>
   );
 };
