@@ -64,7 +64,7 @@ export const OrderPartDialog = ({ open, onOpenChange }: OrderPartDialogProps) =>
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[70vh] sm:max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl sm:text-2xl">შეუკვეთე ნაწილი</DialogTitle>
           <DialogDescription>
