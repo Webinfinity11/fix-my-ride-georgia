@@ -24,6 +24,7 @@ import {
   Briefcase,
   FileText,
   Mail,
+  Package,
 } from "lucide-react";
 import {
   Accordion,
@@ -33,11 +34,13 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { useOldLeadsCount, useNewRequestsCount } from "@/hooks/useAutoLeads";
+import { useNewPartsOrdersCount } from "@/hooks/usePartsOrders";
 
 const DashboardSidebar = () => {
   const { user, signOut } = useAuth();
   const { data: oldLeadsCount = 0 } = useOldLeadsCount();
   const { data: newRequestsCount = 0 } = useNewRequestsCount();
+  const { data: newPartsOrdersCount = 0 } = useNewPartsOrdersCount();
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
@@ -222,6 +225,18 @@ const DashboardSidebar = () => {
                     {newRequestsCount > 0 && (
                       <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
                         {newRequestsCount}
+                      </Badge>
+                    )}
+                  </div>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/parts-orders" className={navLinkClasses}>
+                  <Package size={18} />
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-sm md:text-base">ნაწილების შეკვეთები</span>
+                    {newPartsOrdersCount > 0 && (
+                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
+                        {newPartsOrdersCount}
                       </Badge>
                     )}
                   </div>

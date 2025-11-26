@@ -1127,6 +1127,51 @@ export type Database = {
           },
         ]
       }
+      parts_orders: {
+        Row: {
+          car_brand: string
+          car_model: string
+          car_year: string | null
+          created_at: string | null
+          engine_volume: string | null
+          full_name: string
+          id: string
+          part_description: string | null
+          part_name: string
+          phone: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          car_brand: string
+          car_model: string
+          car_year?: string | null
+          created_at?: string | null
+          engine_volume?: string | null
+          full_name: string
+          id?: string
+          part_description?: string | null
+          part_name: string
+          phone: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          car_brand?: string
+          car_model?: string
+          car_year?: string | null
+          created_at?: string | null
+          engine_volume?: string | null
+          full_name?: string
+          id?: string
+          part_description?: string | null
+          part_name?: string
+          phone?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       portfolio_items: {
         Row: {
           created_at: string
