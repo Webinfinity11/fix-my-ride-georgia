@@ -58,7 +58,7 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
               ${
                 isActive
                   ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
-                  : "border-2 hover:border-primary/50"
+                  : "border-2 hover:border-primary/50 border-trail"
               }
               transition-all duration-200
               touch-manipulation
