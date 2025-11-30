@@ -296,21 +296,20 @@ const Index = () => {
             <div className="max-w-6xl mx-auto">
               {/* Hero Content */}
               <div className="text-center mb-12">
-                <Badge className="mb-6 bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-2 text-sm font-medium">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  საქართველოს #1 ავტო-სერვისის პლატფორმა
-                </Badge>
-
                 <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                   იპოვეთ საუკეთესო
                   <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent block lg:inline lg:ml-4">
                     ხელოსანი
                   </span>
                 </h1>
+                <Badge className="mb-6 bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-2 text-sm font-medium">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  საქართველოს #1 ავტო-სერვისის პლატფორმა
+                </Badge>
 
-            <div className="mb-10">
-              <ServicePageNavigation />
-            </div>
+                <div className="mb-10">
+                  <ServicePageNavigation />
+                </div>
               </div>
 
               {/* Order Parts Button */}
