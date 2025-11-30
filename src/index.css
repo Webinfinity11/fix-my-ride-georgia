@@ -10,52 +10,6 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-
-  /* Border Trail Animation */
-  @keyframes border-trail {
-    0% {
-      offset-distance: 0%;
-    }
-    100% {
-      offset-distance: 100%;
-    }
-  }
-
-  .border-trail {
-    position: relative;
-    overflow: visible;
-  }
-
-  .border-trail::before {
-    content: '';
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: linear-gradient(135deg, #ff3ea5, #6420aa);
-    border-radius: 50%;
-    box-shadow: 
-      0 0 8px 2px rgba(255, 62, 165, 0.6),
-      0 0 12px 3px rgba(100, 32, 170, 0.4);
-    offset-path: path('M 8 2 L calc(100% - 8) 2 Q calc(100% - 2) 2 calc(100% - 2) 8 L calc(100% - 2) calc(100% - 8) Q calc(100% - 2) calc(100% - 2) calc(100% - 8) calc(100% - 2) L 8 calc(100% - 2) Q 2 calc(100% - 2) 2 calc(100% - 8) L 2 8 Q 2 2 8 2');
-    animation: border-trail 3.5s linear infinite;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  /* Tail effect - subtle gradient trail */
-  .border-trail::after {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: radial-gradient(circle, rgba(255, 62, 165, 0.3) 0%, transparent 70%);
-    border-radius: 50%;
-    offset-path: path('M 8 2 L calc(100% - 8) 2 Q calc(100% - 2) 2 calc(100% - 2) 8 L calc(100% - 2) calc(100% - 8) Q calc(100% - 2) calc(100% - 2) calc(100% - 8) calc(100% - 2) L 8 calc(100% - 2) Q 2 calc(100% - 2) 2 calc(100% - 8) L 2 8 Q 2 2 8 2');
-    animation: border-trail 3.5s linear infinite;
-    pointer-events: none;
-    filter: blur(2px);
-    opacity: 0.7;
-  }
 }
 
 @layer base {
