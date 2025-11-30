@@ -312,70 +312,6 @@
   }
 }
 
-/* CSS Property for Gradient Angle Animation */
-@property --gradient-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-/* Animated Rotating Border for Active Buttons */
-@layer utilities {
-  .active-tab-border {
-    position: relative;
-  }
-  
-  .active-tab-border::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    padding: 2px;
-    background: conic-gradient(
-      from var(--gradient-angle),
-      #6420aa,
-      #ff3ea5,
-      #ff7ed4,
-      #ff3ea5,
-      #6420aa
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: rotate-gradient 2.5s linear infinite;
-    z-index: -1;
-  }
-  
-  .active-tab-border::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    background: conic-gradient(
-      from var(--gradient-angle),
-      #6420aa,
-      #ff3ea5,
-      #ff7ed4,
-      #ff3ea5,
-      #6420aa
-    );
-    filter: blur(2rem);
-    opacity: 0.8;
-    animation: rotate-gradient 2.5s linear infinite;
-    z-index: -2;
-  }
-  
-  @keyframes rotate-gradient {
-    0% {
-      --gradient-angle: 0deg;
-    }
-    100% {
-      --gradient-angle: 360deg;
-    }
-  }
-}
-
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -384,11 +320,6 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  
-  .active-tab-border::before,
-  .active-tab-border::after {
-    animation: none !important;
   }
 }
 

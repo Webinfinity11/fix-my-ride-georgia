@@ -18,8 +18,6 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
       icon: DollarSign,
       color: "from-green-500 to-green-600",
       hoverColor: "hover:from-green-600 hover:to-green-700",
-      glowColor: "from-green-400 via-green-500 to-green-600",
-      shadowColor: "shadow-green-500/50",
     },
     {
       id: "dealers",
@@ -28,8 +26,6 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
       icon: Car,
       color: "from-blue-500 to-blue-600",
       hoverColor: "hover:from-blue-600 hover:to-blue-700",
-      glowColor: "from-blue-400 via-blue-500 to-blue-600",
-      shadowColor: "shadow-blue-500/50",
     },
     {
       id: "insurance",
@@ -38,8 +34,6 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
       icon: Shield,
       color: "from-purple-500 to-purple-600",
       hoverColor: "hover:from-purple-600 hover:to-purple-700",
-      glowColor: "from-purple-400 via-purple-500 to-purple-600",
-      shadowColor: "shadow-purple-500/50",
     },
   ];
 
@@ -56,7 +50,6 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
             variant={isActive ? "default" : "outline"}
             size="lg"
             className={`
-              ${isActive ? 'active-tab-border' : ''}
               flex-shrink-0
               snap-center
               min-w-[110px] sm:min-w-[140px] md:min-w-[160px]
@@ -65,7 +58,7 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
               ${
                 isActive
                   ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
-                  : "bg-background border-2 hover:border-primary/50"
+                  : "border-2 hover:border-primary/50"
               }
               transition-all duration-200
               touch-manipulation
