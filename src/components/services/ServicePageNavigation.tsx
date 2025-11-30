@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { DollarSign, Car, Shield } from "lucide-react";
 
 interface ServicePageNavigationProps {
-  currentPage: "leasing" | "dealers" | "insurance";
+  currentPage?: "leasing" | "dealers" | "insurance";
 }
 
 export function ServicePageNavigation({ currentPage }: ServicePageNavigationProps) {
