@@ -18,6 +18,8 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
       icon: DollarSign,
       color: "from-green-500 to-green-600",
       hoverColor: "hover:from-green-600 hover:to-green-700",
+      glowColor: "from-green-400 via-green-500 to-green-600",
+      shadowColor: "shadow-green-500/50",
     },
     {
       id: "dealers",
@@ -26,6 +28,8 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
       icon: Car,
       color: "from-blue-500 to-blue-600",
       hoverColor: "hover:from-blue-600 hover:to-blue-700",
+      glowColor: "from-blue-400 via-blue-500 to-blue-600",
+      shadowColor: "shadow-blue-500/50",
     },
     {
       id: "insurance",
@@ -34,6 +38,8 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
       icon: Shield,
       color: "from-purple-500 to-purple-600",
       hoverColor: "hover:from-purple-600 hover:to-purple-700",
+      glowColor: "from-purple-400 via-purple-500 to-purple-600",
+      shadowColor: "shadow-purple-500/50",
     },
   ];
 
@@ -44,30 +50,49 @@ export function ServicePageNavigation({ currentPage }: ServicePageNavigationProp
         const isActive = currentPage === service.id;
 
         return (
-          <Button
+          <div 
             key={service.id}
-            onClick={() => navigate(service.path)}
-            variant={isActive ? "default" : "outline"}
-            size="lg"
-            className={`
-              flex-shrink-0
-              snap-center
-              min-w-[110px] sm:min-w-[140px] md:min-w-[160px]
-              px-3 sm:px-4 md:px-6
-              py-2.5 sm:py-3
-              ${
-                isActive
-                  ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
-                  : "border-2 hover:border-primary/50"
-              }
-              transition-all duration-200
-              touch-manipulation
-              active:scale-95
-            `}
+            className="relative group flex-shrink-0 snap-center"
           >
-            <Icon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-            <span className="text-xs sm:text-base">{service.label}</span>
-          </Button>
+            {/* Rotating gradient glow border */}
+            <div 
+              className={`
+                absolute -inset-[2px] 
+                bg-gradient-to-r ${service.glowColor}
+                rounded-lg 
+                blur-sm 
+                opacity-75 
+                group-hover:opacity-100
+                animate-border-spin
+                transition-opacity duration-300
+              `}
+              style={{ zIndex: 0 }}
+            />
+            
+            {/* Button */}
+            <Button
+              onClick={() => navigate(service.path)}
+              variant={isActive ? "default" : "outline"}
+              size="lg"
+              className={`
+                relative z-10
+                min-w-[110px] sm:min-w-[140px] md:min-w-[160px]
+                px-3 sm:px-4 md:px-6
+                py-2.5 sm:py-3
+                ${
+                  isActive
+                    ? `bg-gradient-to-r ${service.color} ${service.hoverColor} text-white shadow-lg`
+                    : "bg-background border-2 hover:border-primary/50"
+                }
+                transition-all duration-200
+                touch-manipulation
+                active:scale-95
+              `}
+            >
+              <Icon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+              <span className="text-xs sm:text-base">{service.label}</span>
+            </Button>
+          </div>
         );
       })}
     </div>
