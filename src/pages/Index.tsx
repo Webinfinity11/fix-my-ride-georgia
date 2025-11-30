@@ -13,6 +13,7 @@ import SEOHead from "@/components/seo/SEOHead";
 import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
+import { ServicePageNavigation } from "@/components/services/ServicePageNavigation";
 import {
   Search,
   TrendingUp,
@@ -307,9 +308,9 @@ const Index = () => {
                   </span>
                 </h1>
 
-                <p className="text-base lg:text-lg text-gray-500 mb-10 max-w-2xl mx-auto">
-                  სწრაფი, საიმედო და ხარისხიანი ავტო-სერვისი თქვენი მანქანისთვის
-                </p>
+            <div className="mb-10">
+              <ServicePageNavigation />
+            </div>
               </div>
 
               {/* Order Parts Button */}
