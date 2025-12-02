@@ -1,13 +1,31 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Search, MapPin, Star, Car, Filter, X, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { 
+  Search, 
+  MapPin, 
+  Star, 
+  Car, 
+  X, 
+  Check,
+  MoreHorizontal,
+  Wrench,
+  Circle,
+  Paintbrush,
+  Zap,
+  Fan,
+  Truck,
+  Droplets,
+  Square,
+  Hammer,
+  Sparkles,
+  Package,
+  Settings,
+  type LucideIcon
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 type ServiceCategory = {
   id: number;
   name: string;
@@ -34,64 +52,21 @@ interface ModernServiceFiltersProps {
   onSearch: () => void;
   onResetFilters: () => void;
 }
-const commonCarBrands = [
-  "BMW",
-  "Mercedes-Benz",
-  "Audi",
-  "Toyota",
-  "Honda",
-  "Nissan",
-  "Hyundai",
-  "Kia",
-  "Volkswagen",
-  "Ford",
-  "Chevrolet",
-  "Mazda",
-  "Subaru",
-  "Lexus",
-  "Infiniti",
-  "Acura",
-  "Jeep",
-  "Land Rover",
-  "Porsche",
-  "Mitsubishi",
-  "Opel",
-  "Peugeot",
-  "Renault",
-  "Citroen",
-  "Fiat",
-  "Volvo",
-  "Saab",
-  "Skoda",
-  "Seat",
-  "Alfa Romeo",
-  "Tesla",
-  "სხვა",
-];
-
-// თბილისის უბნები
-const tbilisiDistricts = [
-  "ვაკე",
-  "საბურთალო",
-  "ვერე",
-  "გლდანი",
-  "ისანი",
-  "ნაძალადევი",
-  "ძველი თბილისი",
-  "აბანოთუბანი",
-  "ავლაბარი",
-  "ჩუღურეთი",
-  "სამგორი",
-  "დიღომი",
-  "ვაშლიჯვარი",
-  "მთაწმინდა",
-  "კრწანისი",
-  "ავჭალა",
-  "ლილო",
-  "ორთაჭალა",
-  "დიდუბე",
-  "ფონიჭალა",
-];
+// კატეგორიების აიქონების მაპინგი
+const categoryIcons: Record<string, LucideIcon> = {
+  "ძრავის შეკეთება": Wrench,
+  "ვულკანიზაცია": Circle,
+  "სამღებრო სამუშაოები": Paintbrush,
+  "ელექტროობა": Zap,
+  "კონდინციონერი(ფრეონი)": Fan,
+  "სავალი ნაწილის შეკეთება": Truck,
+  "ზეთის შეცვლა": Droplets,
+  "მინები": Square,
+  "ტიუნინგი": Sparkles,
+  "აკეცვა (სათუნუქე)": Hammer,
+  "ნაწილების შეძენა": Package,
+  "სხვა": Settings,
+};
 const ModernServiceFilters = ({
   searchTerm,
   setSearchTerm,
@@ -101,11 +76,6 @@ const ModernServiceFilters = ({
   selectedCity,
   setSelectedCity,
   cities,
-  selectedDistrict,
-  setSelectedDistrict,
-  districts,
-  selectedBrands,
-  setSelectedBrands,
   onSiteOnly,
   setOnSiteOnly,
   minRating,
@@ -113,291 +83,274 @@ const ModernServiceFilters = ({
   onSearch,
   onResetFilters,
 }: ModernServiceFiltersProps) => {
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const handleBrandToggle = (brand: string) => {
-    const newBrands = selectedBrands.includes(brand)
-      ? selectedBrands.filter((b) => b !== brand)
-      : [...selectedBrands, brand];
-    setSelectedBrands(newBrands);
+  const [showMoreCategories, setShowMoreCategories] = useState(false);
+  const [showAllCities, setShowAllCities] = useState(false);
+  // კატეგორიების ჩვენება
+  const visibleCategories = showMoreCategories ? categories : categories.slice(0, 7);
+  
+  // ქალაქების ჩვენება
+  const displayCities = showAllCities ? cities : cities.slice(0, 4);
+  const hasMoreCities = cities.length > 4;
+
+  const getCategoryIcon = (categoryName: string): LucideIcon => {
+    return categoryIcons[categoryName] || Settings;
   };
-  const handleCityChange = (city: string) => {
-    const newCity = city === "all" ? null : city;
-    setSelectedCity(newCity);
-    if (newCity !== "თბილისი") {
-      setSelectedDistrict(null);
-    }
+
+  const getCategoryName = (categoryId: number | "all"): string => {
+    if (categoryId === "all") return "";
+    const category = categories.find(c => c.id === categoryId);
+    return category?.name || "";
   };
-  const handleDistrictChange = (district: string) => {
-    setSelectedDistrict(district === "all" ? null : district);
-  };
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch();
   };
+
   const hasActiveFilters =
     searchTerm ||
     selectedCategory !== "all" ||
     selectedCity ||
-    selectedDistrict ||
-    selectedBrands.length > 0 ||
     onSiteOnly ||
     minRating;
-  const activeFiltersCount = [
-    searchTerm,
-    selectedCategory !== "all",
-    selectedCity,
-    selectedDistrict,
-    selectedBrands.length > 0,
-    onSiteOnly,
-    minRating,
-  ].filter(Boolean).length;
+
+  const removeFilter = (filterType: 'category' | 'city' | 'rating' | 'onsite') => {
+    switch (filterType) {
+      case 'category':
+        setSelectedCategory("all");
+        break;
+      case 'city':
+        setSelectedCity(null);
+        break;
+      case 'rating':
+        setMinRating(null);
+        break;
+      case 'onsite':
+        setOnSiteOnly(false);
+        break;
+    }
+  };
   return (
-    <Card className="border-primary/20 shadow-lg">
-      <CardContent className="p-3 md:p-6">
-        <div className="space-y-4 md:space-y-6">
-          {/* Main Search Bar - Fixed mobile spacing */}
-          <form onSubmit={handleSearchSubmit} className="relative">
-            <Search
-              className="absolute left-3 top-1/2 h-4 md:h-5 w-4 md:w-5 text-muted-foreground"
-              style={{ transform: "translateY(-50%)", willChange: "transform" }}
-            />
-            <Input
-              placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 md:pl-12 h-12 md:h-14 text-sm md:text-lg border-2 border-primary/20 focus-visible:ring-primary"
-            />
-          </form>
-
-          {/* Quick Filters - Improved mobile layout */}
+    <Card className="border-border/20 shadow-lg bg-slate-50">
+      <CardContent className="p-4 md:p-6">
+        <div className="space-y-6">
+          {/* კატეგორიების სექცია */}
           <div className="space-y-3">
-            {/* Mobile: Single column stack, Desktop: Grid */}
-            <div className="flex flex-col space-y-3 sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0 lg:grid-cols-4">
-              {/* Category Filter */}
-              <div className="space-y-2 min-w-0">
-                <Label className="text-xs md:text-sm font-medium text-gray-600">კატეგორია</Label>
-                <Select
-                  value={selectedCategory.toString()}
-                  onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}
-                >
-                  <SelectTrigger
-                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
-                    aria-label="კატეგორიის არჩევა"
+            {/* მობაილზე: ჰორიზონტალური scroll */}
+            <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+              <div className="flex md:flex-wrap gap-2 md:gap-3 min-w-max md:min-w-0">
+                {visibleCategories.map((category) => {
+                  const Icon = getCategoryIcon(category.name);
+                  const isSelected = selectedCategory === category.id;
+                  
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(isSelected ? "all" : category.id)}
+                      className={cn(
+                        "flex flex-col items-center p-3 rounded-2xl transition-all shrink-0",
+                        "min-w-[90px] md:min-w-[110px] touch-manipulation active:scale-95",
+                        isSelected 
+                          ? "bg-slate-800 text-white shadow-lg" 
+                          : "bg-white hover:bg-gray-50 text-gray-600 border border-gray-200"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-2 transition-colors",
+                        isSelected ? "bg-blue-500/20" : "bg-gray-50"
+                      )}>
+                        <Icon className={cn(
+                          "w-6 h-6 md:w-7 md:h-7",
+                          isSelected ? "text-blue-400" : "text-gray-400"
+                        )} />
+                      </div>
+                      <span className="text-xs md:text-sm text-center leading-tight">{category.name}</span>
+                    </button>
+                  );
+                })}
+                
+                {/* "სხვა" ღილაკი */}
+                {categories.length > 7 && (
+                  <button
+                    onClick={() => setShowMoreCategories(!showMoreCategories)}
+                    className="flex flex-col items-center p-3 rounded-2xl transition-all shrink-0 min-w-[90px] md:min-w-[110px] bg-white hover:bg-gray-50 border border-gray-200 touch-manipulation active:scale-95"
                   >
-                    <SelectValue placeholder="კატეგორია" />
-                  </SelectTrigger>
-                  <SelectContent className="z-50">
-                    <SelectItem value="all">ყველა კატეგორია</SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-2 bg-gray-50">
+                      <MoreHorizontal className="w-6 h-6 md:w-7 md:h-7 text-gray-400" />
+                    </div>
+                    <span className="text-xs md:text-sm text-gray-600">
+                      {showMoreCategories ? "ნაკლები" : "სხვა"}
+                    </span>
+                  </button>
+                )}
               </div>
-
-              {/* City Filter */}
-              <div className="space-y-2 min-w-0">
-                <Label className="text-xs md:text-sm font-medium text-gray-600 flex items-center gap-1">
-                  <MapPin className="h-3 w-3 md:h-4 md:w-4" />
-                  ქალაქი
-                </Label>
-                <Select value={selectedCity || "all"} onValueChange={handleCityChange}>
-                  <SelectTrigger
-                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
-                    aria-label="ქალაქის არჩევა"
-                  >
-                    <SelectValue placeholder="ქალაქი" />
-                  </SelectTrigger>
-                  <SelectContent className="z-50">
-                    <SelectItem value="all">ყველა ქალაქი</SelectItem>
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-3 w-3 md:h-4 md:w-4" />
-                          {city}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* District Filter - Better mobile spacing */}
-              {selectedCity === "თბილისი" && (
-                <div className="space-y-2 min-w-0 sm:col-span-2 lg:col-span-1">
-                  <Label className="text-xs md:text-sm font-medium text-gray-600">უბანი</Label>
-                  <Select value={selectedDistrict || "all"} onValueChange={handleDistrictChange}>
-                    <SelectTrigger className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full">
-                      <SelectValue placeholder="უბანი" />
-                    </SelectTrigger>
-                    <SelectContent className="z-50">
-                      <SelectItem value="all">ყველა უბანი</SelectItem>
-                      {tbilisiDistricts.map((district) => (
-                        <SelectItem key={district} value={district}>
-                          {district}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {/* Rating Filter */}
-              <div className="space-y-2 min-w-0">
-                <Label className="text-xs md:text-sm font-medium text-gray-600 flex items-center gap-1">
-                  <Star className="h-3 w-3 md:h-4 md:w-4" />
-                  რეიტინგი
-                </Label>
-                <Select
-                  value={minRating?.toString() || "all"}
-                  onValueChange={(value) => setMinRating(value === "all" ? null : parseInt(value))}
-                >
-                  <SelectTrigger
-                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
-                    aria-label="რეიტინგის არჩევა"
-                  >
-                    <SelectValue placeholder="რეიტინგი" />
-                  </SelectTrigger>
-                  <SelectContent className="z-50">
-                    <SelectItem value="all">ყველა რეიტინგი</SelectItem>
-                    <SelectItem value="4">4+ ვარსკვლავი</SelectItem>
-                    <SelectItem value="3">3+ ვარსკვლავი</SelectItem>
-                    <SelectItem value="2">2+ ვარსკვლავი</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* On-site service checkbox - Better mobile touch target */}
-            <div className="flex items-center space-x-3 py-3 px-2 bg-gray-50 rounded-lg">
-              <Checkbox id="on_site" checked={onSiteOnly} onCheckedChange={setOnSiteOnly} className="h-5 w-5" />
-              <Label htmlFor="on_site" className="text-sm flex items-center gap-2 cursor-pointer flex-1">
-                <CheckCircle className="h-4 w-4" />
-                ადგილზე მისვლა
-              </Label>
             </div>
           </div>
 
-          {/* Advanced Filters Toggle - Mobile optimized */}
-          <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="border-primary/20 hover:bg-primary/5 h-12 w-full sm:w-auto">
-                  <Filter className="h-4 w-4 mr-2" />
-                  ავტომობილის მარკები
-                  {activeFiltersCount > 0 && (
-                    <Badge variant="secondary" className="ml-2">
-                      {activeFiltersCount}
-                    </Badge>
+          {/* საძიებო ველი */}
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Input
+              placeholder="ჩაწერეთ სერვისი ან ხელოსნის სახელი..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-12 h-14 rounded-xl border-gray-200 bg-white text-base placeholder:text-gray-400"
+            />
+          </form>
+
+          {/* ლოკაცია და დამატებითი ფილტრები */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* ლოკაცია */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-pink-500" />
+                <span className="text-pink-500 text-sm font-medium">ლოკაცია</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedCity(null)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm transition-all touch-manipulation active:scale-95",
+                    !selectedCity
+                      ? "bg-slate-800 text-white shadow-md"
+                      : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
                   )}
-                  {showAdvanced ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
-                </Button>
-              </CollapsibleTrigger>
-
-              {hasActiveFilters}
-            </div>
-
-            {/* Advanced Filters Content - Better mobile layout */}
-            <CollapsibleContent
-              className="space-y-4 pt-4 border-t border-primary/10 mt-4"
-              style={{ willChange: "height" }}
-            >
-              <div className="space-y-4">
-                <Label className="text-sm font-medium flex items-center gap-1">
-                  <Car className="h-4 w-4" />
-                  მანქანის მარკები
-                </Label>
-
-                {/* Mobile: Simplified brand selection with better spacing */}
-                <div className="space-y-4">
-                  {/* First 6 brands always visible */}
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    {commonCarBrands.slice(0, 6).map((brand) => (
-                      <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white h-12">
-                        <Checkbox
-                          id={`brand-${brand}`}
-                          checked={selectedBrands.includes(brand)}
-                          onCheckedChange={() => handleBrandToggle(brand)}
-                          className="h-5 w-5"
-                        />
-                        <Label htmlFor={`brand-${brand}`} className="text-sm flex-1 cursor-pointer font-medium">
-                          {brand}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* More brands in collapsible */}
-                  <Collapsible>
-                    <CollapsibleTrigger asChild>
-                      <Button variant="outline" className="w-full h-12">
-                        მეტის ნახვა ({commonCarBrands.length - 6})
-                        <ChevronDown className="h-4 w-4 ml-2" />
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-4" style={{ willChange: "height" }}>
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                        {commonCarBrands.slice(6).map((brand) => (
-                          <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white h-12">
-                            <Checkbox
-                              id={`brand-${brand}`}
-                              checked={selectedBrands.includes(brand)}
-                              onCheckedChange={() => handleBrandToggle(brand)}
-                              className="h-5 w-5"
-                            />
-                            <Label htmlFor={`brand-${brand}`} className="text-sm flex-1 cursor-pointer font-medium">
-                              {brand}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </div>
-
-                {/* Selected brands display - Better mobile layout */}
-                {selectedBrands.length > 0 && (
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <Label className="text-xs text-gray-600 mb-2 block">არჩეული მარკები:</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedBrands.map((brand) => (
-                        <Badge key={brand} variant="secondary" className="flex items-center gap-1 text-sm py-1 px-2">
-                          {brand}
-                          <button
-                            onClick={() => handleBrandToggle(brand)}
-                            className="text-muted-foreground hover:text-destructive ml-1 h-4 w-4 flex items-center justify-center"
-                          >
-                            ×
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
+                >
+                  ყველა
+                </button>
+                {displayCities.map((city) => (
+                  <button
+                    key={city}
+                    onClick={() => setSelectedCity(city)}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-sm transition-all touch-manipulation active:scale-95",
+                      selectedCity === city
+                        ? "bg-slate-800 text-white shadow-md"
+                        : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
+                    )}
+                  >
+                    {city}
+                  </button>
+                ))}
+                {hasMoreCities && !showAllCities && (
+                  <button
+                    onClick={() => setShowAllCities(true)}
+                    className="px-4 py-2 rounded-full text-sm bg-white border border-gray-200 hover:border-gray-300 text-gray-700 touch-manipulation active:scale-95"
+                  >
+                    + {cities.length - 4}
+                  </button>
                 )}
               </div>
-            </CollapsibleContent>
-          </Collapsible>
+            </div>
 
-          {/* Search Button - Better mobile spacing */}
-          <div className="flex flex-col gap-3 sm:flex-row">
+            {/* დამატებითი ფილტრები */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4 text-yellow-500" />
+                <span className="text-yellow-600 text-sm font-medium">დამატებითი</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setMinRating(minRating === 4 ? null : 4)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm flex items-center gap-2 transition-all touch-manipulation active:scale-95",
+                    minRating === 4
+                      ? "bg-slate-800 text-white shadow-md"
+                      : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
+                  )}
+                >
+                  <Star className={cn("h-4 w-4", minRating === 4 ? "text-yellow-400" : "text-yellow-500")} />
+                  მაღალი რეიტინგი
+                </button>
+                <button
+                  onClick={() => setOnSiteOnly(!onSiteOnly)}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-sm flex items-center gap-2 transition-all touch-manipulation active:scale-95",
+                    onSiteOnly
+                      ? "bg-slate-800 text-white shadow-md"
+                      : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
+                  )}
+                >
+                  <Car className={cn("h-4 w-4", onSiteOnly ? "text-blue-400" : "text-blue-500")} />
+                  ადგილზე
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* არჩეული ფილტრები */}
+          {hasActiveFilters && (
+            <div className="flex items-start gap-2 flex-wrap bg-white p-4 rounded-xl border border-gray-200">
+              <span className="text-sm text-gray-500 font-medium">არჩეული:</span>
+              <div className="flex flex-wrap gap-2 flex-1">
+                {selectedCategory !== "all" && (
+                  <Badge className="flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 px-3 py-1">
+                    <Check className="h-3 w-3" />
+                    {getCategoryName(selectedCategory)}
+                    <button 
+                      onClick={() => removeFilter('category')}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+                {selectedCity && (
+                  <Badge className="flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 px-3 py-1">
+                    <Check className="h-3 w-3" />
+                    {selectedCity}
+                    <button 
+                      onClick={() => removeFilter('city')}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+                {minRating && (
+                  <Badge className="flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 px-3 py-1">
+                    <Check className="h-3 w-3" />
+                    {minRating}+ ვარსკვლავი
+                    <button 
+                      onClick={() => removeFilter('rating')}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+                {onSiteOnly && (
+                  <Badge className="flex items-center gap-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 px-3 py-1">
+                    <Check className="h-3 w-3" />
+                    ადგილზე მისვლა
+                    <button 
+                      onClick={() => removeFilter('onsite')}
+                      className="ml-1 hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ძიებისა და გასუფთავების ღილაკები */}
+          <div className="flex gap-3">
             <Button
               onClick={onSearch}
-              className="flex-1 h-12 md:h-14 text-sm md:text-lg bg-primary hover:bg-primary-dark transition-colors"
+              className="flex-1 h-14 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-base md:text-lg font-medium shadow-lg"
             >
-              <Search className="h-4 md:h-5 w-4 md:w-5 mr-2" />
+              <Search className="h-5 w-5 mr-2" />
               ძიება
             </Button>
-
             {hasActiveFilters && (
               <Button
-                variant="outline"
                 onClick={onResetFilters}
-                className="h-12 md:h-14 px-4 md:px-6 text-muted-foreground hover:text-destructive border-destructive/20 sm:w-auto"
+                variant="outline"
+                className="h-14 px-6 rounded-xl border-gray-300 hover:bg-gray-50 text-gray-700"
               >
-                <X className="h-4 md:h-5 w-4 md:w-5 mr-1 md:mr-2" />
-                გასუფთავება
+                <X className="h-5 w-5" />
               </Button>
             )}
           </div>
@@ -406,4 +359,5 @@ const ModernServiceFilters = ({
     </Card>
   );
 };
+
 export default ModernServiceFilters;
