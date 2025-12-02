@@ -226,9 +226,18 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
       <div className="space-y-3">
         <span className="text-sm text-gray-500">კატეგორიები</span>
         
-        {/* Single row horizontal scroll */}
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
-          <div className="flex gap-2 snap-x snap-mandatory">
+        {/* Hybrid Layout: Mobile horizontal scroll, Desktop flex-wrap */}
+        <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible scrollbar-hide">
+          <div className={cn(
+            // Mobile: horizontal scroll (closed) or 3-row grid (open)
+            showMoreCategories 
+              ? "grid grid-rows-3 grid-flow-col auto-cols-max gap-2 snap-x snap-mandatory"
+              : "flex gap-2 snap-x snap-mandatory",
+            // Desktop: flex-wrap with overflow control
+            "md:flex md:flex-wrap md:gap-3 md:snap-none transition-all duration-300 ease-in-out",
+            // Desktop: limit height when closed
+            !showMoreCategories && "md:max-h-[80px] md:overflow-hidden"
+          )}>
             {visibleCategories.map((cat) => {
               const Icon = getCategoryIcon(cat.name);
               const isSelected = selectedCategory === cat.id;
@@ -238,16 +247,20 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
                   className={cn(
-                    "flex flex-col items-center p-2 md:p-3 rounded-xl md:rounded-2xl transition-all snap-start",
-                    "min-w-[70px] md:min-w-[90px]",
+                    "snap-start flex flex-col items-center rounded-xl transition-all",
+                    // Mobile: compact
+                    "p-2 min-w-[65px]",
+                    // Desktop: larger
+                    "md:p-3 md:min-w-[85px]",
                     isSelected
-                      ? "bg-slate-800 text-white"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                      ? "bg-slate-800 text-white shadow-lg scale-105"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                   )}
                 >
                   <div
                     className={cn(
-                      "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2 flex-shrink-0",
+                      "rounded-full flex items-center justify-center mb-1 md:mb-2 transition-colors",
+                      "w-9 h-9 md:w-11 md:h-11",
                       isSelected ? "bg-blue-500/20" : "bg-white"
                     )}
                   >
@@ -258,32 +271,37 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
                       )}
                     />
                   </div>
-                  <span className="text-[10px] md:text-xs text-center line-clamp-2 leading-tight">
+                  <span className="text-[9px] md:text-xs text-center line-clamp-2 leading-tight">
                     {cat.name}
                   </span>
                 </button>
               );
             })}
 
-            {/* "სხვა" / "აკეცვა" button */}
+            {/* "სხვა" button with counter */}
             {sortedCategories.length > 12 && (
               <button
                 type="button"
                 onClick={() => setShowMoreCategories(!showMoreCategories)}
                 className={cn(
-                  "flex flex-col items-center p-2 md:p-3 rounded-xl md:rounded-2xl transition-all snap-start",
-                  "min-w-[70px] md:min-w-[90px]",
-                  "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                  "snap-start flex flex-col items-center rounded-xl transition-all",
+                  "p-2 min-w-[65px] md:p-3 md:min-w-[85px]",
+                  "bg-gray-100 hover:bg-gray-200 text-gray-700"
                 )}
               >
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2 bg-white flex-shrink-0">
+                <div className="rounded-full w-9 h-9 md:w-11 md:h-11 flex items-center justify-center mb-1 md:mb-2 bg-white">
                   {showMoreCategories ? (
                     <ChevronUp className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                   ) : (
                     <MoreHorizontal className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                   )}
                 </div>
-                <span className="text-[10px] md:text-xs">{showMoreCategories ? "აკეცვა" : "სხვა"}</span>
+                <span className="text-[9px] md:text-xs text-center line-clamp-2 leading-tight">
+                  {showMoreCategories 
+                    ? "აკეცვა" 
+                    : `+${sortedCategories.length - 12} სხვა`
+                  }
+                </span>
               </button>
             )}
           </div>
