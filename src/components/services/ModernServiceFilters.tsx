@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Search,
   MapPin,
@@ -152,7 +151,6 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
   onResetFilters,
 }) => {
   const [showMoreCategories, setShowMoreCategories] = useState(false);
-  const [isDetailedOpen, setIsDetailedOpen] = useState(false);
 
   // Sort categories by popularity
   const sortedCategories = React.useMemo(() => {
@@ -186,15 +184,6 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
     onSiteOnly ||
     minRating;
 
-  const activeFilterCount = [
-    searchTerm,
-    selectedCategory !== "all",
-    selectedCity,
-    selectedBrand,
-    onSiteOnly,
-    minRating
-  ].filter(Boolean).length;
-
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch();
@@ -226,17 +215,11 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
       <div className="space-y-3">
         <span className="text-sm text-gray-500">კატეგორიები</span>
         
-        {/* Hybrid Layout: Mobile horizontal scroll, Desktop flex-wrap */}
+        {/* Mobile: 3-row horizontal scroll grid, Desktop: flex-wrap */}
         <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible scrollbar-hide">
           <div className={cn(
-            // Mobile: horizontal scroll (closed) or 3-row grid (open)
-            showMoreCategories 
-              ? "grid grid-rows-3 grid-flow-col auto-cols-max gap-2 snap-x snap-mandatory"
-              : "flex gap-2 snap-x snap-mandatory",
-            // Desktop: flex-wrap with overflow control
-            "md:flex md:flex-wrap md:gap-3 md:snap-none transition-all duration-300 ease-in-out",
-            // Desktop: limit height when closed
-            !showMoreCategories && "md:max-h-[80px] md:overflow-hidden"
+            "grid grid-rows-3 grid-flow-col auto-cols-max gap-2 snap-x snap-mandatory",
+            "md:flex md:flex-wrap md:gap-3 md:snap-none"
           )}>
             {visibleCategories.map((cat) => {
               const Icon = getCategoryIcon(cat.name);
@@ -247,20 +230,16 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
                   className={cn(
-                    "snap-start flex flex-col items-center rounded-xl transition-all",
-                    // Mobile: compact
-                    "p-2 min-w-[65px]",
-                    // Desktop: larger
-                    "md:p-3 md:min-w-[85px]",
+                    "flex flex-col items-center p-2 md:p-3 rounded-xl md:rounded-2xl transition-all snap-start",
+                    "min-w-[70px] md:min-w-[90px]",
                     isSelected
-                      ? "bg-slate-800 text-white shadow-lg scale-105"
-                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      ? "bg-slate-800 text-white"
+                      : "bg-gray-100 hover:bg-gray-200 text-gray-600"
                   )}
                 >
                   <div
                     className={cn(
-                      "rounded-full flex items-center justify-center mb-1 md:mb-2 transition-colors",
-                      "w-9 h-9 md:w-11 md:h-11",
+                      "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2 flex-shrink-0",
                       isSelected ? "bg-blue-500/20" : "bg-white"
                     )}
                   >
@@ -271,66 +250,39 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
                       )}
                     />
                   </div>
-                  <span className="text-[9px] md:text-xs text-center line-clamp-2 leading-tight">
+                  <span className="text-[10px] md:text-xs text-center line-clamp-2 leading-tight">
                     {cat.name}
                   </span>
                 </button>
               );
             })}
 
-            {/* "სხვა" button with counter */}
+            {/* "სხვა" / "აკეცვა" button */}
             {sortedCategories.length > 12 && (
               <button
                 type="button"
                 onClick={() => setShowMoreCategories(!showMoreCategories)}
                 className={cn(
-                  "snap-start flex flex-col items-center rounded-xl transition-all",
-                  "p-2 min-w-[65px] md:p-3 md:min-w-[85px]",
-                  "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                  "flex flex-col items-center p-2 md:p-3 rounded-xl md:rounded-2xl transition-all snap-start",
+                  "min-w-[70px] md:min-w-[90px]",
+                  "bg-gray-100 hover:bg-gray-200 text-gray-600"
                 )}
               >
-                <div className="rounded-full w-9 h-9 md:w-11 md:h-11 flex items-center justify-center mb-1 md:mb-2 bg-white">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2 bg-white flex-shrink-0">
                   {showMoreCategories ? (
                     <ChevronUp className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                   ) : (
                     <MoreHorizontal className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                   )}
                 </div>
-                <span className="text-[9px] md:text-xs text-center line-clamp-2 leading-tight">
-                  {showMoreCategories 
-                    ? "აკეცვა" 
-                    : `+${sortedCategories.length - 12} სხვა`
-                  }
-                </span>
+                <span className="text-[10px] md:text-xs">{showMoreCategories ? "აკეცვა" : "სხვა"}</span>
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* დეტალური ძიება Collapsible */}
-      <Collapsible open={isDetailedOpen} onOpenChange={setIsDetailedOpen}>
-        <CollapsibleTrigger asChild>
-          <button 
-            type="button"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 py-2 transition-colors"
-          >
-            {isDetailedOpen ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-            <span className="text-sm font-medium">დეტალური ძიება</span>
-            {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {activeFilterCount}
-              </Badge>
-            )}
-          </button>
-        </CollapsibleTrigger>
-        
-        <CollapsibleContent className="space-y-6 pt-4">
-          {/* Search Input + Rating/On-Site Buttons */}
+      {/* Search Input + Rating/On-Site Buttons */}
       <div className="flex flex-col lg:flex-row gap-3">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -545,18 +497,13 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
       )}
 
       {/* Search Button */}
-      <div className="flex justify-center pt-2">
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full md:w-auto min-w-[200px] h-12 bg-slate-800 hover:bg-slate-700 text-white rounded-xl"
-        >
-          <Search className="h-5 w-5 mr-2" />
-          ძიება
-        </Button>
-      </div>
-        </CollapsibleContent>
-      </Collapsible>
+      <Button
+        type="submit"
+        className="w-full h-14 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-lg font-medium"
+      >
+        <Search className="h-5 w-5 mr-2" />
+        ძიება
+      </Button>
     </form>
   );
 };
