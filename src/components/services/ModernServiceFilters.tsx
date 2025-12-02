@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Search,
   MapPin,
@@ -151,6 +152,7 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
   onResetFilters,
 }) => {
   const [showMoreCategories, setShowMoreCategories] = useState(false);
+  const [isDetailedOpen, setIsDetailedOpen] = useState(false);
 
   // Sort categories by popularity
   const sortedCategories = React.useMemo(() => {
@@ -184,6 +186,15 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
     onSiteOnly ||
     minRating;
 
+  const activeFilterCount = [
+    searchTerm,
+    selectedCategory !== "all",
+    selectedCity,
+    selectedBrand,
+    onSiteOnly,
+    minRating
+  ].filter(Boolean).length;
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch();
@@ -215,12 +226,9 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
       <div className="space-y-3">
         <span className="text-sm text-gray-500">კატეგორიები</span>
         
-        {/* Mobile: 3-row horizontal scroll grid, Desktop: flex-wrap */}
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible scrollbar-hide">
-          <div className={cn(
-            "grid grid-rows-3 grid-flow-col auto-cols-max gap-2 snap-x snap-mandatory",
-            "md:flex md:flex-wrap md:gap-3 md:snap-none"
-          )}>
+        {/* Single row horizontal scroll */}
+        <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+          <div className="flex gap-2 snap-x snap-mandatory">
             {visibleCategories.map((cat) => {
               const Icon = getCategoryIcon(cat.name);
               const isSelected = selectedCategory === cat.id;
@@ -282,7 +290,29 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
         </div>
       </div>
 
-      {/* Search Input + Rating/On-Site Buttons */}
+      {/* დეტალური ძიება Collapsible */}
+      <Collapsible open={isDetailedOpen} onOpenChange={setIsDetailedOpen}>
+        <CollapsibleTrigger asChild>
+          <button 
+            type="button"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 py-2 transition-colors"
+          >
+            {isDetailedOpen ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+            <span className="text-sm font-medium">დეტალური ძიება</span>
+            {activeFilterCount > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {activeFilterCount}
+              </Badge>
+            )}
+          </button>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent className="space-y-6 pt-4">
+          {/* Search Input + Rating/On-Site Buttons */}
       <div className="flex flex-col lg:flex-row gap-3">
         <div className="flex-1 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -497,13 +527,18 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
       )}
 
       {/* Search Button */}
-      <Button
-        type="submit"
-        className="w-full h-14 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-lg font-medium"
-      >
-        <Search className="h-5 w-5 mr-2" />
-        ძიება
-      </Button>
+      <div className="flex justify-center pt-2">
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full md:w-auto min-w-[200px] h-12 bg-slate-800 hover:bg-slate-700 text-white rounded-xl"
+        >
+          <Search className="h-5 w-5 mr-2" />
+          ძიება
+        </Button>
+      </div>
+        </CollapsibleContent>
+      </Collapsible>
     </form>
   );
 };
