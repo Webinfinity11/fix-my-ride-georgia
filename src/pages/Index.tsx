@@ -114,13 +114,15 @@ const Index = () => {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [carBrands, setCarBrands] = useState<string[]>([]);
   const [onSiteOnly, setOnSiteOnly] = useState(false);
   const [minRating, setMinRating] = useState<number | null>(null);
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         // Fetch all data in parallel to reduce critical request chain
-        const [categoriesResponse, mechanicsResponse, allCategoriesResponse] = await Promise.all([
+        const [categoriesResponse, mechanicsResponse, allCategoriesResponse, carBrandsResponse] = await Promise.all([
           supabase
             .from("service_categories")
             .select("*")
@@ -157,6 +159,7 @@ const Index = () => {
           supabase.from("service_categories").select("*").order("name", {
             ascending: true,
           }),
+          supabase.from("car_brands").select("name").order("name", { ascending: true }),
         ]);
 
         // Handle categories
@@ -166,6 +169,10 @@ const Index = () => {
         // Handle all categories
         if (allCategoriesResponse.error) throw allCategoriesResponse.error;
         setAllCategories(allCategoriesResponse.data || []);
+
+        // Handle car brands
+        if (carBrandsResponse.error) throw carBrandsResponse.error;
+        setCarBrands(carBrandsResponse.data?.map((b) => b.name) || []);
 
         // Handle mechanics
         if (mechanicsResponse.error) throw mechanicsResponse.error;
@@ -246,6 +253,7 @@ const Index = () => {
     setSelectedCity(null);
     setSelectedDistrict(null);
     setSelectedBrands([]);
+    setSelectedBrand(null);
     setOnSiteOnly(false);
     setMinRating(null);
   };
@@ -355,8 +363,9 @@ const Index = () => {
                       selectedDistrict={selectedDistrict}
                       setSelectedDistrict={setSelectedDistrict}
                       districts={districts}
-                      selectedBrands={selectedBrands}
-                      setSelectedBrands={setSelectedBrands}
+                      selectedBrand={selectedBrand}
+                      setSelectedBrand={setSelectedBrand}
+                      carBrands={carBrands}
                       onSiteOnly={onSiteOnly}
                       setOnSiteOnly={setOnSiteOnly}
                       minRating={minRating}
