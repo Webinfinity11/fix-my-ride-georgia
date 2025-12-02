@@ -24,6 +24,34 @@ import {
   ChevronRight,
   X,
   Check,
+  Activity,
+  Droplet,
+  Lightbulb,
+  Cog,
+  Armchair,
+  Shield,
+  Sparkles,
+  Gauge,
+  Sparkle,
+  Flame,
+  Package,
+  Box,
+  Layers,
+  Fuel,
+  Battery,
+  Wind,
+  CircleDot,
+  BatteryCharging,
+  RotateCw,
+  ShoppingBag,
+  Disc,
+  GlassWater,
+  Target,
+  Filter,
+  Eye,
+  Key,
+  DoorOpen,
+  Palette,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -56,19 +84,51 @@ export interface ModernServiceFiltersProps {
   onResetFilters: () => void;
 }
 
-// Category icon mapping
+// Priority order based on popularity (from database statistics)
+const categoryPriorityOrder = [13, 16, 11, 17, 27, 14, 21, 23, 12, 18, 20, 51, 26, 38, 28, 53, 29, 34, 22, 41, 33, 43, 19, 39, 25, 15, 40, 52, 49, 35, 30, 24, 36, 42, 37, 50, 31, 32, 54];
+
+// Complete category icon mapping for all 39 categories
 const categoryIcons: Record<string, any> = {
-  "ძრავის შეკეთება": Wrench,
-  "ვულკანიზაცია": Circle,
-  "სამღებრო სამუშაოები": Paintbrush,
-  "ელექტროობა": Zap,
-  "კონდიცონერი (ფრეონი)": Fan,
-  "კონდინციონერი": Snowflake,
   "სავალი ნაწილის შეკეთება": Truck,
-  "ზეთის შეცვლა": Droplets,
-  "მინები": Square,
-  "ტიუნინგი": Settings,
-  "აკეცვა (სათუნუქე)": Hammer,
+  "ელექტროობა": Zap,
+  "ძრავის შეკეთება": Wrench,
+  "დიაგნოსტიკა": Activity,
+  "წყლის სისტემა": Droplets,
+  "ზეთის შეცვლა": Droplet,
+  "სათუნუქე სამუშაოები": Hammer,
+  "ფარების აღდგენა": Lightbulb,
+  "გადაცემათა კოლოფი": Cog,
+  "მანქანის სალონი": Armchair,
+  "სამღებრო სამუშაოები": Paintbrush,
+  "აირბაგი": Shield,
+  "ქიმწმენდა": Sparkles,
+  "ტუნინგი": Gauge,
+  "პოლირება": Sparkle,
+  "აალების სანთლები": Flame,
+  "მინების დამუქება": Square,
+  "დაშლილები": Package,
+  "პლასმასის აღდგენა": Box,
+  "წვის სისტემა": Flame,
+  "ფირის გადაკვრა": Layers,
+  "გაზის სისტემის მონტაჟი/შეკეთება": Fuel,
+  "ჰიბრიდული სისტემა": Battery,
+  "გამონაბოლქვის სისტემა": Wind,
+  "კონდიცონერი (ფრეონი)": Snowflake,
+  "კონდინციონერი(ფრეონი)": Snowflake,
+  "ვულკანიზაცია": Circle,
+  "თვლების შეყრა": CircleDot,
+  "აკუმულატორი": BatteryCharging,
+  "დინამოს და სტარტერის შეკეთება": RotateCw,
+  "ახალი ნაწილები": ShoppingBag,
+  "დისკების შეღებვა/აღდგენა": Disc,
+  "საქარე მინები": GlassWater,
+  "საჭის სისტემა": Target,
+  "კატალიზატორის სერვისი": Filter,
+  "ვიზუალური დეტალები": Eye,
+  "მანქანის გასაღები": Key,
+  "კარის გაღება": DoorOpen,
+  "საღებავების შეზავება": Palette,
+  "დითეილინგი": Star,
 };
 
 const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
@@ -92,6 +152,17 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
 }) => {
   const [showMoreCategories, setShowMoreCategories] = useState(false);
 
+  // Sort categories by popularity
+  const sortedCategories = React.useMemo(() => {
+    return [...categories].sort((a, b) => {
+      const aIndex = categoryPriorityOrder.indexOf(a.id);
+      const bIndex = categoryPriorityOrder.indexOf(b.id);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+  }, [categories]);
+
   const getCategoryIcon = (categoryName: string) => {
     const IconComponent = categoryIcons[categoryName] || Wrench;
     return IconComponent;
@@ -103,7 +174,7 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
     return category?.name || "კატეგორია";
   };
 
-  const visibleCategories = showMoreCategories ? categories : categories.slice(0, 6);
+  const visibleCategories = showMoreCategories ? sortedCategories : sortedCategories.slice(0, 12);
 
   const hasActiveFilters =
     searchTerm ||
@@ -143,9 +214,13 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
       {/* კატეგორიები Section */}
       <div className="space-y-3">
         <span className="text-sm text-gray-500">კატეგორიები</span>
-        <div className="space-y-3">
-          {/* First row of categories */}
-          <div className="flex flex-wrap gap-3">
+        
+        {/* Mobile: 3-row horizontal scroll grid, Desktop: flex-wrap */}
+        <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible scrollbar-hide">
+          <div className={cn(
+            "grid grid-rows-3 grid-flow-col auto-cols-max gap-2 snap-x snap-mandatory",
+            "md:flex md:flex-wrap md:gap-3 md:snap-none"
+          )}>
             {visibleCategories.map((cat) => {
               const Icon = getCategoryIcon(cat.name);
               const isSelected = selectedCategory === cat.id;
@@ -155,7 +230,8 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
                   className={cn(
-                    "flex flex-col items-center p-3 rounded-2xl transition-all min-w-[80px]",
+                    "flex flex-col items-center p-2 md:p-3 rounded-xl md:rounded-2xl transition-all snap-start",
+                    "min-w-[70px] md:min-w-[90px]",
                     isSelected
                       ? "bg-slate-800 text-white"
                       : "bg-gray-100 hover:bg-gray-200 text-gray-600"
@@ -163,37 +239,43 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
                 >
                   <div
                     className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center mb-2",
+                      "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2 flex-shrink-0",
                       isSelected ? "bg-blue-500/20" : "bg-white"
                     )}
                   >
                     <Icon
                       className={cn(
-                        "h-5 w-5",
+                        "h-4 w-4 md:h-5 md:w-5",
                         isSelected ? "text-blue-400" : "text-gray-400"
                       )}
                     />
                   </div>
-                  <span className="text-xs text-center">{cat.name}</span>
+                  <span className="text-[10px] md:text-xs text-center line-clamp-2 leading-tight">
+                    {cat.name}
+                  </span>
                 </button>
               );
             })}
 
-            {/* "სხვა" button */}
-            {categories.length > 6 && (
+            {/* "სხვა" / "აკეცვა" button */}
+            {sortedCategories.length > 12 && (
               <button
                 type="button"
                 onClick={() => setShowMoreCategories(!showMoreCategories)}
-                className="flex flex-col items-center p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all min-w-[80px]"
+                className={cn(
+                  "flex flex-col items-center p-2 md:p-3 rounded-xl md:rounded-2xl transition-all snap-start",
+                  "min-w-[70px] md:min-w-[90px]",
+                  "bg-gray-100 hover:bg-gray-200 text-gray-600"
+                )}
               >
-                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-white">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 md:mb-2 bg-white flex-shrink-0">
                   {showMoreCategories ? (
-                    <ChevronUp className="h-5 w-5 text-gray-400" />
+                    <ChevronUp className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                   ) : (
-                    <MoreHorizontal className="h-5 w-5 text-gray-400" />
+                    <MoreHorizontal className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                   )}
                 </div>
-                <span className="text-xs">{showMoreCategories ? "აკეცვა" : "სხვა"}</span>
+                <span className="text-[10px] md:text-xs">{showMoreCategories ? "აკეცვა" : "სხვა"}</span>
               </button>
             )}
           </div>
