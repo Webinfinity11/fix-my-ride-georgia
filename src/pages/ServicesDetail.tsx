@@ -7,7 +7,6 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { useServices } from "@/hooks/useServices";
-import { supabase } from "@/integrations/supabase/client";
 import { Filter, RefreshCw, MapPin } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
@@ -67,8 +66,6 @@ const ServicesDetail = () => {
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
     searchParams.get("brands") ? searchParams.get("brands")!.split(",") : [],
   );
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(searchParams.get("brand") || null);
-  const [carBrands, setCarBrands] = useState<string[]>([]);
   const [onSiteOnly, setOnSiteOnly] = useState(searchParams.get("onSite") === "true");
   const [minRating, setMinRating] = useState<number | null>(
     searchParams.get("minRating") ? parseInt(searchParams.get("minRating")!) : null,
@@ -89,14 +86,6 @@ const ServicesDetail = () => {
     console.log("🚀 Initializing component data...");
     const initializeData = async () => {
       await fetchInitialData();
-      // Fetch car brands
-      const { data } = await supabase
-        .from("car_brands")
-        .select("name")
-        .order("name", { ascending: true });
-      if (data) {
-        setCarBrands(data.map((b) => b.name));
-      }
     };
     initializeData();
   }, []);
@@ -167,7 +156,6 @@ const ServicesDetail = () => {
     setSelectedCity(null);
     setSelectedDistrict(null);
     setSelectedBrands([]);
-    setSelectedBrand(null);
     setOnSiteOnly(false);
     setMinRating(null);
     setSearchParams({});
@@ -273,9 +261,8 @@ const ServicesDetail = () => {
                     selectedDistrict={selectedDistrict}
                     setSelectedDistrict={setSelectedDistrict}
                     districts={availableDistricts}
-                    selectedBrand={selectedBrand}
-                    setSelectedBrand={setSelectedBrand}
-                    carBrands={carBrands}
+                    selectedBrands={selectedBrands}
+                    setSelectedBrands={setSelectedBrands}
                     onSiteOnly={onSiteOnly}
                     setOnSiteOnly={setOnSiteOnly}
                     minRating={minRating}

@@ -1,67 +1,19 @@
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import {
-  Search,
-  MapPin,
-  Star,
-  Car,
-  Wrench,
-  Paintbrush,
-  Zap,
-  Droplets,
-  Square,
-  Hammer,
-  Truck,
-  Snowflake,
-  Circle,
-  Settings,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronUp,
-  X,
-  Check,
-  Activity,
-  Droplet,
-  Lightbulb,
-  Cog,
-  Armchair,
-  Shield,
-  Sparkles,
-  Gauge,
-  Sparkle,
-  Flame,
-  Package,
-  Box,
-  Layers,
-  Fuel,
-  Battery,
-  Wind,
-  CircleDot,
-  BatteryCharging,
-  RotateCw,
-  ShoppingBag,
-  Disc,
-  GlassWater,
-  Target,
-  Filter,
-  Eye,
-  Key,
-  DoorOpen,
-  Palette,
-  LayoutGrid,
-  Navigation,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-
+import { Card, CardContent } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Search, MapPin, Star, Car, Filter, X, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 type ServiceCategory = {
   id: number;
   name: string;
   description?: string | null;
 };
-
-export interface ModernServiceFiltersProps {
+interface ModernServiceFiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   selectedCategory: number | "all";
@@ -70,99 +22,77 @@ export interface ModernServiceFiltersProps {
   selectedCity: string | null;
   setSelectedCity: (city: string | null) => void;
   cities: string[];
-  selectedDistrict?: string | null;
-  setSelectedDistrict?: (district: string | null) => void;
-  districts?: string[];
-  selectedBrand?: string | null;
-  setSelectedBrand?: (brand: string | null) => void;
-  carBrands?: string[];
+  selectedDistrict: string | null;
+  setSelectedDistrict: (district: string | null) => void;
+  districts: string[];
+  selectedBrands: string[];
+  setSelectedBrands: (brands: string[]) => void;
   onSiteOnly: boolean;
-  setOnSiteOnly: (value: boolean) => void;
+  setOnSiteOnly: (onSite: boolean) => void;
   minRating: number | null;
   setMinRating: (rating: number | null) => void;
   onSearch: () => void;
   onResetFilters: () => void;
 }
+const commonCarBrands = [
+  "BMW",
+  "Mercedes-Benz",
+  "Audi",
+  "Toyota",
+  "Honda",
+  "Nissan",
+  "Hyundai",
+  "Kia",
+  "Volkswagen",
+  "Ford",
+  "Chevrolet",
+  "Mazda",
+  "Subaru",
+  "Lexus",
+  "Infiniti",
+  "Acura",
+  "Jeep",
+  "Land Rover",
+  "Porsche",
+  "Mitsubishi",
+  "Opel",
+  "Peugeot",
+  "Renault",
+  "Citroen",
+  "Fiat",
+  "Volvo",
+  "Saab",
+  "Skoda",
+  "Seat",
+  "Alfa Romeo",
+  "Tesla",
+  "სხვა",
+];
 
-// Priority order based on popularity (from database statistics)
-const categoryPriorityOrder = [13, 16, 11, 17, 27, 14, 21, 23, 12, 18, 20, 51, 26, 38, 28, 53, 29, 34, 22, 41, 33, 43, 19, 39, 25, 15, 40, 52, 49, 35, 30, 24, 36, 42, 37, 50, 31, 32, 54];
-
-// Complete category icon mapping for all 39 categories
-const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  "სავალი ნაწილის შეკეთება": Truck,
-  "ელექტროობა": Zap,
-  "ძრავის შეკეთება": Wrench,
-  "დიაგნოსტიკა": Activity,
-  "წყლის სისტემა": Droplets,
-  "ზეთის შეცვლა": Droplet,
-  "სათუნუქე სამუშაოები": Hammer,
-  "ფარების აღდგენა": Lightbulb,
-  "გადაცემათა კოლოფი": Cog,
-  "მანქანის სალონი": Armchair,
-  "სამღებრო სამუშაოები": Paintbrush,
-  "აირბაგი": Shield,
-  "ქიმწმენდა": Sparkles,
-  "ტუნინგი": Gauge,
-  "პოლირება": Sparkle,
-  "აალების სანთლები": Flame,
-  "მინების დამუქება": Square,
-  "დაშლილები": Package,
-  "პლასმასის აღდგენა": Box,
-  "წვის სისტემა": Flame,
-  "ფირის გადაკვრა": Layers,
-  "გაზის სისტემის მონტაჟი/შეკეთება": Fuel,
-  "ჰიბრიდული სისტემა": Battery,
-  "გამონაბოლქვის სისტემა": Wind,
-  "კონდიცონერი (ფრეონი)": Snowflake,
-  "კონდინციონერი(ფრეონი)": Snowflake,
-  "ვულკანიზაცია": Circle,
-  "თვლების შეყრა": CircleDot,
-  "აკუმულატორი": BatteryCharging,
-  "დინამოს და სტარტერის შეკეთება": RotateCw,
-  "ახალი ნაწილები": ShoppingBag,
-  "დისკების შეღებვა/აღდგენა": Disc,
-  "საქარე მინები": GlassWater,
-  "საჭის სისტემა": Target,
-  "კატალიზატორის სერვისი": Filter,
-  "ვიზუალური დეტალები": Eye,
-  "მანქანის გასაღები": Key,
-  "კარის გაღება": DoorOpen,
-  "საღებავების შეზავება": Palette,
-  "დითეილინგი": Star,
-};
-
-// Short names for categories
-const categoryShortNames: Record<string, string> = {
-  "ძრავის შეკეთება": "ძრავი",
-  "ვულკანიზაცია": "საბურავი",
-  "სამღებრო სამუშაოები": "საღებავი",
-  "ელექტროობა": "ელექტრო",
-  "კონდიცონერი (ფრეონი)": "კონდიც.",
-  "კონდინციონერი(ფრეონი)": "კონდიც.",
-  "სავალი ნაწილის შეკეთება": "სავალი",
-  "ზეთის შეცვლა": "ზეთი",
-  "საქარე მინები": "მინები",
-  "სათუნუქე სამუშაოები": "სათუნუქე",
-  "ფარების აღდგენა": "ფარები",
-  "გადაცემათა კოლოფი": "კოლოფი",
-  "მანქანის სალონი": "სალონი",
-  "პლასმასის აღდგენა": "პლასტმასი",
-  "გაზის სისტემის მონტაჟი/შეკეთება": "გაზი",
-  "ჰიბრიდული სისტემა": "ჰიბრიდი",
-  "გამონაბოლქვის სისტემა": "გამონაბოლქვი",
-  "დინამოს და სტარტერის შეკეთება": "დინამო",
-  "დისკების შეღებვა/აღდგენა": "დისკები",
-  "კატალიზატორის სერვისი": "კატალიზატორი",
-  "ვიზუალური დეტალები": "ვიზუალი",
-  "მანქანის გასაღები": "გასაღები",
-  "საღებავების შეზავება": "შეზავება",
-  "აალების სანთლები": "სანთლები",
-  "მინების დამუქება": "დამუქება",
-  "ფირის გადაკვრა": "ფირი",
-  "თვლების შეყრა": "შეყრა",
-};
-
-const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
+// თბილისის უბნები
+const tbilisiDistricts = [
+  "ვაკე",
+  "საბურთალო",
+  "ვერე",
+  "გლდანი",
+  "ისანი",
+  "ნაძალადევი",
+  "ძველი თბილისი",
+  "აბანოთუბანი",
+  "ავლაბარი",
+  "ჩუღურეთი",
+  "სამგორი",
+  "დიღომი",
+  "ვაშლიჯვარი",
+  "მთაწმინდა",
+  "კრწანისი",
+  "ავჭალა",
+  "ლილო",
+  "ორთაჭალა",
+  "დიდუბე",
+  "ფონიჭალა",
+];
+const ModernServiceFilters = ({
   searchTerm,
   setSearchTerm,
   selectedCategory,
@@ -171,440 +101,309 @@ const ModernServiceFilters: React.FC<ModernServiceFiltersProps> = ({
   selectedCity,
   setSelectedCity,
   cities,
-  selectedBrand,
-  setSelectedBrand,
-  carBrands = [],
+  selectedDistrict,
+  setSelectedDistrict,
+  districts,
+  selectedBrands,
+  setSelectedBrands,
   onSiteOnly,
   setOnSiteOnly,
   minRating,
   setMinRating,
   onSearch,
   onResetFilters,
-}) => {
-  const [showMoreCategories, setShowMoreCategories] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-
-  // Sort categories by popularity
-  const sortedCategories = React.useMemo(() => {
-    return [...categories].sort((a, b) => {
-      const aIndex = categoryPriorityOrder.indexOf(a.id);
-      const bIndex = categoryPriorityOrder.indexOf(b.id);
-      if (aIndex === -1) return 1;
-      if (bIndex === -1) return -1;
-      return aIndex - bIndex;
-    });
-  }, [categories]);
-
-  const getCategoryIcon = (categoryName: string) => {
-    return categoryIcons[categoryName] || Wrench;
+}: ModernServiceFiltersProps) => {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const handleBrandToggle = (brand: string) => {
+    const newBrands = selectedBrands.includes(brand)
+      ? selectedBrands.filter((b) => b !== brand)
+      : [...selectedBrands, brand];
+    setSelectedBrands(newBrands);
   };
-
-  const getCategoryShortName = (categoryName: string) => {
-    return categoryShortNames[categoryName] || categoryName;
+  const handleCityChange = (city: string) => {
+    const newCity = city === "all" ? null : city;
+    setSelectedCity(newCity);
+    if (newCity !== "თბილისი") {
+      setSelectedDistrict(null);
+    }
   };
-
-  const getCategoryName = (categoryId: number | "all"): string => {
-    if (categoryId === "all") return "ყველა";
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.name || "კატეგორია";
+  const handleDistrictChange = (district: string) => {
+    setSelectedDistrict(district === "all" ? null : district);
   };
-
-  // Show first 12 when collapsed, all when expanded
-  const visibleCategories = showMoreCategories ? sortedCategories : sortedCategories.slice(0, 12);
-
-  const hasActiveFilters =
-    searchTerm ||
-    selectedCategory !== "all" ||
-    selectedCity ||
-    selectedBrand ||
-    onSiteOnly ||
-    minRating;
-
-  const activeFilterCount = [
-    searchTerm,
-    selectedCategory !== "all",
-    selectedCity,
-    selectedBrand,
-    onSiteOnly,
-    minRating,
-  ].filter(Boolean).length;
-
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch();
   };
-
-  const removeFilter = (filterType: string) => {
-    switch (filterType) {
-      case "category":
-        setSelectedCategory("all");
-        break;
-      case "city":
-        setSelectedCity(null);
-        break;
-      case "brand":
-        if (setSelectedBrand) setSelectedBrand(null);
-        break;
-      case "rating":
-        setMinRating(null);
-        break;
-      case "onSite":
-        setOnSiteOnly(false);
-        break;
-    }
-  };
-
+  const hasActiveFilters =
+    searchTerm ||
+    selectedCategory !== "all" ||
+    selectedCity ||
+    selectedDistrict ||
+    selectedBrands.length > 0 ||
+    onSiteOnly ||
+    minRating;
+  const activeFiltersCount = [
+    searchTerm,
+    selectedCategory !== "all",
+    selectedCity,
+    selectedDistrict,
+    selectedBrands.length > 0,
+    onSiteOnly,
+    minRating,
+  ].filter(Boolean).length;
   return (
-    <form onSubmit={handleSearchSubmit} className="space-y-4">
-      {/* Categories Section - Always Visible */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <LayoutGrid className="h-4 w-4 text-blue-500" />
-          <span className="text-sm text-blue-500 font-medium">სერვისის კატეგორიები</span>
-        </div>
+    <Card className="border-primary/20 shadow-lg">
+      <CardContent className="p-3 md:p-6">
+        <div className="space-y-4 md:space-y-6">
+          {/* Main Search Bar - Fixed mobile spacing */}
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <Search
+              className="absolute left-3 top-1/2 h-4 md:h-5 w-4 md:w-5 text-muted-foreground"
+              style={{ transform: "translateY(-50%)", willChange: "transform" }}
+            />
+            <Input
+              placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 md:pl-12 h-12 md:h-14 text-sm md:text-lg border-2 border-primary/20 focus-visible:ring-primary"
+            />
+          </form>
 
-        {/* Categories Grid */}
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 lg:overflow-visible scrollbar-hide">
-          <div className={cn(
-            "flex gap-2 lg:gap-3",
-            showMoreCategories ? "flex-wrap" : "lg:flex-wrap"
-          )}>
-            {visibleCategories.map((cat) => {
-              const Icon = getCategoryIcon(cat.name);
-              const isSelected = selectedCategory === cat.id;
-              const shortName = getCategoryShortName(cat.name);
-              
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={cn(
-                    "flex flex-col items-center p-3 lg:p-4 rounded-2xl transition-all flex-shrink-0",
-                    "min-w-[80px] lg:min-w-[100px]",
-                    "border",
-                    isSelected
-                      ? "bg-slate-800 text-white border-slate-800"
-                      : "bg-white hover:bg-gray-50 text-gray-600 border-gray-100"
-                  )}
+          {/* Quick Filters - Improved mobile layout */}
+          <div className="space-y-3">
+            {/* Mobile: Single column stack, Desktop: Grid */}
+            <div className="flex flex-col space-y-3 sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0 lg:grid-cols-4">
+              {/* Category Filter */}
+              <div className="space-y-2 min-w-0">
+                <Label className="text-xs md:text-sm font-medium text-gray-600">კატეგორია</Label>
+                <Select
+                  value={selectedCategory.toString()}
+                  onValueChange={(value) => setSelectedCategory(value === "all" ? "all" : parseInt(value))}
                 >
-                  <div
-                    className={cn(
-                      "w-12 h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center mb-2 flex-shrink-0",
-                      isSelected ? "bg-white/20" : "bg-gray-50"
-                    )}
+                  <SelectTrigger
+                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
+                    aria-label="კატეგორიის არჩევა"
                   >
-                    <Icon
-                      className={cn(
-                        "h-5 w-5 lg:h-6 lg:w-6",
-                        isSelected ? "text-white" : "text-gray-400"
-                      )}
-                    />
-                  </div>
-                  <span className="text-xs lg:text-sm text-center line-clamp-2 leading-tight">
-                    {shortName}
-                  </span>
-                </button>
-              );
-            })}
+                    <SelectValue placeholder="კატეგორია" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">ყველა კატეგორია</SelectItem>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id.toString()}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* "სხვა" / "აკეცვა" button - Blue style */}
-            {sortedCategories.length > 12 && (
-              <button
-                type="button"
-                onClick={() => setShowMoreCategories(!showMoreCategories)}
-                className={cn(
-                  "flex flex-col items-center p-3 lg:p-4 rounded-2xl transition-all flex-shrink-0",
-                  "min-w-[80px] lg:min-w-[100px]",
-                  "bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600"
-                )}
-              >
-                <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full flex items-center justify-center mb-2 bg-blue-100 flex-shrink-0">
-                  {showMoreCategories ? (
-                    <ChevronUp className="h-5 w-5 lg:h-6 lg:w-6 text-blue-500" />
-                  ) : (
-                    <MoreHorizontal className="h-5 w-5 lg:h-6 lg:w-6 text-blue-500" />
-                  )}
+              {/* City Filter */}
+              <div className="space-y-2 min-w-0">
+                <Label className="text-xs md:text-sm font-medium text-gray-600 flex items-center gap-1">
+                  <MapPin className="h-3 w-3 md:h-4 md:w-4" />
+                  ქალაქი
+                </Label>
+                <Select value={selectedCity || "all"} onValueChange={handleCityChange}>
+                  <SelectTrigger
+                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
+                    aria-label="ქალაქის არჩევა"
+                  >
+                    <SelectValue placeholder="ქალაქი" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">ყველა ქალაქი</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-3 w-3 md:h-4 md:w-4" />
+                          {city}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* District Filter - Better mobile spacing */}
+              {selectedCity === "თბილისი" && (
+                <div className="space-y-2 min-w-0 sm:col-span-2 lg:col-span-1">
+                  <Label className="text-xs md:text-sm font-medium text-gray-600">უბანი</Label>
+                  <Select value={selectedDistrict || "all"} onValueChange={handleDistrictChange}>
+                    <SelectTrigger className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full">
+                      <SelectValue placeholder="უბანი" />
+                    </SelectTrigger>
+                    <SelectContent className="z-50">
+                      <SelectItem value="all">ყველა უბანი</SelectItem>
+                      {tbilisiDistricts.map((district) => (
+                        <SelectItem key={district} value={district}>
+                          {district}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <span className="text-xs lg:text-sm font-medium">
-                  {showMoreCategories ? "აკეცვა" : `+${sortedCategories.length - 12} სხვა`}
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+              )}
 
-      {/* Collapsible Trigger Button */}
-      {!showFilters && (
-        <div className="flex justify-center pt-2">
-          <button
-            type="button"
-            onClick={() => setShowFilters(true)}
-            className="flex items-center gap-2 px-6 py-3 rounded-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-all"
-          >
-            <span>დეტალური ძიება</span>
-            {activeFilterCount > 0 && (
-              <Badge className="bg-blue-500 text-white text-xs px-2 py-0.5">
-                {activeFilterCount}
-              </Badge>
-            )}
-            <ChevronDown className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Collapsible Filters Section */}
-      {showFilters && (
-        <div className="space-y-4 pt-2 animate-in slide-in-from-top-2 duration-200">
-          {/* Filters Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Settings className="h-4 w-4 text-blue-500" />
-              <span className="text-sm text-blue-500 font-medium">ძიება და ფილტრები</span>
+              {/* Rating Filter */}
+              <div className="space-y-2 min-w-0">
+                <Label className="text-xs md:text-sm font-medium text-gray-600 flex items-center gap-1">
+                  <Star className="h-3 w-3 md:h-4 md:w-4" />
+                  რეიტინგი
+                </Label>
+                <Select
+                  value={minRating?.toString() || "all"}
+                  onValueChange={(value) => setMinRating(value === "all" ? null : parseInt(value))}
+                >
+                  <SelectTrigger
+                    className="h-12 border-primary/20 focus-visible:ring-primary text-sm w-full"
+                    aria-label="რეიტინგის არჩევა"
+                  >
+                    <SelectValue placeholder="რეიტინგი" />
+                  </SelectTrigger>
+                  <SelectContent className="z-50">
+                    <SelectItem value="all">ყველა რეიტინგი</SelectItem>
+                    <SelectItem value="4">4+ ვარსკვლავი</SelectItem>
+                    <SelectItem value="3">3+ ვარსკვლავი</SelectItem>
+                    <SelectItem value="2">2+ ვარსკვლავი</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowFilters(false)}
-              className="text-gray-400 hover:text-gray-600 flex items-center gap-1 text-sm transition-colors"
+
+            {/* On-site service checkbox - Better mobile touch target */}
+            <div className="flex items-center space-x-3 py-3 px-2 bg-gray-50 rounded-lg">
+              <Checkbox id="on_site" checked={onSiteOnly} onCheckedChange={setOnSiteOnly} className="h-5 w-5" />
+              <Label htmlFor="on_site" className="text-sm flex items-center gap-2 cursor-pointer flex-1">
+                <CheckCircle className="h-4 w-4" />
+                ადგილზე მისვლა
+              </Label>
+            </div>
+          </div>
+
+          {/* Advanced Filters Toggle - Mobile optimized */}
+          <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" className="border-primary/20 hover:bg-primary/5 h-12 w-full sm:w-auto">
+                  <Filter className="h-4 w-4 mr-2" />
+                  ავტომობილის მარკები
+                  {activeFiltersCount > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      {activeFiltersCount}
+                    </Badge>
+                  )}
+                  {showAdvanced ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+                </Button>
+              </CollapsibleTrigger>
+
+              {hasActiveFilters}
+            </div>
+
+            {/* Advanced Filters Content - Better mobile layout */}
+            <CollapsibleContent
+              className="space-y-4 pt-4 border-t border-primary/10 mt-4"
+              style={{ willChange: "height" }}
             >
-              აკეცვა
-              <ChevronUp className="h-4 w-4" />
-            </button>
-          </div>
+              <div className="space-y-4">
+                <Label className="text-sm font-medium flex items-center gap-1">
+                  <Car className="h-4 w-4" />
+                  მანქანის მარკები
+                </Label>
 
-          {/* Search Input + Rating/On-Site Buttons */}
-          <div className="flex flex-col lg:flex-row gap-3">
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="ჩაწერეთ სერვისი ან ხელოსნის სახელი..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 h-12 rounded-xl border-gray-200 bg-white"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setMinRating(minRating === 4 ? null : 4)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm flex items-center gap-2 whitespace-nowrap transition-all",
-                  minRating === 4
-                    ? "bg-slate-800 text-white"
-                    : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
-                )}
-              >
-                <Star className={cn("h-4 w-4", minRating === 4 ? "fill-yellow-400 text-yellow-400" : "")} />
-                რეიტინგული
-              </button>
-              <button
-                type="button"
-                onClick={() => setOnSiteOnly(!onSiteOnly)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm flex items-center gap-2 whitespace-nowrap transition-all",
-                  onSiteOnly
-                    ? "bg-slate-800 text-white"
-                    : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
-                )}
-              >
-                <Car className="h-4 w-4" />
-                ადგილზე
-              </button>
-            </div>
-          </div>
+                {/* Mobile: Simplified brand selection with better spacing */}
+                <div className="space-y-4">
+                  {/* First 6 brands always visible */}
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {commonCarBrands.slice(0, 6).map((brand) => (
+                      <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white h-12">
+                        <Checkbox
+                          id={`brand-${brand}`}
+                          checked={selectedBrands.includes(brand)}
+                          onCheckedChange={() => handleBrandToggle(brand)}
+                          className="h-5 w-5"
+                        />
+                        <Label htmlFor={`brand-${brand}`} className="text-sm flex-1 cursor-pointer font-medium">
+                          {brand}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
 
-          {/* Location + Brand in Two Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* ლოკაცია */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-pink-500" />
-                <span className="text-sm text-pink-500 font-medium">ლოკაცია</span>
-              </div>
-              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto scrollbar-hide">
-                {/* "ახლოს" button with navigation icon */}
-                <button
-                  type="button"
-                  className="px-4 py-2 rounded-full text-sm transition-all whitespace-nowrap flex items-center gap-1.5 bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
-                >
-                  <Navigation className="h-3 w-3" />
-                  ახლოს
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedCity(null)}
-                  className={cn(
-                    "px-4 py-2 rounded-full text-sm transition-all whitespace-nowrap",
-                    !selectedCity
-                      ? "bg-slate-800 text-white"
-                      : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
-                  )}
-                >
-                  ყველა
-                </button>
-                {cities.map((city) => (
-                  <button
-                    key={city}
-                    type="button"
-                    onClick={() => setSelectedCity(city)}
-                    className={cn(
-                      "px-4 py-2 rounded-full text-sm transition-all whitespace-nowrap",
-                      selectedCity === city
-                        ? "bg-slate-800 text-white"
-                        : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
-                    )}
-                  >
-                    {city}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* მარკა */}
-            {setSelectedBrand && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Car className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-500 font-medium">მარკა</span>
+                  {/* More brands in collapsible */}
+                  <Collapsible>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="outline" className="w-full h-12">
+                        მეტის ნახვა ({commonCarBrands.length - 6})
+                        <ChevronDown className="h-4 w-4 ml-2" />
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-4" style={{ willChange: "height" }}>
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        {commonCarBrands.slice(6).map((brand) => (
+                          <div key={brand} className="flex items-center space-x-3 p-3 rounded-lg border bg-white h-12">
+                            <Checkbox
+                              id={`brand-${brand}`}
+                              checked={selectedBrands.includes(brand)}
+                              onCheckedChange={() => handleBrandToggle(brand)}
+                              className="h-5 w-5"
+                            />
+                            <Label htmlFor={`brand-${brand}`} className="text-sm flex-1 cursor-pointer font-medium">
+                              {brand}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
-                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto scrollbar-hide">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedBrand(null)}
-                    className={cn(
-                      "px-4 py-2 rounded-full text-sm transition-all whitespace-nowrap",
-                      !selectedBrand
-                        ? "bg-slate-800 text-white"
-                        : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
-                    )}
-                  >
-                    ყველა
-                  </button>
-                  {carBrands.slice(0, 12).map((brand) => (
-                    <button
-                      key={brand}
-                      type="button"
-                      onClick={() => setSelectedBrand(brand)}
-                      className={cn(
-                        "px-4 py-2 rounded-full text-sm transition-all whitespace-nowrap",
-                        selectedBrand === brand
-                          ? "bg-slate-800 text-white"
-                          : "bg-white border border-gray-200 hover:border-gray-300 text-gray-700"
-                      )}
-                    >
-                      {brand}
-                    </button>
-                  ))}
-                </div>
+
+                {/* Selected brands display - Better mobile layout */}
+                {selectedBrands.length > 0 && (
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <Label className="text-xs text-gray-600 mb-2 block">არჩეული მარკები:</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedBrands.map((brand) => (
+                        <Badge key={brand} variant="secondary" className="flex items-center gap-1 text-sm py-1 px-2">
+                          {brand}
+                          <button
+                            onClick={() => handleBrandToggle(brand)}
+                            className="text-muted-foreground hover:text-destructive ml-1 h-4 w-4 flex items-center justify-center"
+                          >
+                            ×
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Search Button - Better mobile spacing */}
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button
+              onClick={onSearch}
+              className="flex-1 h-12 md:h-14 text-sm md:text-lg bg-primary hover:bg-primary-dark transition-colors"
+            >
+              <Search className="h-4 md:h-5 w-4 md:w-5 mr-2" />
+              ძიება
+            </Button>
+
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                onClick={onResetFilters}
+                className="h-12 md:h-14 px-4 md:px-6 text-muted-foreground hover:text-destructive border-destructive/20 sm:w-auto"
+              >
+                <X className="h-4 md:h-5 w-4 md:w-5 mr-1 md:mr-2" />
+                გასუფთავება
+              </Button>
             )}
           </div>
-
-          {/* Active Filters - Outline Style Badges */}
-          {hasActiveFilters && (
-            <div className="flex items-center gap-2 flex-wrap bg-gray-50 p-3 rounded-xl">
-              <span className="text-sm text-gray-500">ფილტრები:</span>
-
-              {/* Category - Blue outline */}
-              {selectedCategory !== "all" && (
-                <Badge className="flex items-center gap-1 bg-transparent border border-blue-300 text-blue-600 hover:bg-blue-50">
-                  <Check className="h-3 w-3" />
-                  {getCategoryName(selectedCategory)}
-                  <button
-                    type="button"
-                    onClick={() => removeFilter("category")}
-                    className="ml-1 hover:bg-blue-100 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              )}
-
-              {/* City - Pink outline */}
-              {selectedCity && (
-                <Badge className="flex items-center gap-1 bg-transparent border border-pink-300 text-pink-600 hover:bg-pink-50">
-                  <MapPin className="h-3 w-3" />
-                  {selectedCity}
-                  <button
-                    type="button"
-                    onClick={() => removeFilter("city")}
-                    className="ml-1 hover:bg-pink-100 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              )}
-
-              {/* Brand - Gray outline */}
-              {selectedBrand && (
-                <Badge className="flex items-center gap-1 bg-transparent border border-gray-300 text-gray-600 hover:bg-gray-100">
-                  <Car className="h-3 w-3" />
-                  {selectedBrand}
-                  <button
-                    type="button"
-                    onClick={() => removeFilter("brand")}
-                    className="ml-1 hover:bg-gray-200 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              )}
-
-              {/* Rating - Yellow outline */}
-              {minRating && (
-                <Badge className="flex items-center gap-1 bg-transparent border border-yellow-400 text-yellow-600 hover:bg-yellow-50">
-                  <Star className="h-3 w-3" />
-                  რეიტინგული
-                  <button
-                    type="button"
-                    onClick={() => removeFilter("rating")}
-                    className="ml-1 hover:bg-yellow-100 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              )}
-
-              {/* On-Site - Green outline */}
-              {onSiteOnly && (
-                <Badge className="flex items-center gap-1 bg-transparent border border-green-400 text-green-600 hover:bg-green-50">
-                  <Car className="h-3 w-3" />
-                  ადგილზე
-                  <button
-                    type="button"
-                    onClick={() => removeFilter("onSite")}
-                    className="ml-1 hover:bg-green-100 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              )}
-
-              {/* Clear All Button */}
-              <button
-                type="button"
-                onClick={onResetFilters}
-                className="ml-auto text-sm text-red-500 hover:text-red-600 font-medium"
-              >
-                გასუფთავება
-              </button>
-            </div>
-          )}
-
-          {/* Search Button */}
-          <Button
-            type="submit"
-            className="w-full h-14 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-lg font-medium"
-          >
-            <Search className="h-5 w-5 mr-2" />
-            ძიება
-          </Button>
         </div>
-      )}
-    </form>
+      </CardContent>
+    </Card>
   );
 };
-
 export default ModernServiceFilters;

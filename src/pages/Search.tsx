@@ -72,24 +72,11 @@ const Search = () => {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [carBrands, setCarBrands] = useState<string[]>([]);
   const [onSiteOnly, setOnSiteOnly] = useState(false);
   const [minRating, setMinRating] = useState<number | null>(null);
 
   useEffect(() => {
-    const initData = async () => {
-      await fetchInitialData();
-      // Fetch car brands
-      const { data } = await supabase
-        .from("car_brands")
-        .select("name")
-        .order("name", { ascending: true });
-      if (data) {
-        setCarBrands(data.map((b) => b.name));
-      }
-    };
-    initData();
+    fetchInitialData();
     loadRecentSearches();
   }, []);
 
@@ -226,7 +213,6 @@ const Search = () => {
     setSelectedCity(null);
     setSelectedDistrict(null);
     setSelectedBrands([]);
-    setSelectedBrand(null);
     setOnSiteOnly(false);
     setMinRating(null);
   };
@@ -386,9 +372,8 @@ const Search = () => {
                           selectedDistrict={selectedDistrict}
                           setSelectedDistrict={setSelectedDistrict}
                           districts={districts}
-                          selectedBrand={selectedBrand}
-                          setSelectedBrand={setSelectedBrand}
-                          carBrands={carBrands}
+                          selectedBrands={selectedBrands}
+                          setSelectedBrands={setSelectedBrands}
                           onSiteOnly={onSiteOnly}
                           setOnSiteOnly={setOnSiteOnly}
                           minRating={minRating}
