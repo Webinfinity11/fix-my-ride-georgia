@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Settings, Plus, Users, Map } from "lucide-react";
+import { LogOut, User, Settings, Plus, Map, Package } from "lucide-react";
 import { toast } from "sonner";
 import { MobileMenu } from "./MobileMenu";
 
@@ -75,12 +75,8 @@ const Header = () => {
           <Link to="/fuel-importers" className="text-gray-700 hover:text-primary transition-colors font-medium">
             საწვავის ფასები
           </Link>
-          <Link
-            to="/community"
-            className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium"
-          >
-            <Users className="h-4 w-4" />
-            <span>community</span>
+          <Link to="/order-parts" className="text-gray-700 hover:text-primary transition-colors font-medium">
+            ნაწილის შეკვეთა
           </Link>
           <Link to="/blog" className="text-gray-700 hover:text-primary transition-colors font-medium">
             ბლოგი

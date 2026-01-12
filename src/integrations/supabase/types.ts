@@ -649,6 +649,36 @@ export type Database = {
         }
         Relationships: []
       }
+      evacuation_requests: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          full_name: string
+          id: string
+          phone: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          full_name: string
+          id?: string
+          phone: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          full_name?: string
+          id?: string
+          phone?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       fuel_brands: {
         Row: {
           created_at: string | null

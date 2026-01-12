@@ -25,6 +25,7 @@ import {
   FileText,
   Mail,
   Package,
+  Truck,
 } from "lucide-react";
 import {
   Accordion,
@@ -35,12 +36,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useOldLeadsCount, useNewRequestsCount } from "@/hooks/useAutoLeads";
 import { useNewPartsOrdersCount } from "@/hooks/usePartsOrders";
+import { useNewEvacuatorRequestsCount } from "@/hooks/useEvacuatorRequests";
 
 const DashboardSidebar = () => {
   const { user, signOut } = useAuth();
   const { data: oldLeadsCount = 0 } = useOldLeadsCount();
   const { data: newRequestsCount = 0 } = useNewRequestsCount();
   const { data: newPartsOrdersCount = 0 } = useNewPartsOrdersCount();
+  const { data: newEvacuatorRequestsCount = 0 } = useNewEvacuatorRequestsCount();
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
@@ -237,6 +240,18 @@ const DashboardSidebar = () => {
                     {newPartsOrdersCount > 0 && (
                       <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
                         {newPartsOrdersCount}
+                      </Badge>
+                    )}
+                  </div>
+                </NavLink>
+
+                <NavLink to="/dashboard/admin/evacuator-requests" className={navLinkClasses}>
+                  <Truck size={18} />
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-sm md:text-base">ევაკუატორი</span>
+                    {newEvacuatorRequestsCount > 0 && (
+                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
+                        {newEvacuatorRequestsCount}
                       </Badge>
                     )}
                   </div>

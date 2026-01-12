@@ -30,11 +30,11 @@ import {
   Car,
   DollarSign,
   FileText,
-  Package,
+  Truck,
 } from "lucide-react";
 import HomeCenterBanner from "@/components/banners/HomeCenterBanner";
 import MobileBanner from "@/components/banners/MobileBanner";
-import { OrderPartDialog } from "@/components/parts/OrderPartDialog";
+import { EvacuatorDialog } from "@/components/evacuator/EvacuatorDialog";
 type ServiceCategory = {
   id: number;
   name: string;
@@ -100,7 +100,7 @@ const Index = () => {
   // Initialize sitemap auto-update listener
   useSitemapAutoUpdate();
   const navigate = useNavigate();
-  const [orderPartDialogOpen, setOrderPartDialogOpen] = useState(false);
+  const [evacuatorDialogOpen, setEvacuatorDialogOpen] = useState(false);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [featuredMechanics, setFeaturedMechanics] = useState<FeaturedMechanic[]>([]);
   const [cities, setCities] = useState<string[]>(georgianCities);
@@ -311,22 +311,22 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Order Parts Button */}
+              {/* Evacuator Call Button */}
               <div className="mb-10 flex justify-center">
                 <button
-                  onClick={() => setOrderPartDialogOpen(true)}
-                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  onClick={() => setEvacuatorDialogOpen(true)}
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-red-500 to-red-700 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   <div className="absolute top-2 right-2">
-                    <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-semibold text-orange-600 shadow-sm">
-                      NEW
+                    <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-semibold text-red-600 shadow-sm">
+                      24/7
                     </span>
                   </div>
                   <div className="flex items-center gap-4 text-white">
-                    <Package className="h-8 w-8" />
+                    <Truck className="h-8 w-8" />
                     <div className="text-left">
-                      <h3 className="text-xl font-bold">შეუკვეთე ნაწილი</h3>
-                      <p className="text-sm opacity-90">სწრაფი და მარტივი</p>
+                      <h3 className="text-xl font-bold">ევაკუატორის გამოძახება</h3>
+                      <p className="text-sm opacity-90">სწრაფი დახმარება</p>
                     </div>
                   </div>
                 </button>
@@ -679,7 +679,7 @@ const Index = () => {
       <Footer />
       <MobileBanner />
       <MobileBottomNav />
-      <OrderPartDialog open={orderPartDialogOpen} onOpenChange={setOrderPartDialogOpen} />
+      <EvacuatorDialog open={evacuatorDialogOpen} onOpenChange={setEvacuatorDialogOpen} />
     </div>
   );
 };

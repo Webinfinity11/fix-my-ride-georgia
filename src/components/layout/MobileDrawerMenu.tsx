@@ -39,6 +39,7 @@ import {
   Briefcase,
   Users,
   FileText,
+  Package,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -61,7 +62,7 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     { icon: Sparkles, label: "სამრეცხაო", path: "/laundries" },
     { icon: Briefcase, label: "ვაკანსიები", path: "/vacancies" },
     { icon: Fuel, label: "საწვავის ფასები", path: "/fuel-importers" },
-    { icon: Users, label: "community", path: "/community" },
+    { icon: Package, label: "ნაწილის შეკვეთა", path: "/order-parts" },
     { icon: FileText, label: "ბლოგი", path: "/blog" },
     { icon: Info, label: "ჩვენ შესახებ", path: "/about" },
     { icon: Phone, label: "კონტაქტი", path: "/contact" },
