@@ -45,6 +45,7 @@ const Dealers = lazy(() => import("./pages/Dealers"));
 const Insurance = lazy(() => import("./pages/Insurance"));
 const AddListing = lazy(() => import("./pages/AddListing"));
 const OrderParts = lazy(() => import("./pages/OrderParts"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 const queryClient = new QueryClient();
 
@@ -85,6 +86,7 @@ function App() {
                   <Route path="/insurance" element={<Insurance />} />
                   <Route path="/add-listing" element={<AddListing />} />
                   <Route path="/order-parts" element={<OrderParts />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
