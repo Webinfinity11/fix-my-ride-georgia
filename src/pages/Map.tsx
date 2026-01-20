@@ -1036,6 +1036,99 @@ const Map = () => {
             </div>
             </div>}
 
+          {/* Top Filters Bar - Brand Filter (only for stations) */}
+          {viewMode === 'stations' && (
+            <div className="bg-background border-b flex-shrink-0 relative z-[50]">
+              <div className="p-2 md:p-3 overflow-x-auto scrollbar-hide">
+                <div className="flex gap-2 items-center" style={{ minWidth: "fit-content" }}>
+                  {/* All Stations */}
+                  <Button
+                    variant={stationBrandFilter === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStationBrandFilter('all')}
+                    className="h-8 px-3 text-xs md:text-sm whitespace-nowrap"
+                  >
+                    <Fuel className="w-3.5 h-3.5 mr-1.5" />
+                    ყველა
+                    <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
+                      {stationBrandCounts.all}
+                    </Badge>
+                  </Button>
+
+                  {/* SOCAR */}
+                  <Button
+                    variant={stationBrandFilter === 'SOCAR' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStationBrandFilter('SOCAR')}
+                    className={`h-8 px-3 text-xs md:text-sm whitespace-nowrap ${stationBrandFilter === 'SOCAR' ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                  >
+                    <img src="/fuel-company-logos/socar-logo.svg" alt="SOCAR" className="w-4 h-4 mr-1.5" />
+                    SOCAR
+                    <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
+                      {stationBrandCounts.SOCAR}
+                    </Badge>
+                  </Button>
+
+                  {/* WISSOL */}
+                  <Button
+                    variant={stationBrandFilter === 'WISSOL' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStationBrandFilter('WISSOL')}
+                    className={`h-8 px-3 text-xs md:text-sm whitespace-nowrap ${stationBrandFilter === 'WISSOL' ? 'bg-red-600 hover:bg-red-700' : ''}`}
+                  >
+                    <img src="/fuel-company-logos/wissol-logo.png" alt="WISSOL" className="w-4 h-4 mr-1.5" />
+                    WISSOL
+                    <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
+                      {stationBrandCounts.WISSOL}
+                    </Badge>
+                  </Button>
+
+                  {/* ROMPETROL */}
+                  <Button
+                    variant={stationBrandFilter === 'ROMPETROL' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStationBrandFilter('ROMPETROL')}
+                    className={`h-8 px-3 text-xs md:text-sm whitespace-nowrap ${stationBrandFilter === 'ROMPETROL' ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                  >
+                    <img src="/fuel-company-logos/rompetrol-logo.png" alt="ROMPETROL" className="w-4 h-4 mr-1.5" />
+                    ROMPETROL
+                    <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
+                      {stationBrandCounts.ROMPETROL}
+                    </Badge>
+                  </Button>
+
+                  {/* GULF */}
+                  <Button
+                    variant={stationBrandFilter === 'GULF' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStationBrandFilter('GULF')}
+                    className={`h-8 px-3 text-xs md:text-sm whitespace-nowrap ${stationBrandFilter === 'GULF' ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+                  >
+                    <img src="/fuel-company-logos/gulf-logo.png" alt="GULF" className="w-4 h-4 mr-1.5" />
+                    GULF
+                    <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
+                      {stationBrandCounts.GULF}
+                    </Badge>
+                  </Button>
+
+                  {/* PORTAL */}
+                  <Button
+                    variant={stationBrandFilter === 'PORTAL' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setStationBrandFilter('PORTAL')}
+                    className={`h-8 px-3 text-xs md:text-sm whitespace-nowrap ${stationBrandFilter === 'PORTAL' ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
+                  >
+                    <img src="/fuel-company-logos/portal-logo.svg" alt="PORTAL" className="w-4 h-4 mr-1.5" />
+                    PORTAL
+                    <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
+                      {stationBrandCounts.PORTAL}
+                    </Badge>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Map Container */}
           <div className="flex-1 relative z-0 pb-16 md:pb-0">
             <div ref={mapRef} className="h-full w-full z-0" />
