@@ -7,6 +7,8 @@ import ServiceCard from "@/components/services/ServiceCard";
 import LaundryCard from "@/components/laundry/LaundryCard";
 import { DriveCard } from "@/components/drive/DriveCard";
 import { ChargerCard } from "@/components/charger/ChargerCard";
+import { MapBottomSheet } from "@/components/map/MapBottomSheet";
+import { MapPreviewCard } from "@/components/map/MapPreviewCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -191,6 +193,7 @@ const Map = () => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<'services' | 'laundries' | 'drives' | 'chargers'>('services');
   const [selectedCharger, setSelectedCharger] = useState<ChargerLocation | null>(null);
+  const [chargerFilter, setChargerFilter] = useState<'all' | 'fast' | 'level2'>('all');
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
@@ -218,14 +221,29 @@ const Map = () => {
     isLoading: chargersLoading
   } = useChargers();
 
-  // Filter chargers by search
+  // Filter chargers by search and type filter
   const filteredChargers = chargers.filter(charger => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return charger.name_ka.toLowerCase().includes(query) || 
-           charger.name_en.toLowerCase().includes(query) ||
-           charger.source.toLowerCase().includes(query);
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesSearch = charger.name_ka.toLowerCase().includes(query) || 
+             charger.name_en.toLowerCase().includes(query) ||
+             charger.source.toLowerCase().includes(query);
+      if (!matchesSearch) return false;
+    }
+    
+    // Type filter
+    if (chargerFilter === 'fast') {
+      return charger.type === 'fast_charger' || charger.status === 'fast';
+    }
+    if (chargerFilter === 'level2') {
+      return charger.type !== 'fast_charger' && charger.status !== 'fast';
+    }
+    return true;
   });
+
+  // Count fast chargers for filter button
+  const fastChargersCount = chargers.filter(c => c.type === 'fast_charger' || c.status === 'fast').length;
 
   // Apply search filters only
   const baseFilteredServices = services.filter(service => {
@@ -718,35 +736,35 @@ const Map = () => {
         {/* Right Side - Map (80% width on desktop, full height on mobile) */}
         <div className="w-full md:w-4/5 h-full flex flex-col">
           {/* View Mode Toggle */}
-          <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[49] px-3 md:px-4 py-3 md:py-4">
-            <div className="flex items-center justify-between gap-3">
-              <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'services' | 'laundries' | 'drives' | 'chargers')} className="flex-1 overflow-x-auto">
-                <TabsList className="inline-flex h-11 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground">
-                  <TabsTrigger value="services" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap px-3">
-                    <Car className="w-4 h-4" />
+          <div className="bg-background border-b flex-shrink-0 relative z-[49] px-2 md:px-4 py-2 md:py-4">
+            <div className="flex items-center justify-between gap-2 md:gap-3">
+              <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'services' | 'laundries' | 'drives' | 'chargers')} className="flex-1 overflow-x-auto scrollbar-hide">
+                <TabsList className="inline-flex h-9 md:h-11 items-center justify-start rounded-lg bg-muted p-1 text-muted-foreground gap-0.5">
+                  <TabsTrigger value="services" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
+                    <Car className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">ავტოსერვისები</span>
-                    <span className="sm:hidden">სერვისები</span>
+                    <span className="sm:hidden">სერვისი</span>
                   </TabsTrigger>
-                  <TabsTrigger value="laundries" className="flex items-center gap-2 data-[state=active]:bg-cyan-600 data-[state=active]:text-white whitespace-nowrap px-3">
-                    <Droplet className="w-4 h-4" />
+                  <TabsTrigger value="laundries" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-cyan-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
+                    <Droplet className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">სამრეცხაოები</span>
                     <span className="sm:hidden">რეცხვა</span>
                   </TabsTrigger>
-                  <TabsTrigger value="drives" className="flex items-center gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-white whitespace-nowrap px-3">
-                    <Car className="w-4 h-4" />
+                  <TabsTrigger value="drives" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
+                    <Car className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">დრაივები</span>
                     <span className="sm:hidden">დრაივი</span>
                   </TabsTrigger>
-                  <TabsTrigger value="chargers" className="flex items-center gap-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-white whitespace-nowrap px-3">
-                    <BatteryCharging className="w-4 h-4" />
+                  <TabsTrigger value="chargers" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
+                    <BatteryCharging className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">ელ. დამტენები</span>
                     <span className="sm:hidden">დამტენი</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
               
-              {/* Count Badge */}
-              <Badge variant="secondary" className="text-xs md:text-sm whitespace-nowrap font-semibold">
+              {/* Count Badge - hidden on mobile to save space */}
+              <Badge variant="secondary" className="hidden md:inline-flex text-sm whitespace-nowrap font-semibold">
                 {viewMode === 'services' ? filteredServices.length : viewMode === 'laundries' ? laundries?.length || 0 : viewMode === 'chargers' ? filteredChargers.length : drives?.length || 0}
               </Badge>
             </div>
@@ -800,11 +818,11 @@ const Map = () => {
             </div>}
 
           {/* Map Container */}
-          <div className="flex-1 relative z-0">
+          <div className="flex-1 relative z-0 pb-16 md:pb-0">
             <div ref={mapRef} className="h-full w-full z-0" />
             
-            {/* Map Info Overlay */}
-            <div className="absolute bottom-4 right-4 bg-background p-2 rounded-lg shadow-lg">
+            {/* Map Info Overlay - adjusted for mobile bottom sheet */}
+            <div className="absolute bottom-20 md:bottom-4 right-4 bg-background p-2 rounded-lg shadow-lg">
               <div className="text-xs text-muted-foreground">
                 <strong>
                   {viewMode === 'services' ? servicesWithLocation.length : 
@@ -814,6 +832,46 @@ const Map = () => {
                 </strong> {viewMode === 'services' ? 'სერვისი' : viewMode === 'laundries' ? 'სამრეცხაო' : viewMode === 'chargers' ? 'დამტენი' : 'დრაივი'}
               </div>
             </div>
+
+            {/* Mobile Preview Card for Chargers */}
+            <div className="md:hidden">
+              <MapPreviewCard
+                charger={selectedCharger}
+                onClose={() => setSelectedCharger(null)}
+              />
+            </div>
+          </div>
+
+          {/* Mobile Bottom Sheet - for laundries, drives, chargers */}
+          <div className="md:hidden">
+            <MapBottomSheet
+              viewMode={viewMode}
+              laundries={laundries || []}
+              drives={drives || []}
+              chargers={filteredChargers}
+              selectedId={selectedCharger?.id}
+              onItemClick={(item) => {
+                if (viewMode === 'chargers') {
+                  setSelectedCharger(item);
+                  if (map && item.latitude && item.longitude) {
+                    map.setView([item.latitude, item.longitude], 15);
+                  }
+                } else if (viewMode === 'laundries') {
+                  if (map && item.latitude && item.longitude) {
+                    map.setView([item.latitude, item.longitude], 15);
+                  }
+                } else if (viewMode === 'drives') {
+                  if (map && item.latitude && item.longitude) {
+                    map.setView([item.latitude, item.longitude], 15);
+                  }
+                }
+              }}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              chargerFilter={chargerFilter}
+              onChargerFilterChange={setChargerFilter}
+              fastChargersCount={fastChargersCount}
+            />
           </div>
         </div>
       </div>
