@@ -230,6 +230,7 @@ const Map = () => {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [map, setMap] = useState<any>(null);
   const mapRef = useRef<HTMLDivElement>(null);
+  const markersRef = useRef<any[]>([]);
   const [selectedCharger, setSelectedCharger] = useState<ChargerLocation | null>(null);
   const [chargerFilter, setChargerFilter] = useState<'all' | 'fast' | 'level2'>('all');
   const [selectedStation, setSelectedStation] = useState<FuelStation | null>(null);
@@ -351,11 +352,7 @@ const Map = () => {
   // Apply viewport filter only to sidebar services (and only show services with coordinates)
   const filteredServices = baseFilteredServices.filter(service => {
     // Only show services that have coordinates (that have pins on map)
-    const hasCoordinates = service.latitude && service.longitude;
-
-    // Map bounds filter - only show services visible on current map view
-    const isInMapBounds = !mapBounds || !hasCoordinates || mapBounds.contains([service.latitude, service.longitude]);
-    return hasCoordinates && isInMapBounds;
+    return service.latitude && service.longitude;
   });
 
   // Sort services to show selected service first
@@ -456,19 +453,17 @@ const Map = () => {
     // Dynamically import Leaflet to avoid SSR issues
     const initMap = async () => {
       const L = await import('leaflet');
-      const leafletMap = L.map(mapRef.current!).setView(defaultCenter, 11);
+      const leafletMap = L.map(mapRef.current!, {
+        markerZoomAnimation: true,
+        fadeAnimation: false
+      }).setView(defaultCenter, 11);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(leafletMap);
       setMap(leafletMap);
 
-      // Set initial bounds
+      // Set initial bounds (no longer update on zoom/move to prevent marker flickering)
       setMapBounds(leafletMap.getBounds());
-
-      // Listen to map move events to update bounds
-      leafletMap.on('moveend zoomend', () => {
-        setMapBounds(leafletMap.getBounds());
-      });
     };
     initMap();
     return () => {
@@ -483,12 +478,12 @@ const Map = () => {
     if (!map) return;
     const updateMarkers = async () => {
       try {
-        // Clear existing markers
-        map.eachLayer((layer: any) => {
-          if (layer.options && layer.options.pane === 'markerPane') {
-            map.removeLayer(layer);
-          }
+        // Clear existing markers from ref
+        markersRef.current.forEach(marker => {
+          map.removeLayer(marker);
         });
+        markersRef.current = [];
+        
         const L = await import('leaflet');
         if (viewMode === 'services') {
           // Only proceed if we have services
@@ -591,6 +586,8 @@ const Map = () => {
                 marker.openPopup();
               }, 100);
             }
+            
+            markersRef.current.push(marker);
           });
         } else if (viewMode === 'laundries') {
           // Render laundries markers
@@ -632,6 +629,8 @@ const Map = () => {
                   </button>` : ''}
               </div>
             `);
+            
+            markersRef.current.push(marker);
           });
         } else if (viewMode === 'drives') {
           // Render drives markers
@@ -673,6 +672,8 @@ const Map = () => {
                   </button>` : ''}
               </div>
             `);
+            
+            markersRef.current.push(marker);
           });
         } else if (viewMode === 'chargers') {
           // Render chargers markers
@@ -733,6 +734,8 @@ const Map = () => {
                 }
               });
             });
+            
+            markersRef.current.push(marker);
           });
         } else if (viewMode === 'stations') {
           // Render fuel stations markers
@@ -805,6 +808,8 @@ const Map = () => {
                 }
               });
             });
+            
+            markersRef.current.push(marker);
           });
         }
       } catch (error) {
