@@ -5,18 +5,20 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, ChevronUp, X, MapPin, Phone, Zap, BatteryCharging, Droplet, Car, Image } from "lucide-react";
+import { Search, ChevronUp, X, MapPin, Phone, Zap, BatteryCharging, Droplet, Car, Image, Fuel } from "lucide-react";
 import { ChargerLocation, getChargerTypeLabel, getChargerColor } from "@/types/charger";
+import { FuelStation, FuelBrand, getFuelStationColor, getFuelStationLogo, fuelTypeLabels } from "@/types/fuelStation";
 import { Tables } from "@/integrations/supabase/types";
 
 type Laundry = Tables<"laundries">;
 type Drive = Tables<"drives">;
 
 interface MapBottomSheetProps {
-  viewMode: 'services' | 'laundries' | 'drives' | 'chargers';
+  viewMode: 'services' | 'laundries' | 'drives' | 'chargers' | 'stations';
   laundries?: Laundry[];
   drives?: Drive[];
   chargers?: ChargerLocation[];
+  stations?: FuelStation[];
   selectedId?: string | number | null;
   onItemClick: (item: any) => void;
   searchQuery: string;
@@ -24,6 +26,9 @@ interface MapBottomSheetProps {
   chargerFilter?: 'all' | 'fast' | 'level2';
   onChargerFilterChange?: (filter: 'all' | 'fast' | 'level2') => void;
   fastChargersCount?: number;
+  stationBrandFilter?: FuelBrand | 'all';
+  onStationBrandFilterChange?: (brand: FuelBrand | 'all') => void;
+  stationBrandCounts?: Record<FuelBrand | 'all', number>;
 }
 
 // Simple mobile-optimized card components
@@ -128,11 +133,59 @@ const MobileChargerCard = ({ charger, onClick, isSelected }: { charger: ChargerL
   );
 };
 
+// Mobile station card
+const MobileStationCard = ({ station, onClick, isSelected }: { station: FuelStation; onClick: () => void; isSelected: boolean }) => {
+  const brandColor = getFuelStationColor(station.brand);
+  const logo = getFuelStationLogo(station.brand);
+  
+  const activeFuelTypes = Object.entries(station.fuel_types)
+    .filter(([_, available]) => available)
+    .map(([type]) => type);
+
+  return (
+    <Card 
+      className={`cursor-pointer transition-all hover:shadow-md ${isSelected ? 'ring-2 ring-orange-500 shadow-lg' : ''}`}
+      onClick={onClick}
+    >
+      <CardContent className="p-3">
+        <div className="flex items-center gap-3">
+          <div 
+            className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center p-1"
+            style={{ backgroundColor: `${brandColor}15` }}
+          >
+            {logo ? (
+              <img src={logo} alt={station.brand} className="w-full h-full object-contain" />
+            ) : (
+              <Fuel className="w-5 h-5" style={{ color: brandColor }} />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-sm truncate">{station.name}</h3>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {activeFuelTypes.slice(0, 3).map((type) => (
+                <Badge key={type} variant="secondary" className="text-[9px] px-1 py-0">
+                  {fuelTypeLabels[type] || type}
+                </Badge>
+              ))}
+              {activeFuelTypes.length > 3 && (
+                <Badge variant="secondary" className="text-[9px] px-1 py-0">
+                  +{activeFuelTypes.length - 3}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 export const MapBottomSheet = ({
   viewMode,
   laundries = [],
   drives = [],
   chargers = [],
+  stations = [],
   selectedId,
   onItemClick,
   searchQuery,
@@ -140,6 +193,9 @@ export const MapBottomSheet = ({
   chargerFilter = 'all',
   onChargerFilterChange,
   fastChargersCount = 0,
+  stationBrandFilter = 'all',
+  onStationBrandFilterChange,
+  stationBrandCounts,
 }: MapBottomSheetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [snapPoint, setSnapPoint] = useState<number | string | null>(0.4);
@@ -149,6 +205,7 @@ export const MapBottomSheet = ({
       case 'laundries': return laundries.length;
       case 'drives': return drives.length;
       case 'chargers': return chargers.length;
+      case 'stations': return stations.length;
       default: return 0;
     }
   };
@@ -158,6 +215,7 @@ export const MapBottomSheet = ({
       case 'laundries': return 'სამრეცხაო';
       case 'drives': return 'დრაივი';
       case 'chargers': return 'დამტენი';
+      case 'stations': return 'სადგური';
       default: return 'ობიექტი';
     }
   };
@@ -254,6 +312,33 @@ export const MapBottomSheet = ({
             </div>
           )}
 
+          {/* Station Brand Filter Chips */}
+          {viewMode === 'stations' && onStationBrandFilterChange && stationBrandCounts && (
+            <div className="flex gap-2 px-4 pb-3 overflow-x-auto">
+              <Button
+                variant={stationBrandFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                className="rounded-full text-xs h-8 shrink-0"
+                onClick={() => onStationBrandFilterChange('all')}
+              >
+                ყველა ({stationBrandCounts.all})
+              </Button>
+              {(['SOCAR', 'WISSOL', 'ROMPETROL', 'GULF', 'PORTAL'] as FuelBrand[]).map(brand => (
+                <Button
+                  key={brand}
+                  variant={stationBrandFilter === brand ? 'default' : 'outline'}
+                  size="sm"
+                  className="rounded-full text-xs h-8 shrink-0 gap-1"
+                  style={stationBrandFilter === brand ? { backgroundColor: getFuelStationColor(brand) } : {}}
+                  onClick={() => onStationBrandFilterChange(brand)}
+                >
+                  <img src={getFuelStationLogo(brand)} alt={brand} className="w-4 h-4 object-contain" />
+                  {stationBrandCounts[brand]}
+                </Button>
+              ))}
+            </div>
+          )}
+
           {/* Items List */}
           <ScrollArea className="flex-1 px-4">
             <div className="space-y-2 pb-4">
@@ -263,6 +348,15 @@ export const MapBottomSheet = ({
                   charger={charger}
                   onClick={() => onItemClick(charger)}
                   isSelected={selectedId === charger.id}
+                />
+              ))}
+
+              {viewMode === 'stations' && stations.map((station) => (
+                <MobileStationCard
+                  key={station.id}
+                  station={station}
+                  onClick={() => onItemClick(station)}
+                  isSelected={selectedId === station.id}
                 />
               ))}
 
