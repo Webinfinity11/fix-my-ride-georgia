@@ -75,6 +75,7 @@ function App() {
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/map" element={<Map />} />
+                  <Route path="/map/:tab" element={<Map />} />
                   <Route path="/laundries" element={<Laundries />} />
                   <Route path="/fuel-importers" element={<FuelImporters />} />
                   <Route path="/fuel-brands" element={<FuelBrands />} />
