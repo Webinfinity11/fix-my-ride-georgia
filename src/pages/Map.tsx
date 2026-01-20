@@ -734,13 +734,82 @@ const Map = () => {
               });
             });
           });
+        } else if (viewMode === 'stations') {
+          // Render fuel stations markers
+          filteredStations.forEach(station => {
+            const size = 28;
+            const isSelected = selectedStation?.id === station.id;
+            const markerColor = getFuelStationColor(station.brand);
+            const logo = getFuelStationLogo(station.brand);
+            
+            const activeFuelTypes = Object.entries(station.fuel_types)
+              .filter(([_, available]) => available)
+              .map(([type]) => fuelTypeLabels[type] || type);
+            
+            const customIcon = L.divIcon({
+              html: `
+                <div style="
+                  width: ${size}px;
+                  height: ${size}px;
+                  background-color: ${markerColor};
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border: ${isSelected ? '4px' : '3px'} solid white;
+                  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                  cursor: pointer;
+                  ${isSelected ? 'transform: scale(1.2);' : ''}
+                ">
+                  <div style="color: white; font-size: 12px;">⛽</div>
+                </div>
+              `,
+              className: 'custom-div-icon',
+              iconSize: [size, size],
+              iconAnchor: [size / 2, size / 2],
+              popupAnchor: [0, -size / 2]
+            });
+            
+            const marker = L.marker([station.latitude, station.longitude], {
+              icon: customIcon
+            }).addTo(map).bindPopup(`
+              <div style="max-width: 280px; min-width: 250px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                  ${logo ? `<img src="${logo}" style="width: 40px; height: 40px; object-fit: contain;" />` : ''}
+                  <h3 style="margin: 0; font-weight: 600; font-size: 16px;">${station.name}</h3>
+                </div>
+                <div style="display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap;">
+                  ${activeFuelTypes.map(type => `
+                    <span style="background: ${markerColor}20; color: ${markerColor}; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500;">
+                      ${type}
+                    </span>
+                  `).join('')}
+                </div>
+                ${station.opening_hours ? `<div style="margin-bottom: 8px; color: #666; font-size: 13px;">🕐 ${station.opening_hours}</div>` : ''}
+                ${station.address?.street ? `<div style="margin-bottom: 8px; color: #666; font-size: 13px;">📍 ${station.address.street}${station.address.city ? ', ' + station.address.city : ''}</div>` : ''}
+                ${station.phone ? `<button onclick="window.open('tel:${station.phone}', '_self')" style="background: ${markerColor}; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer; margin-top: 8px;">
+                    📞 ${station.phone}
+                  </button>` : ''}
+              </div>
+            `);
+
+            marker.on('click', () => {
+              setSelectedStation(station);
+              requestAnimationFrame(() => {
+                const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
+                if (sidebarScrollContainer) {
+                  sidebarScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              });
+            });
+          });
         }
       } catch (error) {
         console.error('Error updating markers:', error);
       }
     };
     updateMarkers();
-  }, [map, viewMode, services, laundries, drives, chargers, filteredChargers, selectedService, selectedCharger]);
+  }, [map, viewMode, services, laundries, drives, chargers, filteredChargers, filteredStations, selectedService, selectedCharger, selectedStation]);
   return (
     <Layout>
       <SEOHead title={seoData[viewMode].title} description={seoData[viewMode].description} />
