@@ -746,28 +746,31 @@ const Map = () => {
               .filter(([_, available]) => available)
               .map(([type]) => fuelTypeLabels[type] || type);
             
+            const logoSize = 36;
             const customIcon = L.divIcon({
               html: `
                 <div style="
-                  width: ${size}px;
-                  height: ${size}px;
-                  background-color: ${markerColor};
+                  width: ${logoSize}px;
+                  height: ${logoSize}px;
+                  background-color: white;
                   border-radius: 50%;
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  border: ${isSelected ? '4px' : '3px'} solid white;
-                  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                  border: ${isSelected ? '4px' : '3px'} solid ${markerColor};
+                  box-shadow: 0 3px 8px rgba(0,0,0,0.35);
                   cursor: pointer;
                   ${isSelected ? 'transform: scale(1.2);' : ''}
+                  overflow: hidden;
+                  padding: 4px;
                 ">
-                  <div style="color: white; font-size: 12px;">⛽</div>
+                  ${logo ? `<img src="${logo}" style="width: 100%; height: 100%; object-fit: contain;" />` : `<div style="color: ${markerColor}; font-size: 16px;">⛽</div>`}
                 </div>
               `,
               className: 'custom-div-icon',
-              iconSize: [size, size],
-              iconAnchor: [size / 2, size / 2],
-              popupAnchor: [0, -size / 2]
+              iconSize: [logoSize, logoSize],
+              iconAnchor: [logoSize / 2, logoSize / 2],
+              popupAnchor: [0, -logoSize / 2]
             });
             
             const marker = L.marker([station.latitude, station.longitude], {
