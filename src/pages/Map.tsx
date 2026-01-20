@@ -18,10 +18,34 @@ import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Se
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { createServiceSlug } from "@/utils/slugUtils";
 import { getChargerColor, getChargerTypeLabel, ChargerLocation } from "@/types/charger";
 import "leaflet/dist/leaflet.css";
+
+// Valid tab types for URL routing
+const validTabs = ['services', 'laundries', 'drives', 'chargers'] as const;
+type TabType = typeof validTabs[number];
+
+// SEO data per tab
+const seoData: Record<TabType, { title: string; description: string }> = {
+  services: {
+    title: "ავტოსერვისების რუკა - FixUp",
+    description: "იპოვე ავტოსერვისები რუკაზე. მექანიკები და სერვისები თბილისსა და საქართველოში."
+  },
+  laundries: {
+    title: "ავტოსამრეცხაოების რუკა - FixUp",
+    description: "იპოვე ავტოსამრეცხაოები რუკაზე საქართველოში."
+  },
+  drives: {
+    title: "დრაივების რუკა - FixUp",
+    description: "იპოვე დრაივები და სატესტო მოედნები რუკაზე."
+  },
+  chargers: {
+    title: "ელექტრო დამტენების რუკა - FixUp",
+    description: "იპოვე ელექტრომობილების დამტენი სადგურები საქართველოში. 100+ ლოკაცია."
+  }
+};
 
 // Add custom styles for markers
 const customMarkerStyles = `
@@ -187,13 +211,43 @@ const getIconSVG = (categoryName: string | null) => {
 };
 const Map = () => {
   const navigate = useNavigate();
+  const { tab } = useParams<{ tab?: string }>();
+  
+  // Initialize viewMode from URL or default to 'services'
+  const initialTab = (tab && validTabs.includes(tab as TabType)) 
+    ? tab as TabType 
+    : 'services';
+  
+  const [viewMode, setViewMode] = useState<TabType>(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedService, setSelectedService] = useState<any>(null);
   const [map, setMap] = useState<any>(null);
   const mapRef = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<'services' | 'laundries' | 'drives' | 'chargers'>('services');
   const [selectedCharger, setSelectedCharger] = useState<ChargerLocation | null>(null);
   const [chargerFilter, setChargerFilter] = useState<'all' | 'fast' | 'level2'>('all');
+
+  // Handle tab change and update URL
+  const handleTabChange = (newTab: string) => {
+    const validTab = newTab as TabType;
+    setViewMode(validTab);
+    navigate(`/map/${validTab}`, { replace: true });
+  };
+
+  // Sync state when URL changes (browser back/forward navigation)
+  useEffect(() => {
+    if (tab && validTabs.includes(tab as TabType)) {
+      setViewMode(tab as TabType);
+    } else if (!tab) {
+      setViewMode('services');
+    }
+  }, [tab]);
+
+  // Redirect invalid tabs to default
+  useEffect(() => {
+    if (tab && !validTabs.includes(tab as TabType)) {
+      navigate('/map/services', { replace: true });
+    }
+  }, [tab, navigate]);
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
@@ -646,7 +700,7 @@ const Map = () => {
     updateMarkers();
   }, [map, viewMode, services, laundries, drives, chargers, filteredChargers, selectedService, selectedCharger]);
   return <Layout>
-      <SEOHead title="Services Map - Fix My Ride Georgia" description="Find car repair services near you on our interactive map. Browse mechanics and services by location in Georgia." />
+      <SEOHead title={seoData[viewMode].title} description={seoData[viewMode].description} />
       
       <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row">
         {/* Left Sidebar - Services/Laundries List (20% width on desktop, hidden on mobile) */}
@@ -738,7 +792,7 @@ const Map = () => {
           {/* View Mode Toggle */}
           <div className="bg-background border-b flex-shrink-0 relative z-[49] px-2 md:px-4 py-2 md:py-4">
             <div className="flex items-center justify-between gap-2 md:gap-3">
-              <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'services' | 'laundries' | 'drives' | 'chargers')} className="flex-1 overflow-x-auto scrollbar-hide">
+              <Tabs value={viewMode} onValueChange={handleTabChange} className="flex-1 overflow-x-auto scrollbar-hide">
                 <TabsList className="inline-flex h-9 md:h-11 items-center justify-start rounded-lg bg-muted p-1 text-muted-foreground gap-0.5">
                   <TabsTrigger value="services" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
                     <Car className="w-3.5 h-3.5 md:w-4 md:h-4" />
