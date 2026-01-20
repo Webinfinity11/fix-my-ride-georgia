@@ -1,0 +1,1848 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.793545,
+          41.703782
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'Radisson Blu Iveria', მთაწმინდა, თბილისი",
+        "name_en": "Hotel 'Radisson Blu Iveria', Mtatsminda, Tbilisi",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.741088,
+          41.70931
+        ]
+      },
+      "properties": {
+        "name_ka": "კუს ტბა",
+        "name_en": "Turtle Lake",
+        "type": "recreation",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.771362,
+          41.735939
+        ]
+      },
+      "properties": {
+        "name_ka": "საქართველოს ბანკი (სათაო ოფისი), საბურთალო, თბილისი",
+        "name_en": "Bank of Georgia (HQ), Saburtalo, Tbilisi",
+        "type": "business",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.776274,
+          41.772118
+        ]
+      },
+      "properties": {
+        "name_ka": "კლინიკა 'იაშვილი', დიღომი, თბილისი",
+        "name_en": "'Iashvili' Clinic, Dighomi, Tbilisi",
+        "type": "clinic",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.769444,
+          41.748497
+        ]
+      },
+      "properties": {
+        "name_ka": "ჰიპერმარკეტი 'აგროჰაბი', დიღომი, თბილისი",
+        "name_en": "Hypermarket 'Agrohub', Digomi, Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.896933,
+          41.688658
+        ]
+      },
+      "properties": {
+        "name_ka": "სავაჭრო ცენტრი 'ისთ ფოინთი', თბილისი",
+        "name_en": "'East Point' Shopping Center, Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.76917982,
+          41.77809674
+        ]
+      },
+      "properties": {
+        "name_ka": "სუპერმარკეტი 'ლიბრე', აღმაშენებლის ხეივანი, თბილისი",
+        "name_en": "Supermarket 'Libre', Agmasheneblis Kheivani, Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.77161258,
+          41.80435006
+        ]
+      },
+      "properties": {
+        "name_ka": "სუპერმარკეტი 'ნიკორა', აღმაშენებლის ხეივანი, თბილისი",
+        "name_en": "Supermarket 'Nikora', Agmasheneblis Kheivani, Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.781028,
+          41.779757
+        ]
+      },
+      "properties": {
+        "name_ka": "ბიზნეს ცენტრი 'მიონი' (II), თბილისი",
+        "name_en": "Business Center 'Mioni' (II), Tbilisi",
+        "type": "business",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.689384,
+          42.261393
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', ქუთაისი",
+        "name_en": "Gas Station 'Socar', Kutaisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.617666,
+          41.643299
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', ბათუმი, შერიფ ხიმშიაშვილის ქუჩა",
+        "name_en": "Gas Station 'Socar', Batumi, Sherif Khimshiashvili Street",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.781675,
+          41.779709
+        ]
+      },
+      "properties": {
+        "name_ka": "ბიზნეს ცენტრი 'მიონი' (I), თბილისი",
+        "name_en": "Business Center 'Mioni' (I), Tbilisi",
+        "type": "business",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.769622,
+          41.780471
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', აღმაშენებლის ხეივანი, თბილისი",
+        "name_en": "Gas Station 'Socar', Agmasheneblis Kheivani, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.452319,
+          41.925711
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', თელავი",
+        "name_en": "Gas Station 'Socar', Telavi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.965317,
+          42.14758
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ვისოლი', არგვეთა",
+        "name_en": "Gas Station 'Wissol', Argveta",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.964387,
+          41.67054
+        ]
+      },
+      "properties": {
+        "name_ka": "თბილისის საერთაშორისო აეროპორტი",
+        "name_en": "Tbilisi International Airport",
+        "type": "airport",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.064885,
+          42.016283
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ვისოლი', გორი",
+        "name_en": "Gas Station 'Wissol', Gori",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.954643,
+          41.580439
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', რუსთავი",
+        "name_en": "Gas Station 'Socar', Rustavi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.625854,
+          41.64905
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'ჰილტონი', ბათუმი, რუსთაველის ქუჩა",
+        "name_en": "Hotel Hilton, Batumi, Rustaveli Street",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.026869,
+          42.016278
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', ურბნისი/გორი",
+        "name_en": "Gas Station 'Socar', Urbnisi/Gori",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.768365,
+          41.805056
+        ]
+      },
+      "properties": {
+        "name_ka": "თავისუფალი უნივერსიტეტი",
+        "name_en": "Free University",
+        "type": "university",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.787294,
+          41.705571
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'რუმსი', ვერა, თბილისი",
+        "name_en": "Hotel 'Rooms', Vera, Tbilisi",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.021833,
+          41.682864
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', გეზი ეკონომიკური ზონა, თბილისი",
+        "name_en": "Gas Station 'Socar', Gezi Economic Zone, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.802768,
+          41.718697
+        ]
+      },
+      "properties": {
+        "name_ka": "სავაჭრო ცენტრი 'ქარვასლა' (I), ჩუღურეთი, თბილისი",
+        "name_en": "Shopping Center 'Karvasla' (I), Chugureti, Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.802683,
+          41.719322
+        ]
+      },
+      "properties": {
+        "name_ka": "სავაჭრო ცენტრი 'ქარვასლა' (II), ჩუღურეთი, თბილისი",
+        "name_en": "Shopping Center 'Karvasla' (II), Chugureti, Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.683114,
+          41.633788
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'ამბასადორი', კაჭრეთი",
+        "name_en": "Hotel 'Ambassador', Kachreti",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.963462,
+          42.1489
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ნეოგაზი', არგვეთა",
+        "name_en": "Gas Station 'Neogas', Argveta",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.839076,
+          41.736387
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', თბილისის ზღვასთან",
+        "name_en": "Gas Station 'Socar', Near Tbilisi Sea",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.800046,
+          41.694463
+        ]
+      },
+      "properties": {
+        "name_ka": "სავაჭრო ცენტრი 'გალერია თბილისი' (I)",
+        "name_en": "Shopping Center 'Galleria Tbilisi' (I)",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.800098,
+          41.694473
+        ]
+      },
+      "properties": {
+        "name_ka": "სავაჭრო ცენტრი 'გალერია თბილისი' (II)",
+        "name_en": "Shopping Center 'Galleria Tbilisi' (II)",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.127427,
+          42.51914
+        ]
+      },
+      "properties": {
+        "name_ka": "კომერციული ცენტრი, ჩხოროწყუ",
+        "name_en": "Commercial Center, Chkhorotsku",
+        "type": "business",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.945029,
+          41.692428
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ნეოგაზი', კახეთის გზატკეცილი, თბილისი",
+        "name_en": "Gas Station 'Neogas', Kakheti Highway, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.826348,
+          41.681071
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ნეოგაზი', ორთაჭალა, თბილისი",
+        "name_en": "Gas Station 'Neogas', Ortachala, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.871072,
+          41.70822
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ნეოგაზი', ვარკეთილი, თბილისი",
+        "name_en": "Gas Station 'Neogas', Varketili, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.770655,
+          41.786435
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ნეოგაზი', აღმაშენებლის ხეივანი, თბილისი",
+        "name_en": "Gas Station 'Neogas', Agmasheneblis Kheivani, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.861215,
+          42.489948
+        ]
+      },
+      "properties": {
+        "name_ka": "ზუგდიდის რეფერალური საავადმყოფო",
+        "name_en": "Zugdidi Referral Hospital",
+        "type": "hospital",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.50785,
+          41.920764
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'ნეოგაზი', თელავი",
+        "name_en": "Gas Station 'Neogas', Telavi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.365652,
+          41.831457
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'ბორჯომი ლიკანი'",
+        "name_en": "Hotel Borjomi Likani",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.794843,
+          41.951921
+        ]
+      },
+      "properties": {
+        "name_ka": "ილიას ტბა, ყვარელი, კახეთი",
+        "name_en": "'Ilia Lake', Kvareli, Kakheti",
+        "type": "recreation",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.018687,
+          42.117093
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', ზესტაფონი",
+        "name_en": "Gas Station 'Socar', Zestafoni",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.960649,
+          41.692698
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', ორხევი, თბილისი",
+        "name_en": "Gas Station 'Socar', Orkhevi, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.667192,
+          41.64999
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', ბათუმი, ბარცხანა",
+        "name_en": "Gas Station 'Socar', Batumi, Bartskhana",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.756082,
+          41.782793
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'ახაშენის ღვინის კურორტი', გურჯაანი",
+        "name_en": "Hotel 'Akhasheni Wine Resort', Gurjaani",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.325585,
+          42.106692
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', დაფნარი",
+        "name_en": "Gas Station 'Socar', Dafnar",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.965317,
+          42.1475
+        ]
+      },
+      "properties": {
+        "name_ka": "სწრაფი დამტენი, 'ვისოლის' კომპლექსი, არგვეთა",
+        "name_en": "Fast Charger, 'Wissol' Complex, Argveta",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.325495,
+          42.106567
+        ]
+      },
+      "properties": {
+        "name_ka": "სწრაფი დამტენი, 'სოკარი', დაფნარი/სამტრედია",
+        "name_en": "Fast Charger, 'Socar', Dafnar/Samtredia",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.666932,
+          41.650013
+        ]
+      },
+      "properties": {
+        "name_ka": "სწრაფი დამტენი, 'სოკარი', ბათუმი",
+        "name_en": "Fast Charger, 'Socar', Batumi",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.963478,
+          42.148872
+        ]
+      },
+      "properties": {
+        "name_ka": "სწრაფი დამტენი, 'ნეოგაზი', არგვეთა",
+        "name_en": "Fast Charger, 'Neogas', Argveta",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.93315,
+          42.172884
+        ]
+      },
+      "properties": {
+        "name_ka": "სწრაფი დამტენი, 'სოკარი', თერჯოლა",
+        "name_en": "Fast Charger, 'Socar', Terjola",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.026491,
+          42.016309
+        ]
+      },
+      "properties": {
+        "name_ka": "სწრაფი დამტენი, 'სოკარის' კომპლექსი, ურბნისი/გორი",
+        "name_en": "Fast Charger, 'Socar' Complex, Urbnisi/Gori",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.064937,
+          42.016185
+        ]
+      },
+      "properties": {
+        "name_ka": "სწრაფი დამტენი, 'ვისოლის' კომპლექსი, გორი",
+        "name_en": "Fast Charger, 'Wissol' Complex, Gori",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.768516,
+          41.782273
+        ]
+      },
+      "properties": {
+        "name_ka": "'გრინვეი', აღმაშენებლის ხეივანი N164, თბილისი",
+        "name_en": "'Greenway', Agmasheneblis Kheivani N164, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.2026,
+          42.205421
+        ]
+      },
+      "properties": {
+        "name_ka": "'გრინვეი', აბაშა, თროფი დარასელიას ქუჩა",
+        "name_en": "'Greenway', Abasha, Trofi Daraselia Street",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.782128,
+          41.780245
+        ]
+      },
+      "properties": {
+        "name_ka": "'გრინვეი', ნოდარ ბოხუას ქუჩა N1, თბილისი",
+        "name_en": "'Greenway', Nodar Bokhua Street N1, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.830546,
+          41.803655
+        ]
+      },
+      "properties": {
+        "name_ka": "'გრინვეი', ომარ ხიზანიშვილის ქუჩა N57, თბილისი",
+        "name_en": "'Greenway', Omar Khizanishvili Street N57, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.873875,
+          41.670208
+        ]
+      },
+      "properties": {
+        "name_ka": "'გრინვეი', ბერი გაბრიელ სალოსის ქუჩა N175, თბილისი",
+        "name_en": "'Greenway', Beri Gabriel Salos Street N175, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.895396,
+          41.68714
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'გალფი', კახეთის გზატკეცილი, თბილისი",
+        "name_en": "Gas Station 'Gulf', Kakheti Highway, Tbilisi",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.637631,
+          41.653563
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'რედისონ ბლუ', ბათუმი, ნინოშვილის ქუჩა",
+        "name_en": "Hotel 'Radisson Blu', Batumi, Ninoshvili Street",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.650601,
+          42.658768
+        ]
+      },
+      "properties": {
+        "name_ka": "სასტუმრო 'რუმსი', ყაზბეგი",
+        "name_en": "Hotel 'Rooms', Kazbegi",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.779072,
+          41.719921
+        ]
+      },
+      "properties": {
+        "name_ka": "სპორტის სასახლის მიმდებარე ტერიტორია, თბილისი",
+        "name_en": "Palace of Sports Area, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.58727,
+          41.992859
+        ]
+      },
+      "properties": {
+        "name_ka": "ბენზინგასამართი სადგური 'სოკარი', ხაშური",
+        "name_en": "Gas Station 'Socar', Khashuri",
+        "type": "gas_station",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.711398,
+          41.72014
+        ]
+      },
+      "properties": {
+        "name_ka": "ბიზნეს ცენტრი 'თენი', პოლიტკოვსკაიას N14, თბილისი",
+        "name_en": "'Ten' Business Center, Politkovskaia N14, Tbilisi",
+        "type": "business",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.565818,
+          41.893672
+        ]
+      },
+      "properties": {
+        "name_ka": "რედისონ კოლექშენ სასტუმრო, წინანდალი, კახეთი",
+        "name_en": "Radisson Collection Hotel, Tsinandali, Kakheti",
+        "type": "hotel",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.787213,
+          41.751377
+        ]
+      },
+      "properties": {
+        "name_ka": "სავაჭრო ცენტრი 'საბა' (I), თბილისი",
+        "name_en": "Shopping Center 'Saba' (I), Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.787178,
+          41.751465
+        ]
+      },
+      "properties": {
+        "name_ka": "სავაჭრო ცენტრი 'საბა' (II), თბილისი",
+        "name_en": "Shopping Center 'Saba' (II), Tbilisi",
+        "type": "shopping",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.779286,
+          41.78648
+        ]
+      },
+      "properties": {
+        "name_ka": "ბიზნეს ცენტრი ბელიაშვილზე (II), თბილისი",
+        "name_en": "Business Center on Beliashvili (II), Tbilisi",
+        "type": "business",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.811207,
+          41.706591
+        ]
+      },
+      "properties": {
+        "name_ka": "კავკასიის უნივერსიტეტი, პ. სააკაძის ქ. 1, თბილისი",
+        "name_en": "'Caucasus University', P. Saakadze St 1, Tbilisi",
+        "type": "university",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.782393,
+          41.769878
+        ]
+      },
+      "properties": {
+        "name_ka": "'გრინვეი', ქსნის ქუჩასთან, თბილისი",
+        "name_en": "'Greenway', Near Ksani Street, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.778008,
+          41.742253
+        ]
+      },
+      "properties": {
+        "name_ka": "'M2' გალერეა",
+        "name_en": "'M2' Gallery",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.779328,
+          41.786369
+        ]
+      },
+      "properties": {
+        "name_ka": "ბიზნეს ცენტრი ბელიაშვილზე (I), თბილისი",
+        "name_en": "Business Center on Beliashvili (I), Tbilisi",
+        "type": "business",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.064967,
+          42.016094
+        ]
+      },
+      "properties": {
+        "name_ka": "Sinexcel სწრაფი დამტენი, 'ვისოლის' კომპლექსი, გორი",
+        "name_en": "Sinexcel Fast Charger, 'Wissol' Complex, Gori",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.965675,
+          42.147762
+        ]
+      },
+      "properties": {
+        "name_ka": "მარჯვენა Sinexcel სწრაფი დამტენი, 'ვისოლის' კომპლექსი, არგვეთა",
+        "name_en": "Right Sinexcel Fast Charger, 'Wissol' Complex, Argveta",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.965574,
+          42.147839
+        ]
+      },
+      "properties": {
+        "name_ka": "მარცხენა Sinexcel სწრაფი დამტენი, 'ვისოლის' კომპლექსი, არგვეთა",
+        "name_en": "Left Sinexcel Fast Charger, 'Wissol' Complex, Argveta",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.412399,
+          41.861764
+        ]
+      },
+      "properties": {
+        "name_ka": "მარჯვენა Sinexcel სწრაფი დამტენი, 'ვისოლის' კომპლექსი, ბორჯომი",
+        "name_en": "Right Sinexcel Fast Charger, 'Wissol' Complex, Borjomi",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.412433,
+          41.861682
+        ]
+      },
+      "properties": {
+        "name_ka": "მარცხენა Sinexcel სწრაფი დამტენი, 'ვისოლის' კომპლექსი, ბორჯომი",
+        "name_en": "Left Sinexcel Fast Charger, 'Wissol' Complex, Borjomi",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.770943,
+          41.794005
+        ]
+      },
+      "properties": {
+        "name_ka": "Sinexcel სწრაფი დამტენი, 'ვისოლის' ბენზინგასამართი, დ. აღმაშენებლის ხეივანი 13კმ",
+        "name_en": "Sinexcel Fast Charger, 'Wissol' Gas Station, D. Agmashenebeli Alley 13km",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.932636,
+          42.173333
+        ]
+      },
+      "properties": {
+        "name_ka": "Sinexcel სწრაფი დამტენი, 'სოკარის' ბენზინგასამართი, არგვეთა",
+        "name_en": "Sinexcel Fast Charger, 'Socar' Gas Station, Argveta",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.802287,
+          41.69303
+        ]
+      },
+      "properties": {
+        "name_ka": "'მონოგრაფი', კოტე აფხაზის ქუჩა N4, თბილისი",
+        "name_en": "'Monograph', Kote Abkhaz Street N4, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.754986,
+          41.711069
+        ]
+      },
+      "properties": {
+        "name_ka": "'ვაკე პლაზა' (-4), ჭავჭავაძის გამზირი 72ა, თბილისი",
+        "name_en": "'Vake Plaza' (-4), Chavchavadze Avenue 72a, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.754942,
+          41.711164
+        ]
+      },
+      "properties": {
+        "name_ka": "'ვაკე პლაზა' (-3), ჭავჭავაძის გამზირი 72ა, თბილისი",
+        "name_en": "'Vake Plaza' (-3), Chavchavadze Avenue 72a, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.754928,
+          41.71127
+        ]
+      },
+      "properties": {
+        "name_ka": "'ვაკე პლაზა' (-2), ჭავჭავაძის გამზირი 72ა, თბილისი",
+        "name_en": "'Vake Plaza' (-2), Chavchavadze Avenue 72a, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.754924,
+          41.711058
+        ]
+      },
+      "properties": {
+        "name_ka": "'ვაკე პლაზა' (-1), ჭავჭავაძის გამზირი 72ა, თბილისი",
+        "name_en": "'Vake Plaza' (-1), Chavchavadze Avenue 72a, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.743942,
+          41.711735
+        ]
+      },
+      "properties": {
+        "name_ka": "'ორიონ ჯგუფი', ჭავჭავაძის გამზირი N49, თბილისი",
+        "name_en": "'Orion Group', Chavchavadze Avenue N49, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.766819,
+          41.70092
+        ]
+      },
+      "properties": {
+        "name_ka": "დამტენი ჟვანიას ქუჩა N65 I, თბილისი",
+        "name_en": "Charger at Zhvania Street N65 I, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.800372,
+          41.766946
+        ]
+      },
+      "properties": {
+        "name_ka": "Helios Energy",
+        "name_en": "Helios Energy",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.856149,
+          41.669327
+        ]
+      },
+      "properties": {
+        "name_ka": "სოკარის დამტენი, რუსთავის გზატკეცილი (მაკდონალდსის უკან)",
+        "name_en": "Socar Charger, Rustavi Highway (Behind McDonald's)",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.856628,
+          41.669148
+        ]
+      },
+      "properties": {
+        "name_ka": "სოკარის დამტენი, რუსთავის გზატკეცილი (გრინვეის უკან)",
+        "name_en": "Socar Charger, Rustavi Highway (Behind Greenway)",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.510555,
+          41.949439
+        ]
+      },
+      "properties": {
+        "name_ka": "რესტორანი ქევრი, თაშისყარი, მარცხენა დამტენი",
+        "name_en": "Restaurant Kevri, Tashiskar, Left Charger",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.510592,
+          41.94926
+        ]
+      },
+      "properties": {
+        "name_ka": "რესტორანი ქევრი, თაშისყარი, მარჯვენა დამტენი",
+        "name_en": "Restaurant Kevri, Tashiskar, Right Charger",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.76673,
+          41.700863
+        ]
+      },
+      "properties": {
+        "name_ka": "დამტენი ჟვანიას ქუჩა N65 II, თბილისი",
+        "name_en": "Charger at Zhvania Street N65 II, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.82344,
+          41.688212
+        ]
+      },
+      "properties": {
+        "name_ka": "შერატონ გრანდ თბილისი მეტეხი პალასი სწრაფი დამტენი, -1 პარკინგი",
+        "name_en": "Sheraton Grand Tbilisi Metechi Palace Fast Charger, -1 Parking",
+        "type": "fast_charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.823525,
+          41.688218
+        ]
+      },
+      "properties": {
+        "name_ka": "შერატონ გრანდ თბილისი მეტეხი პალასი, -1 პარკინგი",
+        "name_en": "Sheraton Grand Tbilisi Metechi Palace, -1 Parking",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.784716,
+          41.71654
+        ]
+      },
+      "properties": {
+        "name_ka": "'მეფე დავითი', მ. ალექსიძის ქუჩა 12, თბილისი",
+        "name_en": "'King David', M. Aleksidze Street 12, Tbilisi",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.739242,
+          41.740462
+        ]
+      },
+      "properties": {
+        "name_ka": "'ალდაგი', პარკინგი ლისის ტბასთან",
+        "name_en": "'Aldagi', Parking Near Lisi Lake",
+        "type": "charger",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.347441,
+          42.163983
+        ]
+      },
+      "properties": {
+        "name_ka": "სამტრედიის მუნიციპალიტეტის მერია",
+        "name_en": "City Hall of Samtredia Municipality",
+        "type": "government",
+        "source": "emotors"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7693005,
+          41.6881125
+        ]
+      },
+      "properties": {
+        "name_ka": "ტექნოპარკი",
+        "name_en": "Technopark",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7648417,
+          41.7545517
+        ]
+      },
+      "properties": {
+        "name_ka": "გრინვეი",
+        "name_en": "Greenway",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.953558,
+          41.566957
+        ]
+      },
+      "properties": {
+        "name_ka": "ავტოპაპა",
+        "name_en": "Avtopapa",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.789454,
+          41.709307
+        ]
+      },
+      "properties": {
+        "name_ka": "გალფი",
+        "name_en": "Gulf",
+        "type": "gas_station",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.33540773,
+          42.14755992
+        ]
+      },
+      "properties": {
+        "name_ka": "ნეოგაზი",
+        "name_en": "Neogas",
+        "type": "gas_station",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.67703083,
+          42.25075985
+        ]
+      },
+      "properties": {
+        "name_ka": "ნეოგაზი",
+        "name_en": "Neogas",
+        "type": "gas_station",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.780072,
+          41.725832
+        ]
+      },
+      "properties": {
+        "name_ka": "ნეოგაზი",
+        "name_en": "Neogas",
+        "type": "gas_station",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.452593,
+          41.925815
+        ]
+      },
+      "properties": {
+        "name_ka": "სოკარი, თელავი",
+        "name_en": "Socar, Telavi",
+        "type": "gas_station",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.775552,
+          41.782689
+        ]
+      },
+      "properties": {
+        "name_ka": "I.C.I.C.I ფილიალი",
+        "name_en": "I.C.I.C.I Branch",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8115369,
+          41.6906508
+        ]
+      },
+      "properties": {
+        "name_ka": "მეტეხის დაღმართი",
+        "name_en": "Metekhi Descent",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.775853,
+          41.683273
+        ]
+      },
+      "properties": {
+        "name_ka": "თაღლაურა",
+        "name_en": "Taglaura",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7873947,
+          41.72708522
+        ]
+      },
+      "properties": {
+        "name_ka": "მახახელა-სამიკიტნო",
+        "name_en": "Makhakhela-Samikitno",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.87038091,
+          41.68782803
+        ]
+      },
+      "properties": {
+        "name_ka": "მახახელა-სამიკიტნო",
+        "name_en": "Makhakhela-Samikitno",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.700829,
+          41.839789
+        ]
+      },
+      "properties": {
+        "name_ka": "ბალკონი",
+        "name_en": "Balcony",
+        "type": "hotel",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.735204,
+          42.041857
+        ]
+      },
+      "properties": {
+        "name_ka": "ვილა რეტა",
+        "name_en": "Villa Reta",
+        "type": "hotel",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.56289935,
+          41.5448342344457
+        ]
+      },
+      "properties": {
+        "name_ka": "მარტინი",
+        "name_en": "Martini",
+        "type": "hotel",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.836248,
+          41.950253
+        ]
+      },
+      "properties": {
+        "name_ka": "ყვარლის ედემი",
+        "name_en": "Kvareli Eden",
+        "type": "hotel",
+        "status": "level2",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.0639925,
+          42.0159542
+        ]
+      },
+      "properties": {
+        "name_ka": "ვისოლი გორი",
+        "name_en": "Wissol Gori",
+        "type": "fast_charger",
+        "status": "fast",
+        "source": "espace"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.6943495,
+          41.9794397
+        ]
+      },
+      "properties": {
+        "name_ka": "შილდას მეღვინეობა",
+        "name_en": "Shilda Winery",
+        "type": "charger",
+        "status": "level2",
+        "source": "espace"
+      }
+    }
+  ]
+}

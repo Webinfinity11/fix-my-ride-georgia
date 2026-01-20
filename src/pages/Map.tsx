@@ -2,20 +2,23 @@ import { useState, useEffect, useRef } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useLaundries } from "@/hooks/useLaundries";
 import { useDrives } from "@/hooks/useDrives";
+import { useChargers } from "@/hooks/useChargers";
 import ServiceCard from "@/components/services/ServiceCard";
 import LaundryCard from "@/components/laundry/LaundryCard";
 import { DriveCard } from "@/components/drive/DriveCard";
+import { ChargerCard } from "@/components/charger/ChargerCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet } from "lucide-react";
+import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet, BatteryCharging } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { Link, useNavigate } from "react-router-dom";
 import { createServiceSlug } from "@/utils/slugUtils";
+import { getChargerColor, getChargerTypeLabel, ChargerLocation } from "@/types/charger";
 import "leaflet/dist/leaflet.css";
 
 // Add custom styles for markers
@@ -186,7 +189,8 @@ const Map = () => {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [map, setMap] = useState<any>(null);
   const mapRef = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<'services' | 'laundries' | 'drives'>('services');
+  const [viewMode, setViewMode] = useState<'services' | 'laundries' | 'drives' | 'chargers'>('services');
+  const [selectedCharger, setSelectedCharger] = useState<ChargerLocation | null>(null);
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
@@ -209,6 +213,19 @@ const Map = () => {
     data: drives = [],
     isLoading: drivesLoading
   } = useDrives();
+  const {
+    chargers,
+    isLoading: chargersLoading
+  } = useChargers();
+
+  // Filter chargers by search
+  const filteredChargers = chargers.filter(charger => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return charger.name_ka.toLowerCase().includes(query) || 
+           charger.name_en.toLowerCase().includes(query) ||
+           charger.source.toLowerCase().includes(query);
+  });
 
   // Apply search filters only
   const baseFilteredServices = services.filter(service => {
@@ -543,13 +560,73 @@ const Map = () => {
               </div>
             `);
           });
+        } else if (viewMode === 'chargers') {
+          // Render chargers markers
+          filteredChargers.forEach(charger => {
+            const isFastCharger = charger.type === 'fast_charger' || charger.status === 'fast';
+            const size = isFastCharger ? 32 : 28;
+            const isSelected = selectedCharger?.id === charger.id;
+            const markerColor = getChargerColor(charger.type);
+            
+            const customIcon = L.divIcon({
+              html: `
+                <div style="
+                  width: ${size}px;
+                  height: ${size}px;
+                  background-color: ${markerColor};
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  border: ${isSelected ? '4px' : '3px'} solid white;
+                  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                  cursor: pointer;
+                  ${isSelected ? 'transform: scale(1.2);' : ''}
+                ">
+                  <div style="color: white; font-size: ${isFastCharger ? '14px' : '12px'};">⚡</div>
+                </div>
+              `,
+              className: 'custom-div-icon',
+              iconSize: [size, size],
+              iconAnchor: [size / 2, size / 2],
+              popupAnchor: [0, -size / 2]
+            });
+            
+            const marker = L.marker([charger.latitude, charger.longitude], {
+              icon: customIcon
+            }).addTo(map).bindPopup(`
+              <div style="max-width: 280px; min-width: 250px;">
+                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${charger.name_ka}</h3>
+                <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                  <span style="background: ${markerColor}20; color: ${markerColor}; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
+                    ${getChargerTypeLabel(charger.type)}
+                  </span>
+                  ${isFastCharger ? '<span style="background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">⚡ სწრაფი</span>' : ''}
+                </div>
+                <div style="margin-bottom: 8px; color: #666; font-size: 13px;">
+                  <strong>წყარო:</strong> ${charger.source}
+                </div>
+                ${charger.name_en ? `<div style="margin-bottom: 8px; color: #999; font-size: 12px;">${charger.name_en}</div>` : ''}
+              </div>
+            `);
+
+            marker.on('click', () => {
+              setSelectedCharger(charger);
+              requestAnimationFrame(() => {
+                const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
+                if (sidebarScrollContainer) {
+                  sidebarScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              });
+            });
+          });
         }
       } catch (error) {
         console.error('Error updating markers:', error);
       }
     };
     updateMarkers();
-  }, [map, viewMode, services, laundries, drives, selectedService]);
+  }, [map, viewMode, services, laundries, drives, chargers, filteredChargers, selectedService, selectedCharger]);
   return <Layout>
       <SEOHead title="Services Map - Fix My Ride Georgia" description="Find car repair services near you on our interactive map. Browse mechanics and services by location in Georgia." />
       
@@ -560,18 +637,18 @@ const Map = () => {
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input type="text" placeholder={viewMode === 'services' ? 'სერვისების ძიება...' : viewMode === 'laundries' ? 'სამრეცხაოების ძიება...' : 'დრაივების ძიება...'} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
+              <Input type="text" placeholder={viewMode === 'services' ? 'სერვისების ძიება...' : viewMode === 'laundries' ? 'სამრეცხაოების ძიება...' : viewMode === 'chargers' ? 'დამტენების ძიება...' : 'დრაივების ძიება...'} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-10" />
             </div>
           </div>
           
           <div className="flex-1 overflow-y-auto sidebar-scroll-container">
             {/* Results Header */}
-            {!loading && !laundriesLoading && !drivesLoading && <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
-                <p className="text-sm text-gray-600">
+            {!loading && !laundriesLoading && !drivesLoading && !chargersLoading && <div className="px-4 py-2 border-b border-gray-100 bg-gray-50">
+                <p className="text-sm text-muted-foreground">
                   <strong>
-                    {viewMode === 'services' ? sortedFilteredServices.length : viewMode === 'laundries' ? laundries?.length || 0 : drives?.length || 0}
+                    {viewMode === 'services' ? sortedFilteredServices.length : viewMode === 'laundries' ? laundries?.length || 0 : viewMode === 'chargers' ? filteredChargers.length : drives?.length || 0}
                   </strong>{' '}
-                  {viewMode === 'services' ? 'სერვისი' : viewMode === 'laundries' ? 'სამრეცხაო' : 'დრაივი'} ნაპოვნია
+                  {viewMode === 'services' ? 'სერვისი' : viewMode === 'laundries' ? 'სამრეცხაო' : viewMode === 'chargers' ? 'დამტენი' : 'დრაივი'} ნაპოვნია
                   {viewMode === 'services' && servicesWithLocation.length !== sortedFilteredServices.length && <span className="ml-2 text-xs">
                       ({servicesWithLocation.length} რუკაზე)
                     </span>}
@@ -579,16 +656,16 @@ const Map = () => {
               </div>}
 
             <div className="p-2 md:p-4">
-              {loading || laundriesLoading || drivesLoading ? <div className="text-center py-8">
+              {loading || laundriesLoading || drivesLoading || chargersLoading ? <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="mt-2 text-gray-600">
-                    {viewMode === 'services' ? 'სერვისები' : viewMode === 'laundries' ? 'სამრეცხაოები' : 'დრაივები'} იტვირთება...
+                  <p className="mt-2 text-muted-foreground">
+                    {viewMode === 'services' ? 'სერვისები' : viewMode === 'laundries' ? 'სამრეცხაოები' : viewMode === 'chargers' ? 'დამტენები' : 'დრაივები'} იტვირთება...
                   </p>
                   </div> : viewMode === 'laundries' ? (
             // Laundries View
             laundries?.length === 0 ? <div className="text-center py-8">
-                    <Search className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                    <p className="text-gray-600">სამრეცხაოები ვერ მოიძებნა</p>
+                    <Search className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground">სამრეცხაოები ვერ მოიძებნა</p>
                   </div> : <div className="space-y-2 md:space-y-4">
                     {laundries?.map(laundry => <div key={laundry.id}>
                         <LaundryCard laundry={laundry} onViewDetails={() => {
@@ -602,8 +679,8 @@ const Map = () => {
           ) : viewMode === 'drives' ? (
             // Drives View
             drives?.length === 0 ? <div className="text-center py-8">
-                    <Search className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                    <p className="text-gray-600">დრაივები ვერ მოიძებნა</p>
+                    <Search className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground">დრაივები ვერ მოიძებნა</p>
                   </div> : <div className="space-y-2 md:space-y-4">
                     {drives?.map(drive => <div key={drive.id}>
                         <DriveCard drive={drive} onClick={() => {
@@ -612,6 +689,25 @@ const Map = () => {
                     map.setView([drive.latitude, drive.longitude], 15);
                   }
                 }} />
+                      </div>)}
+                  </div>
+          ) : viewMode === 'chargers' ? (
+            // Chargers View
+            filteredChargers.length === 0 ? <div className="text-center py-8">
+                    <Search className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground">დამტენები ვერ მოიძებნა</p>
+                  </div> : <div className="space-y-2 md:space-y-4">
+                    {filteredChargers.map(charger => <div key={charger.id}>
+                        <ChargerCard 
+                          charger={charger} 
+                          isSelected={selectedCharger?.id === charger.id}
+                          onClick={() => {
+                            setSelectedCharger(charger);
+                            if (map && charger.latitude && charger.longitude) {
+                              map.setView([charger.latitude, charger.longitude], 15);
+                            }
+                          }} 
+                        />
                       </div>)}
                   </div>
           ) : null}
@@ -624,7 +720,7 @@ const Map = () => {
           {/* View Mode Toggle */}
           <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[49] px-3 md:px-4 py-3 md:py-4">
             <div className="flex items-center justify-between gap-3">
-              <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'services' | 'laundries' | 'drives')} className="flex-1 overflow-x-auto">
+              <Tabs value={viewMode} onValueChange={value => setViewMode(value as 'services' | 'laundries' | 'drives' | 'chargers')} className="flex-1 overflow-x-auto">
                 <TabsList className="inline-flex h-11 items-center justify-start rounded-md bg-muted p-1 text-muted-foreground">
                   <TabsTrigger value="services" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap px-3">
                     <Car className="w-4 h-4" />
@@ -641,12 +737,17 @@ const Map = () => {
                     <span className="hidden sm:inline">დრაივები</span>
                     <span className="sm:hidden">დრაივი</span>
                   </TabsTrigger>
+                  <TabsTrigger value="chargers" className="flex items-center gap-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-white whitespace-nowrap px-3">
+                    <BatteryCharging className="w-4 h-4" />
+                    <span className="hidden sm:inline">ელ. დამტენები</span>
+                    <span className="sm:hidden">დამტენი</span>
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
               
               {/* Count Badge */}
               <Badge variant="secondary" className="text-xs md:text-sm whitespace-nowrap font-semibold">
-                {viewMode === 'services' ? filteredServices.length : viewMode === 'laundries' ? laundries?.length || 0 : drives?.length || 0}
+                {viewMode === 'services' ? filteredServices.length : viewMode === 'laundries' ? laundries?.length || 0 : viewMode === 'chargers' ? filteredChargers.length : drives?.length || 0}
               </Badge>
             </div>
           </div>
@@ -703,9 +804,14 @@ const Map = () => {
             <div ref={mapRef} className="h-full w-full z-0" />
             
             {/* Map Info Overlay */}
-            <div className="absolute bottom-4 right-4 bg-white p-2 rounded-lg shadow-lg">
-              <div className="text-xs text-gray-600">
-                <strong>{servicesWithLocation.length}</strong> სერვისი
+            <div className="absolute bottom-4 right-4 bg-background p-2 rounded-lg shadow-lg">
+              <div className="text-xs text-muted-foreground">
+                <strong>
+                  {viewMode === 'services' ? servicesWithLocation.length : 
+                   viewMode === 'laundries' ? laundries?.length || 0 : 
+                   viewMode === 'chargers' ? filteredChargers.length : 
+                   drives?.length || 0}
+                </strong> {viewMode === 'services' ? 'სერვისი' : viewMode === 'laundries' ? 'სამრეცხაო' : viewMode === 'chargers' ? 'დამტენი' : 'დრაივი'}
               </div>
             </div>
           </div>
