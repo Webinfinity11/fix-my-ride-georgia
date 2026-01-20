@@ -411,8 +411,8 @@ const Map = () => {
       onSiteOnly: false,
       minRating: null
     });
-};
-export default Map;
+  };
+
   // Fetch services on component mount
   useEffect(() => {
     const loadServices = async () => {
@@ -741,7 +741,8 @@ export default Map;
     };
     updateMarkers();
   }, [map, viewMode, services, laundries, drives, chargers, filteredChargers, selectedService, selectedCharger]);
-  return <Layout>
+  return (
+    <Layout>
       <SEOHead title={seoData[viewMode].title} description={seoData[viewMode].description} />
       
       <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row">
@@ -978,7 +979,6 @@ export default Map;
                    drives?.length || 0}
                 </strong> {viewMode === 'services' ? 'სერვისი' : viewMode === 'laundries' ? 'სამრეცხაო' : viewMode === 'chargers' ? 'დამტენი' : viewMode === 'stations' ? 'სადგური' : 'დრაივი'}
               </div>
-              </div>
             </div>
 
             {/* Mobile Preview Card for Chargers and Stations */}
@@ -1032,6 +1032,8 @@ export default Map;
           </div>
         </div>
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default Map;
