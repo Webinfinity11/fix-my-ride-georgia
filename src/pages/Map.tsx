@@ -11,6 +11,7 @@ import { ChargerCard } from "@/components/charger/ChargerCard";
 import { FuelStationCard } from "@/components/fuel/FuelStationCard";
 import { MapBottomSheet } from "@/components/map/MapBottomSheet";
 import { MapPreviewCard } from "@/components/map/MapPreviewCard";
+import MapStationsBanner from "@/components/banners/MapStationsBanner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -1150,6 +1151,9 @@ const Map = () => {
                 </strong> {viewMode === 'services' ? 'სერვისი' : viewMode === 'laundries' ? 'სამრეცხაო' : viewMode === 'chargers' ? 'დამტენი' : viewMode === 'stations' ? 'სადგური' : 'დრაივი'}
               </div>
             </div>
+
+            {/* Stations Ad Banner - Desktop only */}
+            {viewMode === 'stations' && <MapStationsBanner />}
 
             {/* Mobile Preview Card for Chargers and Stations */}
             <div className="md:hidden">
