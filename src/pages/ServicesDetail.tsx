@@ -326,8 +326,8 @@ const ServicesDetail = () => {
                   {sortedServices.slice(0, visibleServicesCount).map((service, index) => (
                     <>
                       <ServiceCard key={service.id} service={service} />
-                      {/* Banner after second row (after 8th item for 4-column grid) */}
-                      {index === 7 && <ServicesGridBanner key="banner-row-2" />}
+                      {/* Banner after first row (after 4th item for 4-column grid) */}
+                      {index === 3 && <ServicesGridBanner key="banner-row-1" />}
                     </>
                   ))}
                 </div>
