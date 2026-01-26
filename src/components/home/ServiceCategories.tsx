@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wrench, Car, Zap, Settings, Gauge, Paintbrush, MapPin } from "lucide-react";
 import { createCategorySlug } from "@/utils/slugUtils";
+import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 
 type ServiceCategory = {
   id: number;
@@ -63,34 +64,38 @@ const ServiceCategories = ({ categories }: ServiceCategoriesProps) => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {servicesToShow.map((category) => (
-            <Card 
-              key={category.id} 
-              className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105 bg-white border-2 hover:border-primary/30"
-              onClick={() => handleCategoryClick(category)}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="mb-4 flex justify-center">
-                  {getIcon(category.icon)}
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-primary">
-                  {category.name}
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  {category.description || "პროფესიონალური სერვისი თქვენი ავტომობილისთვის"}
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="w-full hover:bg-primary hover:text-white transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCategoryClick(category);
-                  }}
-                >
-                  ხელოსნების ნახვა
-                </Button>
-              </CardContent>
-            </Card>
+          {servicesToShow.map((category, index) => (
+            <>
+              <Card 
+                key={category.id} 
+                className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105 bg-white border-2 hover:border-primary/30"
+                onClick={() => handleCategoryClick(category)}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className="mb-4 flex justify-center">
+                    {getIcon(category.icon)}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 text-primary">
+                    {category.name}
+                  </h3>
+                  <p className="text-muted-foreground mb-4 text-sm">
+                    {category.description || "პროფესიონალური სერვისი თქვენი ავტომობილისთვის"}
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    className="w-full hover:bg-primary hover:text-white transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCategoryClick(category);
+                    }}
+                  >
+                    ხელოსნების ნახვა
+                  </Button>
+                </CardContent>
+              </Card>
+              {/* Banner after second row (after 6th item) */}
+              {index === 5 && <ServicesGridBanner key="banner-row-2" />}
+            </>
           ))}
         </div>
         
