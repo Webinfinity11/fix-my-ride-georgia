@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
+import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import { useServices } from "@/hooks/useServices";
 import { Filter, RefreshCw, MapPin } from "lucide-react";
 
@@ -322,8 +323,12 @@ const ServicesDetail = () => {
 
                 {/* Services Grid */}
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {sortedServices.slice(0, visibleServicesCount).map((service) => (
-                    <ServiceCard key={service.id} service={service} />
+                  {sortedServices.slice(0, visibleServicesCount).map((service, index) => (
+                    <>
+                      <ServiceCard key={service.id} service={service} />
+                      {/* Banner after second row (after 8th item for 4-column grid) */}
+                      {index === 7 && <ServicesGridBanner key="banner-row-2" />}
+                    </>
                   ))}
                 </div>
 
