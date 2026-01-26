@@ -41,6 +41,7 @@ import { generateServiceOGImage } from "@/utils/ogImageGenerator";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
 import { SaveServiceButton } from "@/components/services/SaveServiceButton";
+import ServiceDetailBanner from "@/components/banners/ServiceDetailBanner";
 
 interface ServiceType {
   id: number;
@@ -814,6 +815,9 @@ const ServiceDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Ad Banner - below photos */}
+            <ServiceDetailBanner />
 
             {/* Service Videos */}
             {service.videos && service.videos.length > 0 && (
