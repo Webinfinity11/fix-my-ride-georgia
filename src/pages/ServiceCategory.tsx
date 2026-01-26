@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -389,8 +390,12 @@ const ServiceCategory = () => {
         <div className="container mx-auto px-4 pb-12">
           {services.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => (
-                <ServiceCard key={service.id} service={service} />
+              {services.map((service, index) => (
+                <>
+                  <ServiceCard key={service.id} service={service} />
+                  {/* Banner after second row (after 6th item) */}
+                  {index === 5 && <ServicesGridBanner key="banner-row-2" />}
+                </>
               ))}
             </div>
           ) : (
