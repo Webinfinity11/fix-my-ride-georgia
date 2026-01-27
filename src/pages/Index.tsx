@@ -14,7 +14,24 @@ import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/Structure
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import { ServicePageNavigation } from "@/components/services/ServicePageNavigation";
-import { Search, TrendingUp, Zap, Shield, Users, Star, MapPin, ArrowRight, CheckCircle2, Sparkles, UserPlus, Wrench, Car, DollarSign, FileText, Truck } from "lucide-react";
+import {
+  Search,
+  TrendingUp,
+  Zap,
+  Shield,
+  Users,
+  Star,
+  MapPin,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+  UserPlus,
+  Wrench,
+  Car,
+  DollarSign,
+  FileText,
+  Truck,
+} from "lucide-react";
 import HomeCenterBanner from "@/components/banners/HomeCenterBanner";
 import MobileBanner from "@/components/banners/MobileBanner";
 import { EvacuatorDialog } from "@/components/evacuator/EvacuatorDialog";
@@ -39,29 +56,45 @@ type FeaturedMechanic = {
 };
 
 // საქართველოს მთავარი ქალაქები
-const georgianCities = ["თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი", "ზუგდიდი", "ფოთი", "ხაშური", "სამტრედია", "ოზურგეთი"];
+const georgianCities = [
+  "თბილისი",
+  "ბათუმი",
+  "ქუთაისი",
+  "რუსთავი",
+  "გორი",
+  "ზუგდიდი",
+  "ფოთი",
+  "ხაშური",
+  "სამტრედია",
+  "ოზურგეთი",
+];
 
 // პოპულარული ძიებები
 const popularSearches = ["ძრავის შეკეთება", "ელექტროობა", "დიაგნოსტიკა", "ზეთის შეცვლა"];
 
 // სტატისტიკა
-const stats = [{
-  number: "2,500+",
-  label: "ხელოსანი",
-  icon: Users
-}, {
-  number: "15,000+",
-  label: "სერვისი",
-  icon: Zap
-}, {
-  number: "50,000+",
-  label: "მომხმარებელი",
-  icon: Shield
-}, {
-  number: "4.8★",
-  label: "საშუალო რეიტინგი",
-  icon: Star
-}];
+const stats = [
+  {
+    number: "500+",
+    label: "ხელოსანი",
+    icon: Users,
+  },
+  {
+    number: "500+",
+    label: "სერვისი",
+    icon: Zap,
+  },
+  {
+    number: "50,000+",
+    label: "მომხმარებელი",
+    icon: Shield,
+  },
+  {
+    number: "4.8★",
+    label: "საშუალო რეიტინგი",
+    icon: Star,
+  },
+];
 import { useSitemapAutoUpdate } from "@/hooks/useSitemapAutoUpdate";
 const Index = () => {
   // Initialize sitemap auto-update listener
@@ -87,9 +120,18 @@ const Index = () => {
     const fetchInitialData = async () => {
       try {
         // Fetch all data in parallel to reduce critical request chain
-        const [categoriesResponse, mechanicsResponse, allCategoriesResponse] = await Promise.all([supabase.from("service_categories").select("*").order("id", {
-          ascending: true
-        }).limit(8), supabase.from("mechanic_profiles").select(`
+        const [categoriesResponse, mechanicsResponse, allCategoriesResponse] = await Promise.all([
+          supabase
+            .from("service_categories")
+            .select("*")
+            .order("id", {
+              ascending: true,
+            })
+            .limit(8),
+          supabase
+            .from("mechanic_profiles")
+            .select(
+              `
               id,
               specialization,
               rating,
@@ -101,13 +143,21 @@ const Index = () => {
                 city,
                 district
               )
-            `).gte("rating", 4.0).not("rating", "is", null).order("rating", {
-          ascending: false
-        }).order("review_count", {
-          ascending: false
-        }).limit(6), supabase.from("service_categories").select("*").order("name", {
-          ascending: true
-        })]);
+            `,
+            )
+            .gte("rating", 4.0)
+            .not("rating", "is", null)
+            .order("rating", {
+              ascending: false,
+            })
+            .order("review_count", {
+              ascending: false,
+            })
+            .limit(6),
+          supabase.from("service_categories").select("*").order("name", {
+            ascending: true,
+          }),
+        ]);
 
         // Handle categories
         if (categoriesResponse.error) throw categoriesResponse.error;
@@ -120,25 +170,46 @@ const Index = () => {
         // Handle mechanics
         if (mechanicsResponse.error) throw mechanicsResponse.error;
         if (mechanicsResponse.data && mechanicsResponse.data.length > 0) {
-          const transformedMechanics: FeaturedMechanic[] = mechanicsResponse.data.map(mechanic => ({
+          const transformedMechanics: FeaturedMechanic[] = mechanicsResponse.data.map((mechanic) => ({
             id: mechanic.id,
             profiles: {
               first_name: mechanic.profiles.first_name,
               last_name: mechanic.profiles.last_name,
               avatar_url: mechanic.profiles.avatar_url,
               city: mechanic.profiles.city,
-              district: mechanic.profiles.district
+              district: mechanic.profiles.district,
             },
             specialization: mechanic.specialization,
             rating: mechanic.rating,
-            review_count: mechanic.review_count
+            review_count: mechanic.review_count,
           }));
           setFeaturedMechanics(transformedMechanics);
         }
 
         // თბილისის უბნების fetch თუ თბილისია არჩეული
         if (selectedCity === "თბილისი") {
-          const tbilisiDistricts = ["ვაკე", "საბურთალო", "ვერე", "გლდანი", "ისანი", "ნაძალადევი", "ძველი თბილისი", "აბანოთუბანი", "ავლაბარი", "ჩუღურეთი", "სამგორი", "დიღომი", "ვაშლიჯვარი", "მთაწმინდა", "კრწანისი", "ავჭალა", "ლილო", "ორთაჭალა", "დიდუბე", "ფონიჭალა"];
+          const tbilisiDistricts = [
+            "ვაკე",
+            "საბურთალო",
+            "ვერე",
+            "გლდანი",
+            "ისანი",
+            "ნაძალადევი",
+            "ძველი თბილისი",
+            "აბანოთუბანი",
+            "ავლაბარი",
+            "ჩუღურეთი",
+            "სამგორი",
+            "დიღომი",
+            "ვაშლიჯვარი",
+            "მთაწმინდა",
+            "კრწანისი",
+            "ავჭალა",
+            "ლილო",
+            "ორთაჭალა",
+            "დიდუბე",
+            "ფონიჭალა",
+          ];
           setDistricts(tbilisiDistricts);
         } else {
           setDistricts([]);
@@ -182,18 +253,35 @@ const Index = () => {
   // All categories state (now loaded in parallel with other data)
   const [allCategories, setAllCategories] = useState<ServiceCategory[]>([]);
   const canonicalUrl = generateCanonicalURL("home", {});
-  return <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
-      <SEOHead title={generateSEOTitle("home", {})} description={generateSEODescription("home", {})} keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup" url={canonicalUrl} canonical={canonicalUrl} type="website" />
+  return (
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 pb-[70px] md:pb-0">
+      <SEOHead
+        title={generateSEOTitle("home", {})}
+        description={generateSEODescription("home", {})}
+        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup"
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        type="website"
+      />
 
-      <OrganizationSchema name="ავტოხელოსანი" url="https://fixup.ge" description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა" contactPoint={{
-      contactType: "customer service",
-      email: "info@fixup.ge"
-    }} />
+      <OrganizationSchema
+        name="ავტოხელოსანი"
+        url="https://fixup.ge"
+        description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა"
+        contactPoint={{
+          contactType: "customer service",
+          email: "info@fixup.ge",
+        }}
+      />
 
-      <BreadcrumbSchema items={[{
-      name: "მთავარი",
-      url: "https://fixup.ge/"
-    }]} />
+      <BreadcrumbSchema
+        items={[
+          {
+            name: "მთავარი",
+            url: "https://fixup.ge/",
+          },
+        ]}
+      />
       <Header />
 
       <main className="flex-grow">
@@ -218,14 +306,15 @@ const Index = () => {
                     ხელოსანი
                   </span>
                 </h1>
-                <div className="mb-10">
-                  
-                </div>
+                <div className="mb-10"></div>
               </div>
 
               {/* Evacuator Call Button */}
               <div className="mb-10 flex justify-center">
-                <button onClick={() => setEvacuatorDialogOpen(true)} className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-red-500 to-red-700 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <button
+                  onClick={() => setEvacuatorDialogOpen(true)}
+                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-red-500 to-red-700 p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
                   <div className="absolute top-2 right-2">
                     <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-semibold text-red-600 shadow-sm">
                       24/7
@@ -252,14 +341,37 @@ const Index = () => {
                       <h2 className="text-xl lg:text-2xl font-bold text-gray-900">დეტალური ძიება</h2>
                     </div>
 
-                    <ModernServiceFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} categories={allCategories} selectedCity={selectedCity} setSelectedCity={setSelectedCity} cities={cities} selectedDistrict={selectedDistrict} setSelectedDistrict={setSelectedDistrict} districts={districts} selectedBrands={selectedBrands} setSelectedBrands={setSelectedBrands} onSiteOnly={onSiteOnly} setOnSiteOnly={setOnSiteOnly} minRating={minRating} setMinRating={setMinRating} onSearch={handleSearch} onResetFilters={handleResetFilters} />
+                    <ModernServiceFilters
+                      searchTerm={searchTerm}
+                      setSearchTerm={setSearchTerm}
+                      selectedCategory={selectedCategory}
+                      setSelectedCategory={setSelectedCategory}
+                      categories={allCategories}
+                      selectedCity={selectedCity}
+                      setSelectedCity={setSelectedCity}
+                      cities={cities}
+                      selectedDistrict={selectedDistrict}
+                      setSelectedDistrict={setSelectedDistrict}
+                      districts={districts}
+                      selectedBrands={selectedBrands}
+                      setSelectedBrands={setSelectedBrands}
+                      onSiteOnly={onSiteOnly}
+                      setOnSiteOnly={setOnSiteOnly}
+                      minRating={minRating}
+                      setMinRating={setMinRating}
+                      onSearch={handleSearch}
+                      onResetFilters={handleResetFilters}
+                    />
                   </div>
                 </div>
               </Card>
 
               {/* Quick Access Buttons */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?onSite=true")}>
+                <Card
+                  className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/services?onSite=true")}
+                >
                   <CardContent className="p-4 lg:p-6 text-center">
                     <div className="p-3 lg:p-4 bg-green-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
                       <MapPin className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
@@ -269,7 +381,10 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services?minRating=4")}>
+                <Card
+                  className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/services?minRating=4")}
+                >
                   <CardContent className="p-4 lg:p-6 text-center">
                     <div className="p-3 lg:p-4 bg-blue-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
                       <Star className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
@@ -279,7 +394,10 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/services")}>
+                <Card
+                  className="border-0 shadow-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/services")}
+                >
                   <CardContent className="p-4 lg:p-6 text-center">
                     <div className="p-3 lg:p-4 bg-purple-500 rounded-full w-fit mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform">
                       <Zap className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
@@ -298,7 +416,8 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                {stats.map((stat, index) => <Card key={index} className="border-0 shadow-lg bg-white hover:shadow-xl transition-all duration-300">
+                {stats.map((stat, index) => (
+                  <Card key={index} className="border-0 shadow-lg bg-white hover:shadow-xl transition-all duration-300">
                     <CardContent className="p-4 lg:p-6 text-center">
                       <div className="flex items-center justify-center mb-3">
                         <div className="p-2 lg:p-3 bg-gradient-to-r from-primary to-blue-600 rounded-full">
@@ -308,7 +427,8 @@ const Index = () => {
                       <div className="text-xl lg:text-3xl font-bold text-gray-900 mb-1">{stat.number}</div>
                       <div className="text-sm lg:text-base text-gray-600 font-medium">{stat.label}</div>
                     </CardContent>
-                  </Card>)}
+                  </Card>
+                ))}
               </div>
             </div>
           </div>
@@ -345,7 +465,10 @@ const Index = () => {
                         </Button>
                       </Link>
                       <Link to="/login">
-                        <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 py-2 lg:py-3 text-base lg:text-lg">
+                        <Button
+                          variant="outline"
+                          className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 py-2 lg:py-3 text-base lg:text-lg"
+                        >
                           შესვლა
                         </Button>
                       </Link>
@@ -370,7 +493,10 @@ const Index = () => {
                         </Button>
                       </Link>
                       <Link to="/login">
-                        <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary/10 py-2 lg:py-3 text-base lg:text-lg">
+                        <Button
+                          variant="outline"
+                          className="w-full border-secondary text-secondary hover:bg-secondary/10 py-2 lg:py-3 text-base lg:text-lg"
+                        >
                           შესვლა
                         </Button>
                       </Link>
@@ -399,7 +525,10 @@ const Index = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                 {/* Leasing Card */}
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-green-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/leasing")}>
+                <Card
+                  className="border-0 shadow-xl bg-gradient-to-br from-green-50 to-green-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/leasing")}
+                >
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-green-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <DollarSign className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
@@ -416,7 +545,10 @@ const Index = () => {
                 </Card>
 
                 {/* Dealers Card */}
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/dealers")}>
+                <Card
+                  className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/dealers")}
+                >
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-blue-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <Car className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
@@ -433,7 +565,10 @@ const Index = () => {
                 </Card>
 
                 {/* Insurance Card */}
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/insurance")}>
+                <Card
+                  className="border-0 shadow-xl bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                  onClick={() => navigate("/insurance")}
+                >
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-purple-500 rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <Shield className="h-8 w-8 lg:h-12 lg:w-12 text-white" />
@@ -467,16 +602,26 @@ const Index = () => {
               </p>
             </div>
 
-            {loading ? <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                {[...Array(8)].map((_, i) => <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                {[...Array(8)].map((_, i) => (
+                  <Card key={i} className="animate-pulse border-0 shadow-lg bg-white">
                     <CardContent className="p-4 lg:p-6 text-center">
                       <div className="h-12 w-12 lg:h-16 lg:w-16 bg-gray-200 rounded-full mb-4 mx-auto"></div>
                       <div className="h-5 lg:h-6 bg-gray-200 rounded mb-2"></div>
                       <div className="h-3 lg:h-4 bg-gray-200 rounded"></div>
                     </CardContent>
-                  </Card>)}
-              </div> : <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                {categories.map(category => <Card key={category.id} className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white cursor-pointer overflow-hidden" onClick={() => navigate(`/services?category=${category.id}`)}>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                {categories.map((category) => (
+                  <Card
+                    key={category.id}
+                    className="group hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white cursor-pointer overflow-hidden"
+                    onClick={() => navigate(`/services?category=${category.id}`)}
+                  >
                     <CardContent className="p-4 lg:p-6 text-center relative">
                       {/* Background Gradient */}
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -494,7 +639,9 @@ const Index = () => {
                           {category.name}
                         </h3>
 
-                        {category.description && <p className="text-xs lg:text-sm text-gray-600 line-clamp-2">{category.description}</p>}
+                        {category.description && (
+                          <p className="text-xs lg:text-sm text-gray-600 line-clamp-2">{category.description}</p>
+                        )}
 
                         {/* Hover Arrow */}
                         <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -502,12 +649,17 @@ const Index = () => {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>)}
-              </div>}
+                  </Card>
+                ))}
+              </div>
+            )}
 
             <div className="text-center mt-8 lg:mt-12">
               <Link to="/services">
-                <Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                >
                   ყველა სერვისის ნახვა
                   <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
                 </Button>
@@ -526,6 +678,7 @@ const Index = () => {
       <MobileBanner />
       <MobileBottomNav />
       <EvacuatorDialog open={evacuatorDialogOpen} onOpenChange={setEvacuatorDialogOpen} />
-    </div>;
+    </div>
+  );
 };
 export default Index;
