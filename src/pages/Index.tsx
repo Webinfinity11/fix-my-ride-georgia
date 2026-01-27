@@ -14,84 +14,48 @@ import SimplifiedSearch from "@/components/home/SimplifiedSearch";
 import CategoryCarousel from "@/components/home/CategoryCarousel";
 import VIPServicesCarousel from "@/components/home/VIPServicesCarousel";
 import StationsPromo from "@/components/home/StationsPromo";
-import {
-  Zap,
-  Shield,
-  Users,
-  Star,
-  ArrowRight,
-  Sparkles,
-  UserPlus,
-  Wrench,
-  Car,
-  DollarSign,
-} from "lucide-react";
+import { Zap, Shield, Users, Star, ArrowRight, Sparkles, UserPlus, Wrench, Car, DollarSign } from "lucide-react";
 import HomeCenterBanner from "@/components/banners/HomeCenterBanner";
 import MobileBanner from "@/components/banners/MobileBanner";
 import { EvacuatorDialog } from "@/components/evacuator/EvacuatorDialog";
 import { useSitemapAutoUpdate } from "@/hooks/useSitemapAutoUpdate";
 
 // სტატისტიკა
-const stats = [
-  {
-    number: "500+",
-    label: "ხელოსანი",
-    icon: Users,
-  },
-  {
-    number: "500+",
-    label: "სერვისი",
-    icon: Zap,
-  },
-  {
-    number: "50,000+",
-    label: "მომხმარებელი",
-    icon: Shield,
-  },
-  {
-    number: "4.8★",
-    label: "საშუალო რეიტინგი",
-    icon: Star,
-  },
-];
-
+const stats = [{
+  number: "500+",
+  label: "ხელოსანი",
+  icon: Users
+}, {
+  number: "500+",
+  label: "სერვისი",
+  icon: Zap
+}, {
+  number: "50,000+",
+  label: "მომხმარებელი",
+  icon: Shield
+}, {
+  number: "4.8★",
+  label: "საშუალო რეიტინგი",
+  icon: Star
+}];
 const Index = () => {
   // Initialize sitemap auto-update listener
   useSitemapAutoUpdate();
   const navigate = useNavigate();
   const [evacuatorDialogOpen, setEvacuatorDialogOpen] = useState(false);
-
   const canonicalUrl = generateCanonicalURL("home", {});
+  return <div className="min-h-screen flex flex-col bg-gradient-to-br from-muted via-background to-accent/30 pb-[70px] md:pb-0">
+      <SEOHead title={generateSEOTitle("home", {})} description={generateSEODescription("home", {})} keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup" url={canonicalUrl} canonical={canonicalUrl} type="website" />
 
-  return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-muted via-background to-accent/30 pb-[70px] md:pb-0">
-      <SEOHead
-        title={generateSEOTitle("home", {})}
-        description={generateSEODescription("home", {})}
-        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup"
-        url={canonicalUrl}
-        canonical={canonicalUrl}
-        type="website"
-      />
+      <OrganizationSchema name="ავტოხელოსანი" url="https://fixup.ge" description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა" contactPoint={{
+      contactType: "customer service",
+      email: "info@fixup.ge"
+    }} />
 
-      <OrganizationSchema
-        name="ავტოხელოსანი"
-        url="https://fixup.ge"
-        description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა"
-        contactPoint={{
-          contactType: "customer service",
-          email: "info@fixup.ge",
-        }}
-      />
-
-      <BreadcrumbSchema
-        items={[
-          {
-            name: "მთავარი",
-            url: "https://fixup.ge/",
-          },
-        ]}
-      />
+      <BreadcrumbSchema items={[{
+      name: "მთავარი",
+      url: "https://fixup.ge/"
+    }]} />
       <Header />
 
       <main className="flex-grow">
@@ -158,27 +122,7 @@ const Index = () => {
         <StationsPromo />
 
         {/* Stats Section */}
-        <section className="py-10 md:py-16 bg-card">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                {stats.map((stat, index) => (
-                  <Card key={index} className="border-0 shadow-lg bg-background hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-4 lg:p-6 text-center">
-                      <div className="flex items-center justify-center mb-3">
-                        <div className="p-2 lg:p-3 bg-gradient-to-r from-primary to-primary-light rounded-full">
-                          <stat.icon className="h-5 w-5 lg:h-6 lg:w-6 text-primary-foreground" />
-                        </div>
-                      </div>
-                      <div className="text-xl lg:text-3xl font-bold text-foreground mb-1">{stat.number}</div>
-                      <div className="text-sm lg:text-base text-muted-foreground font-medium">{stat.label}</div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        
 
         {/* Registration Section */}
         <section className="py-10 md:py-16 bg-gradient-to-br from-muted to-background">
@@ -211,10 +155,7 @@ const Index = () => {
                         </Button>
                       </Link>
                       <Link to="/login">
-                        <Button
-                          variant="outline"
-                          className="w-full border-primary text-primary hover:bg-primary/5 py-2 lg:py-3 text-base lg:text-lg"
-                        >
+                        <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary/5 py-2 lg:py-3 text-base lg:text-lg">
                           შესვლა
                         </Button>
                       </Link>
@@ -239,10 +180,7 @@ const Index = () => {
                         </Button>
                       </Link>
                       <Link to="/login">
-                        <Button
-                          variant="outline"
-                          className="w-full border-secondary text-secondary hover:bg-secondary/10 py-2 lg:py-3 text-base lg:text-lg"
-                        >
+                        <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary/10 py-2 lg:py-3 text-base lg:text-lg">
                           შესვლა
                         </Button>
                       </Link>
@@ -271,10 +209,7 @@ const Index = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                 {/* Leasing Card */}
-                <Card
-                  className="border-0 shadow-xl bg-gradient-to-br from-primary/10 to-primary/5 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-                  onClick={() => navigate("/leasing")}
-                >
+                <Card className="border-0 shadow-xl bg-gradient-to-br from-primary/10 to-primary/5 hover:shadow-2xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/leasing")}>
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-primary rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <DollarSign className="h-8 w-8 lg:h-12 lg:w-12 text-primary-foreground" />
@@ -291,10 +226,7 @@ const Index = () => {
                 </Card>
 
                 {/* Dealers Card */}
-                <Card
-                  className="border-0 shadow-xl bg-gradient-to-br from-accent to-accent/50 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-                  onClick={() => navigate("/dealers")}
-                >
+                <Card className="border-0 shadow-xl bg-gradient-to-br from-accent to-accent/50 hover:shadow-2xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/dealers")}>
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-primary rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <Car className="h-8 w-8 lg:h-12 lg:w-12 text-primary-foreground" />
@@ -311,10 +243,7 @@ const Index = () => {
                 </Card>
 
                 {/* Insurance Card */}
-                <Card
-                  className="border-0 shadow-xl bg-gradient-to-br from-secondary/10 to-secondary/5 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-                  onClick={() => navigate("/insurance")}
-                >
+                <Card className="border-0 shadow-xl bg-gradient-to-br from-secondary/10 to-secondary/5 hover:shadow-2xl transition-all duration-300 cursor-pointer group" onClick={() => navigate("/insurance")}>
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-secondary rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                       <Shield className="h-8 w-8 lg:h-12 lg:w-12 text-secondary-foreground" />
@@ -342,8 +271,6 @@ const Index = () => {
       <MobileBanner />
       <MobileBottomNav />
       <EvacuatorDialog open={evacuatorDialogOpen} onOpenChange={setEvacuatorDialogOpen} />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
