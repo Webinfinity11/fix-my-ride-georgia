@@ -440,11 +440,11 @@ const Index = () => {
             <div className="max-w-4xl mx-auto text-center">
               <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
                 <UserPlus className="h-4 w-4 mr-2" />
-                გაწევრება
+                გაწევრიანდი
               </Badge>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">დაიწყეთ ახლავე</h2>
               <p className="text-lg lg:text-xl text-gray-600 mb-8 lg:mb-12 max-w-2xl mx-auto">
-                შეუერთდით ჩვენს პლატფორმას და იღებდეთ ან გაწვდოდეთ ხარისხიანი ავტო-სერვისი
+                შემოუერთდით ჩვენს პლატფორმას და მიიღეთ ან მიაწოდეთ ხარისხიანი ავტოსერვისი
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
@@ -456,7 +456,7 @@ const Index = () => {
                     </div>
                     <h3 className="text-xl lg:text-2xl font-bold text-blue-900 mb-3 lg:mb-4">მომხმარებლად</h3>
                     <p className="text-sm lg:text-base text-blue-700 mb-4 lg:mb-6">
-                      იპოვეთ და დაჯავშნეთ საუკეთესო ხელოსნები თქვენი ავტომობილისთვის
+                      იპოვეთ საუკეთესო ხელოსნები 
                     </p>
                     <div className="space-y-3 lg:space-y-4">
                       <Link to="/register?type=customer">
@@ -484,7 +484,7 @@ const Index = () => {
                     </div>
                     <h3 className="text-xl lg:text-2xl font-bold text-orange-900 mb-3 lg:mb-4">ხელოსნად</h3>
                     <p className="text-sm lg:text-base text-orange-700 mb-4 lg:mb-6">
-                      გაიზარდეთ თქვენი ბიზნესი და მოიძიეთ ახალი კლიენტები ჩვენს პლატფორმაზე
+                      გაზარდე შენი სერვისი და მოიძიე ახალი კლიენტები 
                     </p>
                     <div className="space-y-3 lg:space-y-4">
                       <Link to="/register?type=mechanic">
@@ -519,8 +519,7 @@ const Index = () => {
                 </Badge>
                 <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">ყველა კომპანია ერთ პლატფორმაზე</h2>
                 <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto">
-                  დატოვეთ თქვენი საკონტაქტო ინფორმაცია და პარტნიორი კომპანიები პირობებს შემოგთავაზებენ!
-                </p>
+                  დატოვე საკონტაქტო ინფორმაცია და პარტნიორი კომპანიები დაგიკავშირდებიან!
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -535,7 +534,7 @@ const Index = () => {
                     </div>
                     <h3 className="text-xl lg:text-2xl font-bold text-green-900 mb-3">ავტოლიზინგები</h3>
                     <p className="text-sm lg:text-base text-green-700 mb-6">
-                      მიიღეთ თქვენი საოცნებო მანქანა მოქნილი გადახდის პირობებით
+                      იპოვე საუკეთესო სალიზინგო კომპანია ჩვენი დახმარებით
                     </p>
                     <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
                       გაიგე მეტი
@@ -555,7 +554,7 @@ const Index = () => {
                     </div>
                     <h3 className="text-xl lg:text-2xl font-bold text-blue-900 mb-3">ავტოდილერები</h3>
                     <p className="text-sm lg:text-base text-blue-700 mb-6">
-                      ოფიციალური დილერები და ფართო არჩევანი ავტომობილებისა
+                      სანდო დილერები და ავტომობილების ფართო არჩევანი 
                     </p>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                       გაიგე მეტი
@@ -575,7 +574,7 @@ const Index = () => {
                     </div>
                     <h3 className="text-xl lg:text-2xl font-bold text-purple-900 mb-3">დაზღვევა</h3>
                     <p className="text-sm lg:text-base text-purple-700 mb-6">
-                      დააზღვიეთ თქვენი ავტომობილი საუკეთესო პირობებით
+                      დააზღვიე ავტომობილი საუკეთესო პირობებით
                     </p>
                     <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
                       გაიგე მეტი
@@ -594,11 +593,11 @@ const Index = () => {
             <div className="text-center mb-12 lg:mb-16">
               <Badge className="mb-4 bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-2">
                 <Zap className="h-4 w-4 mr-2" />
-                ჩვენი სერვისები
+                კატეგორიები
               </Badge>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">სრული სპექტრის ავტო სერვისში</h2>
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">მოიძიე ყველა ავტოსერვისი ერთ სივრცეში</h2>
               <p className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
-                პროფესიონალური მომსახურება ყველა ტიპის ავტომობილისთვის
+                მხოლოდ ავტორიზებული ხელოსნები ერთ სივრცეში
               </p>
             </div>
 
