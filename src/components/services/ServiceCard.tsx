@@ -253,7 +253,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
 
             {/* Details Button */}
             <Button onClick={handleViewDetails} className="flex-1 bg-primary hover:bg-primary-light transition-colors">
-              დეტალების ნახვა
+              ვრცლად
             </Button>
           </div>
         </div>
