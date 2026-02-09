@@ -19,7 +19,7 @@ const BannerManagement = () => {
   const [bannerToDelete, setBannerToDelete] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    position: 'home_center_desktop' as 'home_center_desktop' | 'home_above_mobile_nav',
+    position: 'home_center_desktop' as 'home_center_desktop' | 'home_above_mobile_nav' | 'services_page',
     banner_url: '',
     link_url: '',
     is_active: true,
@@ -86,9 +86,9 @@ const BannerManagement = () => {
   };
 
   const getPositionLabel = (position: string) => {
-    return position === 'home_center_desktop' 
-      ? '🖥️ Desktop - ცენტრალური' 
-      : '📱 Mobile - ნავიგაციის ზემოთ';
+    if (position === 'home_center_desktop') return '🖥️ Desktop - ცენტრალური';
+    if (position === 'services_page') return '📄 სერვისების გვერდი';
+    return '📱 Mobile - ნავიგაციის ზემოთ';
   };
 
   if (isLoading) {
@@ -195,6 +195,9 @@ const BannerManagement = () => {
                   </SelectItem>
                   <SelectItem value="home_above_mobile_nav">
                     📱 Mobile - ნავიგაციის ზემოთ
+                  </SelectItem>
+                  <SelectItem value="services_page">
+                    📄 სერვისების გვერდი (760x90px)
                   </SelectItem>
                 </SelectContent>
               </Select>

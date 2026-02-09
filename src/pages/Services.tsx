@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 
 import { PhoneCall } from "lucide-react";
 import { toast } from "sonner";
+import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 
 type ServiceCategory = {
   id: number;
@@ -155,7 +156,7 @@ const Services = () => {
       </main>
       
       <Footer />
-      
+      <ServicesPageBanner />
     </div>
   );
 };
