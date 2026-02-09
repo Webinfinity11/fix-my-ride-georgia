@@ -28,7 +28,7 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
       // Fetch categories and cities in parallel
       const [categoriesRes, citiesRes] = await Promise.all([
         supabase.from("service_categories").select("id, name").order("name"),
-        supabase.from("cities").select("name").order("name"),
+        supabase.from("mechanic_services").select("city").not("city", "is", null),
       ]);
 
       if (categoriesRes.data) {
@@ -36,7 +36,8 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
       }
 
       if (citiesRes.data) {
-        setCities(citiesRes.data.map((c) => c.name));
+        const uniqueCities = [...new Set(citiesRes.data.map((c) => c.city).filter(Boolean))] as string[];
+        setCities(uniqueCities.sort());
       }
     };
 

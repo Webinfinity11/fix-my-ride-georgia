@@ -965,16 +965,6 @@ const Map = () => {
                     <span className="hidden sm:inline">ავტოსერვისები</span>
                     <span className="sm:hidden">სერვისი</span>
                   </TabsTrigger>
-                  <TabsTrigger value="laundries" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-cyan-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
-                    <Droplet className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">სამრეცხაოები</span>
-                    <span className="sm:hidden">რეცხვა</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="drives" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
-                    <Car className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">დრაივები</span>
-                    <span className="sm:hidden">დრაივი</span>
-                  </TabsTrigger>
                   <TabsTrigger value="chargers" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
                     <BatteryCharging className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">ელ. დამტენები</span>
@@ -984,6 +974,16 @@ const Map = () => {
                     <Fuel className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">სადგურები</span>
                     <span className="sm:hidden">⛽</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="laundries" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-cyan-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
+                    <Droplet className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <span className="hidden sm:inline">სამრეცხაოები</span>
+                    <span className="sm:hidden">რეცხვა</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="drives" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
+                    <Car className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <span className="hidden sm:inline">დრაივები</span>
+                    <span className="sm:hidden">დრაივი</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>

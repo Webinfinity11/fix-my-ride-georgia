@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export type SiteBanner = {
   id: string;
-  position: 'home_center_desktop' | 'home_above_mobile_nav';
+  position: 'home_center_desktop' | 'home_above_mobile_nav' | 'services_page';
   banner_url: string;
   link_url?: string | null;
   is_active: boolean;
@@ -31,7 +31,7 @@ export const useSiteBanners = () => {
 };
 
 // Fetch active banner by position (for public display)
-export const useActiveBanner = (position: 'home_center_desktop' | 'home_above_mobile_nav') => {
+export const useActiveBanner = (position: 'home_center_desktop' | 'home_above_mobile_nav' | 'services_page') => {
   return useQuery({
     queryKey: ["active-banner", position],
     queryFn: async () => {
