@@ -7,6 +7,7 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
+import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 import { useServices } from "@/hooks/useServices";
 import { Filter, RefreshCw, MapPin } from "lucide-react";
 
@@ -215,6 +216,7 @@ const ServicesDetail = () => {
     citiesCount: availableCities.length,
   });
   return (
+    <>
     <Layout>
       <div className="py-8">
         <div className="container mx-auto px-4">
@@ -370,6 +372,8 @@ const ServicesDetail = () => {
         </div>
       </div>
     </Layout>
+    <ServicesPageBanner />
+    </>
   );
 };
 export default ServicesDetail;
