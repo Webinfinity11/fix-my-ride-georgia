@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, MousePointerClick } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import BannerUpload from "@/components/forms/BannerUpload";
 import { useSiteBanners, useCreateBanner, useUpdateBanner, useDeleteBanner, type SiteBanner } from "@/hooks/useSiteBanners";
+import { useBannerStats } from "@/hooks/useBannerAnalytics";
 
 const BannerManagement = () => {
   const [selectedBanner, setSelectedBanner] = useState<SiteBanner | null>(null);
@@ -27,9 +28,15 @@ const BannerManagement = () => {
   });
 
   const { data: banners = [], isLoading } = useSiteBanners();
+  const { data: bannerStats = [] } = useBannerStats();
   const createMutation = useCreateBanner();
   const updateMutation = useUpdateBanner();
   const deleteMutation = useDeleteBanner();
+
+  const getStats = (bannerId: string) => {
+    const stats = bannerStats.find(s => s.banner_id === bannerId);
+    return { impressions: stats?.impressions || 0, clicks: stats?.clicks || 0 };
+  };
 
   const handleAdd = () => {
     setSelectedBanner(null);
@@ -154,6 +161,16 @@ const BannerManagement = () => {
                   🔗 {banner.link_url}
                 </p>
               )}
+              <div className="flex gap-4 mt-3 pt-3 border-t">
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <BarChart3 className="w-4 h-4" />
+                  <span>{getStats(banner.id).impressions.toLocaleString()} ნახვა</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <MousePointerClick className="w-4 h-4" />
+                  <span>{getStats(banner.id).clicks.toLocaleString()} კლიკი</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
