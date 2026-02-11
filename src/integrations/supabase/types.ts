@@ -85,6 +85,41 @@ export type Database = {
         }
         Relationships: []
       }
+      banner_analytics: {
+        Row: {
+          banner_id: string
+          created_at: string
+          event_type: string
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+        }
+        Insert: {
+          banner_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+        }
+        Update: {
+          banner_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "banner_analytics_banner_id_fkey"
+            columns: ["banner_id"]
+            isOneToOne: false
+            referencedRelation: "site_banners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_posts: {
         Row: {
           author_id: string
@@ -2078,6 +2113,14 @@ export type Database = {
           total_mechanics: number
           total_revenue: number
           total_services: number
+        }[]
+      }
+      get_banner_stats: {
+        Args: never
+        Returns: {
+          banner_id: string
+          clicks: number
+          impressions: number
         }[]
       }
       get_community_feed: {
