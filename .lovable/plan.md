@@ -1,86 +1,72 @@
 
 
-# SEO შეფასება — fixup.ge
+# SEO გეგმის 7 პუნქტის სტატუსი
 
-## რა გვაქვს კარგად (✅)
+## რა შესრულდა ✅
 
-1. **SEOHead კომპონენტი** — `react-helmet-async`-ით title, description, OG tags, Twitter cards, canonical URL სრულად იმართება
-2. **Structured Data (Schema.org)** — Organization, LocalBusiness, Service, Product, Person, FAQ, Breadcrumb, Review, CollectionPage სქემები
-3. **Structured Data ვალიდაცია** — ფასები და რეიტინგები ვალიდირდება (არასწორი მნიშვნელობები არ ჩაისმის)
-4. **Dynamic SEO titles/descriptions** — სერვისის, მექანიკოსის, კატეგორიის გვერდებზე დინამიური meta tags
-5. **Canonical URLs** — ყველა მთავარ გვერდზე canonical URL-ები
-6. **Sitemap.xml** — სტატიკური + დინამიური (edge function-ით გენერაცია), sitemap-index.xml
-7. **robots.txt** — სწორად კონფიგურირებული (dashboard/admin დახურული)
-8. **Google Tag Manager + gtag** — ანალიტიკა ინტეგრირებული
-9. **Google Site Verification** — meta tag დამატებული
-10. **OG Image** — დეფაულტი + დინამიური გენერაცია (ogImageGenerator.ts)
-11. **Breadcrumbs** — სერვისის დეტალურ გვერდზე + schema markup
-12. **Georgian language** — `lang="ka"`, `og:locale="ka_GE"`
-13. **PWA manifest** — manifest.webmanifest
-14. **Lazy loading** — კოდის სპლიტინგი route-ებით
+### 1. ყველა გვერდზე SEOHead დამატება (🔴 მაღალი) — ✅ შესრულდა
+- `About.tsx` — SEOHead დამატებულია
+- `NotFound.tsx` — Helmet + `noindex, nofollow` დამატებულია
+- `Blog.tsx` — canonical გასწორებულია `https://fixup.ge/blog`-ზე
+- `Laundries.tsx` — SEOHead უკვე ჰქონდა, `window.location.origin` პრობლემა აღარ არსებობს (გასუფთავებულია)
 
----
+### 2. BlogPosting schema გაუმჯობესება (🟡 საშუალო) — ✅ შესრულდა
+- `dateModified`, `publisher` (Organization + logo), `mainEntityOfPage`, `wordCount` — ყველა დამატებულია
+- canonical URL — `https://fixup.ge/blog/${slug}` სწორად მითითებულია
 
-## რა გვაკლია / გასაუმჯობესებელი (❌)
-
-### კრიტიკული პრობლემები
-
-**1. SPA + SEO ფუნდამენტური პრობლემა**
-React SPA აპლიკაციაა — Google bot-ი JavaScript-ს ასრულებს, მაგრამ სხვა სოციალური ქსელების crawler-ები (Facebook, Telegram, LinkedIn) ვერ კითხულობენ დინამიურ meta tags-ს. OG tags მხოლოდ `index.html`-ის სტატიკური მნიშვნელობები ჩანს sharing-ისას.
-
-**გადაწყვეტა:** SSR/prerendering edge function, რომელიც crawler-ებს წინასწარ დარენდერილ HTML-ს მიაწვდის.
-
-**2. რამდენიმე გვერდს meta tags საერთოდ არ აქვს**
-- `About.tsx` — არ აქვს SEOHead, არ აქვს title/description
-- `NotFound.tsx` — არ აქვს 404 meta tags
-- `Laundries.tsx` — აქვს SEOHead მაგრამ canonical URL `window.location.origin`-ით (არ არის fixup.ge)
-- `Blog.tsx` — Helmet იყენებს `window.location.origin`-ით canonical-ს
-
-**3. Sitemap მოძველებულია**
-`lastmod` თარიღი `2025-10-29` — სტატიკური ფაილია, ხელით განახლებას საჭიროებს. Edge function არსებობს (`generate-sitemap`) მაგრამ ავტომატური განახლება არ არის სრულად ინტეგრირებული.
-
-### SEO გაუმჯობესებები
-
-**4. hreflang tags არ არის**
-თუ მომავალში მულტიენოვანი ვერსია იგეგმება, hreflang tags დასჭირდება.
-
-**5. Blog ArticleSchema არასრულია**
-`BlogPost.tsx`-ში `BlogPosting` schema-ში `datePublished` აქვს, მაგრამ `dateModified`, `publisher`, `mainEntityOfPage` აკლია.
-
-**6. Image alt tags / lazy loading**
-გვერდებზე სურათებს ხშირად არ აქვს ოპტიმიზირებული alt ატრიბუტები ქართულ ენაზე.
-
-**7. Core Web Vitals ოპტიმიზაცია**
-- `index.html`-ში inline CSS + external fonts + GTM + gtag ერთდროულად იტვირთება — LCP/FID შეიძლება დაზარალდეს
-- Leaflet CSS `unpkg`-დან იტვირთება — შეიძლება ლოკალურად ჩაისმას
-
-**8. URL სტრუქტურა**
-- `/service/:id` და `/service/:slug` ორივე route არსებობს — duplicate content რისკი
-- კატეგორიებისთვის `/category/:slug` და `/services/:slug` ორივე მუშაობს
-
-**9. Internal linking**
-კატეგორიის გვერდებიდან სერვისებზე და მექანიკოსებზე cross-linking სუსტია.
-
-**10. 404 გვერდს არ აქვს proper HTTP status**
-SPA-ში 404 გვერდი რეალურად 200 status-ით ბრუნდება. სერვერის კონფიგურაციაა საჭირო.
+### 3. Duplicate route-ების canonical redirect (🟡 საშუალო) — ნაწილობრივ ✅
+- `/service/:slug` route წაშლილია App.tsx-დან — მხოლოდ `/service/:id` დარჩა
+- **მაგრამ:** `/category/:categorySlug` და `/services/:categorySlug` ორივე ჯერ კიდევ არსებობს (ხაზი 103-104)
 
 ---
 
-## პრიორიტეტების რეკომენდაცია
+## რა არ შესრულდა ❌
 
-| პრიორიტეტი | თასქი | სირთულე |
-|-----------|-------|---------|
-| 🔴 მაღალი | SSR/Prerendering crawler-ებისთვის (OG sharing fix) | მაღალი |
-| 🔴 მაღალი | ყველა გვერდზე SEOHead დამატება (About, NotFound, etc.) | დაბალი |
-| 🟡 საშუალო | BlogPosting schema გაუმჯობესება | დაბალი |
-| 🟡 საშუალო | Duplicate route-ების canonical redirect | საშუალო |
-| 🟡 საშუალო | Sitemap ავტომატური განახლება | საშუალო |
-| 🟢 დაბალი | Image alt tags ოპტიმიზაცია | დაბალი |
-| 🟢 დაბალი | Core Web Vitals ოპტიმიზაცია | საშუალო |
+### 4. SSR/Prerendering crawler-ებისთვის (🔴 მაღალი) — ❌ არ შესრულდა
+სოციალური ქსელების crawler-ები (Facebook, Telegram, LinkedIn) ჯერ კიდევ ვერ კითხულობენ დინამიურ OG tags-ს. ეს ყველაზე რთული და მნიშვნელოვანი თასქია.
+
+**გეგმა:** შევქმნა Edge Function `serve-og-meta/index.ts` რომელიც:
+- User-Agent-ს შეამოწმებს (facebookexternalhit, Twitterbot, LinkedInBot, TelegramBot)
+- Crawler-ებისთვის მინიმალურ HTML-ს დააბრუნებს სწორი OG meta tags-ით
+- სერვისის/მექანიკოსის/ბლოგის გვერდებისთვის Supabase-დან წამოიღებს მონაცემებს
+- ჩვეულებრივ მომხმარებლებს SPA-ზე გადაამისამართებს
+
+**შენიშვნა:** ეს Edge Function-ის დონეზე მუშაობს, მაგრამ რეალურად საჭიროა Cloudflare Worker ან სერვერის proxy რომ URL-ების დონეზე გადამისამართება მოხდეს. Lovable-ს ფარგლებში შეგვიძლია Edge Function შევქმნათ, მაგრამ DNS/proxy კონფიგურაცია ცალკე დასჭირდება.
+
+### 5. Sitemap ავტომატური განახლება (🟡 საშუალო) — ❌ არ შესრულდა
+`generate-sitemap` edge function არსებობს, მაგრამ ავტომატურად არ ეშვება სერვისის დამატება/წაშლის დროს.
+
+**გეგმა:**
+- `supabase/config.toml`-ში `generate-sitemap` ფუნქციას cron schedule დავამატოთ (ყოველდღიური)
+- `sitemap-index.xml`-ის lastmod განახლება
+
+### 6. Image alt tags ოპტიმიზაცია (🟢 დაბალი) — ❌ არ შესრულდა
+სურათებს ქართული alt ატრიბუტები უნდა ჰქონდეს.
+
+**გეგმა:** ServiceCard, MechanicCard, LaundryCard კომპონენტებში alt ატრიბუტების ქართულად გაწერა (სერვისის/მექანიკოსის სახელით).
+
+### 7. Core Web Vitals ოპტიმიზაცია (🟢 დაბალი) — ❌ არ შესრულდა
+- Leaflet CSS unpkg-დან იტვირთება
+- index.html-ში ბევრი blocking resource
+
+**გეგმა:** 
+- Leaflet CSS-ის `preload` hint-ის დამატება
+- GTM/gtag სკრიპტების `defer` ატრიბუტით ჩატვირთვა
+- Font display: swap უზრუნველყოფა
 
 ---
 
-## შეჯამება
+## შესასრულებელი სამუშაოების ჩამონათვალი
 
-პროექტს SEO-ს ტექნიკური ინფრასტრუქტურა კარგად აქვს — structured data, meta tags, canonical URLs, sitemap. მთავარი პრობლემა **SPA-ს ფუნდამენტური შეზღუდვაა**: სოციალურ ქსელებში sharing-ისას OG tags არ მუშაობს სწორად, რადგან crawler-ები JavaScript-ს ვერ ასრულებენ. ასევე რამდენიმე გვერდს მეტა თეგები საერთოდ აკლია.
+| # | თასქი | სტატუსი |
+|---|-------|---------|
+| 1 | SEOHead ყველა გვერდზე | ✅ შესრულდა |
+| 2 | BlogPosting schema | ✅ შესრულდა |
+| 3 | Duplicate routes | ⚠️ ნაწილობრივ — `/category` vs `/services` დარჩა |
+| 4 | SSR/Prerendering | ❌ — Edge Function საჭიროა + DNS proxy |
+| 5 | Sitemap auto-update | ❌ — cron schedule დასამატებელია |
+| 6 | Image alt tags | ❌ — კომპონენტებში alt-ების ქართულად გაწერა |
+| 7 | Core Web Vitals | ❌ — script defer, font swap, preload |
+
+ახლა შევასრულებ დარჩენილ 4.5 პუნქტს: duplicate route fix, sitemap cron, image alts, Core Web Vitals, და SSR edge function-ის მომზადებას.
 
