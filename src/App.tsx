@@ -101,7 +101,6 @@ function App() {
                   <Route path="/mechanic/:id" element={<MechanicProfile />} />
                   <Route path="/category" element={<CategoryList />} />
                   <Route path="/category/:categorySlug" element={<ServiceCategory />} />
-                  <Route path="/services/:categorySlug" element={<ServiceCategory />} />
                   <Route path="/sitemap.xml" element={<SitemapXML />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

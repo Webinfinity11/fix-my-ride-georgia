@@ -206,16 +206,10 @@ serve(async (req) => {
     categories?.forEach(category => {
       const categorySlug = georgianToLatin(category.name)
       
-      // Both routes exist: /category/:slug and /services/:slug
+      // Only /category/:slug route (duplicate /services/:slug removed)
       sitemapXml += `
   <url>
     <loc>https://fixup.ge/category/${categorySlug}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://fixup.ge/services/${categorySlug}</loc>
     <lastmod>${currentDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -323,7 +317,7 @@ serve(async (req) => {
 
     const staticUrls = 10 // Updated count for static pages (including /blog)
     const serviceUrls = services?.length || 0
-    const categoryUrls = (categories?.length || 0) * 2 // Both /category and /services routes
+    const categoryUrls = categories?.length || 0
     const mechanicUrls = (mechanics?.length || 0) * 2 // Both /mechanic and /book routes
     const blogUrls = blogPosts?.length || 0
     const totalUrls = staticUrls + serviceUrls + categoryUrls + mechanicUrls + blogUrls

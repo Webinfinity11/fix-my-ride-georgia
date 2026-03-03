@@ -142,7 +142,7 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
             <div className="aspect-[4/3] overflow-hidden">
               <img
                 src={mainPhoto}
-                alt={service.name}
+                alt={`${service.name} - ${service.category?.name || 'ავტოსერვისი'} | Fixup.ge`}
                 width="300"
                 height="225"
                 loading="lazy"
