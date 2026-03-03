@@ -1,6 +1,7 @@
 
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
 
@@ -15,6 +16,12 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
+    <>
+      <Helmet>
+        <title>404 - გვერდი ვერ მოიძებნა | ავტოხელოსანი</title>
+        <meta name="description" content="მოთხოვნილი გვერდი არ არსებობს. დაბრუნდით მთავარ გვერდზე ან მოძებნეთ სერვისები." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center max-w-md px-4">
         <h1 className="text-6xl font-bold text-primary mb-4">404</h1>
@@ -51,6 +58,7 @@ const NotFound = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

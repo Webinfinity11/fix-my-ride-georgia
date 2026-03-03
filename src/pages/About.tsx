@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
+import SEOHead from "@/components/seo/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -71,6 +72,12 @@ const About = () => {
 
   return (
     <Layout>
+      <SEOHead
+        title="ჩვენ შესახებ"
+        description="ავტოხელოსანი არის პლატფორმა, რომელიც აკავშირებს ავტომფლობელებს კვალიფიციურ ავტომექანიკოსებთან საქართველოში."
+        keywords="ავტოხელოსანი, ავტოსერვისი, საქართველო, ჩვენ შესახებ"
+        url="/about"
+      />
       <div className="bg-muted py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm">
