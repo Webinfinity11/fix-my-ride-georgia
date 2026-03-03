@@ -32,7 +32,7 @@ const LaundryCard = ({ laundry, onViewDetails }: LaundryCardProps) => {
         <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden rounded-t-lg">
           <img
             src={laundry.photos[0]}
-            alt={laundry.name}
+            alt={`${laundry.name} - ავტოსამრეცხაო | Fixup.ge`}
             className="w-full h-full object-cover transition-transform hover:scale-105"
             loading="lazy"
             style={{ minHeight: '160px', backgroundColor: '#f3f4f6' }}

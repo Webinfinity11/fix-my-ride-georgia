@@ -48,7 +48,7 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
       <CardContent className="p-4">
         <div className="flex items-start gap-4 mb-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={mechanic.profiles.avatar_url} alt={`${mechanic.profiles.first_name || ''} ${mechanic.profiles.last_name || ''}`.trim() || 'Mechanic'} />
+            <AvatarImage src={mechanic.profiles.avatar_url} alt={`${mechanic.profiles.first_name || ''} ${mechanic.profiles.last_name || ''} - ავტოხელოსანი | Fixup.ge`.trim()} />
             <AvatarFallback className="bg-primary text-primary-foreground text-lg">
               {mechanic.profiles.first_name?.charAt(0)}{mechanic.profiles.last_name?.charAt(0)}
             </AvatarFallback>
