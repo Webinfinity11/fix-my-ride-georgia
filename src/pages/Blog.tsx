@@ -46,7 +46,7 @@ export default function Blog() {
           content="წაიკითხეთ სასარგებლო სტატიები ავტომობილების მოვლა-შენახვის, სერვისების არჩევისა და საავტომობილო ინდუსტრიის შესახებ." 
         />
         <meta name="keywords" content="ავტო ბლოგი, ავტომობილის მოვლა, ავტო რჩევები, ავტოსერვისი საქართველო" />
-        <link rel="canonical" href={`${window.location.origin}/blog`} />
+        <link rel="canonical" href="https://fixup.ge/blog" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 md:py-12">

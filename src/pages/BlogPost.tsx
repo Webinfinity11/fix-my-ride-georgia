@@ -103,11 +103,16 @@ export default function BlogPost() {
       name: 'FixUp',
       logo: {
         '@type': 'ImageObject',
-        url: `${window.location.origin}/fixup-logo.jpg`,
+        url: 'https://fixup.ge/fixup-logo.jpg',
       },
     },
     datePublished: post.published_at || post.created_at,
-    dateModified: post.updated_at,
+    dateModified: post.updated_at || post.published_at || post.created_at,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://fixup.ge/blog/${post.slug}`,
+    },
+    wordCount: post.content?.split(/\s+/).length || 0,
   };
 
   return (
@@ -116,12 +121,12 @@ export default function BlogPost() {
         <title>{post.meta_title || post.title} | FixUp ბლოგი</title>
         <meta name="description" content={post.meta_description || post.excerpt || ''} />
         {post.meta_keywords && <meta name="keywords" content={post.meta_keywords} />}
-        <link rel="canonical" href={`${window.location.origin}/blog/${post.slug}`} />
+        <link rel="canonical" href={`https://fixup.ge/blog/${post.slug}`} />
         
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt || post.meta_description || ''} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={`${window.location.origin}/blog/${post.slug}`} />
+        <meta property="og:url" content={`https://fixup.ge/blog/${post.slug}`} />
         {post.featured_image && <meta property="og:image" content={post.featured_image} />}
         
         <meta property="article:published_time" content={post.published_at || post.created_at} />
