@@ -1,84 +1,86 @@
 
-# 4 თასქის იმპლემენტაციის გეგმა
+
+# SEO შეფასება — fixup.ge
+
+## რა გვაქვს კარგად (✅)
+
+1. **SEOHead კომპონენტი** — `react-helmet-async`-ით title, description, OG tags, Twitter cards, canonical URL სრულად იმართება
+2. **Structured Data (Schema.org)** — Organization, LocalBusiness, Service, Product, Person, FAQ, Breadcrumb, Review, CollectionPage სქემები
+3. **Structured Data ვალიდაცია** — ფასები და რეიტინგები ვალიდირდება (არასწორი მნიშვნელობები არ ჩაისმის)
+4. **Dynamic SEO titles/descriptions** — სერვისის, მექანიკოსის, კატეგორიის გვერდებზე დინამიური meta tags
+5. **Canonical URLs** — ყველა მთავარ გვერდზე canonical URL-ები
+6. **Sitemap.xml** — სტატიკური + დინამიური (edge function-ით გენერაცია), sitemap-index.xml
+7. **robots.txt** — სწორად კონფიგურირებული (dashboard/admin დახურული)
+8. **Google Tag Manager + gtag** — ანალიტიკა ინტეგრირებული
+9. **Google Site Verification** — meta tag დამატებული
+10. **OG Image** — დეფაულტი + დინამიური გენერაცია (ogImageGenerator.ts)
+11. **Breadcrumbs** — სერვისის დეტალურ გვერდზე + schema markup
+12. **Georgian language** — `lang="ka"`, `og:locale="ka_GE"`
+13. **PWA manifest** — manifest.webmanifest
+14. **Lazy loading** — კოდის სპლიტინგი route-ებით
 
 ---
 
-## თასქი 1: ქალაქების ფილტრი მთავარ გვერდზე
+## რა გვაკლია / გასაუმჯობესებელი (❌)
 
-**პრობლემა:** `SimplifiedSearch.tsx` ქალაქებს იღებს `cities` ცხრილიდან, მაგრამ ეს ცხრილი ცარიელია ან არ შეიცავს სწორ მონაცემებს. რეალურად სერვისები დამატებულია 6 ქალაქში: ბათუმი, ზუგდიდი, თბილისი, მცხეთა, რუსთავი, ქუთაისი.
+### კრიტიკული პრობლემები
 
-**გადაწყვეტა:** ქალაქების წამოღება `mechanic_services` ცხრილიდან (DISTINCT city), სადაც რეალურად სერვისებია დამატებული.
+**1. SPA + SEO ფუნდამენტური პრობლემა**
+React SPA აპლიკაციაა — Google bot-ი JavaScript-ს ასრულებს, მაგრამ სხვა სოციალური ქსელების crawler-ები (Facebook, Telegram, LinkedIn) ვერ კითხულობენ დინამიურ meta tags-ს. OG tags მხოლოდ `index.html`-ის სტატიკური მნიშვნელობები ჩანს sharing-ისას.
 
-**ფაილი:** `src/components/home/SimplifiedSearch.tsx`
-- `cities` ცხრილის ნაცვლად query შეიცვლება: `supabase.from("mechanic_services").select("city").not("city", "is", null)` და შემდეგ unique ქალაქების ამორჩევა.
+**გადაწყვეტა:** SSR/prerendering edge function, რომელიც crawler-ებს წინასწარ დარენდერილ HTML-ს მიაწვდის.
 
----
+**2. რამდენიმე გვერდს meta tags საერთოდ არ აქვს**
+- `About.tsx` — არ აქვს SEOHead, არ აქვს title/description
+- `NotFound.tsx` — არ აქვს 404 meta tags
+- `Laundries.tsx` — აქვს SEOHead მაგრამ canonical URL `window.location.origin`-ით (არ არის fixup.ge)
+- `Blog.tsx` — Helmet იყენებს `window.location.origin`-ით canonical-ს
 
-## თასქი 2: კატეგორიების აიკონები
+**3. Sitemap მოძველებულია**
+`lastmod` თარიღი `2025-10-29` — სტატიკური ფაილია, ხელით განახლებას საჭიროებს. Edge function არსებობს (`generate-sitemap`) მაგრამ ავტომატური განახლება არ არის სრულად ინტეგრირებული.
 
-**პრობლემა:** ბაზაში 39 კატეგორიაა, მაგრამ `CategoryCarousel.tsx`-ში მხოლოდ 14 კატეგორიას აქვს აიკონი მინიჭებული. დანარჩენებს დეფაულტად Hammer (ჩაქუჩი) უჩანს.
+### SEO გაუმჯობესებები
 
-**გადაწყვეტა:** ყველა 39 კატეგორიას მიენიჭება შესაბამისი Lucide აიკონი, ხოლო დეფაულტი შეიცვლება Hammer-დან Settings-ზე (გადაცემათა კოლოფი).
+**4. hreflang tags არ არის**
+თუ მომავალში მულტიენოვანი ვერსია იგეგმება, hreflang tags დასჭირდება.
 
-**ფაილი:** `src/components/home/CategoryCarousel.tsx`
-- `categoryIcons` mapping გაფართოვდება ყველა კატეგორიისთვის
-- Default icon: `Settings` (გადაცემათა კოლოფი) ნაცვლად `Hammer`-ისა
-- ახალი აიკონები მაგალითად:
-  - "ვულკანიზაცია" -> CircleDot
-  - "ზეთის შეცვლა" -> Droplets
-  - "სათუნუქე სამუშაოები" -> Hammer
-  - "ფარების აღდგენა" -> Lightbulb
-  - "ქიმწმენდა" -> Sparkles
-  - "ჰიბრიდული სისტემა" -> Leaf
-  - და ა.შ.
+**5. Blog ArticleSchema არასრულია**
+`BlogPost.tsx`-ში `BlogPosting` schema-ში `datePublished` აქვს, მაგრამ `dateModified`, `publisher`, `mainEntityOfPage` აკლია.
 
----
+**6. Image alt tags / lazy loading**
+გვერდებზე სურათებს ხშირად არ აქვს ოპტიმიზირებული alt ატრიბუტები ქართულ ენაზე.
 
-## თასქი 3: /services გვერდზე ბანერი
+**7. Core Web Vitals ოპტიმიზაცია**
+- `index.html`-ში inline CSS + external fonts + GTM + gtag ერთდროულად იტვირთება — LCP/FID შეიძლება დაზარალდეს
+- Leaflet CSS `unpkg`-დან იტვირთება — შეიძლება ლოკალურად ჩაისმას
 
-**პრობლემა:** /services გვერდზე არ არის რეალური საბანერე პოზიცია, რომელიც ადმინ პანელიდან იმართება.
+**8. URL სტრუქტურა**
+- `/service/:id` და `/service/:slug` ორივე route არსებობს — duplicate content რისკი
+- კატეგორიებისთვის `/category/:slug` და `/services/:slug` ორივე მუშაობს
 
-**გადაწყვეტა:**
+**9. Internal linking**
+კატეგორიის გვერდებიდან სერვისებზე და მექანიკოსებზე cross-linking სუსტია.
 
-1. **ახალი ბანერის პოზიცია ბაზაში:** `services_page` პოზიციის დამატება `site_banners` ცხრილის `position` ველის ტიპში.
-
-2. **ახალი კომპონენტი:** `src/components/banners/ServicesPageBanner.tsx` - ანალოგიური `HomeCenterBanner`-ის:
-   - Fixed პოზიცია ქვემოთ, ცენტრში
-   - სქროლზე გამოჩნდება
-   - დახურვის ღილაკი
-   - 730x90 ზომა
-   - ადმინიდან ატვირთული სურათი
-
-3. **ადმინ პანელის განახლება:**
-   - `BannerManagement.tsx`-ში position select-ში ახალი ოფცია: `services_page`
-   - `useSiteBanners.ts` ტიპის განახლება
-
-4. **Services.tsx-ში ინტეგრაცია:** `ServicesPageBanner` კომპონენტის დამატება.
+**10. 404 გვერდს არ აქვს proper HTTP status**
+SPA-ში 404 გვერდი რეალურად 200 status-ით ბრუნდება. სერვერის კონფიგურაციაა საჭირო.
 
 ---
 
-## თასქი 4: რუკის ტაბების თანმიმდევრობის შეცვლა
+## პრიორიტეტების რეკომენდაცია
 
-**პრობლემა:** ამჟამინდელი თანმიმდევრობა: სერვისები, სამრეცხაოები, დრაივები, ელ.დამტენები, სადგურები
-
-**სასურველი თანმიმდევრობა:** სერვისები, ელ.დამტენები, სადგურები, სამრეცხაოები, დრაივები
-
-**ფაილი:** `src/pages/Map.tsx` (ხაზები 963-986)
-- TabsTrigger ელემენტების გადაწყობა: services -> chargers -> stations -> laundries -> drives
+| პრიორიტეტი | თასქი | სირთულე |
+|-----------|-------|---------|
+| 🔴 მაღალი | SSR/Prerendering crawler-ებისთვის (OG sharing fix) | მაღალი |
+| 🔴 მაღალი | ყველა გვერდზე SEOHead დამატება (About, NotFound, etc.) | დაბალი |
+| 🟡 საშუალო | BlogPosting schema გაუმჯობესება | დაბალი |
+| 🟡 საშუალო | Duplicate route-ების canonical redirect | საშუალო |
+| 🟡 საშუალო | Sitemap ავტომატური განახლება | საშუალო |
+| 🟢 დაბალი | Image alt tags ოპტიმიზაცია | დაბალი |
+| 🟢 დაბალი | Core Web Vitals ოპტიმიზაცია | საშუალო |
 
 ---
 
-## ტექნიკური დეტალები
+## შეჯამება
 
-### შესაცვლელი ფაილები
+პროექტს SEO-ს ტექნიკური ინფრასტრუქტურა კარგად აქვს — structured data, meta tags, canonical URLs, sitemap. მთავარი პრობლემა **SPA-ს ფუნდამენტური შეზღუდვაა**: სოციალურ ქსელებში sharing-ისას OG tags არ მუშაობს სწორად, რადგან crawler-ები JavaScript-ს ვერ ასრულებენ. ასევე რამდენიმე გვერდს მეტა თეგები საერთოდ აკლია.
 
-| ფაილი | ცვლილება |
-|-------|---------|
-| `src/components/home/SimplifiedSearch.tsx` | ქალაქების fetch logic |
-| `src/components/home/CategoryCarousel.tsx` | აიკონების mapping გაფართოება + default icon |
-| `src/components/banners/ServicesPageBanner.tsx` | ახალი კომპონენტი (HomeCenterBanner-ის ანალოგი) |
-| `src/hooks/useSiteBanners.ts` | position type-ში `services_page` დამატება |
-| `src/components/dashboard/admin/BannerManagement.tsx` | ახალი პოზიციის ოფცია |
-| `src/pages/Services.tsx` | ბანერის კომპონენტის ინტეგრაცია |
-| `src/pages/Map.tsx` | ტაბების თანმიმდევრობის შეცვლა |
-| Supabase migration | `site_banners` position check constraint განახლება |
