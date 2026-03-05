@@ -1,72 +1,86 @@
 
 
-# SEO გეგმის 7 პუნქტის სტატუსი
+# Core Web Vitals გამოსწორების გეგმა
 
-## რა შესრულდა ✅
+## პრობლემების ანალიზი
 
-### 1. ყველა გვერდზე SEOHead დამატება (🔴 მაღალი) — ✅ შესრულდა
-- `About.tsx` — SEOHead დამატებულია
-- `NotFound.tsx` — Helmet + `noindex, nofollow` დამატებულია
-- `Blog.tsx` — canonical გასწორებულია `https://fixup.ge/blog`-ზე
-- `Laundries.tsx` — SEOHead უკვე ჰქონდა, `window.location.origin` პრობლემა აღარ არსებობს (გასუფთავებულია)
+Lighthouse და CrUX მონაცემებიდან გამომდინარე:
 
-### 2. BlogPosting schema გაუმჯობესება (🟡 საშუალო) — ✅ შესრულდა
-- `dateModified`, `publisher` (Organization + logo), `mainEntityOfPage`, `wordCount` — ყველა დამატებულია
-- canonical URL — `https://fixup.ge/blog/${slug}` სწორად მითითებულია
+| მეტრიკა | Mobile Lab | Desktop Lab | CrUX Mobile | CrUX Desktop | სტატუსი |
+|---------|-----------|------------|-------------|-------------|---------|
+| LCP | **9.4s** | 2.1s | 2.9s | 3s | ❌ Failed |
+| FCP | **3.7s** | 0.8s | 2.2s | 1.9s | ⚠️ Needs improvement |
+| CLS | 0 | **0.341** | 0.01 | **0.24** | ❌ Failed (desktop) |
+| TBT/INP | 140ms/— | 0ms/— | —/181ms | —/91ms | ✅ OK |
+| TTFB | — | — | 1.1s | 1.1s | ⚠️ Needs improvement |
 
-### 3. Duplicate route-ების canonical redirect (🟡 საშუალო) — ნაწილობრივ ✅
-- `/service/:slug` route წაშლილია App.tsx-დან — მხოლოდ `/service/:id` დარჩა
-- **მაგრამ:** `/category/:categorySlug` და `/services/:categorySlug` ორივე ჯერ კიდევ არსებობს (ხაზი 103-104)
+## მიზეზები და გამოსწორებები
+
+### 1. LCP (9.4s mobile) — ყველაზე კრიტიკული
+
+**მიზეზი:** VIPServicesCarousel-ში ServiceCard სურათები Supabase storage-დან იტვირთება. მობილურზე ეს სურათები LCP ელემენტია და არანაირი preload/priority არ აქვს.
+
+**გამოსწორება:**
+- VIPServicesCarousel-ში პირველი 2 სურათისთვის `loading="eager"` და `fetchPriority="high"` დამატება
+- ServiceCard-ში სურათებზე explicit `width` და `height` ატრიბუტების დამატება
+- SimplifiedSearch-ში 2 Supabase query მთავარ გვერდზე არ არის საჭირო დაუყოვნებლივ — lazy load-ით
+
+### 2. CLS (0.341 desktop) — Layout Shift
+
+**მიზეზი:** 
+- CategoryCarousel loading state-დან content-ზე გადასვლა ზომას ცვლის
+- VIPServicesCarousel skeleton-დან content-ზე layout shift
+- HomeCenterBanner/MobileBanner scroll-ზე გამოჩენისას content-ს ძირს აწვება
+- Google Fonts ჩატვირთვისას ტექსტის ზომა იცვლება
+
+**გამოსწორება:**
+- CategoryCarousel: loading skeleton-ს იგივე min-height მივცეთ რაც content-ს აქვს
+- VIPServicesCarousel: section-ს `min-height` დავუყენოთ რომ loading-დან content-ზე shift არ იყოს
+- ServiceCard-ში სურათის container-ს fixed `aspect-ratio` აქვს (OK), მაგრამ `width/height` ატრიბუტი აკლია
+- Font loading: `font-display: swap` უკვე არის, მაგრამ `size-adjust` CSS-ით fallback font-ის ზომა შეგვიძლია დავარეგულიროთ
+
+### 3. FCP (3.7s mobile) — Render Blocking
+
+**მიზეზი:** 
+- GTM და gtag სკრიპტები head-ში sync/async-ით იტვირთება
+- Google Fonts CSS render-blocking-ია (media="print" workaround-ით ნაწილობრივ მოხსნილია)
+
+**გამოსწორება:**
+- GTM სკრიპტი `setTimeout`-ით გადავდოთ 2-3 წამით (non-critical)
+- gtag.js-ს `defer` დავამატოთ
+
+### 4. Image Delivery (396 KiB savings)
+
+**გამოსწორება:**
+- Supabase Storage სურათებისთვის `?width=400&quality=75` transform parameter-ების გამოყენება ServiceCard-ში
+- StationsPromo-ში fuel logo სურათებს `width/height` დავამატოთ
+
+### 5. Cache Lifetimes (887 KiB savings)
+
+ეს ძირითადად 3rd party რესურსებზეა (GTM, fonts). Lovable-ს მხრიდან ვერ ვაკონტროლებთ, მაგრამ Supabase სურათების cache policy სწორია.
 
 ---
 
-## რა არ შესრულდა ❌
+## კონკრეტული ცვლილებები
 
-### 4. SSR/Prerendering crawler-ებისთვის (🔴 მაღალი) — ❌ არ შესრულდა
-სოციალური ქსელების crawler-ები (Facebook, Telegram, LinkedIn) ჯერ კიდევ ვერ კითხულობენ დინამიურ OG tags-ს. ეს ყველაზე რთული და მნიშვნელოვანი თასქია.
+### ფაილი 1: `index.html`
+- GTM სკრიპტი `setTimeout(..., 3000)`-ში გავახვიოთ — FCP-ს არ შეაფერხებს
+- gtag.js-ზე `defer` ატრიბუტი
 
-**გეგმა:** შევქმნა Edge Function `serve-og-meta/index.ts` რომელიც:
-- User-Agent-ს შეამოწმებს (facebookexternalhit, Twitterbot, LinkedInBot, TelegramBot)
-- Crawler-ებისთვის მინიმალურ HTML-ს დააბრუნებს სწორი OG meta tags-ით
-- სერვისის/მექანიკოსის/ბლოგის გვერდებისთვის Supabase-დან წამოიღებს მონაცემებს
-- ჩვეულებრივ მომხმარებლებს SPA-ზე გადაამისამართებს
+### ფაილი 2: `src/components/services/ServiceCard.tsx`
+- `<img>` ტეგს `width` და `height` ატრიბუტები
+- Supabase image URL-ს `?width=400&quality=80` transform
 
-**შენიშვნა:** ეს Edge Function-ის დონეზე მუშაობს, მაგრამ რეალურად საჭიროა Cloudflare Worker ან სერვერის proxy რომ URL-ების დონეზე გადამისამართება მოხდეს. Lovable-ს ფარგლებში შეგვიძლია Edge Function შევქმნათ, მაგრამ DNS/proxy კონფიგურაცია ცალკე დასჭირდება.
+### ფაილი 3: `src/components/home/VIPServicesCarousel.tsx`
+- section-ს `min-h-[400px]` CLS-ის თავიდან ასარიდებლად
+- პირველი 2 ServiceCard-ს `loading="eager"` prop-ის გადაცემა
 
-### 5. Sitemap ავტომატური განახლება (🟡 საშუალო) — ❌ არ შესრულდა
-`generate-sitemap` edge function არსებობს, მაგრამ ავტომატურად არ ეშვება სერვისის დამატება/წაშლის დროს.
+### ფაილი 4: `src/components/home/CategoryCarousel.tsx`
+- Loading skeleton-ს იგივე height მივცეთ რაც real content-ს
 
-**გეგმა:**
-- `supabase/config.toml`-ში `generate-sitemap` ფუნქციას cron schedule დავამატოთ (ყოველდღიური)
-- `sitemap-index.xml`-ის lastmod განახლება
+### ფაილი 5: `src/components/home/StationsPromo.tsx`
+- Fuel logo `<img>` ტეგებს `width/height` ატრიბუტები
 
-### 6. Image alt tags ოპტიმიზაცია (🟢 დაბალი) — ❌ არ შესრულდა
-სურათებს ქართული alt ატრიბუტები უნდა ჰქონდეს.
-
-**გეგმა:** ServiceCard, MechanicCard, LaundryCard კომპონენტებში alt ატრიბუტების ქართულად გაწერა (სერვისის/მექანიკოსის სახელით).
-
-### 7. Core Web Vitals ოპტიმიზაცია (🟢 დაბალი) — ❌ არ შესრულდა
-- Leaflet CSS unpkg-დან იტვირთება
-- index.html-ში ბევრი blocking resource
-
-**გეგმა:** 
-- Leaflet CSS-ის `preload` hint-ის დამატება
-- GTM/gtag სკრიპტების `defer` ატრიბუტით ჩატვირთვა
-- Font display: swap უზრუნველყოფა
-
----
-
-## შესასრულებელი სამუშაოების ჩამონათვალი
-
-| # | თასქი | სტატუსი |
-|---|-------|---------|
-| 1 | SEOHead ყველა გვერდზე | ✅ შესრულდა |
-| 2 | BlogPosting schema | ✅ შესრულდა |
-| 3 | Duplicate routes | ⚠️ ნაწილობრივ — `/category` vs `/services` დარჩა |
-| 4 | SSR/Prerendering | ❌ — Edge Function საჭიროა + DNS proxy |
-| 5 | Sitemap auto-update | ❌ — cron schedule დასამატებელია |
-| 6 | Image alt tags | ❌ — კომპონენტებში alt-ების ქართულად გაწერა |
-| 7 | Core Web Vitals | ❌ — script defer, font swap, preload |
-
-ახლა შევასრულებ დარჩენილ 4.5 პუნქტს: duplicate route fix, sitemap cron, image alts, Core Web Vitals, და SSR edge function-ის მომზადებას.
+### ფაილი 6: `src/components/home/SimplifiedSearch.tsx`
+- Categories/cities fetch-ი lazy — არა mount-ზე, არამედ focus-ზე
 
