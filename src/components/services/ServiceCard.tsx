@@ -45,9 +45,10 @@ interface ServiceType {
 interface ServiceCardProps {
   service: ServiceType;
   onMapFocus?: () => void;
+  priorityImage?: boolean;
 }
 
-const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
+const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCardProps) => {
   const navigate = useNavigate();
   const [showPhone, setShowPhone] = useState(false);
 
@@ -140,15 +141,17 @@ const ServiceCard = ({ service, onMapFocus }: ServiceCardProps) => {
 
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
+              {/* eslint-disable-next-line */}
               <img
-                src={mainPhoto}
+                src={mainPhoto.includes('supabase.co') ? `${mainPhoto}?width=400&quality=75` : mainPhoto}
                 alt={`${service.name} - ${service.category?.name || 'ავტოსერვისი'} | Fixup.ge`}
-                width="300"
-                height="225"
-                loading="lazy"
-                decoding="async"
+                width={400}
+                height={300}
+                loading={priorityImage ? "eager" : "lazy"}
+                decoding={priorityImage ? "sync" : "async"}
+                {...(priorityImage ? { fetchpriority: "high" } : {})}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                style={{ minHeight: "225px", backgroundColor: "#f3f4f6" }}
+                style={{ backgroundColor: "#f3f4f6" }}
               />
             </div>
           ) : (

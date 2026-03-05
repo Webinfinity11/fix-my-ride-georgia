@@ -50,7 +50,9 @@ const StationsPromo = () => {
                           >
                             <img
                               src={`/fuel-company-logos/${brand}-logo.${brand === "socar" ? "svg" : "png"}`}
-                              alt={brand}
+                              alt={`${brand} საწვავის ლოგო`}
+                              width="32"
+                              height="32"
                               className="w-8 h-8 object-contain"
                               loading="lazy"
                             />

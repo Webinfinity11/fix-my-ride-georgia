@@ -48,7 +48,7 @@ const VIPServicesCarousel = () => {
   }
 
   return (
-    <section className="py-10 md:py-16 bg-gradient-to-br from-amber-50/50 via-white to-orange-50/50">
+    <section className="py-10 md:py-16 bg-gradient-to-br from-amber-50/50 via-white to-orange-50/50 min-h-[420px] md:min-h-[480px]">
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -123,12 +123,12 @@ const VIPServicesCarousel = () => {
                     </div>
                   ))
                 ) : (
-                  services.map((service) => (
+                  services.map((service, index) => (
                     <div
                       key={service.id}
                       className="flex-shrink-0 w-[85%] sm:w-[45%] md:w-[32%] lg:w-[24%]"
                     >
-                      <ServiceCard service={service} />
+                      <ServiceCard service={service} priorityImage={index < 2} />
                     </div>
                   ))
                 )}
