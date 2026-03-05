@@ -140,7 +140,7 @@ const CategoryCarousel = () => {
 
   if (loading) {
     return (
-      <div className="flex gap-3 overflow-hidden py-2">
+      <div className="flex gap-3 overflow-hidden py-2" style={{ minHeight: '112px' }}>
         {[...Array(6)].map((_, i) => (
           <div key={i} className="flex-shrink-0 w-24 h-24 md:w-28 md:h-28 bg-muted animate-pulse rounded-xl" />
         ))}

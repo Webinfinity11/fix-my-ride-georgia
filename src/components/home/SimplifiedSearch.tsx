@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,26 +23,25 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [cities, setCities] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      // Fetch categories and cities in parallel
-      const [categoriesRes, citiesRes] = await Promise.all([
-        supabase.from("service_categories").select("id, name").order("name"),
-        supabase.from("mechanic_services").select("city").not("city", "is", null),
-      ]);
+  const [dataFetched, setDataFetched] = useState(false);
 
-      if (categoriesRes.data) {
-        setCategories(categoriesRes.data);
-      }
+  const fetchData = async () => {
+    if (dataFetched) return;
+    setDataFetched(true);
+    const [categoriesRes, citiesRes] = await Promise.all([
+      supabase.from("service_categories").select("id, name").order("name"),
+      supabase.from("mechanic_services").select("city").not("city", "is", null),
+    ]);
 
-      if (citiesRes.data) {
-        const uniqueCities = [...new Set(citiesRes.data.map((c) => c.city).filter(Boolean))] as string[];
-        setCities(uniqueCities.sort());
-      }
-    };
+    if (categoriesRes.data) {
+      setCategories(categoriesRes.data);
+    }
 
-    fetchData();
-  }, []);
+    if (citiesRes.data) {
+      const uniqueCities = [...new Set(citiesRes.data.map((c) => c.city).filter(Boolean))] as string[];
+      setCities(uniqueCities.sort());
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,10 +61,11 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
         {/* Main Search Input */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
+           <Input
             placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={fetchData}
             className="pl-12 h-14 text-base md:text-lg border-2 border-primary/20 focus-visible:ring-primary rounded-xl bg-white"
           />
         </div>
