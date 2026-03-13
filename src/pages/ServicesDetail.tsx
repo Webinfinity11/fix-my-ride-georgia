@@ -10,7 +10,7 @@ import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 import { useServices } from "@/hooks/useServices";
-import { RefreshCw, MapPin } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
