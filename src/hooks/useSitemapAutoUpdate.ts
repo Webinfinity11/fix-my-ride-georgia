@@ -44,7 +44,7 @@ export const useSitemapAutoUpdate = () => {
   }, []);
 
   // Debounced sitemap update function
-  let sitemapUpdateTimeout: NodeJS.Timeout;
+  let sitemapUpdateTimeout: ReturnType<typeof setTimeout>;
   
   const debouncedSitemapUpdate = () => {
     clearTimeout(sitemapUpdateTimeout);
