@@ -26,6 +26,7 @@ export type ServiceType = {
   vip_status: 'vip' | 'super_vip' | null;
   vip_until: string | null;
   is_vip_active: boolean;
+  created_at?: string;
   category: {
     id: number;
     name: string;
@@ -161,6 +162,7 @@ export const useServices = () => {
           vip_status,
           vip_until,
           is_vip_active,
+          created_at,
           service_categories(id, name)
         `)
         .eq("is_active", true);
@@ -267,6 +269,7 @@ export const useServices = () => {
           vip_status: (service as any).vip_status || null,
           vip_until: (service as any).vip_until || null,
           is_vip_active: (service as any).is_vip_active || false,
+          created_at: service.created_at,
           category: category ? {
             id: category.id,
             name: category.name
