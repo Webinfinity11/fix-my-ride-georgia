@@ -52,7 +52,6 @@ const tbilisiDistricts = [
 type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | "popular";
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [visibleServicesCount, setVisibleServicesCount] = useState(12);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(false);
