@@ -269,6 +269,7 @@ export const useServices = () => {
           vip_status: (service as any).vip_status || null,
           vip_until: (service as any).vip_until || null,
           is_vip_active: (service as any).is_vip_active || false,
+          created_at: service.created_at,
           category: category ? {
             id: category.id,
             name: category.name
