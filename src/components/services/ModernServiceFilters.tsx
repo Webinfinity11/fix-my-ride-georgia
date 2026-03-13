@@ -150,7 +150,7 @@ const ModernServiceFilters = ({
   });
 
   return (
-    <div className="space-y-3" style={{ touchAction: "pan-y" }}>
+    <div className="space-y-2" style={{ touchAction: "pan-y" }}>
       {/* Always visible: Search bar with map button */}
       <form onSubmit={handleSearchSubmit} className="flex gap-2">
         <div className="relative flex-1">

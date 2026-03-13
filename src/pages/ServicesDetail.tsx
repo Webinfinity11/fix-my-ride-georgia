@@ -286,7 +286,7 @@ const ServicesDetail = () => {
             ) : sortedServices.length > 0 ? (
               <div>
                 {/* Results Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-3 md:mb-6">
                   <div className="flex items-center gap-3">
                     <p className="text-muted-foreground">
                       ნაპოვნია <span className="font-semibold text-primary">{sortedServices.length}</span> სერვისი
