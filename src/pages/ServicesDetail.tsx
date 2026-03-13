@@ -9,7 +9,7 @@ import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 import { useServices } from "@/hooks/useServices";
-import { Filter, RefreshCw, MapPin } from "lucide-react";
+import { RefreshCw, MapPin } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -54,7 +54,7 @@ const ServicesDetail = () => {
   const navigate = useNavigate();
   const [visibleServicesCount, setVisibleServicesCount] = useState(12);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const { services, categories, cities, districts, loading, fetchInitialData, fetchDistricts, fetchServices } =
     useServices();
 
@@ -229,52 +229,38 @@ const ServicesDetail = () => {
 
             {/* Filters Section */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-primary/20"
-                  >
-                    <Filter className="h-4 w-4" />
-                    ფილტრები
-                  </Button>
-                  <Button
-                    onClick={() => navigate("/map")}
-                    className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white"
-                  >
-                    <MapPin className="h-4 w-4" />
-                    რუკით ძებნა
-                  </Button>
-                </div>
+              <div className="flex items-center gap-2 mb-4">
+                <Button
+                  onClick={() => navigate("/map")}
+                  variant="outline"
+                  className="flex items-center gap-2 border-primary/20"
+                >
+                  <MapPin className="h-4 w-4" />
+                  რუკით ძებნა
+                </Button>
               </div>
 
-              {/* Filters Panel */}
-              {showFilters && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200">
-                  <ModernServiceFilters
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                    categories={categories}
-                    selectedCity={selectedCity}
-                    setSelectedCity={setSelectedCity}
-                    cities={availableCities}
-                    selectedDistrict={selectedDistrict}
-                    setSelectedDistrict={setSelectedDistrict}
-                    districts={availableDistricts}
-                    selectedBrands={selectedBrands}
-                    setSelectedBrands={setSelectedBrands}
-                    onSiteOnly={onSiteOnly}
-                    setOnSiteOnly={setOnSiteOnly}
-                    minRating={minRating}
-                    setMinRating={setMinRating}
-                    onSearch={handleSearch}
-                    onResetFilters={handleResetFilters}
-                  />
-                </div>
-              )}
+              <ModernServiceFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                categories={categories}
+                selectedCity={selectedCity}
+                setSelectedCity={setSelectedCity}
+                cities={availableCities}
+                selectedDistrict={selectedDistrict}
+                setSelectedDistrict={setSelectedDistrict}
+                districts={availableDistricts}
+                selectedBrands={selectedBrands}
+                setSelectedBrands={setSelectedBrands}
+                onSiteOnly={onSiteOnly}
+                setOnSiteOnly={setOnSiteOnly}
+                minRating={minRating}
+                setMinRating={setMinRating}
+                onSearch={handleSearch}
+                onResetFilters={handleResetFilters}
+              />
             </div>
 
             {/* Choose a Craftsman Promotional Box */}
