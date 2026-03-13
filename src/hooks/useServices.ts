@@ -26,6 +26,7 @@ export type ServiceType = {
   vip_status: 'vip' | 'super_vip' | null;
   vip_until: string | null;
   is_vip_active: boolean;
+  created_at?: string;
   category: {
     id: number;
     name: string;
