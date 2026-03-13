@@ -219,28 +219,17 @@ const ServicesDetail = () => {
   return (
     <>
     <Layout>
-      <div className="py-8">
+      <div className="py-4 md:py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">ავტო სერვისი</h1>
-              <h2 className="text-lg text-gray-600">მოძებნეთ სასურველი ხელოსანი და ავტო სერვისი</h2>
+            <div className="text-center mb-3 md:mb-8">
+              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">ავტო სერვისი</h1>
+              <h2 className="text-sm md:text-lg text-muted-foreground">მოძებნეთ სასურველი ხელოსანი და ავტო სერვისი</h2>
             </div>
 
             {/* Filters Section */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Button
-                  onClick={() => navigate("/map")}
-                  variant="outline"
-                  className="flex items-center gap-2 border-primary/20"
-                >
-                  <MapPin className="h-4 w-4" />
-                  რუკით ძებნა
-                </Button>
-              </div>
-
+            <div className="mb-3 md:mb-8">
               <ModernServiceFilters
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}

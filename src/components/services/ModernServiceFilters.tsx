@@ -151,7 +151,7 @@ const ModernServiceFilters = ({
 
   return (
     <div className="space-y-3" style={{ touchAction: "pan-y" }}>
-      {/* Always visible: Search bar */}
+      {/* Always visible: Search bar with map button */}
       <form onSubmit={handleSearchSubmit} className="flex gap-2">
         <div className="relative flex-1">
           <Search
@@ -162,10 +162,10 @@ const ModernServiceFilters = ({
             placeholder="სერვისის ძიება..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-11 border-2 border-primary/20 focus-visible:ring-primary text-sm"
+            className="pl-10 h-10 border-2 border-primary/20 focus-visible:ring-primary text-sm"
           />
         </div>
-        <Button type="submit" className="h-11 px-4 shrink-0">
+        <Button type="submit" className="h-10 px-4 shrink-0">
           <Search className="h-4 w-4" />
         </Button>
       </form>
