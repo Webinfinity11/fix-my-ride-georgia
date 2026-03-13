@@ -339,11 +339,11 @@ const ServicesDetail = () => {
             ) : (
               <div className="text-center py-16">
                 <div className="max-w-md mx-auto">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
                     <span className="text-4xl">🔍</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">სერვისები ვერ მოიძებნა</h3>
-                  <p className="text-gray-600 mb-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">სერვისები ვერ მოიძებნა</h3>
+                  <p className="text-muted-foreground mb-6">
                     {hasActiveFilters
                       ? "შეცვალეთ საძიებო კრიტერიუმები ან გაასუფთავეთ ფილტრები"
                       : "ჯერ არ არის დამატებული სერვისები"}
