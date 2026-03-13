@@ -255,23 +255,23 @@ const ServicesDetail = () => {
 
             {/* Choose a Craftsman Promotional Box */}
             <div
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200 mb-8 cursor-pointer hover:shadow-xl transition-all duration-300"
+              className="bg-card/80 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-md md:shadow-lg p-3 md:p-6 border border-border mb-4 md:mb-8 cursor-pointer hover:shadow-xl transition-all duration-300"
               onClick={() => (window.location.href = "tel:+995574047994")}
             >
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="text-center md:text-left">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">🔧 მირჩიე ხელოსანი</h3>
-                  <p className="text-gray-600">დაგვირეკეთ და ჩვენ შეგირჩევთ შესაფერის ხელოსანს</p>
-                  <p className="text-lg font-semibold text-primary mt-1">+995 574 04 79 94</p>
+              <div className="flex flex-row items-center justify-between gap-3 md:gap-4">
+                <div className="min-w-0">
+                  <h3 className="text-base md:text-xl font-bold text-foreground mb-0.5 md:mb-2">🔧 მირჩიე ხელოსანი</h3>
+                  <p className="text-xs md:text-base text-muted-foreground hidden md:block">დაგვირეკეთ და ჩვენ შეგირჩევთ შესაფერის ხელოსანს</p>
+                  <p className="text-sm md:text-lg font-semibold text-primary mt-0.5 md:mt-1">+995 574 04 79 94</p>
                 </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     window.location.href = "tel:+995574047994";
                   }}
-                  className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2 shrink-0"
+                  className="bg-primary text-primary-foreground px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-semibold hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2 shrink-0"
                 >
-                  📞 დარეკვა
+                  📞 <span className="hidden md:inline">დარეკვა</span>
                 </button>
               </div>
             </div>
