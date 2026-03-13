@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
@@ -298,7 +299,7 @@ const ServicesDetail = () => {
                 {/* Results Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <p className="text-gray-600">
+                    <p className="text-muted-foreground">
                       ნაპოვნია <span className="font-semibold text-primary">{sortedServices.length}</span> სერვისი
                     </p>
                     {hasActiveFilters && (
@@ -307,6 +308,19 @@ const ServicesDetail = () => {
                       </Badge>
                     )}
                   </div>
+                  <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+                    <SelectTrigger className="w-[180px] h-9 text-sm border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">ახალი → ძველი</SelectItem>
+                      <SelectItem value="oldest">ძველი → ახალი</SelectItem>
+                      <SelectItem value="rating">რეიტინგით</SelectItem>
+                      <SelectItem value="popular">პოპულარობით</SelectItem>
+                      <SelectItem value="price_low">ფასი: დაბალი → მაღალი</SelectItem>
+                      <SelectItem value="price_high">ფასი: მაღალი → დაბალი</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Services Grid */}
