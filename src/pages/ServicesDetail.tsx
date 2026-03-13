@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,7 +10,7 @@ import ModernServiceFilters from "@/components/services/ModernServiceFilters";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 import { useServices } from "@/hooks/useServices";
-import { RefreshCw, MapPin } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -52,7 +52,6 @@ const tbilisiDistricts = [
 type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | "popular";
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [visibleServicesCount, setVisibleServicesCount] = useState(12);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(false);
@@ -219,28 +218,17 @@ const ServicesDetail = () => {
   return (
     <>
     <Layout>
-      <div className="py-8">
+      <div className="py-4 md:py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">ავტო სერვისი</h1>
-              <h2 className="text-lg text-gray-600">მოძებნეთ სასურველი ხელოსანი და ავტო სერვისი</h2>
+            <div className="text-center mb-3 md:mb-8">
+              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">ავტო სერვისი</h1>
+              <h2 className="text-sm md:text-lg text-muted-foreground">მოძებნეთ სასურველი ხელოსანი და ავტო სერვისი</h2>
             </div>
 
             {/* Filters Section */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Button
-                  onClick={() => navigate("/map")}
-                  variant="outline"
-                  className="flex items-center gap-2 border-primary/20"
-                >
-                  <MapPin className="h-4 w-4" />
-                  რუკით ძებნა
-                </Button>
-              </div>
-
+            <div className="mb-3 md:mb-8">
               <ModernServiceFilters
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
@@ -266,23 +254,23 @@ const ServicesDetail = () => {
 
             {/* Choose a Craftsman Promotional Box */}
             <div
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200 mb-8 cursor-pointer hover:shadow-xl transition-all duration-300"
+              className="bg-card/80 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-md md:shadow-lg p-3 md:p-6 border border-border mb-4 md:mb-8 cursor-pointer hover:shadow-xl transition-all duration-300"
               onClick={() => (window.location.href = "tel:+995574047994")}
             >
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="text-center md:text-left">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">🔧 მირჩიე ხელოსანი</h3>
-                  <p className="text-gray-600">დაგვირეკეთ და ჩვენ შეგირჩევთ შესაფერის ხელოსანს</p>
-                  <p className="text-lg font-semibold text-primary mt-1">+995 574 04 79 94</p>
+              <div className="flex flex-row items-center justify-between gap-3 md:gap-4">
+                <div className="min-w-0">
+                  <h3 className="text-base md:text-xl font-bold text-foreground mb-0.5 md:mb-2">🔧 მირჩიე ხელოსანი</h3>
+                  <p className="text-xs md:text-base text-muted-foreground hidden md:block">დაგვირეკეთ და ჩვენ შეგირჩევთ შესაფერის ხელოსანს</p>
+                  <p className="text-sm md:text-lg font-semibold text-primary mt-0.5 md:mt-1">+995 574 04 79 94</p>
                 </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     window.location.href = "tel:+995574047994";
                   }}
-                  className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2 shrink-0"
+                  className="bg-primary text-primary-foreground px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-semibold hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2 shrink-0"
                 >
-                  📞 დარეკვა
+                  📞 <span className="hidden md:inline">დარეკვა</span>
                 </button>
               </div>
             </div>
@@ -297,7 +285,7 @@ const ServicesDetail = () => {
             ) : sortedServices.length > 0 ? (
               <div>
                 {/* Results Header */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-3 md:mb-6">
                   <div className="flex items-center gap-3">
                     <p className="text-muted-foreground">
                       ნაპოვნია <span className="font-semibold text-primary">{sortedServices.length}</span> სერვისი
@@ -351,11 +339,11 @@ const ServicesDetail = () => {
             ) : (
               <div className="text-center py-16">
                 <div className="max-w-md mx-auto">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
                     <span className="text-4xl">🔍</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">სერვისები ვერ მოიძებნა</h3>
-                  <p className="text-gray-600 mb-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">სერვისები ვერ მოიძებნა</h3>
+                  <p className="text-muted-foreground mb-6">
                     {hasActiveFilters
                       ? "შეცვალეთ საძიებო კრიტერიუმები ან გაასუფთავეთ ფილტრები"
                       : "ჯერ არ არის დამატებული სერვისები"}
