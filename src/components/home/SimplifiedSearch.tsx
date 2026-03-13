@@ -73,7 +73,7 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
         {/* Filter Row */}
         <div className="grid grid-cols-2 gap-3 md:gap-4">
           {/* Category Select */}
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory} onOpenChange={(open) => { if (open) fetchData(); }}>
             <SelectTrigger className="h-12 border-primary/20 bg-white rounded-lg">
               <SelectValue placeholder="კატეგორია" />
             </SelectTrigger>
@@ -88,7 +88,7 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
           </Select>
 
           {/* City Select */}
-          <Select value={selectedCity} onValueChange={setSelectedCity}>
+          <Select value={selectedCity} onValueChange={setSelectedCity} onOpenChange={(open) => { if (open) fetchData(); }}>
             <SelectTrigger className="h-12 border-primary/20 bg-white rounded-lg">
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
