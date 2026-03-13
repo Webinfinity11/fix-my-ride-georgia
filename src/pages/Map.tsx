@@ -948,6 +948,37 @@ const Map = () => {
                     ))}
                   </div>
                 )
+              ) : viewMode === 'services' ? (
+                // Services View
+                sortedFilteredServices.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Search className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground">სერვისები ვერ მოიძებნა</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 md:space-y-4">
+                    {sortedFilteredServices.map(service => (
+                      <div
+                        key={service.id}
+                        className={`cursor-pointer transition-all ${selectedService?.id === service.id ? 'ring-2 ring-primary rounded-lg' : ''}`}
+                        onClick={() => {
+                          setSelectedService(service);
+                          if (map && service.latitude && service.longitude) {
+                            map.setView([service.latitude, service.longitude], 15);
+                            markersRef.current.forEach(marker => {
+                              const pos = marker.getLatLng();
+                              if (Math.abs(pos.lat - service.latitude) < 0.0001 && Math.abs(pos.lng - service.longitude) < 0.0001) {
+                                marker.openPopup();
+                              }
+                            });
+                          }
+                        }}
+                      >
+                        <ServiceCard service={service} />
+                      </div>
+                    ))}
+                  </div>
+                )
               ) : null}
             </div>
           </div>
