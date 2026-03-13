@@ -162,6 +162,7 @@ export const useServices = () => {
           vip_status,
           vip_until,
           is_vip_active,
+          created_at,
           service_categories(id, name)
         `)
         .eq("is_active", true);
