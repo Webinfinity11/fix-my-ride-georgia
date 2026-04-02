@@ -241,6 +241,19 @@ export const ProductSchema = ({
     typeof offers.price === 'number' && 
     offers.price > 0;
 
+  const hasValidRating = aggregateRating && 
+    aggregateRating.reviewCount > 0 && 
+    aggregateRating.ratingValue > 0;
+
+  // Google requires at least one of: offers (with price), review, or aggregateRating
+  // If none are valid, don't render Product schema at all
+  if (!hasValidPrice && !hasValidRating) {
+    return null;
+  }
+
+  // Generate priceValidUntil - end of next year
+  const priceValidUntil = `${new Date().getFullYear() + 1}-12-31`;
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -252,29 +265,26 @@ export const ProductSchema = ({
       name: brand
     },
     ...(category && { category }),
-    offers: {
-      "@type": "Offer",
-      // Only include price if it's a valid number
-      ...(hasValidPrice && {
+    ...(hasValidPrice && {
+      offers: {
+        "@type": "Offer",
         price: offers.price,
-        priceCurrency: offers.priceCurrency || "GEL"
-      }),
-      // Set proper availability based on price
-      availability: hasValidPrice 
-        ? `https://schema.org/${offers.availability || "InStock"}`
-        : "https://schema.org/PreOrder",
-      ...(offers.seller && {
-        seller: {
-          "@type": "Person",
-          ...offers.seller
-        }
-      })
-    },
-    ...(aggregateRating && aggregateRating.reviewCount > 0 && {
+        priceCurrency: offers.priceCurrency || "GEL",
+        availability: `https://schema.org/${offers.availability || "InStock"}`,
+        priceValidUntil,
+        ...(offers.seller && {
+          seller: {
+            "@type": "Person",
+            ...offers.seller
+          }
+        })
+      }
+    }),
+    ...(hasValidRating && {
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: aggregateRating.ratingValue,
-        reviewCount: aggregateRating.reviewCount,
+        ratingValue: aggregateRating!.ratingValue,
+        reviewCount: aggregateRating!.reviewCount,
         bestRating: 5,
         worstRating: 1
       }
