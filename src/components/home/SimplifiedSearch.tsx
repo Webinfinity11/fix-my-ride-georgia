@@ -26,23 +26,36 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
 
   const [dataFetched, setDataFetched] = useState(false);
 
-  const fetchData = async () => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearchTerm(value);
+    }, 150);
+  }, []);
+
+  const fetchData = useCallback(async () => {
     if (dataFetched) return;
     setDataFetched(true);
-    const [categoriesRes, citiesRes] = await Promise.all([
-      supabase.from("service_categories").select("id, name").order("name"),
-      supabase.from("mechanic_services").select("city").not("city", "is", null),
-    ]);
+    startTransition(() => {
+      (async () => {
+        const [categoriesRes, citiesRes] = await Promise.all([
+          supabase.from("service_categories").select("id, name").order("name"),
+          supabase.from("mechanic_services").select("city").not("city", "is", null),
+        ]);
 
-    if (categoriesRes.data) {
-      setCategories(categoriesRes.data);
-    }
+        if (categoriesRes.data) {
+          setCategories(categoriesRes.data);
+        }
 
-    if (citiesRes.data) {
-      const uniqueCities = [...new Set(citiesRes.data.map((c) => c.city).filter(Boolean))] as string[];
-      setCities(uniqueCities.sort());
-    }
-  };
+        if (citiesRes.data) {
+          const uniqueCities = [...new Set(citiesRes.data.map((c) => c.city).filter(Boolean))] as string[];
+          setCities(uniqueCities.sort());
+        }
+      })();
+    });
+  }, [dataFetched]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
