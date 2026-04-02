@@ -98,7 +98,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
             >
               <div className="w-24 h-16 bg-gray-100 rounded-lg overflow-hidden group">
                 <img
-                  src={photo}
+                  src={getOptimizedImageUrl(photo, 96, 64, 60)}
                   alt={`${serviceName} - ფოტო ${index + 1}`}
                   className={`w-full h-full object-cover transition-all duration-200 group-hover:scale-110 ${
                     index === currentImageIndex
