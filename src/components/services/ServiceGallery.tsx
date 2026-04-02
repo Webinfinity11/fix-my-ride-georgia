@@ -36,12 +36,11 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
       {/* Main Image - Full width with 16:10 aspect ratio */}
       <div className="relative group cursor-pointer w-full" onClick={openGallery}>
         <div className="aspect-[16/10] bg-gray-100 rounded-xl overflow-hidden shadow-sm">
-          <img
+          <LazyImage
             src={getOptimizedImageUrl(photos[currentImageIndex], 800, 500, 75)}
             alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
             className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
-            loading="lazy"
-            style={{ minHeight: '100%', backgroundColor: '#f3f4f6' }}
+            priority
           />
         </div>
         
