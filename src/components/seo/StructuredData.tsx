@@ -171,17 +171,12 @@ export const ServiceSchema = ({
         name: areaServed
       }
     }),
-    ...(offers && {
+    ...(hasValidPrice && offers && {
       offers: {
         "@type": "Offer",
-        // Only include price if valid
-        ...(hasValidPrice && {
-          price: offers.price,
-          priceCurrency: offers.priceCurrency || "GEL"
-        }),
-        availability: hasValidPrice 
-          ? `https://schema.org/${offers.availability || "InStock"}`
-          : "https://schema.org/PreOrder"
+        price: offers.price,
+        priceCurrency: offers.priceCurrency || "GEL",
+        availability: `https://schema.org/${offers.availability || "InStock"}`
       }
     }),
     ...(aggregateRating && aggregateRating.reviewCount > 0 && {
