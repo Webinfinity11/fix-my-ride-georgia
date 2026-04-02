@@ -441,7 +441,7 @@ export const PersonSchema = ({
   );
 };
 
-// NEW: CollectionPage Schema
+// CollectionPage Schema - uses ItemList instead of Product to avoid Google validation errors
 interface CollectionPageSchemaProps {
   name: string;
   description: string;
@@ -465,21 +465,17 @@ export const CollectionPageSchema = ({
     "@type": "CollectionPage",
     name,
     description,
-    numberOfItems,
-    hasPart: itemList.map((item, index) => ({
-      "@type": "Product",
-      position: index + 1,
-      name: item.name,
-      url: item.url,
-      ...(item.image && { image: item.image }),
-      ...(item.price && {
-        offers: {
-          "@type": "Offer",
-          price: item.price,
-          priceCurrency: "GEL"
-        }
-      })
-    }))
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems,
+      itemListElement: itemList.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        url: item.url,
+        ...(item.image && { image: item.image })
+      }))
+    }
   };
 
   return (
