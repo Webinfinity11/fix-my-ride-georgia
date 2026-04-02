@@ -52,12 +52,12 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
   const navigate = useNavigate();
   const [showPhone, setShowPhone] = useState(false);
 
-  const handleViewDetails = () => {
+  const handleViewDetails = useCallback(() => {
     const slug = createServiceSlug(service.id, service.name);
     navigate(`/service/${slug}`);
-  };
+  }, [service.id, service.name, navigate]);
 
-  const handleViewMechanic = (e: React.MouseEvent) => {
+  const handleViewMechanic = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     const mechanicSlug = createMechanicSlug(
       service.mechanic.display_id || 0,
@@ -65,7 +65,7 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
       service.mechanic.last_name,
     );
     navigate(`/mechanic/${mechanicSlug}`);
-  };
+  }, [service.mechanic, navigate]);
 
   const handlePhoneClick = (e: React.MouseEvent) => {
     e.stopPropagation();
