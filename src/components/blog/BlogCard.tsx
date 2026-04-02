@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Clock, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { LazyImage } from '@/components/ui/lazy-image';
 import { calculateReadTime, formatDate, extractTextFromHtml, truncateText } from '@/utils/blogHelpers';
 import type { BlogPost } from '@/hooks/useBlogPosts';
 

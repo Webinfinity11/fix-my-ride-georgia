@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, ImageOff } from "lucide-react";
+import { LazyImage } from "@/components/ui/lazy-image";
 import { useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";

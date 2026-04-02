@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Phone, MapPin, Car, Image } from "lucide-react";
+import { LazyImage } from "@/components/ui/lazy-image";
 import type { Database } from "@/integrations/supabase/types";
 
 type Laundry = Database["public"]["Tables"]["laundries"]["Row"];

@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ChevronDown, ChevronUp, Info } from "lucide-react";
+import { LazyImage } from "@/components/ui/lazy-image";
 import type { FuelImporter } from "@/hooks/useFuelImporters";
 
 interface FuelImporterCardProps {
