@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, Image } from "lucide-react";
+import { compressImage } from "@/utils/imageCompression";
 
 interface PhotoUploadProps {
   photos: string[];
@@ -28,17 +29,25 @@ const PhotoUpload = ({
     try {
       setUploading(true);
       
-      // Create a unique filename
-      const fileExt = file.name.split('.').pop();
+      // Compress and convert to WebP before uploading
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1200,
+        maxHeight: 1200,
+        quality: 0.8,
+      });
+      
+      // Create a unique filename with .webp extension
+      const fileExt = compressedFile.name.split('.').pop() || 'webp';
       const fileName = `${mechanicId}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
-      console.log('Uploading to bucket:', bucketName, 'file:', fileName);
+      console.log('Uploading to bucket:', bucketName, 'file:', fileName, 'size:', (compressedFile.size / 1024).toFixed(0) + 'KB');
       
       const { data, error } = await supabase.storage
         .from(bucketName)
-        .upload(fileName, file, {
+        .upload(fileName, compressedFile, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: compressedFile.type,
         });
 
       if (error) {

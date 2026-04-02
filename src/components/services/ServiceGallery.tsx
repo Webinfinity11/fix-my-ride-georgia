@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 
 interface ServiceGalleryProps {
   photos: string[];
@@ -35,7 +36,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
       <div className="relative group cursor-pointer w-full" onClick={openGallery}>
         <div className="aspect-[16/10] bg-gray-100 rounded-xl overflow-hidden shadow-sm">
           <img
-            src={photos[currentImageIndex]}
+            src={getOptimizedImageUrl(photos[currentImageIndex], 800, 500, 75)}
             alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
             className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
             loading="lazy"
@@ -97,7 +98,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
             >
               <div className="w-24 h-16 bg-gray-100 rounded-lg overflow-hidden group">
                 <img
-                  src={photo}
+                  src={getOptimizedImageUrl(photo, 96, 64, 60)}
                   alt={`${serviceName} - ფოტო ${index + 1}`}
                   className={`w-full h-full object-cover transition-all duration-200 group-hover:scale-110 ${
                     index === currentImageIndex

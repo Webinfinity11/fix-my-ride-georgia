@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { SaveServiceButton } from "./SaveServiceButton";
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { VIPBadge } from "./VIPBadge";
 import { VIPPlanType } from "@/hooks/useVIPRequests";
 
@@ -143,7 +144,7 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
             <div className="aspect-[4/3] overflow-hidden">
               {/* eslint-disable-next-line */}
               <img
-                src={mainPhoto.includes('supabase.co') ? `${mainPhoto}?width=400&height=300&quality=70&resize=cover` : mainPhoto}
+                src={getOptimizedImageUrl(mainPhoto, 400, 300, 70)}
                 alt={`${service.name} - ${service.category?.name || 'ავტოსერვისი'} | Fixup.ge`}
                 width={400}
                 height={300}
