@@ -4,6 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
+import { LazyImage } from "@/components/ui/lazy-image";
 
 interface ServiceGalleryProps {
   photos: string[];
@@ -35,12 +36,11 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
       {/* Main Image - Full width with 16:10 aspect ratio */}
       <div className="relative group cursor-pointer w-full" onClick={openGallery}>
         <div className="aspect-[16/10] bg-gray-100 rounded-xl overflow-hidden shadow-sm">
-          <img
+          <LazyImage
             src={getOptimizedImageUrl(photos[currentImageIndex], 800, 500, 75)}
             alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
             className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
-            loading="lazy"
-            style={{ minHeight: '100%', backgroundColor: '#f3f4f6' }}
+            priority
           />
         </div>
         
@@ -97,7 +97,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
               onClick={() => setCurrentImageIndex(index)}
             >
               <div className="w-24 h-16 bg-gray-100 rounded-lg overflow-hidden group">
-                <img
+                <LazyImage
                   src={getOptimizedImageUrl(photo, 96, 64, 60)}
                   alt={`${serviceName} - ფოტო ${index + 1}`}
                   className={`w-full h-full object-cover transition-all duration-200 group-hover:scale-110 ${
@@ -105,8 +105,6 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
                       ? "ring-2 ring-primary ring-offset-2"
                       : "opacity-70 hover:opacity-100"
                   }`}
-                  loading="lazy"
-                  style={{ minHeight: '64px', backgroundColor: '#f3f4f6' }}
                 />
               </div>
             </div>

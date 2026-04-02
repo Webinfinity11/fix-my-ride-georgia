@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Phone, MapPin, Car, Image } from "lucide-react";
+import { LazyImage } from "@/components/ui/lazy-image";
 import type { Database } from "@/integrations/supabase/types";
 
 type Laundry = Database["public"]["Tables"]["laundries"]["Row"];
@@ -30,14 +31,12 @@ const LaundryCard = ({ laundry, onViewDetails }: LaundryCardProps) => {
       {/* Photo Section */}
       {laundry.photos && laundry.photos.length > 0 ? (
         <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden rounded-t-lg">
-          <img
+          <LazyImage
             src={laundry.photos[0]}
             alt={`${laundry.name} - ავტოსამრეცხაო | Fixup.ge`}
             className="w-full h-full object-cover transition-transform hover:scale-105"
-            loading="lazy"
-            style={{ minHeight: '160px', backgroundColor: '#f3f4f6' }}
             onError={(e) => {
-              e.currentTarget.src = '/placeholder.svg';
+              (e.target as HTMLImageElement).src = '/placeholder.svg';
             }}
           />
           {laundry.photos.length > 1 && (

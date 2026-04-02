@@ -1,4 +1,5 @@
 import { MapPin, Phone, Image as ImageIcon } from "lucide-react";
+import { LazyImage } from "@/components/ui/lazy-image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Database } from "@/integrations/supabase/types";
@@ -20,7 +21,7 @@ export const DriveCard = ({ drive, onClick }: DriveCardProps) => {
     >
       {firstPhoto && (
         <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
-          <img
+          <LazyImage
             src={firstPhoto}
             alt={drive.name}
             className="h-full w-full object-cover"

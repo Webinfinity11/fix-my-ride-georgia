@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ChevronDown, ChevronUp, Info } from "lucide-react";
+import { LazyImage } from "@/components/ui/lazy-image";
 import type { FuelImporter } from "@/hooks/useFuelImporters";
 
 interface FuelImporterCardProps {
@@ -67,12 +68,10 @@ const FuelImporterCard = ({ importer }: FuelImporterCardProps) => {
             </div>
             {importer.logo_url && (
               <div className="mt-3">
-                <img 
+                <LazyImage 
                   src={logoPath || importer.logo_url}
                   alt={`${importer.name} ლოგო`}
                   className="h-6 sm:h-8 w-auto object-contain"
-                  loading="lazy"
-                  style={{ backgroundColor: 'transparent' }}
                 />
               </div>
             )}

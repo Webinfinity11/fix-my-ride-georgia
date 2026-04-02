@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Clock, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { LazyImage } from '@/components/ui/lazy-image';
 import { calculateReadTime, formatDate, extractTextFromHtml, truncateText } from '@/utils/blogHelpers';
 import type { BlogPost } from '@/hooks/useBlogPosts';
 
@@ -18,11 +19,10 @@ export const BlogCard = ({ post }: BlogCardProps) => {
       <Card className="group overflow-hidden transition-all hover:shadow-lg">
         {post.featured_image && (
           <div className="relative aspect-[16/9] overflow-hidden">
-            <img
+            <LazyImage
               src={post.featured_image}
               alt={post.title}
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
-              loading="lazy"
             />
             {post.is_featured && (
               <Badge className="absolute right-3 top-3 bg-primary text-primary-foreground">
