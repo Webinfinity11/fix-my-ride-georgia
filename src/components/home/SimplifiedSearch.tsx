@@ -18,7 +18,8 @@ interface SimplifiedSearchProps {
 const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [inputValue, setInputValue] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [cities, setCities] = useState<string[]>([]);
