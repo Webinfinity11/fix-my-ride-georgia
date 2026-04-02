@@ -1,60 +1,50 @@
 
 
-# /services ფილტრების UX გამოსწორება
+# Google Search Console Product Snippets - Fix Plan
 
-## პრობლემების იდენტიფიკაცია
+## Problem
+Google Search Console reports 475 invalid Product snippets with 2 critical issues:
+1. **"Either 'offers', 'review', or 'aggregateRating' should be specified"** (292 items) — `CollectionPageSchema` outputs `Product` type items in `hasPart` without required fields
+2. **"Either 'price' or 'priceSpecification.price' should be specified"** (183 items) — services without `price_from` still emit `offers` block without a price
 
-### 1. სქროლვისას ფილტრები იხსნება
-მობილურზე Select dropdown-ებს და Collapsible trigger-ებს `h-12` touch target აქვს. სქროლვისას თითი რომ მოხვდება Select-ზე ან Collapsible trigger-ზე, ის იხსნება. ეს Radix Select-ის ქცევაა — touch start-ზე ამუშავდება.
+Plus warnings: missing `aggregateRating`, `review`, `priceCurrency`, `availability`, `priceValidUntil`.
 
-### 2. ფილტრაციის შემდეგ ფილტრი არ იკეცება
-`showFilters` state ყოველთვის `true`-ა (`useState(true)`). ფილტრაცია/ძიება არ ცვლის ამ state-ს.
+## Root Causes
 
-### 3. ზოგადი UX გაუმჯობესება
-ამჟამინდელი ფილტრი ძალიან რთულია მობილურზე: 4 Select dropdown, checkbox, Collapsible brands, nested Collapsible — ეს ყველაფერი ერთდროულად ჩანს.
+1. **`CollectionPageSchema`** (`StructuredData.tsx`) — `hasPart` items use `@type: "Product"` but only include `name`, `url`, optional `image` and `price`. Products without price have no `offers` at all, violating Google's requirement.
 
-## გეგმა
+2. **`ProductSchema`** (`StructuredData.tsx`) — when `price_from` is `undefined`, it still outputs an `offers` block without `price`, and missing `priceCurrency`/`availability` for the no-price case.
 
-### ფაილი 1: `src/components/services/ModernServiceFilters.tsx`
-**სრული რედიზაინი მობილურისთვის:**
+3. **`ServiceDetail.tsx`** passes `price: service.price_from || undefined` — so ~292 services with null price get schemas without required fields.
 
-- **Search bar ყოველთვის ხილული** — მხოლოდ ძიების input და ძიების ღილაკი
-- **ფილტრები ჩაკეცილი default-ად** — "ფილტრები" ღილაკზე დაჭერით იხსნება
-- **ძიების/ფილტრაციის შემდეგ ავტომატურად იკეცება** — `onSearch` callback-ში `setShowAdvanced(false)` 
-- **Select-ებზე touch-move prevention** — `onPointerDown` ნაცვლად click-ის გამოყენება, ან wrapper div-ით `touch-action: manipulation` CSS
-- **გამარტივებული layout:** კატეგორია + ქალაქი ერთ row-ში, ბრენდები მთლიანად ცალკე collapsible-ში
-- **Active filter chips** — არჩეული ფილტრები ჩანს badge-ებით ფილტრის ქვემოთ, X-ით წაშლადი
-- **"გასუფთავება" ღილაკი** მხოლოდ აქტიური ფილტრების დროს
+## Solution
 
-### ფაილი 2: `src/pages/ServicesDetail.tsx`
-- `showFilters` default `false`-ზე შეცვლა მობილურზე
-- ძიების შემდეგ ფილტრის ავტომატური ჩაკეცვა
-- ფილტრების toggle ღილაკზე active filter count badge-ის დამატება
+### File: `src/components/seo/StructuredData.tsx`
 
-### კონკრეტული UX ცვლილებები:
+**1. Fix `CollectionPageSchema`**: Change `hasPart` items from `Product` to `ListItem` type (part of `ItemList`), or switch the whole schema to `ItemList` which doesn't require offers/rating. This eliminates the 292-item error entirely.
 
-```text
-ამჟამინდელი:                    ახალი:
-┌─────────────────┐            ┌─────────────────┐
-│ [Search input ] │            │ [Search input ] │
-│ კატეგორია ▼     │            │ [🔍 ძიება]      │
-│ ქალაქი ▼        │            │                 │
-│ რეიტინგი ▼      │            │ [⚙ ფილტრები (2)]│
-│ ☐ ადგილზე       │            │                 │
-│ [ბრენდები ▼]    │            │  ← დაჭერისას:   │
-│  BMW ☐          │            │ კატეგორია ▼      │
-│  Mercedes ☐     │            │ ქალაქი ▼        │
-│  ...            │            │ ☐ ადგილზე       │
-│ [ძიება]         │            │ [ბრენდები ▼]    │
-│ [გასუფთავება]   │            │ [გაფილტვრა]     │
-└─────────────────┘            │                 │
-                               │ არჩეული:        │
-                               │ [BMW ×] [ვაკე ×]│
-                               └─────────────────┘
+```
+@type: "ItemList" with itemListElement of @type: "ListItem"
 ```
 
-### Touch scroll fix:
-- ფილტრის container-ს `touch-action: pan-y` CSS property
-- Select trigger-ებს `data-touch="true"` attribute და CSS `touch-action: manipulation`
-- Collapsible trigger-ზე `onTouchMove` handler-ით event cancellation — სქროლვისას არ გაიხსნას
+**2. Fix `ProductSchema`**: 
+- Always include `priceCurrency: "GEL"` when price exists
+- Add `priceValidUntil` (set to end of current year + 1)
+- When no valid price: don't output `ProductSchema` at all (return null)
+
+**3. Fix `ServiceSchema`**:
+- Same price validation — only include offers block when price is valid
+
+### File: `src/pages/ServiceDetail.tsx`
+
+**4. Conditionally render `ProductSchema`**: Only render when service has valid `price_from > 0` OR valid `aggregateRating`. This satisfies Google's "either offers, review, or aggregateRating" requirement.
+
+### File: `src/pages/ServiceCategory.tsx`
+
+**5. No changes needed** — once `CollectionPageSchema` switches to `ItemList`, category pages are fixed.
+
+## Expected Result
+- 292 "missing offers/review/aggregateRating" errors → eliminated (ItemList doesn't require them)
+- 183 "missing price in offers" errors → eliminated (no offers without valid price)
+- Warnings for priceCurrency, availability, priceValidUntil → fixed with proper fields
 
