@@ -4,6 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
+import { LazyImage } from "@/components/ui/lazy-image";
 
 interface ServiceGalleryProps {
   photos: string[];
