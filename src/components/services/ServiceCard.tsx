@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, ImageOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { SaveServiceButton } from "./SaveServiceButton";
 import { VIPBadge } from "./VIPBadge";
@@ -52,12 +52,12 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
   const navigate = useNavigate();
   const [showPhone, setShowPhone] = useState(false);
 
-  const handleViewDetails = () => {
+  const handleViewDetails = useCallback(() => {
     const slug = createServiceSlug(service.id, service.name);
     navigate(`/service/${slug}`);
-  };
+  }, [service.id, service.name, navigate]);
 
-  const handleViewMechanic = (e: React.MouseEvent) => {
+  const handleViewMechanic = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     const mechanicSlug = createMechanicSlug(
       service.mechanic.display_id || 0,
@@ -65,7 +65,7 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
       service.mechanic.last_name,
     );
     navigate(`/mechanic/${mechanicSlug}`);
-  };
+  }, [service.mechanic, navigate]);
 
   const handlePhoneClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -143,7 +143,7 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
             <div className="aspect-[4/3] overflow-hidden">
               {/* eslint-disable-next-line */}
               <img
-                src={mainPhoto.includes('supabase.co') ? `${mainPhoto}?width=400&quality=75` : mainPhoto}
+                src={mainPhoto.includes('supabase.co') ? `${mainPhoto}?width=400&height=300&quality=70&resize=cover` : mainPhoto}
                 alt={`${service.name} - ${service.category?.name || 'ავტოსერვისი'} | Fixup.ge`}
                 width={400}
                 height={300}

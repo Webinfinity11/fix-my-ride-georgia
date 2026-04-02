@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback, startTransition } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ interface SimplifiedSearchProps {
 const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
@@ -25,23 +27,36 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
 
   const [dataFetched, setDataFetched] = useState(false);
 
-  const fetchData = async () => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setSearchTerm(value);
+    }, 150);
+  }, []);
+
+  const fetchData = useCallback(async () => {
     if (dataFetched) return;
     setDataFetched(true);
-    const [categoriesRes, citiesRes] = await Promise.all([
-      supabase.from("service_categories").select("id, name").order("name"),
-      supabase.from("mechanic_services").select("city").not("city", "is", null),
-    ]);
+    startTransition(() => {
+      (async () => {
+        const [categoriesRes, citiesRes] = await Promise.all([
+          supabase.from("service_categories").select("id, name").order("name"),
+          supabase.from("mechanic_services").select("city").not("city", "is", null),
+        ]);
 
-    if (categoriesRes.data) {
-      setCategories(categoriesRes.data);
-    }
+        if (categoriesRes.data) {
+          setCategories(categoriesRes.data);
+        }
 
-    if (citiesRes.data) {
-      const uniqueCities = [...new Set(citiesRes.data.map((c) => c.city).filter(Boolean))] as string[];
-      setCities(uniqueCities.sort());
-    }
-  };
+        if (citiesRes.data) {
+          const uniqueCities = [...new Set(citiesRes.data.map((c) => c.city).filter(Boolean))] as string[];
+          setCities(uniqueCities.sort());
+        }
+      })();
+    });
+  }, [dataFetched]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,8 +78,8 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
            <Input
             placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={inputValue}
+            onChange={handleInputChange}
             onFocus={fetchData}
             className="pl-12 h-14 text-base md:text-lg border-2 border-primary/20 focus-visible:ring-primary rounded-xl bg-white"
           />

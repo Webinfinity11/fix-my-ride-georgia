@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    target: 'es2020',
     sourcemap: true,
     rollupOptions: {
       output: {
@@ -37,6 +38,9 @@ export default defineConfig(({ mode }) => ({
           'query-vendor': ['@tanstack/react-query'],
           'form-vendor': ['react-hook-form', 'zod'],
           'map-vendor': ['leaflet', 'react-leaflet'],
+          'supabase': ['@supabase/supabase-js'],
+          'embla': ['embla-carousel-react'],
+          'helmet': ['react-helmet-async'],
         },
       },
     },

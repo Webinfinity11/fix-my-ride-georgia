@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -6,19 +6,20 @@ import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
 import SEOHead from "@/components/seo/SEOHead";
 import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import SimplifiedSearch from "@/components/home/SimplifiedSearch";
 import CategoryCarousel from "@/components/home/CategoryCarousel";
 import VIPServicesCarousel from "@/components/home/VIPServicesCarousel";
-import StationsPromo from "@/components/home/StationsPromo";
-import { Zap, Shield, Users, Star, ArrowRight, Sparkles, UserPlus, Wrench, Car, DollarSign } from "lucide-react";
-import HomeCenterBanner from "@/components/banners/HomeCenterBanner";
-import MobileBanner from "@/components/banners/MobileBanner";
+import { Zap, Shield, Users, Star, ArrowRight, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
 import { EvacuatorDialog } from "@/components/evacuator/EvacuatorDialog";
 import { useSitemapAutoUpdate } from "@/hooks/useSitemapAutoUpdate";
+
+// Lazy load below-fold components
+const StationsPromo = lazy(() => import("@/components/home/StationsPromo"));
+const HomeCenterBanner = lazy(() => import("@/components/banners/HomeCenterBanner"));
+const MobileBanner = lazy(() => import("@/components/banners/MobileBanner"));
 
 // სტატისტიკა
 const stats = [{
@@ -38,12 +39,13 @@ const stats = [{
   label: "საშუალო რეიტინგი",
   icon: Star
 }];
+
 const Index = () => {
-  // Initialize sitemap auto-update listener
   useSitemapAutoUpdate();
   const navigate = useNavigate();
   const [evacuatorDialogOpen, setEvacuatorDialogOpen] = useState(false);
   const canonicalUrl = generateCanonicalURL("home", {});
+
   return <div className="min-h-screen flex flex-col bg-gradient-to-br from-muted via-background to-accent/30 pb-[70px] md:pb-0">
       <SEOHead title={generateSEOTitle("home", {})} description={generateSEODescription("home", {})} keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup" url={canonicalUrl} canonical={canonicalUrl} type="website" />
 
@@ -59,16 +61,14 @@ const Index = () => {
       <Header />
 
       <main className="flex-grow">
-        {/* Hero Section - Simplified */}
+        {/* Hero Section */}
         <section className="relative py-12 lg:py-20 overflow-hidden">
-          {/* Background Elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent to-primary/10"></div>
           <div className="absolute top-0 right-0 w-72 h-72 md:w-96 md:h-96 bg-gradient-to-br from-primary/10 to-accent/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-gradient-to-tr from-accent/20 to-primary/10 rounded-full blur-3xl"></div>
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto">
-              {/* Hero Content */}
               <div className="text-center mb-8 md:mb-10">
                 <Badge className="mb-4 md:mb-6 bg-gradient-to-r from-primary to-primary-light text-primary-foreground px-4 md:px-6 py-1.5 md:py-2 text-xs md:text-sm font-medium">
                   <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1.5 md:mr-2" />
@@ -82,7 +82,6 @@ const Index = () => {
                 </h1>
               </div>
 
-              {/* Simplified Search Form */}
               <Card className="shadow-xl border-0 bg-card/95 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-4 md:p-6 lg:p-8">
                   <SimplifiedSearch onEvacuatorClick={() => setEvacuatorDialogOpen(true)} />
@@ -118,11 +117,13 @@ const Index = () => {
         {/* VIP Services Carousel */}
         <VIPServicesCarousel />
 
-        {/* Stations Promo */}
-        <StationsPromo />
+        {/* Stations Promo - lazy loaded */}
+        <Suspense fallback={<div className="min-h-[200px]" />}>
+          <StationsPromo />
+        </Suspense>
 
         {/* Stats Section */}
-        <section className="py-10 md:py-16 bg-card">
+        <section className="py-10 md:py-16 bg-card min-h-[200px]">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -143,7 +144,7 @@ const Index = () => {
         </section>
 
         {/* Registration Section */}
-        <section className="py-10 md:py-16 bg-gradient-to-br from-muted to-background">
+        <section className="py-10 md:py-16 bg-gradient-to-br from-muted to-background min-h-[400px]">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <Badge className="mb-4 bg-gradient-to-r from-primary to-primary-light text-primary-foreground px-4 py-2">
@@ -156,7 +157,6 @@ const Index = () => {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Customer Registration */}
                 <Card className="border-0 shadow-xl bg-gradient-to-br from-primary/10 to-primary/5 hover:shadow-2xl transition-all duration-300 group">
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-primary rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
@@ -181,7 +181,6 @@ const Index = () => {
                   </CardContent>
                 </Card>
 
-                {/* Mechanic Registration */}
                 <Card className="border-0 shadow-xl bg-gradient-to-br from-secondary/10 to-secondary/5 hover:shadow-2xl transition-all duration-300 group">
                   <CardContent className="p-6 lg:p-8 text-center">
                     <div className="p-4 lg:p-6 bg-secondary rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
@@ -210,15 +209,16 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Additional Services Section */}
-        
-
-        {/* Banner Section - Desktop */}
-        <HomeCenterBanner />
+        {/* Banner Section - Desktop (lazy) */}
+        <Suspense fallback={null}>
+          <HomeCenterBanner />
+        </Suspense>
       </main>
 
       <Footer />
-      <MobileBanner />
+      <Suspense fallback={null}>
+        <MobileBanner />
+      </Suspense>
       <MobileBottomNav />
       <EvacuatorDialog open={evacuatorDialogOpen} onOpenChange={setEvacuatorDialogOpen} />
     </div>;
