@@ -20,6 +20,7 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [cities, setCities] = useState<string[]>([]);
