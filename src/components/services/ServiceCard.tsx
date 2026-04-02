@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { SaveServiceButton } from "./SaveServiceButton";
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { VIPBadge } from "./VIPBadge";
 import { VIPPlanType } from "@/hooks/useVIPRequests";
 
