@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, Image } from "lucide-react";
+import { compressImage } from "@/utils/imageCompression";
 
 interface PhotoUploadProps {
   photos: string[];
