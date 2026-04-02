@@ -142,17 +142,13 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
 
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
-              {/* eslint-disable-next-line */}
-              <img
+              <LazyImage
                 src={getOptimizedImageUrl(mainPhoto, 400, 300, 70)}
                 alt={`${service.name} - ${service.category?.name || 'ავტოსერვისი'} | Fixup.ge`}
                 width={400}
                 height={300}
-                loading={priorityImage ? "eager" : "lazy"}
-                decoding={priorityImage ? "sync" : "async"}
-                {...(priorityImage ? { fetchpriority: "high" } : {})}
+                priority={priorityImage}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                style={{ backgroundColor: "#f3f4f6" }}
               />
             </div>
           ) : (

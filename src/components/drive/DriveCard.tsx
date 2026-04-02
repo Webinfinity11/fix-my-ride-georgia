@@ -20,7 +20,7 @@ export const DriveCard = ({ drive, onClick }: DriveCardProps) => {
     >
       {firstPhoto && (
         <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
-          <img
+          <LazyImage
             src={firstPhoto}
             alt={drive.name}
             className="h-full w-full object-cover"

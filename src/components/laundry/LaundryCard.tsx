@@ -30,14 +30,12 @@ const LaundryCard = ({ laundry, onViewDetails }: LaundryCardProps) => {
       {/* Photo Section */}
       {laundry.photos && laundry.photos.length > 0 ? (
         <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden rounded-t-lg">
-          <img
+          <LazyImage
             src={laundry.photos[0]}
             alt={`${laundry.name} - ავტოსამრეცხაო | Fixup.ge`}
             className="w-full h-full object-cover transition-transform hover:scale-105"
-            loading="lazy"
-            style={{ minHeight: '160px', backgroundColor: '#f3f4f6' }}
             onError={(e) => {
-              e.currentTarget.src = '/placeholder.svg';
+              (e.target as HTMLImageElement).src = '/placeholder.svg';
             }}
           />
           {laundry.photos.length > 1 && (

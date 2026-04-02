@@ -97,7 +97,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
               onClick={() => setCurrentImageIndex(index)}
             >
               <div className="w-24 h-16 bg-gray-100 rounded-lg overflow-hidden group">
-                <img
+                <LazyImage
                   src={getOptimizedImageUrl(photo, 96, 64, 60)}
                   alt={`${serviceName} - ფოტო ${index + 1}`}
                   className={`w-full h-full object-cover transition-all duration-200 group-hover:scale-110 ${
@@ -105,8 +105,6 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
                       ? "ring-2 ring-primary ring-offset-2"
                       : "opacity-70 hover:opacity-100"
                   }`}
-                  loading="lazy"
-                  style={{ minHeight: '64px', backgroundColor: '#f3f4f6' }}
                 />
               </div>
             </div>
