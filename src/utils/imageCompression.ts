@@ -100,17 +100,11 @@ export const compressImage = (
  */
 export const getOptimizedImageUrl = (
   url: string,
-  width = 400,
-  height = 300,
-  quality = 70
+  _width = 400,
+  _height = 300,
+  _quality = 70
 ): string => {
-  if (!url.includes('supabase.co')) return url;
-
-  // Convert /object/public/ to /render/image/public/ for transformation support
-  const renderUrl = url.replace(
-    '/storage/v1/object/public/',
-    '/storage/v1/render/image/public/'
-  );
-
-  return `${renderUrl}?width=${width}&height=${height}&quality=${quality}&resize=cover&format=webp`;
+  // render/image endpoint requires Supabase Pro plan.
+  // Client-side compression on upload handles new images.
+  return url;
 };
