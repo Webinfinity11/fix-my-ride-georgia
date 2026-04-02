@@ -134,9 +134,9 @@ const CategoryCarousel = () => {
     return categoryIcons[categoryName] || categoryIcons.default;
   };
 
-  const handleCategoryClick = (categoryId: number) => {
+  const handleCategoryClick = useCallback((categoryId: number) => {
     navigate(`/services?category=${categoryId}`);
-  };
+  }, [navigate]);
 
   if (loading) {
     return (
