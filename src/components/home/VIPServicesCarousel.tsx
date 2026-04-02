@@ -104,7 +104,7 @@ const VIPServicesCarousel = () => {
 
             {/* Carousel */}
             <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex gap-4 md:gap-6">
+              <div className="flex gap-4 md:gap-6" style={{ willChange: 'transform' }}>
                 {loading ? (
                   // Loading skeletons
                   [...Array(4)].map((_, i) => (

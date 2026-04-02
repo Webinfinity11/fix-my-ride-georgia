@@ -168,8 +168,8 @@ const CategoryCarousel = () => {
         <ChevronRight className="h-5 w-5" />
       </Button>
 
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-3 md:gap-4 py-2">
+      <div className="overflow-hidden min-h-[112px]" ref={emblaRef}>
+        <div className="flex gap-3 md:gap-4 py-2" style={{ willChange: 'transform' }}>
           {categories.map((category) => {
             const IconComponent = getIcon(category.name);
             return (

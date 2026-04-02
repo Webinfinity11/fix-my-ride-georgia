@@ -77,8 +77,8 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
            <Input
             placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={inputValue}
+            onChange={handleInputChange}
             onFocus={fetchData}
             className="pl-12 h-14 text-base md:text-lg border-2 border-primary/20 focus-visible:ring-primary rounded-xl bg-white"
           />
