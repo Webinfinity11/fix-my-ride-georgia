@@ -8,6 +8,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/context/AuthContext";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import { InstallPWA } from "@/components/mobile/InstallPWA";
+import { IOSAppPromo } from "@/components/mobile/IOSAppPromo";
 import Index from "./pages/Index";
 
 // Lazy load routes for better performance
@@ -54,8 +55,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
         <TooltipProvider>
-          <Toaster />
-          <InstallPWA />
+            <Toaster />
+            <InstallPWA />
+            <IOSAppPromo />
           <BrowserRouter>
             <ScrollToTop />
             <AuthProvider>
