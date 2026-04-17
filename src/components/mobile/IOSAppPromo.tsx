@@ -89,14 +89,11 @@ export function IOSAppPromo() {
 
         {/* App icon */}
         <div className="flex justify-center mb-4">
-          <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-lg bg-primary/10 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-lg bg-background flex items-center justify-center p-3 border border-border">
             <img
-              src="/icon-192.png"
+              src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
               alt="FixUp"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "/favicon.ico";
-              }}
+              className="w-full h-full object-contain"
             />
           </div>
         </div>
