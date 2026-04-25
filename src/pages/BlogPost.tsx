@@ -113,6 +113,19 @@ export default function BlogPost() {
       '@id': `https://fixup.ge/blog/${post.slug}`,
     },
     wordCount: post.content?.split(/\s+/).length || 0,
+    inLanguage: 'ka-GE',
+    articleSection: 'Auto',
+    keywords: post.meta_keywords || 'ავტო, ავტოსერვისი, საქართველო',
+  };
+
+  const breadcrumbStructured = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'მთავარი', item: 'https://fixup.ge/' },
+      { '@type': 'ListItem', position: 2, name: 'ბლოგი', item: 'https://fixup.ge/blog' },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `https://fixup.ge/blog/${post.slug}` },
+    ],
   };
 
   return (
@@ -135,6 +148,9 @@ export default function BlogPost() {
         
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbStructured)}
         </script>
       </Helmet>
 
@@ -195,6 +211,10 @@ export default function BlogPost() {
             <img
               src={post.featured_image}
               alt={post.title}
+              width={1200}
+              height={675}
+              loading="eager"
+              fetchPriority="high"
               className="w-full h-auto"
             />
           </div>
