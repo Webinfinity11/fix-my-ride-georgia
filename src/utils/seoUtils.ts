@@ -258,7 +258,7 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
     case 'insurance':
       return `ავტოდაზღვევა - დააზღვიეთ თქვენი მანქანა საუკეთესო პირობებით | ავტოხელოსანი`;
     case 'home':
-      return `ავტოხელოსანი - საქართველოს #1 ავტოსერვისების პლატფორმა`;
+      return `ავტოხელოსანი — საქართველოს #1 ავტოსერვისები`;
     default:
       return `${data.title || 'ავტოხელოსანი'} | საქართველოს ავტოსერვისების პლატფორმა`;
   }
