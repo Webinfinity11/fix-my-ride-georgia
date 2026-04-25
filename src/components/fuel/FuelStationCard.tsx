@@ -47,7 +47,10 @@ export const FuelStationCard = ({ station, isSelected, onClick }: FuelStationCar
             {logo ? (
               <img 
                 src={logo} 
-                alt={station.brand} 
+                alt={`${station.brand} საწვავის სადგური`}
+                width={48}
+                height={48}
+                loading="lazy"
                 className="w-full h-full object-contain"
               />
             ) : (
@@ -138,7 +141,10 @@ export const MobileFuelStationCard = ({ station, isSelected, onClick }: FuelStat
         {logo ? (
           <img 
             src={logo} 
-            alt={station.brand} 
+            alt={`${station.brand} საწვავის სადგური`}
+            width={40}
+            height={40}
+            loading="lazy"
             className="w-full h-full object-contain"
           />
         ) : (

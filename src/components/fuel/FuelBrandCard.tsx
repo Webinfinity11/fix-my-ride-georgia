@@ -33,7 +33,10 @@ export const FuelBrandCard = ({
           {brand.logo_url ? (
             <img 
               src={brand.logo_url} 
-              alt={brand.brand_name}
+              alt={`${brand.brand_name} საწვავის ბრენდის ლოგო`}
+              width={64}
+              height={64}
+              loading="lazy"
               className="w-16 h-16 object-contain"
             />
           ) : (
