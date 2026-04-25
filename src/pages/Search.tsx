@@ -27,6 +27,7 @@ import {
 import { toast } from "sonner";
 import { createMechanicSlug } from "@/utils/slugUtils";
 import { useSearchTracking } from "@/hooks/useSearchTracking";
+import SEOHead from "@/components/seo/SEOHead";
 
 type MechanicType = {
   id: string;
@@ -235,6 +236,13 @@ const Search = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <SEOHead
+        title="ძიება — ავტოხელოსანი"
+        description="მოძებნეთ ხელოსანი ან სერვისი თქვენს რაიონში. ფილტრაცია კატეგორიის, ქალაქის, რეიტინგის და ფასის მიხედვით."
+        keywords="ძიება, ავტოსერვისი, ხელოსანი, ფილტრი, საქართველო"
+        url="https://fixup.ge/search"
+        canonical="https://fixup.ge/search"
+      />
       <Header />
       
       <main className="py-8">
