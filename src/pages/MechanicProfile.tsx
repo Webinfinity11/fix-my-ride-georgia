@@ -520,7 +520,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         <Header />
         <main className="flex-grow bg-muted flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg shadow-sm text-center">
-            <h1 className="text-2xl font-bold mb-4">ხელოსანი ვერ მოიძებნა</h1>
+            <div role="alert" className="text-2xl font-bold mb-4">ხელოსანი ვერ მოიძებნა</div>
             <p className="mb-6">მოთხოვნილი ხელოსანი არ არსებობს ან წაშლილია.</p>
             <Button onClick={() => navigate("/search")}>
               დაბრუნება ძიებაზე

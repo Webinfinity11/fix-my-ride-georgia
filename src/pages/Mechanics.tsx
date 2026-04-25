@@ -10,6 +10,8 @@ import MechanicCardSkeleton from "@/components/mechanic/MechanicCardSkeleton";
 import MechanicFilters from "@/components/mechanic/MechanicFilters";
 import { useMechanics } from "@/hooks/useMechanics";
 import { Filter, RefreshCw, MapPin } from "lucide-react";
+import SEOHead from "@/components/seo/SEOHead";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -195,6 +197,17 @@ const Mechanics = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <SEOHead
+        title="ხელოსნები — ავტოხელოსანი"
+        description="იპოვეთ საუკეთესო ხელოსანი საქართველოში. 500+ დადასტურებული ავტოხელოსანი, რეიტინგები, შეფასებები და კონტაქტი."
+        keywords="ხელოსანი, ავტოხელოსანი, მექანიკოსი, თბილისი, ბათუმი, ქუთაისი, საქართველო"
+        url="https://fixup.ge/mechanic"
+        canonical="https://fixup.ge/mechanic"
+      />
+      <BreadcrumbSchema items={[
+        { name: "მთავარი", url: "https://fixup.ge/" },
+        { name: "ხელოსნები", url: "https://fixup.ge/mechanic" },
+      ]} />
       <Header />
       
       <main className="py-8">

@@ -24,7 +24,10 @@ const SEOHead = ({
 }: SEOHeadProps) => {
   const baseUrl = 'https://fixup.ge';
   const defaultImage = `${baseUrl}/fixup-og-image.jpg`;
-  const fullTitle = `${title} | ავტოხელოსანი`;
+  // Avoid double "| ავტოხელოსანი" suffix when title already contains brand
+  const fullTitle = /ავტოხელოსან|fixup/i.test(title)
+    ? title
+    : `${title} | ავტოხელოსანი`;
   const imageUrl = image || defaultImage;
   
   // Generate clean canonical URL without query params or fragments
