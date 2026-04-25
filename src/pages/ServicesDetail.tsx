@@ -218,6 +218,13 @@ const ServicesDetail = () => {
   });
   return (
     <>
+    <SEOHead
+      title="ავტოსერვისები — დეტალური ძიება"
+      description="დაათვალიერე ავტოსერვისები ფილტრებით: კატეგორია, ქალაქი, ფასი, რეიტინგი. იპოვე საუკეთესო ხელოსანი ერთ ადგილას."
+      keywords="ავტოსერვისი, სერვისების ძიება, ფილტრი, ხელოსანი, საქართველო"
+      url="https://fixup.ge/services-detail"
+      canonical="https://fixup.ge/services-detail"
+    />
     <Layout>
       <div className="py-4 md:py-8">
         <div className="container mx-auto px-4">
