@@ -1,23 +1,39 @@
-
 User-agent: *
 Allow: /
 
-# Allow important pages
+# Allow important public pages
 Allow: /services
-Allow: /mechanics
+Allow: /mechanic
 Allow: /search
 Allow: /about
 Allow: /contact
+Allow: /blog
+Allow: /vacancies
+Allow: /leasing
+Allow: /insurance
+Allow: /dealers
+Allow: /fuel-importers
+Allow: /map
+
+# Allow detail pages
+Allow: /service/*
+Allow: /mechanic/*
+Allow: /category/*
+Allow: /blog/*
+Allow: /vacancy/*
 
 # Disallow private/admin areas
 Disallow: /dashboard
 Disallow: /admin
 Disallow: /chat
 Disallow: /api
-
-# Allow search engines to crawl service and mechanic pages
-Allow: /service/*
-Allow: /mechanic/*
+Disallow: /login
+Disallow: /register
+Disallow: /reset-password
+Disallow: /update-password
+Disallow: /add-listing
+Disallow: /add-service
+Disallow: /book
 
 # Sitemap location
 Sitemap: https://fixup.ge/sitemap.xml
