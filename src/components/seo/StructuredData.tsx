@@ -32,7 +32,11 @@ export const OrganizationSchema = ({
       ...contactPoint,
       availableLanguage: "Georgian"
     },
-    sameAs: [],
+    sameAs: [
+      "https://apps.apple.com/ge/app/fixup-auto-services/id6757795136",
+      "https://www.facebook.com/fixup.ge",
+      "https://www.instagram.com/fixup.ge"
+    ],
     potentialAction: {
       "@type": "SearchAction",
       target: `${url}/search?q={search_term_string}`,

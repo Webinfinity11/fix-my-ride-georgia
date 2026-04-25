@@ -15,6 +15,8 @@ const LazyImage = ({
   placeholderClassName,
   style,
   onError,
+  width,
+  height,
   ...props
 }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -55,6 +57,8 @@ const LazyImage = ({
         <img
           src={src}
           alt={alt}
+          width={width}
+          height={height}
           className={cn(
             "transition-opacity duration-300",
             isLoaded ? "opacity-100" : "opacity-0",
@@ -63,6 +67,7 @@ const LazyImage = ({
           style={style}
           loading={priority ? "eager" : "lazy"}
           decoding={priority ? "sync" : "async"}
+          fetchPriority={priority ? "high" : "auto"}
           onLoad={() => setIsLoaded(true)}
           onError={(e) => {
             setIsLoaded(true);

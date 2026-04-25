@@ -21,6 +21,8 @@ const NotFound = () => {
         <title>404 - გვერდი ვერ მოიძებნა | ავტოხელოსანი</title>
         <meta name="description" content="მოთხოვნილი გვერდი არ არსებობს. დაბრუნდით მთავარ გვერდზე ან მოძებნეთ სერვისები." />
         <meta name="robots" content="noindex, nofollow" />
+        <meta name="googlebot" content="noindex, nofollow" />
+        <meta httpEquiv="status" content="404" />
       </Helmet>
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center max-w-md px-4">
