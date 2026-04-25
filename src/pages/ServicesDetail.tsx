@@ -11,6 +11,7 @@ import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 import { useServices } from "@/hooks/useServices";
 import { RefreshCw } from "lucide-react";
+import SEOHead from "@/components/seo/SEOHead";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
