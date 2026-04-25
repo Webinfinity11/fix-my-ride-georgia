@@ -366,7 +366,7 @@ const ServiceDetail = () => {
         </Helmet>
         <div className="container mx-auto px-4 py-8">
           <div className="text-center space-y-4">
-            <h1 className="text-2xl font-bold text-gray-900">სერვისი ვერ მოიძებნა</h1>
+            <div role="alert" className="text-2xl font-bold text-gray-900">სერვისი ვერ მოიძებნა</div>
             <Button onClick={() => navigate("/services")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               სერვისებზე დაბრუნება

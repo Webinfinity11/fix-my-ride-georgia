@@ -76,7 +76,7 @@ export default function BlogPost() {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8 md:py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">სტატია ვერ მოიძებნა</h1>
+          <div role="alert" className="text-2xl font-bold mb-4">სტატია ვერ მოიძებნა</div>
           <Link to="/blog">
             <Button>დაბრუნება ბლოგზე</Button>
           </Link>
