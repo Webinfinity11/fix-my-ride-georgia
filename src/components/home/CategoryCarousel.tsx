@@ -153,6 +153,7 @@ const CategoryCarousel = () => {
       <Button
         variant="outline"
         size="icon"
+        aria-label="წინა კატეგორიები"
         className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 hidden md:flex h-10 w-10 rounded-full bg-white shadow-lg border-primary/20 hover:bg-primary hover:text-primary-foreground transition-colors ${!canScrollPrev && "opacity-0 pointer-events-none"}`}
         onClick={scrollPrev}
       >
@@ -162,6 +163,7 @@ const CategoryCarousel = () => {
       <Button
         variant="outline"
         size="icon"
+        aria-label="შემდეგი კატეგორიები"
         className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 hidden md:flex h-10 w-10 rounded-full bg-white shadow-lg border-primary/20 hover:bg-primary hover:text-primary-foreground transition-colors ${!canScrollNext && "opacity-0 pointer-events-none"}`}
         onClick={scrollNext}
       >

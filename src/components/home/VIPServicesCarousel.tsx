@@ -83,6 +83,7 @@ const VIPServicesCarousel = () => {
             <Button
               variant="outline"
               size="icon"
+              aria-label="წინა VIP სერვისები"
               className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 hidden lg:flex h-12 w-12 rounded-full bg-white shadow-lg border-amber-200 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all ${
                 !canScrollPrev && "opacity-0 pointer-events-none"
               }`}
@@ -94,6 +95,7 @@ const VIPServicesCarousel = () => {
             <Button
               variant="outline"
               size="icon"
+              aria-label="შემდეგი VIP სერვისები"
               className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 hidden lg:flex h-12 w-12 rounded-full bg-white shadow-lg border-amber-200 hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all ${
                 !canScrollNext && "opacity-0 pointer-events-none"
               }`}

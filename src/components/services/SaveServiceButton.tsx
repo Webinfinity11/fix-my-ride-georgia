@@ -28,9 +28,11 @@ export const SaveServiceButton = ({
     await toggleSave(serviceId);
   };
 
+  const ariaLabel = saved ? 'სერვისის შენახვის გაუქმება' : 'სერვისის შენახვა';
+
   if (loading) {
     return (
-      <Button variant={variant} size={size} disabled className={className}>
+      <Button variant={variant} size={size} disabled className={className} aria-label={ariaLabel}>
         <Bookmark className="h-4 w-4" />
         {showText && size !== 'icon' && <span className="ml-2">შენახვა</span>}
       </Button>
@@ -42,6 +44,8 @@ export const SaveServiceButton = ({
       variant={variant}
       size={size}
       onClick={handleClick}
+      aria-label={ariaLabel}
+      aria-pressed={saved}
       className={cn(
         saved && 'bg-primary/10 text-primary hover:bg-primary/20',
         className

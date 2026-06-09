@@ -87,7 +87,7 @@ const Header = () => {
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-10 w-10 p-0 rounded-full">
+              <Button variant="ghost" className="h-10 w-10 p-0 rounded-full" aria-label="პროფილის მენიუ">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     {user.firstName?.charAt(0)}
