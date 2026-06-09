@@ -24,6 +24,8 @@ export const DriveCard = ({ drive, onClick }: DriveCardProps) => {
           <LazyImage
             src={firstPhoto}
             alt={drive.name}
+            width={400}
+            height={192}
             className="h-full w-full object-cover"
           />
         </div>
