@@ -231,8 +231,8 @@ const ServicesDetail = () => {
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
             <div className="text-center mb-3 md:mb-8">
-              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">ავტო სერვისი</h1>
-              <h2 className="text-sm md:text-lg text-muted-foreground">მოძებნეთ სასურველი ხელოსანი და ავტო სერვისი</h2>
+              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">ავტოსერვისები საქართველოში</h1>
+              <h2 className="text-sm md:text-lg text-muted-foreground">იპოვე ხელოსანი თბილისში, ბათუმში, ქუთაისში — შეფასებებითა და ფასებით</h2>
             </div>
 
             {/* Filters Section */}

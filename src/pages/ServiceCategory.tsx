@@ -337,9 +337,9 @@ const ServiceCategory = () => {
         <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-4xl font-bold mb-4">{category.name}</h1>
+              <h1 className="text-4xl font-bold mb-4">{category.name} — ავტოსერვისები საქართველოში</h1>
               <p className="text-lg text-muted-foreground mb-6">
-                {category.description || `იპოვეთ საუკეთესო ${category.name} სერვისები საქართველოში`}
+                {category.description || `იპოვეთ საუკეთესო ${category.name}-ის ხელოსანი თბილისში, ბათუმში, ქუთაისში და მთელ საქართველოში`}
               </p>
               <div className="text-sm text-muted-foreground">
                 {services.length} სერვისი ამ კატეგორიაში

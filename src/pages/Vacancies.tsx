@@ -169,7 +169,7 @@ const Vacancies = () => {
         <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
           <div className="container mx-auto px-4">
             <div className="text-center">
-              <h1 className="text-4xl font-bold mb-4">სამუშაო ვაკანსიები</h1>
+              <h1 className="text-4xl font-bold mb-4">ავტოსერვისის ვაკანსიები საქართველოში</h1>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 იპოვეთ სამუშაო ავტოსერვისის სფეროში. ხელოსნები ეძებენ კვალიფიციურ თანამშრომლებს.
               </p>

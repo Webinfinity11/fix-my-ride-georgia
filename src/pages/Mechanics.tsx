@@ -215,8 +215,8 @@ const Mechanics = () => {
           <div className="max-w-7xl mx-auto">
             {/* Header Section */}
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">ყველა ხელოსანი</h1>
-              <p className="text-lg text-gray-600">მოძებნეთ სასურველი ხელოსანი</p>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">ავტოხელოსნები საქართველოში</h1>
+              <p className="text-lg text-gray-600">ვერიფიცირებული მექანიკოსები თბილისში, ბათუმში, ქუთაისში — შეფასებებითა და გამოცდილებით</p>
             </div>
             
             {/* Filters Section */}

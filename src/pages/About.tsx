@@ -81,7 +81,7 @@ const About = () => {
       <div className="bg-muted py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm">
-            <h1 className="text-3xl font-bold mb-6">ჩვენ შესახებ</h1>
+            <h1 className="text-3xl font-bold mb-6">ჩვენ შესახებ — ავტოხელოსანი (Fixup.ge)</h1>
 
             <p className="mb-4">
               ავტოხელოსანი არის პლატფორმა, რომელიც აკავშირებს ავტომფლობელებს კვალიფიციურ ავტომექანიკოსებთან. ჩვენი

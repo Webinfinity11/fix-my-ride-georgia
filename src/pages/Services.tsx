@@ -94,7 +94,7 @@ const Services = () => {
       <main className="flex-grow">
         <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl font-bold mb-6 text-center">ჩვენი სერვისები</h1>
+            <h1 className="text-4xl font-bold mb-6 text-center">ავტოსერვისის კატეგორიები საქართველოში</h1>
             <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-6">
               აღმოაჩინეთ ჩვენი მრავალფეროვანი სერვისები ავტომობილებისთვის. ჩვენ გთავაზობთ მაღალი ხარისხის მომსახურებას სხვადასხვა საჭიროებისთვის.
             </p>

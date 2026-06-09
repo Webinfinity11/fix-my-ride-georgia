@@ -75,11 +75,14 @@ const Index = () => {
                   საქართველოს #1 ავტო-სერვისის პლატფორმა
                 </Badge>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
-                  იპოვეთ საუკეთესო
+                  ავტოხელოსანი საქართველოში —
                   <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-transparent block md:inline md:ml-3">
-                    ხელოსანი
+                    იპოვე ხელოსანი
                   </span>
                 </h1>
+                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
+                  დადასტურებული ავტოხელოსნები და ავტოსერვისები თბილისში, ბათუმში და მთელ საქართველოში
+                </p>
               </div>
 
               <Card className="shadow-xl border-0 bg-card/95 backdrop-blur-sm overflow-hidden">

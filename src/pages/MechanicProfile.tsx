@@ -646,6 +646,11 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <h1 className="text-2xl md:text-3xl font-bold">
                     {mechanic?.profile.first_name} {mechanic?.profile.last_name}
+                    {mechanic?.profile.city && (
+                      <span className="text-lg md:text-xl font-normal text-blue-100 ml-2">
+                        — ავტოხელოსანი {mechanic.profile.city}-ში
+                      </span>
+                    )}
                   </h1>
                   {mechanic?.profile.is_verified && (
                     <Badge className="bg-green-500 text-white flex items-center">
