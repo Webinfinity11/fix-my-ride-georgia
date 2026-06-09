@@ -134,7 +134,7 @@ export const MapPreviewCard = ({ charger, station, onClose, onNavigate }: MapPre
                 style={{ backgroundColor: `${brandColor}15` }}
               >
                 {logo ? (
-                  <img src={logo} alt={station.brand} className="w-full h-full object-contain" />
+                  <img src={logo} alt={station.brand} width={36} height={36} className="w-full h-full object-contain" />
                 ) : (
                   <Fuel className="w-6 h-6" style={{ color: brandColor }} />
                 )}

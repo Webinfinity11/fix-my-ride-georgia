@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Layout from "@/components/layout/Layout";
 import ServiceForm from "@/components/forms/ServiceForm";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,6 +121,12 @@ const AddService = () => {
 
   return (
     <Layout>
+      <Helmet>
+        <title>ახალი სერვისის დამატება | ავტოხელოსანი</title>
+        <meta name="description" content="დაამატეთ ახალი ავტოსერვისი თქვენი პროფილისთვის." />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://fixup.ge/add-service" />
+      </Helmet>
       <div className="py-8">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="mb-6">

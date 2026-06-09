@@ -34,6 +34,8 @@ const LaundryCard = ({ laundry, onViewDetails }: LaundryCardProps) => {
           <LazyImage
             src={laundry.photos[0]}
             alt={`${laundry.name} - ავტოსამრეცხაო | Fixup.ge`}
+            width={400}
+            height={192}
             className="w-full h-full object-cover transition-transform hover:scale-105"
             onError={(e) => {
               (e.target as HTMLImageElement).src = '/placeholder.svg';

@@ -23,6 +23,7 @@ import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createServiceSlug } from "@/utils/slugUtils";
+import { escapeHtml as esc, safeUrl } from "@/lib/sanitize";
 import { getChargerColor, getChargerTypeLabel, ChargerLocation } from "@/types/charger";
 import { FuelStation, FuelBrand, getFuelStationColor, getFuelStationLogo, fuelTypeLabels } from "@/types/fuelStation";
 import "leaflet/dist/leaflet.css";
@@ -514,11 +515,11 @@ const Map = () => {
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
                 <!-- Service Name -->
-                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px; color: #1a1a1a; line-height: 1.2;">${service.name}</h3>
+                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px; color: #1a1a1a; line-height: 1.2;">${esc(service.name)}</h3>
                 
                 <!-- Service Photo -->
-                ${service.photos && service.photos.length > 0 ? `<img src="${service.photos[0]}" 
-                        alt="${service.name}" 
+                ${service.photos && service.photos.length > 0 ? `<img src="${safeUrl(service.photos[0])}" 
+                        alt="${esc(service.name)}" 
                         width="250" 
                         height="120"
                         loading="lazy"
@@ -532,7 +533,7 @@ const Map = () => {
                 
                 <!-- Short Description (2-3 lines max) -->
                 <p style="margin: 0 0 12px 0; color: #666; font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                  ${service.description || 'მოიცავს მანქანის შეკეთებას და მომსახურებას პროფესიონალური მექანიკოსების მიერ.'}
+                  ${esc(service.description || 'მოიცავს მანქანის შეკეთებას და მომსახურებას პროფესიონალური მექანიკოსების მიერ.')}
                 </p>
                 
                 <!-- Address -->
@@ -540,11 +541,11 @@ const Map = () => {
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: #0F4C81;">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                   </svg>
-                  <span>${service.address || (service.city && service.district ? `${service.city}, ${service.district}` : service.city || 'მისამართი მითითებული არ არის')}</span>
+                  <span>${esc(service.address || (service.city && service.district ? `${service.city}, ${service.district}` : service.city || 'მისამართი მითითებული არ არის'))}</span>
                 </div>
                 
                 <!-- View Details Button -->
-                <button onclick="window.location.href='/service/${serviceSlug}'" 
+                <button onclick="window.location.href='/service/${esc(serviceSlug)}'" 
                         style="
                           width: 100%; 
                           background-color: #0F4C81; 
@@ -621,12 +622,12 @@ const Map = () => {
               icon: customIcon
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
-                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${laundry.name}</h3>
-                ${laundry.photos?.[0] ? `<img src="${laundry.photos[0]}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🚿</div>`}
-                ${laundry.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${laundry.description.substring(0, 120)}</p>` : ''}
-                ${laundry.address ? `<div style="margin-bottom: 12px;">📍 ${laundry.address}</div>` : ''}
-                ${laundry.contact_number ? `<button onclick="window.open('tel:${laundry.contact_number}', '_self')" style="background: #0891B2; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
-                    📞 ${laundry.contact_number}
+                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${esc(laundry.name)}</h3>
+                ${laundry.photos?.[0] ? `<img src="${safeUrl(laundry.photos[0])}" alt="${esc(laundry.name)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🚿</div>`}
+                ${laundry.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${esc(laundry.description.substring(0, 120))}</p>` : ''}
+                ${laundry.address ? `<div style="margin-bottom: 12px;">📍 ${esc(laundry.address)}</div>` : ''}
+                ${laundry.contact_number ? `<button onclick="window.open('tel:${esc(laundry.contact_number)}', '_self')" style="background: #0891B2; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
+                    📞 ${esc(laundry.contact_number)}
                   </button>` : ''}
               </div>
             `);
@@ -664,12 +665,12 @@ const Map = () => {
               icon: customIcon
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
-                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${drive.name}</h3>
-                ${drive.photos?.[0] ? `<img src="${drive.photos[0]}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : ''}
-                ${drive.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${drive.description.substring(0, 120)}</p>` : ''}
-                ${drive.address ? `<div style="margin-bottom: 12px;">📍 ${drive.address}</div>` : ''}
-                ${drive.contact_number ? `<button onclick="window.open('tel:${drive.contact_number}', '_self')" style="background: #16A34A; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
-                    📞 ${drive.contact_number}
+                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${esc(drive.name)}</h3>
+                ${drive.photos?.[0] ? `<img src="${safeUrl(drive.photos[0])}" alt="${esc(drive.name)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : ''}
+                ${drive.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${esc(drive.description.substring(0, 120))}</p>` : ''}
+                ${drive.address ? `<div style="margin-bottom: 12px;">📍 ${esc(drive.address)}</div>` : ''}
+                ${drive.contact_number ? `<button onclick="window.open('tel:${esc(drive.contact_number)}', '_self')" style="background: #16A34A; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
+                    📞 ${esc(drive.contact_number)}
                   </button>` : ''}
               </div>
             `);
@@ -712,17 +713,17 @@ const Map = () => {
               icon: customIcon
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
-                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${charger.name_ka}</h3>
+                <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${esc(charger.name_ka)}</h3>
                 <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
                   <span style="background: ${markerColor}20; color: ${markerColor}; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
-                    ${getChargerTypeLabel(charger.type)}
+                    ${esc(getChargerTypeLabel(charger.type))}
                   </span>
                   ${isFastCharger ? '<span style="background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">⚡ სწრაფი</span>' : ''}
                 </div>
                 <div style="margin-bottom: 8px; color: #666; font-size: 13px;">
-                  <strong>წყარო:</strong> ${charger.source}
+                  <strong>წყარო:</strong> ${esc(charger.source)}
                 </div>
-                ${charger.name_en ? `<div style="margin-bottom: 8px; color: #999; font-size: 12px;">${charger.name_en}</div>` : ''}
+                ${charger.name_en ? `<div style="margin-bottom: 8px; color: #999; font-size: 12px;">${esc(charger.name_en)}</div>` : ''}
               </div>
             `);
 
@@ -782,20 +783,20 @@ const Map = () => {
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                  ${logo ? `<img src="${logo}" style="width: 40px; height: 40px; object-fit: contain;" />` : ''}
-                  <h3 style="margin: 0; font-weight: 600; font-size: 16px;">${station.name}</h3>
+                  ${logo ? `<img src="${safeUrl(logo)}" alt="${esc(station.brand)}" style="width: 40px; height: 40px; object-fit: contain;" />` : ''}
+                  <h3 style="margin: 0; font-weight: 600; font-size: 16px;">${esc(station.name)}</h3>
                 </div>
                 <div style="display: flex; gap: 4px; margin-bottom: 12px; flex-wrap: wrap;">
                   ${activeFuelTypes.map(type => `
                     <span style="background: ${markerColor}20; color: ${markerColor}; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500;">
-                      ${type}
+                      ${esc(type)}
                     </span>
                   `).join('')}
                 </div>
-                ${station.opening_hours ? `<div style="margin-bottom: 8px; color: #666; font-size: 13px;">🕐 ${station.opening_hours}</div>` : ''}
-                ${station.address?.street ? `<div style="margin-bottom: 8px; color: #666; font-size: 13px;">📍 ${station.address.street}${station.address.city ? ', ' + station.address.city : ''}</div>` : ''}
-                ${station.phone ? `<button onclick="window.open('tel:${station.phone}', '_self')" style="background: ${markerColor}; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer; margin-top: 8px;">
-                    📞 ${station.phone}
+                ${station.opening_hours ? `<div style="margin-bottom: 8px; color: #666; font-size: 13px;">🕐 ${esc(station.opening_hours)}</div>` : ''}
+                ${station.address?.street ? `<div style="margin-bottom: 8px; color: #666; font-size: 13px;">📍 ${esc(station.address.street)}${station.address.city ? ', ' + esc(station.address.city) : ''}</div>` : ''}
+                ${station.phone ? `<button onclick="window.open('tel:${esc(station.phone)}', '_self')" style="background: ${markerColor}; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer; margin-top: 8px;">
+                    📞 ${esc(station.phone)}
                   </button>` : ''}
               </div>
             `);

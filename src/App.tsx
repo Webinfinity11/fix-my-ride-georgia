@@ -10,6 +10,7 @@ import ScrollToTop from "@/components/layout/ScrollToTop";
 import { InstallPWA } from "@/components/mobile/InstallPWA";
 import { IOSAppPromo } from "@/components/mobile/IOSAppPromo";
 import Index from "./pages/Index";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Lazy load routes for better performance
 const ServicesDetail = lazy(() => import("./pages/ServicesDetail"));
@@ -60,11 +61,12 @@ function App() {
           <BrowserRouter>
             <ScrollToTop />
             <AuthProvider>
-              <Suspense fallback={
-                <div className="min-h-screen flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                </div>
-              }>
+              <ErrorBoundary>
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                  </div>
+                }>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/services" element={<ServicesDetail />} />
@@ -104,7 +106,8 @@ function App() {
                   <Route path="/category/:categorySlug" element={<ServiceCategory />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </Suspense>
+                </Suspense>
+              </ErrorBoundary>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>

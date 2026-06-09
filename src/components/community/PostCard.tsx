@@ -28,6 +28,7 @@ import { CommentList } from './CommentList';
 import { ReportDialog } from './ReportDialog';
 import { EditPostDialog } from './EditPostDialog';
 import { ImageGalleryModal } from './ImageGalleryModal';
+import { sanitizeHtml } from '@/lib/sanitize';
 import { PostReactions } from './PostReactions';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -242,9 +243,9 @@ export function PostCard({ post, isAuthenticated, onAuthRequired }: PostCardProp
         {/* Content */}
         {post.content && (
           <div className="mb-3">
-            <div 
+            <div
               className={`prose prose-sm max-w-none ${!showFullContent && shouldTruncate ? 'line-clamp-3' : ''}`}
-              dangerouslySetInnerHTML={{ __html: post.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
             />
             {shouldTruncate && (
               <Button 

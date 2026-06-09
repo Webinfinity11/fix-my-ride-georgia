@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Calendar } from "@/components/ui/calendar";
@@ -420,7 +421,14 @@ const Book = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>სერვისის დაჯავშნა | ავტოხელოსანი</title>
+        <meta name="description" content="დაჯავშნეთ ავტოსერვისი თქვენს რაიონში." />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://fixup.ge/book" />
+      </Helmet>
       <Header />
+
 
       <main className="flex-grow bg-muted py-8">
         <div className="container mx-auto px-4">

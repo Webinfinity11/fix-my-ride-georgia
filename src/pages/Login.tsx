@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,14 @@ const Login = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>სისტემაში შესვლა | ავტოხელოსანი</title>
+        <meta name="description" content="შედით თქვენს ანგარიშში ავტოხელოსანი.ge-ზე და მართეთ თქვენი სერვისები და ჯავშნები." />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://fixup.ge/login" />
+      </Helmet>
       <Header />
+      
       
       <main className="flex-grow flex items-center justify-center bg-muted py-10">
         <div className="container mx-auto px-4">
