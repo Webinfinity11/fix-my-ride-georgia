@@ -23,6 +23,7 @@ import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createServiceSlug } from "@/utils/slugUtils";
+import { escapeHtml as esc, safeUrl } from "@/lib/sanitize";
 import { getChargerColor, getChargerTypeLabel, ChargerLocation } from "@/types/charger";
 import { FuelStation, FuelBrand, getFuelStationColor, getFuelStationLogo, fuelTypeLabels } from "@/types/fuelStation";
 import "leaflet/dist/leaflet.css";
