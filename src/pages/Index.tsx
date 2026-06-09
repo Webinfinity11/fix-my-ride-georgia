@@ -75,8 +75,7 @@ const Index = () => {
                   საქართველოს #1 ავტო-სერვისის პლატფორმა
                 </Badge>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
-                  ავტოხელოსანი საქართველოში
-                  <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-transparent block md:inline md:ml-3">
+                  <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-transparent">
                     იპოვე მარტივად
                   </span>
                 </h1>
