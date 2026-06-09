@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Calendar, Clock, Eye, Facebook, Twitter, Linkedin, Copy } from 'lucide-react';
@@ -10,6 +10,7 @@ import { BlogCard } from '@/components/blog/BlogCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
+import { sanitizeHtml } from '@/lib/sanitize';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -220,11 +221,12 @@ export default function BlogPost() {
           </div>
         )}
 
-        {/* Content */}
-        <div 
+        {/* Content (sanitized to prevent XSS) */}
+        <div
           className="prose prose-lg max-w-none mb-12"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
         />
+
 
         <Separator className="my-8" />
 

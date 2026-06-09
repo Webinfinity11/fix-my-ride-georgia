@@ -46,6 +46,9 @@ export default defineConfig(({ mode }) => ({
     },
     chunkSizeWarningLimit: 1000,
   },
+  // Strip console.* and debugger statements from production builds.
+  // Prevents leaking PII (user IDs, JWTs, session data) into browser console.
+  esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : undefined,
   plugins: [
     react(),
     mode === 'development' &&
