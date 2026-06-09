@@ -421,7 +421,14 @@ const Book = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>სერვისის დაჯავშნა | ავტოხელოსანი</title>
+        <meta name="description" content="დაჯავშნეთ ავტოსერვისი თქვენს რაიონში." />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://fixup.ge/book" />
+      </Helmet>
       <Header />
+
 
       <main className="flex-grow bg-muted py-8">
         <div className="container mx-auto px-4">
