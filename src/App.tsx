@@ -106,7 +106,8 @@ function App() {
                   <Route path="/category/:categorySlug" element={<ServiceCategory />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </Suspense>
+                </Suspense>
+              </ErrorBoundary>
             </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
