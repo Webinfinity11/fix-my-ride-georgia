@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,14 @@ const UpdatePassword = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>ახალი პაროლის დაყენება | ავტოხელოსანი</title>
+        <meta name="description" content="დააყენეთ ახალი პაროლი თქვენი ანგარიშისთვის." />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://fixup.ge/update-password" />
+      </Helmet>
       <Header />
+
 
       <main className="flex-grow flex items-center justify-center bg-muted py-10">
         <div className="container mx-auto px-4">
