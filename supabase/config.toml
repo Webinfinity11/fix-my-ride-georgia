@@ -1,8 +1,5 @@
 project_id = "kwozniwtygkdoagjegom"
 
-[functions.update-sitemap]
-verify_jwt = false
-
 [functions.generate-sitemap]
 verify_jwt = false
 schedule = "0 3 * * *"

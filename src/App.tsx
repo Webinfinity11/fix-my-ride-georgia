@@ -38,7 +38,6 @@ const Mechanics = lazy(() => import("./pages/Mechanics"));
 const ServiceCategory = lazy(() => import("./pages/ServiceCategory"));
 const CategoryList = lazy(() => import("./pages/CategoryList"));
 const Map = lazy(() => import("./pages/Map"));
-const SitemapXML = lazy(() => import("./pages/SitemapXML"));
 const Vacancies = lazy(() => import("./pages/Vacancies"));
 const VacancyDetail = lazy(() => import("./pages/VacancyDetail"));
 const Leasing = lazy(() => import("./pages/Leasing"));
@@ -103,7 +102,6 @@ function App() {
                   <Route path="/mechanic/:id" element={<MechanicProfile />} />
                   <Route path="/category" element={<CategoryList />} />
                   <Route path="/category/:categorySlug" element={<ServiceCategory />} />
-                  <Route path="/sitemap.xml" element={<SitemapXML />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

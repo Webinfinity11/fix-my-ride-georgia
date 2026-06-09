@@ -10,19 +10,6 @@ const SITE_URL = 'https://fixup.ge'
 const DEFAULT_OG_IMAGE = `${SITE_URL}/fixup-og-image.jpg`
 const SITE_NAME = 'Fixup.ge - ავტოხელოსანი'
 
-// Georgian to Latin for slug matching
-const georgianToLatin = (text: string): string => {
-  if (!text) return '';
-  const mapping: Record<string, string> = {
-    'ა':'a','ბ':'b','გ':'g','დ':'d','ე':'e','ვ':'v','ზ':'z','თ':'t',
-    'ი':'i','კ':'k','ლ':'l','მ':'m','ნ':'n','ო':'o','პ':'p','ჟ':'zh',
-    'რ':'r','ს':'s','ტ':'t','უ':'u','ფ':'f','ქ':'q','ღ':'gh','ყ':'q',
-    'შ':'sh','ჩ':'ch','ც':'ts','ძ':'dz','წ':'ts','ჭ':'ch','ხ':'kh','ჯ':'j','ჰ':'h'
-  };
-  return text.toLowerCase().split('').map(c => mapping[c] || c).join('')
-    .replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
-};
-
 function buildOgHtml(meta: { title: string; description: string; url: string; image: string; type?: string }) {
   return `<!DOCTYPE html>
 <html lang="ka" prefix="og: https://ogp.me/ns#">

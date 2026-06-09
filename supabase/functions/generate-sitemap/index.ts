@@ -1,32 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createSlug } from '../_shared/slug.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
-
-// Georgian to Latin transliteration for consistent slug generation
-const georgianToLatin = (text: string): string => {
-  if (!text) return '';
-  
-  const mapping: { [key: string]: string } = {
-    'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
-    'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh',
-    'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'f', 'ქ': 'q', 'ღ': 'gh', 'ყ': 'q',
-    'შ': 'sh', 'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh', 'ჯ': 'j', 'ჰ': 'h'
-  };
-  
-  return text
-    .toLowerCase()
-    .split('')
-    .map(char => mapping[char] || char)
-    .join('')
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -44,7 +23,7 @@ serve(async (req) => {
     // Fetch all active services with VIP status for priority calculation
     const { data: services, error: servicesError } = await supabase
       .from('mechanic_services')
-      .select('id, name, slug, updated_at, is_vip_active, vip_status')
+      .select('id, name, slug, updated_at, is_vip_active, vip_status, photos')
       .eq('is_active', true)
       .order('id')
 
@@ -68,9 +47,10 @@ serve(async (req) => {
     const { data: mechanics, error: mechanicsError } = await supabase
       .from('mechanic_profiles')
       .select(`
-        id, 
+        id,
         display_id,
         rating,
+        updated_at,
         profiles!inner(role, is_verified, first_name, last_name)
       `)
       .eq('profiles.role', 'mechanic')
@@ -78,7 +58,7 @@ serve(async (req) => {
       .order('display_id')
 
     if (mechanicsError) {
-      console.error('Error fetching mechanics:', mechanicsError) 
+      console.error('Error fetching mechanics:', mechanicsError)
       throw mechanicsError
     }
 
@@ -94,11 +74,24 @@ serve(async (req) => {
       throw blogPostsError
     }
 
+    // Fetch active vacancies
+    const { data: vacancies, error: vacanciesError } = await supabase
+      .from('mechanic_vacancies')
+      .select('id, created_at, updated_at')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+
+    if (vacanciesError) {
+      console.error('Error fetching vacancies:', vacanciesError)
+      // Non-fatal: continue without vacancies
+    }
+
     // Generate sitemap XML with real, indexable URLs only
     const currentDate = new Date().toISOString().split('T')[0]
     
     let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Static pages matching App.tsx routes -->
   <url>
     <loc>https://fixup.ge/</loc>
@@ -160,41 +153,102 @@ serve(async (req) => {
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
+  <url>
+    <loc>https://fixup.ge/vacancies</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/leasing</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/dealers</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/insurance</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-importers</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-brands</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/community</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://fixup.ge/privacy-policy</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 
   <!-- Real service pages with proper slugs -->`
 
-    // Add real service pages with VIP priority logic
-    services?.forEach(service => {
+    // Escape XML special chars in image URLs (titles are not user-provided URLs but be safe)
+    const xmlEscape = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&apos;')
+
+    // Add real service pages with VIP priority logic + image extension
+    services?.forEach((service: any) => {
       let serviceUrl
-      
+
       // Check if slug already contains id-slug format (from database)
       if (service.slug && service.slug.match(/^\d+-/)) {
-        // Slug already has id-slug format, use as is
         serviceUrl = service.slug
       } else {
-        // Generate slug from name and combine with id
-        const slug = service.slug || georgianToLatin(service.name)
+        const slug = service.slug || createSlug(service.name)
         serviceUrl = slug ? `${service.id}-${slug}` : service.id
       }
-      
+
       const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : currentDate
-      
-      // VIP Priority Logic: Super VIP (0.95) > VIP (0.85) > Regular (0.75)
-      const priority = service.is_vip_active && service.vip_status === 'super_vip' 
-        ? '0.95' 
-        : service.is_vip_active && service.vip_status === 'vip' 
-        ? '0.85' 
-        : '0.75';
-      
-      // VIP services update more frequently
-      const changefreq = service.is_vip_active ? 'daily' : 'weekly';
-      
+
+      // VIP Priority: Super VIP (0.95) > VIP (0.85) > Regular (0.75)
+      const priority = service.is_vip_active && service.vip_status === 'super_vip'
+        ? '0.95'
+        : service.is_vip_active && service.vip_status === 'vip'
+        ? '0.85'
+        : '0.75'
+
+      const changefreq = service.is_vip_active ? 'daily' : 'weekly'
+
+      // Cap at 5 images per Google image-sitemap best practice (max 1000, but ~5 keeps file size sane)
+      const photos: string[] = Array.isArray(service.photos) ? service.photos.slice(0, 5) : []
+      const imageBlocks = photos
+        .filter((p: string) => typeof p === 'string' && p.startsWith('http'))
+        .map((photo: string) => `
+    <image:image>
+      <image:loc>${xmlEscape(photo)}</image:loc>
+      <image:title>${xmlEscape(service.name || '')}</image:title>
+    </image:image>`)
+        .join('')
+
       sitemapXml += `
   <url>
     <loc>https://fixup.ge/service/${serviceUrl}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
+    <priority>${priority}</priority>${imageBlocks}
   </url>`
     })
 
@@ -204,7 +258,7 @@ serve(async (req) => {
 
     // Add category pages that match actual categories
     categories?.forEach(category => {
-      const categorySlug = georgianToLatin(category.name)
+      const categorySlug = createSlug(category.name)
       
       // Only /category/:slug route (duplicate /services/:slug removed)
       sitemapXml += `
@@ -221,35 +275,32 @@ serve(async (req) => {
   <!-- Real mechanic pages -->`
 
     // Add verified mechanic pages with rating-based priority
-    mechanics?.forEach(mechanic => {
-      // Safely access profile data with fallback
-      const profile = mechanic.profiles?.[0]
+    mechanics?.forEach((mechanic: any) => {
+      // Supabase can return joined `profiles` as either object or array depending on relation cardinality.
+      const profile = Array.isArray(mechanic.profiles) ? mechanic.profiles[0] : mechanic.profiles
       const firstName = profile?.first_name || 'Mechanic'
       const lastName = profile?.last_name || ''
       const fullName = `${firstName} ${lastName}`.trim()
-      const mechanicSlug = georgianToLatin(fullName)
+      const mechanicSlug = createSlug(fullName)
       const mechanicUrl = mechanicSlug ? `${mechanic.display_id}-${mechanicSlug}` : mechanic.display_id
-      
-      // Get rating from mechanic_profiles relation
-      const rating = 0
-      
+
+      const rating = Number(mechanic.rating) || 0
+      const lastmod = mechanic.updated_at
+        ? new Date(mechanic.updated_at).toISOString().split('T')[0]
+        : currentDate
+
       // High-rated mechanics (4.5+) get higher priority
       const mechanicPriority = rating >= 4.5 ? '0.85' : rating >= 4.0 ? '0.75' : '0.65'
-      const bookingPriority = rating >= 4.5 ? '0.75' : rating >= 4.0 ? '0.65' : '0.55'
-      
+
       sitemapXml += `
   <url>
     <loc>https://fixup.ge/mechanic/${mechanicUrl}</loc>
-    <lastmod>${currentDate}</lastmod>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${mechanicPriority}</priority>
-  </url>
-  <url>
-    <loc>https://fixup.ge/book/${mechanicUrl}</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>${bookingPriority}</priority>
   </url>`
+      // NOTE: /book/:id is intentionally excluded from sitemap — it's a transactional flow
+      // (also disallowed in robots.txt) and shouldn't be indexed.
     })
 
     sitemapXml += `
@@ -259,16 +310,34 @@ serve(async (req) => {
     // Add blog posts with view-based priority
     blogPosts?.forEach(post => {
       const lastmod = post.updated_at ? new Date(post.updated_at).toISOString().split('T')[0] : currentDate
-      
+
       // Popular posts (1000+ views) get higher priority
       const priority = (post.view_count || 0) >= 1000 ? '0.80' : (post.view_count || 0) >= 500 ? '0.75' : '0.70'
-      
+
       sitemapXml += `
   <url>
     <loc>https://fixup.ge/blog/${post.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${priority}</priority>
+  </url>`
+    })
+
+    sitemapXml += `
+
+  <!-- Active vacancies -->`
+
+    vacancies?.forEach((vacancy: any) => {
+      const lastmod = vacancy.updated_at || vacancy.created_at
+        ? new Date(vacancy.updated_at || vacancy.created_at).toISOString().split('T')[0]
+        : currentDate
+
+      sitemapXml += `
+  <url>
+    <loc>https://fixup.ge/vacancy/${vacancy.id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
   </url>`
     })
 
@@ -315,20 +384,21 @@ serve(async (req) => {
       throw indexUploadError
     }
 
-    const staticUrls = 10 // Updated count for static pages (including /blog)
+    const staticUrls = 17 // /, /services, /mechanic, /search, /about, /contact, /map, /laundries, /category, /blog, /vacancies, /leasing, /dealers, /insurance, /fuel-importers, /fuel-brands, /community, /privacy-policy
     const serviceUrls = services?.length || 0
     const categoryUrls = categories?.length || 0
-    const mechanicUrls = (mechanics?.length || 0) * 2 // Both /mechanic and /book routes
+    const mechanicUrls = mechanics?.length || 0
     const blogUrls = blogPosts?.length || 0
-    const totalUrls = staticUrls + serviceUrls + categoryUrls + mechanicUrls + blogUrls
-    
+    const vacancyUrls = vacancies?.length || 0
+    const totalUrls = staticUrls + serviceUrls + categoryUrls + mechanicUrls + blogUrls + vacancyUrls
+
     console.log(`Focused sitemap generated successfully:`)
     console.log(`- sitemap.xml with ${totalUrls} real URLs`)
     console.log(`- Only indexable content included`)
-    console.log(`Breakdown: ${staticUrls} static, ${serviceUrls} services, ${categoryUrls} categories, ${mechanicUrls} mechanics, ${blogUrls} blog posts`)
+    console.log(`Breakdown: ${staticUrls} static, ${serviceUrls} services, ${categoryUrls} categories, ${mechanicUrls} mechanics, ${blogUrls} blog, ${vacancyUrls} vacancies`)
 
-    return new Response(JSON.stringify({ 
-      success: true, 
+    return new Response(JSON.stringify({
+      success: true,
       totalUrls,
       lastUpdate: currentDate,
       breakdown: {
@@ -337,6 +407,7 @@ serve(async (req) => {
         categories: categoryUrls,
         mechanics: mechanicUrls,
         blog: blogUrls,
+        vacancies: vacancyUrls,
         totalUrls
       }
     }), {
