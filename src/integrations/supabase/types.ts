@@ -935,6 +935,7 @@ export type Database = {
           rating: number | null
           review_count: number | null
           specialization: string | null
+          updated_at: string | null
           verified_at: string | null
           working_hours: Json | null
         }
@@ -949,6 +950,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           specialization?: string | null
+          updated_at?: string | null
           verified_at?: string | null
           working_hours?: Json | null
         }
@@ -963,6 +965,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           specialization?: string | null
+          updated_at?: string | null
           verified_at?: string | null
           working_hours?: Json | null
         }
