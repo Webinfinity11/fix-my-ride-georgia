@@ -1,21 +1,13 @@
 #!/usr/bin/env node
-// Build-time sitemap generator.
+// Build-time sitemap generator — RankMath-style split index + 4 child sitemaps.
 //
-// Mirrors supabase/functions/generate-sitemap/index.ts but runs in Node so
-// the output lands in public/sitemap.xml at build time. Lovable hosting
-// serves public/ files directly — there is no rewrite layer for the
-// edge function — so a fresh static file is the only reliable way for
-// Googlebot to see current URLs.
-//
-// Run manually:   npm run sitemap:generate
-// Runs automatically before `npm run build` via the prebuild hook.
-//
-// Required env:
-//   SUPABASE_URL                 (or VITE_SUPABASE_URL)
-//   SUPABASE_SERVICE_ROLE_KEY    (write/read all rows; never expose client-side)
-//
-// If env is missing the script skips regeneration and exits 0 — this
-// avoids breaking dev-only builds where the key isn't available.
+// Outputs to public/:
+//   sitemap.xml           → sitemap index (references the 4 children)
+//   sitemap-index.xml     → alias of sitemap.xml (backward-compat)
+//   sitemap-static.xml    → static routes + /map sub-tabs + categories
+//   sitemap-services.xml  → service detail pages + image sitemap
+//   sitemap-mechanics.xml → ALL mechanic profile pages
+//   sitemap-content.xml   → blog posts (with cover image) + vacancies
 
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -23,7 +15,6 @@ import { dirname, join } from 'node:path';
 
 const SITE_URL = 'https://fixup.ge';
 
-// Keep in sync with src/utils/slugUtils.ts AND supabase/functions/_shared/slug.ts.
 const georgianToLatin = {
   'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
   'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh',
@@ -33,15 +24,8 @@ const georgianToLatin = {
 
 function createSlug(text) {
   if (!text) return '';
-  return text
-    .toLowerCase()
-    .split('')
-    .map(c => georgianToLatin[c] || c)
-    .join('')
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
+  return text.toLowerCase().split('').map(c => georgianToLatin[c] || c).join('')
+    .replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
 }
 
 const xmlEscape = (s) =>
@@ -55,7 +39,12 @@ const STATIC_PAGES = [
   { path: '/search',          priority: '0.8',  changefreq: 'weekly' },
   { path: '/about',           priority: '0.7',  changefreq: 'monthly' },
   { path: '/contact',         priority: '0.7',  changefreq: 'monthly' },
-  { path: '/map',             priority: '0.6',  changefreq: 'weekly' },
+  { path: '/map',             priority: '0.7',  changefreq: 'weekly' },
+  { path: '/map/services',    priority: '0.7',  changefreq: 'weekly' },
+  { path: '/map/chargers',    priority: '0.75', changefreq: 'weekly' },
+  { path: '/map/stations',    priority: '0.75', changefreq: 'weekly' },
+  { path: '/map/laundries',   priority: '0.7',  changefreq: 'weekly' },
+  { path: '/map/drives',      priority: '0.6',  changefreq: 'weekly' },
   { path: '/laundries',       priority: '0.8',  changefreq: 'weekly' },
   { path: '/category',        priority: '0.8',  changefreq: 'weekly' },
   { path: '/blog',            priority: '0.85', changefreq: 'daily' },
@@ -63,7 +52,7 @@ const STATIC_PAGES = [
   { path: '/leasing',         priority: '0.8',  changefreq: 'weekly' },
   { path: '/dealers',         priority: '0.8',  changefreq: 'weekly' },
   { path: '/insurance',       priority: '0.8',  changefreq: 'weekly' },
-  { path: '/fuel-importers',  priority: '0.8',  changefreq: 'weekly' },
+  { path: '/fuel-importers',  priority: '0.7',  changefreq: 'weekly' },
   { path: '/fuel-brands',     priority: '0.75', changefreq: 'weekly' },
   { path: '/community',       priority: '0.7',  changefreq: 'daily' },
   { path: '/privacy-policy',  priority: '0.3',  changefreq: 'yearly' },
@@ -74,16 +63,15 @@ async function main() {
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!SUPABASE_URL || !SERVICE_KEY) {
-    console.warn('[sitemap] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing — skipping regeneration (keeping existing public/sitemap.xml).');
+    console.warn('[sitemap] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing — skipping regeneration.');
     process.exit(0);
   }
 
-  // Lazy-import so the script doesn't crash before env check when deps aren't installed yet.
   let createClient;
   try {
     ({ createClient } = await import('@supabase/supabase-js'));
   } catch {
-    console.warn('[sitemap] @supabase/supabase-js not installed — skipping. Run `npm install` first.');
+    console.warn('[sitemap] @supabase/supabase-js not installed — skipping.');
     process.exit(0);
   }
 
@@ -99,40 +87,28 @@ async function main() {
   ] = await Promise.all([
     supabase.from('mechanic_services')
       .select('id, name, slug, updated_at, is_vip_active, vip_status, photos')
-      .eq('is_active', true)
-      .order('id'),
-    supabase.from('service_categories')
-      .select('id, name')
-      .order('id'),
+      .eq('is_active', true).order('id'),
+    supabase.from('service_categories').select('id, name').order('id'),
     supabase.from('mechanic_profiles')
       .select('id, display_id, rating, updated_at, profiles!inner(role, is_verified, first_name, last_name)')
-      .eq('profiles.role', 'mechanic')
-      .eq('profiles.is_verified', true)
-      .order('display_id'),
+      .eq('profiles.role', 'mechanic').order('display_id'),
     supabase.from('blog_posts')
-      .select('slug, updated_at, view_count')
-      .eq('status', 'published')
-      .order('published_at', { ascending: false }),
+      .select('slug, updated_at, view_count, featured_image, title')
+      .eq('status', 'published').order('published_at', { ascending: false }),
     supabase.from('mechanic_vacancies')
       .select('id, created_at, updated_at')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false }),
+      .eq('is_active', true).order('created_at', { ascending: false }),
   ]);
 
   for (const [name, err] of Object.entries({ servicesErr, categoriesErr, mechanicsErr, blogErr, vacanciesErr })) {
-    if (err) {
-      console.error(`[sitemap] ${name}:`, err.message);
-      // Non-fatal: emit what we have.
-    }
+    if (err) console.error(`[sitemap] ${name}:`, err.message);
   }
 
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <!-- Static pages -->`;
-
+  // ---------- sitemap-static.xml ----------
+  let staticXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
   for (const p of STATIC_PAGES) {
-    xml += `
+    staticXml += `
   <url>
     <loc>${SITE_URL}${p.path}</loc>
     <lastmod>${today}</lastmod>
@@ -140,10 +116,24 @@ async function main() {
     <priority>${p.priority}</priority>
   </url>`;
   }
+  for (const c of categories || []) {
+    const slug = createSlug(c.name);
+    staticXml += `
+  <url>
+    <loc>${SITE_URL}/category/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+  }
+  staticXml += `
+</urlset>
+`;
 
-  xml += `
-
-  <!-- Service detail pages -->`;
+  // ---------- sitemap-services.xml ----------
+  let servicesXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
   for (const s of services || []) {
     let urlPart;
     if (s.slug && /^\d+-/.test(s.slug)) {
@@ -170,7 +160,7 @@ async function main() {
     </image:image>`)
       .join('');
 
-    xml += `
+    servicesXml += `
   <url>
     <loc>${SITE_URL}/service/${urlPart}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -178,24 +168,13 @@ async function main() {
     <priority>${priority}</priority>${imageBlocks}
   </url>`;
   }
+  servicesXml += `
+</urlset>
+`;
 
-  xml += `
-
-  <!-- Category pages -->`;
-  for (const c of categories || []) {
-    const slug = createSlug(c.name);
-    xml += `
-  <url>
-    <loc>${SITE_URL}/category/${slug}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`;
-  }
-
-  xml += `
-
-  <!-- Mechanic profile pages -->`;
+  // ---------- sitemap-mechanics.xml ----------
+  let mechanicsXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
   for (const m of mechanics || []) {
     const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
     const firstName = profile?.first_name || 'Mechanic';
@@ -204,9 +183,12 @@ async function main() {
     const slug = createSlug(fullName);
     const urlPart = slug ? `${m.display_id}-${slug}` : String(m.display_id);
     const rating = Number(m.rating) || 0;
-    const priority = rating >= 4.5 ? '0.85' : rating >= 4.0 ? '0.75' : '0.65';
+    const verified = profile?.is_verified === true;
+    const priority = verified
+      ? (rating >= 4.5 ? '0.85' : rating >= 4.0 ? '0.75' : '0.65')
+      : '0.50';
     const lastmod = m.updated_at ? new Date(m.updated_at).toISOString().split('T')[0] : today;
-    xml += `
+    mechanicsXml += `
   <url>
     <loc>${SITE_URL}/mechanic/${urlPart}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -214,30 +196,38 @@ async function main() {
     <priority>${priority}</priority>
   </url>`;
   }
+  mechanicsXml += `
+</urlset>
+`;
 
-  xml += `
-
-  <!-- Blog posts -->`;
+  // ---------- sitemap-content.xml ----------
+  let contentXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
   for (const p of blogPosts || []) {
     const lastmod = p.updated_at ? new Date(p.updated_at).toISOString().split('T')[0] : today;
     const views = p.view_count || 0;
     const priority = views >= 1000 ? '0.80' : views >= 500 ? '0.75' : '0.70';
-    xml += `
+    const cover = p.featured_image;
+    const imageBlock = (cover && typeof cover === 'string' && cover.startsWith('http'))
+      ? `
+    <image:image>
+      <image:loc>${xmlEscape(cover)}</image:loc>
+      <image:title>${xmlEscape(p.title || '')}</image:title>
+    </image:image>`
+      : '';
+    contentXml += `
   <url>
     <loc>${SITE_URL}/blog/${p.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>
+    <priority>${priority}</priority>${imageBlock}
   </url>`;
   }
-
-  xml += `
-
-  <!-- Active vacancies -->`;
   for (const v of vacancies || []) {
     const ts = v.updated_at || v.created_at;
     const lastmod = ts ? new Date(ts).toISOString().split('T')[0] : today;
-    xml += `
+    contentXml += `
   <url>
     <loc>${SITE_URL}/vacancy/${v.id}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -245,15 +235,27 @@ async function main() {
     <priority>0.65</priority>
   </url>`;
   }
-
-  xml += `
+  contentXml += `
 </urlset>
 `;
 
+  // ---------- sitemap.xml (INDEX) ----------
   const indexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>${SITE_URL}/sitemap.xml</loc>
+    <loc>${SITE_URL}/sitemap-static.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-services.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-mechanics.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITE_URL}/sitemap-content.xml</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
 </sitemapindex>
@@ -261,24 +263,29 @@ async function main() {
 
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const publicDir = join(__dirname, '..', 'public');
-  await writeFile(join(publicDir, 'sitemap.xml'), xml, 'utf8');
-  await writeFile(join(publicDir, 'sitemap-index.xml'), indexXml, 'utf8');
+
+  await Promise.all([
+    writeFile(join(publicDir, 'sitemap.xml'),           indexXml,     'utf8'),
+    writeFile(join(publicDir, 'sitemap-index.xml'),     indexXml,     'utf8'),
+    writeFile(join(publicDir, 'sitemap-static.xml'),    staticXml,    'utf8'),
+    writeFile(join(publicDir, 'sitemap-services.xml'),  servicesXml,  'utf8'),
+    writeFile(join(publicDir, 'sitemap-mechanics.xml'), mechanicsXml, 'utf8'),
+    writeFile(join(publicDir, 'sitemap-content.xml'),   contentXml,   'utf8'),
+  ]);
 
   const counts = {
     static: STATIC_PAGES.length,
-    services: services?.length || 0,
     categories: categories?.length || 0,
+    services: services?.length || 0,
     mechanics: mechanics?.length || 0,
     blog: blogPosts?.length || 0,
     vacancies: vacancies?.length || 0,
   };
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  console.log(`[sitemap] ✓ Wrote public/sitemap.xml — ${total} URLs (${JSON.stringify(counts)})`);
+  console.log(`[sitemap] ✓ Wrote split sitemap — ${total} URLs (${JSON.stringify(counts)})`);
 }
 
 main().catch((err) => {
   console.error('[sitemap] generation failed:', err);
-  // Exit 0: don't break the build over sitemap failures. Existing static
-  // file will continue to serve. CI logs will surface the error.
   process.exit(0);
 });

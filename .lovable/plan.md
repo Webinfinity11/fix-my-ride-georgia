@@ -1,64 +1,86 @@
-## აუდიტის ანალიზი — რა გავაკეთოთ მარტივად
+## პასუხები შენს კითხვებზე
 
-აუდიტი კარგია, მაგრამ ნაწილი უკვე გვაქვს გაკეთებული (SEOHead, sitemap, lazy-image, breadcrumbs, structured data). ქვემოთ ვაჯგუფე **მარტივი + მაღალი ROI** ფიქსები, რაც რეალურად მოგვარდება სწრაფად.
+**1. რატომ 15 მექანიკოსი?** DB-ში 241 მექანიკოსია (`profiles.role='mechanic'`), მაგრამ მხოლოდ 15 აქვს `is_verified=true`. ფუნქცია ფილტრით იღებდა მხოლოდ ვერიფიცირებულებს. ✅ შენი არჩევანი: ყველა (245 `mechanic_profiles` row) ჩავსვათ.
 
-### 🔴 ფაზა 1 — Security & Privacy (კრიტიკული, ~2 სთ)
+**2. /map ქვე-გვერდები არ იყო საიტმაპში.** App.tsx-ში `/map/:tab` მარშრუტი არსებობს და 5 უნიკალური ტაბი აქვს (`/map/services`, `/map/chargers`, `/map/stations`, `/map/laundries`, `/map/drives`), თითოეულს უნიკალური SEO title/description Map.tsx-ში. ✅ დაემატება.
 
-1. **XSS დაცვა — DOMPurify**
-   - დავამატოთ `dompurify` პაკეტი
-   - ვცვლით `dangerouslySetInnerHTML`-ს `BlogPost.tsx`-ში და `PostCard.tsx`-ში sanitized HTML-ით
-   - Allow-list: ჩვეულებრივი ფორმატირება, ბმულები, სურათები. Block: `<script>`, `on*` ჰენდლერები, `javascript:` URL-ები
+**3. სერვისები:** 529 აქტიური, 529-ვე საიტმაპშია — სრულად ✓.
 
-2. **console.log გასუფთავება production-ში**
-   - `vite.config.ts`-ში დავამატოთ `esbuild.drop: ['console', 'debugger']` production build-ისთვის
-   - მარტივად შლის ყველა 497 statement-ს deploy-ის დროს, dev-ში არ აზიანებს
-   - სენსიტიური auth/chat ლოგებიდან აშორებს PII-ს browser console-დან
+**4. სტრუქტურა:** ✅ RankMath-სტილით 4 child sitemap-ად დავყოფთ.
 
-3. **Map.tsx popup HTML injection**
-   - მინიმუმ encodeURI/escape user-მოწოდებულ ველებზე (photo URL, name, address) template literal-ში
-   - სრული React-popup refactor დიდი სამუშაოა — ჯერ escape
+---
 
-### 🔴 ფაზა 2 — Resilience (~30 წთ)
+## იმპლემენტაციის გეგმა — RankMath-style Split Sitemap
 
-4. **Global ErrorBoundary**
-   - `src/components/ErrorBoundary.tsx` ვქმნით (class component + fallback UI ქართულად)
-   - `App.tsx`-ში ვახვევთ `<Suspense>`-ის ირგვლივ
-   - ერთი component crash აღარ ანადგურებს მთელ SPA-ს
+### ფაილების სტრუქტურა (Google + RankMath სტანდარტი)
 
-### 🟡 ფაზა 3 — Performance / CLS (~1.5 სთ)
+```
+fixup.ge/sitemap.xml              ← INDEX (entry point Google-სთვის)
+  ├── sitemap-static.xml          ← სტატიკური + /map ტაბები + 39 კატეგორია (~62 URL)
+  ├── sitemap-services.xml        ← 529 სერვისის გვერდი + image sitemap
+  ├── sitemap-mechanics.xml       ← ყველა 245 მექანიკოსი
+  └── sitemap-content.xml         ← 3 ბლოგი (cover image-ით) + 24 ვაკანსია
+```
 
-5. **Image width/height** მნიშვნელოვან კომპონენტებზე:
-   - `MapPreviewCard`, `MapBottomSheet`, `ServiceCard` thumbnail-ები
-   - `LaundryCard`, `DriveCard`, `ChargerCard` (თუ აკლია)
-   - CLS დარდება, LCP გაუმჯობესდება
+**სულ ~870 URL** (15 → 245 mechanics; +5 /map tabs; +blog images)
 
-### 🟡 ფაზა 4 — SEO საფარის გავრცობა (~1 სთ)
+### Priority ლოგიკა
 
-6. **SEOHead დარჩენილ გვერდებზე**: `Login`, `Register`, `ResetPassword`, `UpdatePassword`, `Book`, `AddService`
-   - ყველა noindex (auth/transactional), მაგრამ სუფთა title/canonical
+| ტიპი | Priority წესი |
+|---|---|
+| სერვისები — Super VIP | 0.95 |
+| სერვისები — VIP | 0.85 |
+| სერვისები — Regular | 0.75 |
+| მექანიკოსი — verified + ★4.5+ | 0.85 |
+| მექანიკოსი — verified + ★4.0+ | 0.75 |
+| მექანიკოსი — verified | 0.65 |
+| მექანიკოსი — unverified | 0.50 (ახალი) |
+| ბლოგი — 1000+ views | 0.80 |
+| Map ტაბები (chargers, stations) | 0.75 |
 
-7. **SEO utils consolidation**
-   - `seoUtils.ts` და `seoHelpers.ts` ერთ ფაილში გავაერთიანოთ, duplicate-ები ამოვშალოთ
-   - ერთი source of truth
+### კონკრეტული ცვლილებები
 
-### ❌ რას არ ვაკეთებთ ამ ეტაპზე (დიდი სამუშაო, ცალკე გეგმაა)
+**1. `supabase/functions/generate-sitemap/index.ts`** — სრული refactor:
+- პარალელური query-ები (Promise.all) — სიჩქარე
+- მექანიკოსების `.eq('is_verified', true)` ფილტრის წაშლა
+- 4 ცალკე XML string ბილდი
+- ბლოგებზე `featured_image` დამატება image sitemap-ში
+- /map sub-tabs სტატიკურ ფაილში
+- სტორიჯში 6 ფაილის ატვირთვა: `sitemap.xml` (index), `sitemap-index.xml` (alias), + 4 child
 
-- **RLS audit** — სრული DB-side policies გადახედვა (1 დღე, ცალკე ფაზად ღირს)
-- **Map.tsx-ის სრული refactor** (1,243 → React popups) — 1+ დღე
-- **Tests + CI** — დიდი setup, ცალკე გადაწყვეტილება
-- **Sentry / Web Vitals** — საჭიროებს account/key-ს თქვენგან
-- **PWA icons + offline page** — შესაძლებელია, მაგრამ ცალკე batch
-- **115 `any` types** — refactor-ი, არა quick-win
-- **Large file splits** (ServiceDetail, MechanicProfile) — refactor-ი
+**2. `scripts/generate-sitemap.mjs`** — იგივე ლოგიკის mirror Node-ში (`public/`-ში წერს build-ის დროს)
 
-### სავარაუდო შედეგი
+**3. `public/robots.txt`** — ერთი `Sitemap:` ხაზი (sitemap.xml = ინდექსი)
 
-- 🔒 XSS დახურული + PII console-დან ამოღებული
-- 🛡️ App crash-resistant ErrorBoundary-ით
-- 📐 CLS გაუმჯობესება ძირითად ბარათებზე
-- 🔍 100% SEOHead coverage საჯარო/auth გვერდებზე
-- 🧹 SEO utils-ის ერთიანი ფაილი
+**4. `src/components/dashboard/admin/SitemapManagement.tsx`** — UI breakdown გაფართოება (4 ფაილის ცალკე სტატისტიკა, download dropdown)
 
-**ჯამური დრო:** ~5 საათი მუშაობა, ერთ ჯერზე გავაკეთებ.
+### Google-სტანდარტის შესაბამისობა
 
-თუ თანახმა ხარ, დავიწყებ ფაზა 1-დან. შემდეგ ცალკე გადავწყვიტოთ RLS audit-ი და Map refactor.
+| სტანდარტი | სტატუსი |
+|---|---|
+| `<sitemapindex>` + child `<urlset>` | ✓ (RankMath pattern) |
+| `xmlns:image` namespace | ✓ (services + blog) |
+| Absolute URLs (https://fixup.ge) | ✓ |
+| UTF-8 + XML escape | ✓ |
+| Real `lastmod` from DB | ✓ |
+| ≤50,000 URL/file, ≤50MB | ✓ (max 529) |
+| robots.txt-ში reference | ✓ |
+| Storage + static dual delivery | ✓ |
+
+### Deploy ნაბიჯები (build-mode-ში)
+
+1. ფაილების ჩაწერა (4 ფაილი)
+2. Edge function auto-deploy
+3. მანუალური ერთჯერადი გაშვება ადმინ პანელიდან (ან curl) → 6 ფაილი storage-ში
+4. Build run → 6 ფაილი public/-ში
+5. Google Search Console-ში `sitemap.xml`-ის resubmit
+
+### Verification (გავუშვი მე)
+
+- `curl https://fixup.ge/sitemap.xml` → უნდა აჩვენოს sitemapindex
+- `curl https://fixup.ge/sitemap-mechanics.xml | grep -c "<url>"` → ~245
+- `curl https://fixup.ge/sitemap-services.xml | grep -c "<url>"` → ~529
+
+---
+
+**მზად ვარ — Build mode-ში გადადი და დავიწყოთ.**
