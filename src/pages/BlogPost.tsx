@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { RelatedServices } from '@/components/seo/InternalLinkWidgets';
+import { autoLinkContent } from '@/utils/autoLinkContent';
+import { useLinkableTerms } from '@/hooks/useLinkableTerms';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,6 +27,7 @@ export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const { data: post, isLoading } = useBlogPost(slug!);
   const { data: relatedPosts } = useBlogPosts('published');
+  const { data: linkableTerms } = useLinkableTerms();
   const incrementView = useIncrementBlogView();
 
   useEffect(() => {
@@ -224,10 +227,12 @@ export default function BlogPost() {
           </div>
         )}
 
-        {/* Content (sanitized to prevent XSS) */}
+        {/* Content (auto-linked to category pages, then sanitized to prevent XSS) */}
         <div
           className="prose prose-lg max-w-none mb-12"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
+          dangerouslySetInnerHTML={{
+            __html: sanitizeHtml(autoLinkContent(post.content, linkableTerms || [])),
+          }}
         />
 
 
