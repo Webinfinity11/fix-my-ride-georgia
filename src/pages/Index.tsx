@@ -76,7 +76,7 @@ const Index = () => {
                 </Badge>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
                   <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-transparent">
-                    იპოვე მარტივად
+                    იპოვე საუკეთესო ავტოხელოსანი საქართველოში
                   </span>
                 </h1>
                 <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-2">

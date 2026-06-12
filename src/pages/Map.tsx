@@ -157,7 +157,7 @@ const createCustomMarkerHTML = (service: any, isSelected: boolean = false) => {
       transition: all 0.2s ease;
     ">
       <img src="/icons/service-pin.png" 
-           alt="Service" 
+           alt="ავტოსერვისის ლოკაცია"
            width="${iconSize}" 
            height="${iconSize}" 
            style="filter: brightness(0) invert(1);" />

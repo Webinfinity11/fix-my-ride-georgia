@@ -203,7 +203,7 @@ export function CreatePostDialog({ open, onOpenChange }: CreatePostDialogProps) 
               {mediaPreview && (
                 <div className="relative rounded-lg overflow-hidden bg-muted max-h-[200px]">
                   {mediaFile?.type.startsWith("image") ? (
-                    <img src={mediaPreview} alt="Preview" className="w-full rounded-lg object-contain max-h-[200px]" />
+                    <img src={mediaPreview} alt="პოსტის მედიის წინასწარი ნახვა" className="w-full rounded-lg object-contain max-h-[200px]" />
                   ) : (
                     <video src={mediaPreview} controls className="w-full rounded-lg max-h-[200px]" />
                   )}
