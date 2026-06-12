@@ -242,6 +242,10 @@ const Search = () => {
         keywords="ძიება, ავტოსერვისი, ხელოსანი, ფილტრი, საქართველო"
         url="https://fixup.ge/search"
         canonical="https://fixup.ge/search"
+        /* User-generated query URLs (?q=...) create infinite near-duplicate
+           pages; block them from indexing while keeping the bare /search route
+           crawlable for the empty search landing. */
+        noindex={!!searchParams.get("q")}
       />
       <Header />
       

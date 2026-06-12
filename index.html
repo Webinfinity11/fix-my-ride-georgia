@@ -29,15 +29,30 @@
     <meta name="twitter:description" content="იპოვეთ საუკეთესო ავტოხელოსანი და ავტოსერვისი საქართველოში. 500+ ხელოსანი, ონლაინ დაჯავშნა, შეფასებები." />
     <meta name="twitter:image" content="https://fixup.ge/fixup-og-image.jpg" />
 
+    <!-- hreflang (sitewide default — react-helmet-async overrides per route) -->
+    <link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/" />
+    <link rel="alternate" hreflang="x-default" href="https://fixup.ge/" />
+
     <!-- Performance: Preconnect to critical origins -->
     <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
-    
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+
     <!-- Preload critical assets -->
     <link rel="preload" href="/icons/service-pin.png" as="image" type="image/png">
-    
+
+    <!-- Preload Georgian font file (woff2) so LCP text paints without waiting on the CSS
+         file. Falls back to the stylesheet load below if the woff2 source moves. -->
+    <link
+      rel="preload"
+      href="https://fonts.gstatic.com/s/notosansgeorgian/v44/PlIaFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zWn-8YDB09HFNcb.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
     <!-- Fonts with display=swap for LCP optimization — loaded immediately since they affect hero text -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap">
     

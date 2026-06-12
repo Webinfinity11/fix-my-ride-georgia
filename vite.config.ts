@@ -41,6 +41,10 @@ export default defineConfig(({ mode }) => ({
           'supabase': ['@supabase/supabase-js'],
           'embla': ['embla-carousel-react'],
           'helmet': ['react-helmet-async'],
+          // recharts pulled in by FuelPriceHistory + admin charts; split out so
+          // pages that don't use it don't pay the ~150KB tax.
+          'charts-vendor': ['recharts'],
+          'date-vendor': ['date-fns'],
         },
       },
     },

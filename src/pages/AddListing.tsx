@@ -86,6 +86,8 @@ const AddListing = () => {
         title="დაამატე უფასოდ | FixUp"
         description="დაამატე შენი ავტოსერვისი, სამრეცხაო, დრაივი ან ვაკანსია უფასოდ FixUp პლატფორმაზე"
         keywords="ავტოსერვისის დამატება, დრაივის დამატება, სამრეცხაოს დამატება, ვაკანსიის დამატება"
+        /* Authenticated submission flow — no SEO value, may leak draft titles. */
+        noindex
       />
       
       <div className="container mx-auto px-4 py-8 md:py-12">

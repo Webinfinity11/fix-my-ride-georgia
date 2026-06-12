@@ -10,6 +10,11 @@ interface SEOHeadProps {
   type?: 'website' | 'article' | 'profile';
   structuredData?: object;
   canonical?: string;
+  /**
+   * Block indexing for low-value pages: search results with query params,
+   * filtered list views, internal tools. Defaults to false (index, follow).
+   */
+  noindex?: boolean;
 }
 
 const SEOHead = ({
@@ -20,7 +25,8 @@ const SEOHead = ({
   url,
   type = 'website',
   structuredData,
-  canonical
+  canonical,
+  noindex = false,
 }: SEOHeadProps) => {
   const baseUrl = 'https://fixup.ge';
   const defaultImage = `${baseUrl}/fixup-og-image.jpg`;
@@ -51,12 +57,20 @@ const SEOHead = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
-      <meta name="robots" content="index, follow" />
+      <meta
+        name="robots"
+        content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+      />
       <meta name="author" content="ავტოხელოსანი" />
       <meta name="language" content="ka" />
-      
+
       {/* Canonical URL */}
       <link rel="canonical" href={canonicalUrl} />
+
+      {/* hreflang — site is Georgian-only today; structure ready for an English
+          locale later without breaking Google's locale signal. */}
+      <link rel="alternate" hrefLang="ka-ge" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
       
       {/* Open Graph Meta Tags */}
       <meta property="og:title" content={title} />
