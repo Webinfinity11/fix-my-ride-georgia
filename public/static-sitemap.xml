@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="//fixup.ge/main-sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <url>
+    <loc>https://fixup.ge/</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/services</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/services" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/services" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/mechanic</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/mechanic" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/mechanic" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/search</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/search" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/search" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/about</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/about" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/contact</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/contact" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/map</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/map" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/map" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/category</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/category" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/category" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/blog</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/blog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/blog" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/vacancies</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/vacancies" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/vacancies" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/laundries</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/laundries" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/laundries" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/leasing</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/leasing" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/leasing" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/dealers</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/dealers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/dealers" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/insurance</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/insurance" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/insurance" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-importers</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-importers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-importers" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-brands</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-brands" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-brands" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/community</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/community" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/community" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/privacy-policy" />
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </url>
+</urlset>

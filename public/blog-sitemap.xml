@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="//fixup.ge/main-sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <url>
+    <loc>https://fixup.ge/blog/smartfoni-borblebze-da-dasasruli-sakutrebisa-rogor</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/blog/smartfoni-borblebze-da-dasasruli-sakutrebisa-rogor" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/blog/smartfoni-borblebze-da-dasasruli-sakutrebisa-rogor" />
+    <lastmod>2026-06-11T06:32:11.496+00:00</lastmod>
+    <image:image>
+      <image:loc>https://kwozniwtygkdoagjegom.supabase.co/storage/v1/object/public/blog-images/2jp77zjabt-1764334439888.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://fixup.ge/blog/khval-aghar-gveqoleba-ubralod-manqana-5-revolutsiu</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/blog/khval-aghar-gveqoleba-ubralod-manqana-5-revolutsiu" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/blog/khval-aghar-gveqoleba-ubralod-manqana-5-revolutsiu" />
+    <lastmod>2025-11-29T16:27:24.603+00:00</lastmod>
+    <image:image>
+      <image:loc>https://kwozniwtygkdoagjegom.supabase.co/storage/v1/object/public/blog-images/cmxnx8clpqh-1764333943984.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://fixup.ge/blog/avtoindustriis-akhali-era-5-tendentsia-romelits-gz</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/blog/avtoindustriis-akhali-era-5-tendentsia-romelits-gz" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/blog/avtoindustriis-akhali-era-5-tendentsia-romelits-gz" />
+    <lastmod>2025-11-30T18:40:02.550+00:00</lastmod>
+    <image:image>
+      <image:loc>https://kwozniwtygkdoagjegom.supabase.co/storage/v1/object/public/blog-images/gcvs2vvzkgd-1763719789994.jpg</image:loc>
+    </image:image>
+  </url>
+</urlset>

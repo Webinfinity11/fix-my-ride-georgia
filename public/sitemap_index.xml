@@ -4,7 +4,27 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd">
   <sitemap>
-    <loc>https://fixup.ge/sitemap.xml</loc>
-    <lastmod>2026-06-12T08:00:00+00:00</lastmod>
+    <loc>https://fixup.ge/static-sitemap.xml</loc>
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://fixup.ge/service-sitemap.xml</loc>
+    <lastmod>2026-06-11T11:53:31.048+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://fixup.ge/mechanic-sitemap.xml</loc>
+    <lastmod>2026-06-11T06:24:14.160+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://fixup.ge/category-sitemap.xml</loc>
+    <lastmod>2026-06-12T08:49:19.295+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://fixup.ge/blog-sitemap.xml</loc>
+    <lastmod>2026-06-11T06:32:11.496+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://fixup.ge/vacancy-sitemap.xml</loc>
+    <lastmod>2025-11-21T07:37:27.537+00:00</lastmod>
   </sitemap>
 </sitemapindex>
