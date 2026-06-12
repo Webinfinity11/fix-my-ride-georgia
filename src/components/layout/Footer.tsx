@@ -43,7 +43,9 @@ const Footer = () => {
               </p>
               <div className="flex space-x-4">
                 <a
-                  href="#"
+                  href="https://www.facebook.com/FixupGeorgia"
+                  target="_blank"
+                  rel="noopener"
                   className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
                   aria-label="Facebook-ის გვერდი"
                 >
