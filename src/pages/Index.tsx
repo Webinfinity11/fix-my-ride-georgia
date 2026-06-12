@@ -14,7 +14,6 @@ import CategoryCarousel from "@/components/home/CategoryCarousel";
 import VIPServicesCarousel from "@/components/home/VIPServicesCarousel";
 import { Zap, Shield, Users, Star, ArrowRight, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
 import { EvacuatorDialog } from "@/components/evacuator/EvacuatorDialog";
-import { useSitemapAutoUpdate } from "@/hooks/useSitemapAutoUpdate";
 
 // Lazy load below-fold components
 const StationsPromo = lazy(() => import("@/components/home/StationsPromo"));
@@ -41,7 +40,6 @@ const stats = [{
 }];
 
 const Index = () => {
-  useSitemapAutoUpdate();
   const navigate = useNavigate();
   const [evacuatorDialogOpen, setEvacuatorDialogOpen] = useState(false);
   const canonicalUrl = generateCanonicalURL("home", {});

@@ -35,8 +35,8 @@ Disallow: /add-listing
 Disallow: /add-service
 Disallow: /book
 
-# Sitemap location (sitemap.xml is the index — references 4 child sitemaps)
-Sitemap: https://fix-my-ride-georgia.lovable.app/sitemap.xml
+# Sitemap location (RankMath-style index)
+Sitemap: https://fixup.ge/sitemap_index.xml
 
 # Crawl-delay for better server performance
 Crawl-delay: 1

@@ -1,20 +1,38 @@
 #!/usr/bin/env node
-// Build-time sitemap generator — RankMath-style split index + 4 child sitemaps.
+// RankMath-style sitemap generator (build-time).
 //
-// Outputs to public/:
-//   sitemap.xml           → sitemap index (references the 4 children)
-//   sitemap-index.xml     → alias of sitemap.xml (backward-compat)
-//   sitemap-static.xml    → static routes + /map sub-tabs + categories
-//   sitemap-services.xml  → service detail pages + image sitemap
-//   sitemap-mechanics.xml → ALL mechanic profile pages
-//   sitemap-content.xml   → blog posts (with cover image) + vacancies
+// Writes to public/:
+//   sitemap_index.xml          — master index (underscore, RankMath convention)
+//   static-sitemap.xml         — landing pages
+//   service-sitemap.xml        — services (paginated as service-sitemap1.xml... if >2000)
+//   mechanic-sitemap.xml       — verified mechanics
+//   category-sitemap.xml       — service categories
+//   blog-sitemap.xml           — published posts
+//   vacancy-sitemap.xml        — active vacancies
+//   main-sitemap.xsl           — XSL stylesheet (created separately)
+//
+// Mirrors supabase/functions/generate-sitemap/index.ts — keep in sync.
+//
+// Run manually:   npm run sitemap:generate
+// Auto-runs before `npm run build` via prebuild hook.
+//
+// Required env:
+//   SUPABASE_URL                 (or VITE_SUPABASE_URL)
+//   SUPABASE_SERVICE_ROLE_KEY    (read all rows; never expose client-side)
+//
+// Missing env → script skips regeneration (exit 0) so dev builds don't break.
 
-import { writeFile } from 'node:fs/promises';
+import { writeFile, unlink, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const SITE_URL = 'https://fixup.ge';
+const MAX_URLS_PER_SITEMAP = 2000;
+const XSL_HREF = '//fixup.ge/main-sitemap.xsl';
+// IndexNow key — file lives at public/{KEY}.txt for ownership verification.
+const INDEXNOW_KEY = 'a3f7e2b9c4d6e8f1a2b3c4d5e6f78901';
 
+// Keep in sync with src/utils/slugUtils.ts AND supabase/functions/_shared/slug.ts.
 const georgianToLatin = {
   'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
   'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh',
@@ -24,38 +42,95 @@ const georgianToLatin = {
 
 function createSlug(text) {
   if (!text) return '';
-  return text.toLowerCase().split('').map(c => georgianToLatin[c] || c).join('')
-    .replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+  return text
+    .toLowerCase()
+    .split('')
+    .map(c => georgianToLatin[c] || c)
+    .join('')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 const xmlEscape = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
+// ISO 8601 with timezone offset, e.g. 2026-06-12T10:15:30+00:00
+function isoLastmod(input) {
+  const d = input ? new Date(input) : new Date();
+  if (Number.isNaN(d.getTime())) return new Date().toISOString().replace('Z', '+00:00');
+  return d.toISOString().replace('Z', '+00:00');
+}
+
+// urlset header — 4 namespaces, RankMath-style
+function urlsetHeader() {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="${XSL_HREF}"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">`;
+}
+
+function sitemapIndexHeader() {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="${XSL_HREF}"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd">`;
+}
+
+// Build a single <url> entry — RankMath structure (no priority/changefreq).
+// images: array of absolute URL strings.
+function urlEntry({ loc, lastmod, images = [] }) {
+  const imageBlocks = (images || [])
+    .filter((p) => typeof p === 'string' && p.startsWith('http'))
+    .slice(0, 5)
+    .map((img) => `
+    <image:image>
+      <image:loc>${xmlEscape(img)}</image:loc>
+    </image:image>`)
+    .join('');
+
+  return `
+  <url>
+    <loc>${xmlEscape(loc)}</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="${xmlEscape(loc)}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(loc)}" />
+    <lastmod>${lastmod}</lastmod>${imageBlocks}
+  </url>`;
+}
+
+function wrapUrlset(entries) {
+  return `${urlsetHeader()}${entries.join('')}
+</urlset>
+`;
+}
+
+// Static pages — all single landing pages (including dealers/insurance/leasing/laundries/fuel-*).
+// No detail routes for these → they belong in the static sitemap.
 const STATIC_PAGES = [
-  { path: '/',                priority: '1.0',  changefreq: 'daily' },
-  { path: '/services',        priority: '0.9',  changefreq: 'daily' },
-  { path: '/mechanic',        priority: '0.9',  changefreq: 'daily' },
-  { path: '/search',          priority: '0.8',  changefreq: 'weekly' },
-  { path: '/about',           priority: '0.7',  changefreq: 'monthly' },
-  { path: '/contact',         priority: '0.7',  changefreq: 'monthly' },
-  { path: '/map',             priority: '0.7',  changefreq: 'weekly' },
-  { path: '/map/services',    priority: '0.7',  changefreq: 'weekly' },
-  { path: '/map/chargers',    priority: '0.75', changefreq: 'weekly' },
-  { path: '/map/stations',    priority: '0.75', changefreq: 'weekly' },
-  { path: '/map/laundries',   priority: '0.7',  changefreq: 'weekly' },
-  { path: '/map/drives',      priority: '0.6',  changefreq: 'weekly' },
-  { path: '/laundries',       priority: '0.8',  changefreq: 'weekly' },
-  { path: '/category',        priority: '0.8',  changefreq: 'weekly' },
-  { path: '/blog',            priority: '0.85', changefreq: 'daily' },
-  { path: '/vacancies',       priority: '0.85', changefreq: 'daily' },
-  { path: '/leasing',         priority: '0.8',  changefreq: 'weekly' },
-  { path: '/dealers',         priority: '0.8',  changefreq: 'weekly' },
-  { path: '/insurance',       priority: '0.8',  changefreq: 'weekly' },
-  { path: '/fuel-importers',  priority: '0.7',  changefreq: 'weekly' },
-  { path: '/fuel-brands',     priority: '0.75', changefreq: 'weekly' },
-  { path: '/community',       priority: '0.7',  changefreq: 'daily' },
-  { path: '/privacy-policy',  priority: '0.3',  changefreq: 'yearly' },
+  '/',
+  '/services',
+  '/mechanic',
+  '/search',
+  '/about',
+  '/contact',
+  '/map',
+  '/category',
+  '/blog',
+  '/vacancies',
+  '/laundries',
+  '/leasing',
+  '/dealers',
+  '/insurance',
+  '/fuel-importers',
+  '/fuel-brands',
+  '/community',
+  '/privacy-policy',
 ];
 
 async function main() {
@@ -71,12 +146,26 @@ async function main() {
   try {
     ({ createClient } = await import('@supabase/supabase-js'));
   } catch {
-    console.warn('[sitemap] @supabase/supabase-js not installed — skipping.');
+    console.warn('[sitemap] @supabase/supabase-js not installed — skipping. Run `npm install` first.');
     process.exit(0);
   }
 
   const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
-  const today = new Date().toISOString().split('T')[0];
+  const now = isoLastmod(new Date());
+
+  // Parent <lastmod> in the index should reflect the latest content change in
+  // the sub-sitemap, not the first row or current time. Google uses it to
+  // decide whether to recrawl the whole sub-sitemap.
+  const maxLastmod = (rows, fields = ['updated_at']) => {
+    let max = 0;
+    for (const r of rows || []) {
+      for (const f of fields) {
+        const t = r?.[f] ? new Date(r[f]).getTime() : 0;
+        if (t > max) max = t;
+      }
+    }
+    return max > 0 ? isoLastmod(new Date(max)) : now;
+  };
 
   const [
     { data: services, error: servicesErr },
@@ -86,55 +175,70 @@ async function main() {
     { data: vacancies, error: vacanciesErr },
   ] = await Promise.all([
     supabase.from('mechanic_services')
-      .select('id, name, slug, updated_at, is_vip_active, vip_status, photos')
-      .eq('is_active', true).order('id'),
-    supabase.from('service_categories').select('id, name').order('id'),
+      .select('id, name, slug, updated_at, photos')
+      .eq('is_active', true)
+      .order('id'),
+    supabase.from('service_categories')
+      .select('id, name')
+      .order('id'),
     supabase.from('mechanic_profiles')
-      .select('id, display_id, rating, updated_at, profiles!inner(role, is_verified, first_name, last_name)')
-      .eq('profiles.role', 'mechanic').order('display_id'),
+      .select('id, display_id, updated_at, profiles!inner(role, is_verified, first_name, last_name)')
+      .eq('profiles.role', 'mechanic')
+      .eq('profiles.is_verified', true)
+      .order('display_id'),
     supabase.from('blog_posts')
-      .select('slug, updated_at, view_count, featured_image, title')
-      .eq('status', 'published').order('published_at', { ascending: false }),
+      .select('slug, updated_at, featured_image')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false }),
     supabase.from('mechanic_vacancies')
       .select('id, created_at, updated_at')
-      .eq('is_active', true).order('created_at', { ascending: false }),
+      .eq('is_active', true)
+      .order('created_at', { ascending: false }),
   ]);
 
   for (const [name, err] of Object.entries({ servicesErr, categoriesErr, mechanicsErr, blogErr, vacanciesErr })) {
     if (err) console.error(`[sitemap] ${name}:`, err.message);
   }
 
-  // ---------- sitemap-static.xml ----------
-  let staticXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
-  for (const p of STATIC_PAGES) {
-    staticXml += `
-  <url>
-    <loc>${SITE_URL}${p.path}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
-  </url>`;
-  }
-  for (const c of categories || []) {
-    const slug = createSlug(c.name);
-    staticXml += `
-  <url>
-    <loc>${SITE_URL}/category/${slug}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>`;
-  }
-  staticXml += `
-</urlset>
-`;
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const publicDir = join(__dirname, '..', 'public');
 
-  // ---------- sitemap-services.xml ----------
-  let servicesXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
-  for (const s of services || []) {
+  // Track generated sub-sitemaps for the index.
+  const indexEntries = [];
+
+  const writeSitemap = async (filename, entries, lastmod) => {
+    if (entries.length === 0) return; // skip empty — Google warns on 0-URL sitemaps
+    await writeFile(join(publicDir, filename), wrapUrlset(entries), 'utf8');
+    indexEntries.push({ filename, lastmod });
+  };
+
+  // Split entries into multiple files if over MAX_URLS_PER_SITEMAP.
+  // Pagination follows RankMath convention: foo-sitemap.xml, foo-sitemap1.xml, foo-sitemap2.xml
+  const writePaginated = async (baseName, entries, lastmod) => {
+    if (entries.length === 0) return;
+    if (entries.length <= MAX_URLS_PER_SITEMAP) {
+      await writeSitemap(`${baseName}-sitemap.xml`, entries, lastmod);
+      return;
+    }
+    const chunks = [];
+    for (let i = 0; i < entries.length; i += MAX_URLS_PER_SITEMAP) {
+      chunks.push(entries.slice(i, i + MAX_URLS_PER_SITEMAP));
+    }
+    // First chunk: foo-sitemap.xml. Subsequent: foo-sitemap1.xml, foo-sitemap2.xml...
+    await writeSitemap(`${baseName}-sitemap.xml`, chunks[0], lastmod);
+    for (let i = 1; i < chunks.length; i++) {
+      await writeSitemap(`${baseName}-sitemap${i}.xml`, chunks[i], lastmod);
+    }
+  };
+
+  // ---- Static pages ----
+  const staticEntries = STATIC_PAGES.map((path) =>
+    urlEntry({ loc: `${SITE_URL}${path}`, lastmod: now })
+  );
+  await writeSitemap('static-sitemap.xml', staticEntries, now);
+
+  // ---- Services ----
+  const serviceEntries = (services || []).map((s) => {
     let urlPart;
     if (s.slug && /^\d+-/.test(s.slug)) {
       urlPart = s.slug;
@@ -142,147 +246,137 @@ async function main() {
       const slug = s.slug || createSlug(s.name);
       urlPart = slug ? `${s.id}-${slug}` : String(s.id);
     }
-    const lastmod = s.updated_at ? new Date(s.updated_at).toISOString().split('T')[0] : today;
-    const priority = s.is_vip_active && s.vip_status === 'super_vip'
-      ? '0.95'
-      : s.is_vip_active && s.vip_status === 'vip'
-      ? '0.85'
-      : '0.75';
-    const changefreq = s.is_vip_active ? 'daily' : 'weekly';
+    const images = Array.isArray(s.photos) ? s.photos : [];
+    return urlEntry({
+      loc: `${SITE_URL}/service/${urlPart}`,
+      lastmod: isoLastmod(s.updated_at),
+      images,
+    });
+  });
+  await writePaginated('service', serviceEntries, maxLastmod(services));
 
-    const photos = Array.isArray(s.photos) ? s.photos.slice(0, 5) : [];
-    const imageBlocks = photos
-      .filter((p) => typeof p === 'string' && p.startsWith('http'))
-      .map((photo) => `
-    <image:image>
-      <image:loc>${xmlEscape(photo)}</image:loc>
-      <image:title>${xmlEscape(s.name || '')}</image:title>
-    </image:image>`)
-      .join('');
-
-    servicesXml += `
-  <url>
-    <loc>${SITE_URL}/service/${urlPart}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>${imageBlocks}
-  </url>`;
-  }
-  servicesXml += `
-</urlset>
-`;
-
-  // ---------- sitemap-mechanics.xml ----------
-  let mechanicsXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
-  for (const m of mechanics || []) {
+  // ---- Mechanics ----
+  const mechanicEntries = (mechanics || []).map((m) => {
     const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
     const firstName = profile?.first_name || 'Mechanic';
     const lastName = profile?.last_name || '';
     const fullName = `${firstName} ${lastName}`.trim();
     const slug = createSlug(fullName);
     const urlPart = slug ? `${m.display_id}-${slug}` : String(m.display_id);
-    const rating = Number(m.rating) || 0;
-    const verified = profile?.is_verified === true;
-    const priority = verified
-      ? (rating >= 4.5 ? '0.85' : rating >= 4.0 ? '0.75' : '0.65')
-      : '0.50';
-    const lastmod = m.updated_at ? new Date(m.updated_at).toISOString().split('T')[0] : today;
-    mechanicsXml += `
-  <url>
-    <loc>${SITE_URL}/mechanic/${urlPart}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>
-  </url>`;
-  }
-  mechanicsXml += `
-</urlset>
-`;
+    return urlEntry({
+      loc: `${SITE_URL}/mechanic/${urlPart}`,
+      lastmod: isoLastmod(m.updated_at),
+    });
+  });
+  await writePaginated('mechanic', mechanicEntries, maxLastmod(mechanics));
 
-  // ---------- sitemap-content.xml ----------
-  let contentXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
-  for (const p of blogPosts || []) {
-    const lastmod = p.updated_at ? new Date(p.updated_at).toISOString().split('T')[0] : today;
-    const views = p.view_count || 0;
-    const priority = views >= 1000 ? '0.80' : views >= 500 ? '0.75' : '0.70';
-    const cover = p.featured_image;
-    const imageBlock = (cover && typeof cover === 'string' && cover.startsWith('http'))
-      ? `
-    <image:image>
-      <image:loc>${xmlEscape(cover)}</image:loc>
-      <image:title>${xmlEscape(p.title || '')}</image:title>
-    </image:image>`
-      : '';
-    contentXml += `
-  <url>
-    <loc>${SITE_URL}/blog/${p.slug}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>${imageBlock}
-  </url>`;
-  }
-  for (const v of vacancies || []) {
-    const ts = v.updated_at || v.created_at;
-    const lastmod = ts ? new Date(ts).toISOString().split('T')[0] : today;
-    contentXml += `
-  <url>
-    <loc>${SITE_URL}/vacancy/${v.id}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.65</priority>
-  </url>`;
-  }
-  contentXml += `
-</urlset>
-`;
+  // ---- Categories ----
+  // service_categories has no updated_at; use current timestamp as fallback.
+  const categoryEntries = (categories || []).map((c) => {
+    const slug = createSlug(c.name);
+    return urlEntry({
+      loc: `${SITE_URL}/category/${slug}`,
+      lastmod: now,
+    });
+  });
+  await writePaginated('category', categoryEntries, now);
 
-  // ---------- sitemap.xml (INDEX) ----------
-  const indexXml = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  // ---- Blog posts ----
+  const blogEntries = (blogPosts || []).map((p) =>
+    urlEntry({
+      loc: `${SITE_URL}/blog/${p.slug}`,
+      lastmod: isoLastmod(p.updated_at),
+      images: p.featured_image ? [p.featured_image] : [],
+    })
+  );
+  await writePaginated('blog', blogEntries, maxLastmod(blogPosts));
+
+  // ---- Vacancies ----
+  const vacancyEntries = (vacancies || []).map((v) =>
+    urlEntry({
+      loc: `${SITE_URL}/vacancy/${v.id}`,
+      lastmod: isoLastmod(v.updated_at || v.created_at),
+    })
+  );
+  await writePaginated('vacancy', vacancyEntries, maxLastmod(vacancies, ['updated_at', 'created_at']));
+
+  // ---- Sitemap index ----
+  const indexXml = `${sitemapIndexHeader()}${indexEntries.map(({ filename, lastmod }) => `
   <sitemap>
-    <loc>${SITE_URL}/sitemap-static.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
+    <loc>${SITE_URL}/${filename}</loc>
+    <lastmod>${lastmod}</lastmod>
+  </sitemap>`).join('')}
+</sitemapindex>
+`;
+  await writeFile(join(publicDir, 'sitemap_index.xml'), indexXml, 'utf8');
+
+  // ---- Backward-compat shims ----
+  // Old robots.txt referenced /sitemap.xml and /sitemap-index.xml. Browsers can't
+  // 301-redirect static files without server config — we serve a 1-line index
+  // pointing to sitemap_index.xml so Search Console submissions continue working.
+  const legacyPointer = `${sitemapIndexHeader()}
   <sitemap>
-    <loc>${SITE_URL}/sitemap-services.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${SITE_URL}/sitemap-mechanics.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${SITE_URL}/sitemap-content.xml</loc>
-    <lastmod>${today}</lastmod>
+    <loc>${SITE_URL}/sitemap_index.xml</loc>
+    <lastmod>${now}</lastmod>
   </sitemap>
 </sitemapindex>
 `;
+  await writeFile(join(publicDir, 'sitemap.xml'), legacyPointer, 'utf8');
+  await writeFile(join(publicDir, 'sitemap-index.xml'), legacyPointer, 'utf8');
 
-  const __dirname = dirname(fileURLToPath(import.meta.url));
-  const publicDir = join(__dirname, '..', 'public');
-
-  await Promise.all([
-    writeFile(join(publicDir, 'sitemap.xml'),           indexXml,     'utf8'),
-    writeFile(join(publicDir, 'sitemap-index.xml'),     indexXml,     'utf8'),
-    writeFile(join(publicDir, 'sitemap-static.xml'),    staticXml,    'utf8'),
-    writeFile(join(publicDir, 'sitemap-services.xml'),  servicesXml,  'utf8'),
-    writeFile(join(publicDir, 'sitemap-mechanics.xml'), mechanicsXml, 'utf8'),
-    writeFile(join(publicDir, 'sitemap-content.xml'),   contentXml,   'utf8'),
+  // Remove stale paginated files from previous runs (e.g. service-sitemap5.xml
+  // if data shrank). Only delete files matching our managed naming.
+  const managed = new Set([
+    'sitemap.xml',
+    'sitemap-index.xml',
+    'sitemap_index.xml',
+    'main-sitemap.xsl',
+    ...indexEntries.map((e) => e.filename),
   ]);
+  const dir = await readdir(publicDir);
+  for (const f of dir) {
+    if (/^(static|service|mechanic|category|blog|vacancy)-sitemap\d*\.xml$/.test(f) && !managed.has(f)) {
+      await unlink(join(publicDir, f)).catch(() => {});
+      console.log(`[sitemap] removed stale ${f}`);
+    }
+  }
 
   const counts = {
-    static: STATIC_PAGES.length,
-    categories: categories?.length || 0,
-    services: services?.length || 0,
-    mechanics: mechanics?.length || 0,
-    blog: blogPosts?.length || 0,
-    vacancies: vacancies?.length || 0,
+    static: staticEntries.length,
+    services: serviceEntries.length,
+    mechanics: mechanicEntries.length,
+    categories: categoryEntries.length,
+    blog: blogEntries.length,
+    vacancies: vacancyEntries.length,
   };
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  console.log(`[sitemap] ✓ Wrote split sitemap — ${total} URLs (${JSON.stringify(counts)})`);
+  console.log(`[sitemap] ✓ Wrote ${indexEntries.length} sub-sitemaps, ${total} URLs total`);
+  console.log(`[sitemap] breakdown: ${JSON.stringify(counts)}`);
+
+  // IndexNow ping — non-fatal. Bing + Yandex pick up new URLs faster.
+  // Skipped on build-time runs (CI doesn't need to ping) unless explicit env flag.
+  if (process.env.SITEMAP_PING_INDEXNOW === '1') {
+    await pingIndexNow(indexEntries.map((e) => `${SITE_URL}/${e.filename}`));
+  }
+}
+
+async function pingIndexNow(urlList) {
+  const body = {
+    host: 'fixup.ge',
+    key: INDEXNOW_KEY,
+    keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`,
+    urlList: [`${SITE_URL}/sitemap_index.xml`, ...urlList],
+  };
+  try {
+    const res = await fetch('https://api.indexnow.org/IndexNow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    console.log(`[sitemap] IndexNow ping → ${res.status}`);
+  } catch (err) {
+    console.warn('[sitemap] IndexNow ping failed (non-fatal):', err?.message);
+  }
 }
 
 main().catch((err) => {
