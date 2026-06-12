@@ -5,7 +5,7 @@
               xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd">
   <sitemap>
     <loc>https://fixup.ge/static-sitemap.xml</loc>
-    <lastmod>2026-06-12T09:24:10.275+00:00</lastmod>
+    <lastmod>2026-06-12T09:34:17.846+00:00</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://fixup.ge/service-sitemap.xml</loc>
@@ -17,7 +17,7 @@
   </sitemap>
   <sitemap>
     <loc>https://fixup.ge/category-sitemap.xml</loc>
-    <lastmod>2026-06-12T09:24:10.275+00:00</lastmod>
+    <lastmod>2026-06-12T09:34:17.846+00:00</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://fixup.ge/blog-sitemap.xml</loc>
@@ -26,5 +26,9 @@
   <sitemap>
     <loc>https://fixup.ge/vacancy-sitemap.xml</loc>
     <lastmod>2025-11-21T07:37:27.537+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://fixup.ge/video-sitemap.xml</loc>
+    <lastmod>2026-05-10T09:57:40.049+00:00</lastmod>
   </sitemap>
 </sitemapindex>

@@ -14,6 +14,7 @@ type Breakdown = {
   categories: number;
   blog: number;
   vacancies: number;
+  videos: number;
 };
 
 const SUB_SITEMAPS: { key: keyof Breakdown; label: string; filename: string }[] = [
@@ -23,13 +24,14 @@ const SUB_SITEMAPS: { key: keyof Breakdown; label: string; filename: string }[] 
   { key: 'categories', label: 'კატეგორიები',        filename: 'category-sitemap.xml' },
   { key: 'blog',       label: 'ბლოგი',              filename: 'blog-sitemap.xml' },
   { key: 'vacancies',  label: 'ვაკანსიები',         filename: 'vacancy-sitemap.xml' },
+  { key: 'videos',     label: 'ვიდეოები',           filename: 'video-sitemap.xml' },
 ];
 
 const SitemapManagement = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
   const [breakdown, setBreakdown] = useState<Breakdown>({
-    static: 0, services: 0, mechanics: 0, categories: 0, blog: 0, vacancies: 0,
+    static: 0, services: 0, mechanics: 0, categories: 0, blog: 0, vacancies: 0, videos: 0,
   });
   const [totalUrls, setTotalUrls] = useState(0);
   const [subSitemaps, setSubSitemaps] = useState(0);

@@ -75,6 +75,17 @@ function urlsetHeader() {
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">`;
 }
 
+// Video sitemap urlset header — adds the video namespace.
+function videoUrlsetHeader() {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="${XSL_HREF}"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">`;
+}
+
 function sitemapIndexHeader() {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="${XSL_HREF}"?>
@@ -108,6 +119,39 @@ function wrapUrlset(entries) {
   return `${urlsetHeader()}${entries.join('')}
 </urlset>
 `;
+}
+
+function wrapVideoUrlset(entries) {
+  return `${videoUrlsetHeader()}${entries.join('')}
+</urlset>
+`;
+}
+
+// Build a video <url> entry per Google's video sitemap spec.
+// One <url> per page; multiple <video:video> blocks if the page has many videos.
+// thumbnail_loc, title, description, content_loc are REQUIRED.
+function videoUrlEntry({ loc, lastmod, videos, thumbnail, title, description, publicationDate }) {
+  const cdata = (s) => `<![CDATA[${String(s ?? '').replace(/]]>/g, ']]]]><![CDATA[>')}]]>`;
+  const blocks = videos
+    .filter((v) => typeof v === 'string' && v.startsWith('http'))
+    .map((video) => `
+    <video:video>
+      <video:thumbnail_loc>${xmlEscape(thumbnail)}</video:thumbnail_loc>
+      <video:title>${cdata(title)}</video:title>
+      <video:description>${cdata(description || title)}</video:description>
+      <video:content_loc>${xmlEscape(video)}</video:content_loc>${publicationDate ? `
+      <video:publication_date>${publicationDate}</video:publication_date>` : ''}
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>`)
+    .join('');
+
+  return `
+  <url>
+    <loc>${xmlEscape(loc)}</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="${xmlEscape(loc)}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(loc)}" />
+    <lastmod>${lastmod}</lastmod>${blocks}
+  </url>`;
 }
 
 // Static pages — all single landing pages (including dealers/insurance/leasing/laundries/fuel-*).
@@ -182,7 +226,7 @@ async function main() {
     { data: vacancies, error: vacanciesErr },
   ] = await Promise.all([
     supabase.from('mechanic_services')
-      .select('id, name, slug, updated_at, photos')
+      .select('id, name, slug, description, updated_at, created_at, photos, videos')
       .eq('is_active', true)
       .order('id'),
     supabase.from('service_categories')
@@ -215,6 +259,12 @@ async function main() {
   const writeSitemap = async (filename, entries, lastmod) => {
     if (entries.length === 0) return; // skip empty — Google warns on 0-URL sitemaps
     await writeFile(join(publicDir, filename), wrapUrlset(entries), 'utf8');
+    indexEntries.push({ filename, lastmod });
+  };
+
+  const writeVideoSitemap = async (filename, entries, lastmod) => {
+    if (entries.length === 0) return;
+    await writeFile(join(publicDir, filename), wrapVideoUrlset(entries), 'utf8');
     indexEntries.push({ filename, lastmod });
   };
 
@@ -306,6 +356,37 @@ async function main() {
   );
   await writePaginated('vacancy', vacancyEntries, maxLastmod(vacancies, ['updated_at', 'created_at']));
 
+  // ---- Videos ----
+  // Google requires thumbnail + title + description + content_loc per video.
+  // Skip services without a usable thumbnail (first http(s) photo).
+  const servicesWithVideos = (services || []).filter((s) => {
+    const v = Array.isArray(s.videos) ? s.videos : [];
+    const p = Array.isArray(s.photos) ? s.photos : [];
+    return v.some((x) => typeof x === 'string' && x.startsWith('http'))
+      && p.some((x) => typeof x === 'string' && x.startsWith('http'));
+  });
+
+  const videoEntries = servicesWithVideos.map((s) => {
+    let urlPart;
+    if (s.slug && /^\d+-/.test(s.slug)) {
+      urlPart = s.slug;
+    } else {
+      const slug = s.slug || createSlug(s.name);
+      urlPart = slug ? `${s.id}-${slug}` : String(s.id);
+    }
+    const thumbnail = s.photos.find((p) => typeof p === 'string' && p.startsWith('http'));
+    return videoUrlEntry({
+      loc: `${SITE_URL}/service/${urlPart}`,
+      lastmod: isoLastmod(s.updated_at),
+      videos: s.videos,
+      thumbnail,
+      title: s.name,
+      description: s.description,
+      publicationDate: isoLastmod(s.created_at || s.updated_at),
+    });
+  });
+  await writeVideoSitemap('video-sitemap.xml', videoEntries, maxLastmod(servicesWithVideos));
+
   // ---- Sitemap index ----
   const indexXml = `${sitemapIndexHeader()}${indexEntries.map(({ filename, lastmod }) => `
   <sitemap>
@@ -341,7 +422,7 @@ async function main() {
   ]);
   const dir = await readdir(publicDir);
   for (const f of dir) {
-    if (/^(static|service|mechanic|category|blog|vacancy)-sitemap\d*\.xml$/.test(f) && !managed.has(f)) {
+    if (/^(static|service|mechanic|category|blog|vacancy|video)-sitemap\d*\.xml$/.test(f) && !managed.has(f)) {
       await unlink(join(publicDir, f)).catch(() => {});
       console.log(`[sitemap] removed stale ${f}`);
     }
@@ -354,6 +435,7 @@ async function main() {
     categories: categoryEntries.length,
     blog: blogEntries.length,
     vacancies: vacancyEntries.length,
+    videos: videoEntries.length,
   };
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   console.log(`[sitemap] ✓ Wrote ${indexEntries.length} sub-sitemaps, ${total} URLs total`);

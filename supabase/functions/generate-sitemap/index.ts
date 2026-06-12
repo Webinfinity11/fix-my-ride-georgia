@@ -50,6 +50,16 @@ function urlsetHeader(): string {
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">`
 }
 
+function videoUrlsetHeader(): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="${XSL_HREF}"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">`
+}
+
 function sitemapIndexHeader(): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="${XSL_HREF}"?>
@@ -81,6 +91,40 @@ function wrapUrlset(entries: string[]): string {
   return `${urlsetHeader()}${entries.join('')}
 </urlset>
 `
+}
+
+function wrapVideoUrlset(entries: string[]): string {
+  return `${videoUrlsetHeader()}${entries.join('')}
+</urlset>
+`
+}
+
+function videoUrlEntry({ loc, lastmod, videos, thumbnail, title, description, publicationDate }: {
+  loc: string; lastmod: string; videos: string[]; thumbnail: string;
+  title: string; description?: string | null; publicationDate?: string;
+}): string {
+  const cdata = (s: string | null | undefined) =>
+    `<![CDATA[${String(s ?? '').replace(/]]>/g, ']]]]><![CDATA[>')}]]>`
+  const blocks = videos
+    .filter((v) => typeof v === 'string' && v.startsWith('http'))
+    .map((video) => `
+    <video:video>
+      <video:thumbnail_loc>${xmlEscape(thumbnail)}</video:thumbnail_loc>
+      <video:title>${cdata(title)}</video:title>
+      <video:description>${cdata(description || title)}</video:description>
+      <video:content_loc>${xmlEscape(video)}</video:content_loc>${publicationDate ? `
+      <video:publication_date>${publicationDate}</video:publication_date>` : ''}
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>`)
+    .join('')
+
+  return `
+  <url>
+    <loc>${xmlEscape(loc)}</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="${xmlEscape(loc)}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(loc)}" />
+    <lastmod>${lastmod}</lastmod>${blocks}
+  </url>`
 }
 
 // Map tabs (services/laundries/drives/chargers/stations) are real URL paths;
@@ -126,7 +170,7 @@ serve(async (req) => {
       { data: vacancies, error: vacanciesErr },
     ] = await Promise.all([
       supabase.from('mechanic_services')
-        .select('id, name, slug, updated_at, photos')
+        .select('id, name, slug, description, updated_at, created_at, photos, videos')
         .eq('is_active', true)
         .order('id'),
       supabase.from('service_categories')
@@ -156,6 +200,12 @@ serve(async (req) => {
     const queueSitemap = (filename: string, entries: string[], lastmod: string) => {
       if (entries.length === 0) return
       uploads.push({ filename, body: wrapUrlset(entries) })
+      indexEntries.push({ filename, lastmod })
+    }
+
+    const queueVideoSitemap = (filename: string, entries: string[], lastmod: string) => {
+      if (entries.length === 0) return
+      uploads.push({ filename, body: wrapVideoUrlset(entries) })
       indexEntries.push({ filename, lastmod })
     }
 
@@ -243,6 +293,35 @@ serve(async (req) => {
     )
     queuePaginated('vacancy', vacancyEntries, maxLastmod(vacancies, ['updated_at', 'created_at']))
 
+    // ---- Videos ----
+    const servicesWithVideos = (services || []).filter((s: any) => {
+      const v = Array.isArray(s.videos) ? s.videos : []
+      const p = Array.isArray(s.photos) ? s.photos : []
+      return v.some((x: any) => typeof x === 'string' && x.startsWith('http'))
+        && p.some((x: any) => typeof x === 'string' && x.startsWith('http'))
+    })
+
+    const videoEntries = servicesWithVideos.map((s: any) => {
+      let urlPart: string
+      if (s.slug && /^\d+-/.test(s.slug)) {
+        urlPart = s.slug
+      } else {
+        const slug = s.slug || createSlug(s.name)
+        urlPart = slug ? `${s.id}-${slug}` : String(s.id)
+      }
+      const thumbnail = s.photos.find((p: any) => typeof p === 'string' && p.startsWith('http'))
+      return videoUrlEntry({
+        loc: `${SITE_URL}/service/${urlPart}`,
+        lastmod: isoLastmod(s.updated_at),
+        videos: s.videos,
+        thumbnail,
+        title: s.name,
+        description: s.description,
+        publicationDate: isoLastmod(s.created_at || s.updated_at),
+      })
+    })
+    queueVideoSitemap('video-sitemap.xml', videoEntries, maxLastmod(servicesWithVideos))
+
     // ---- Index ----
     const indexBody = `${sitemapIndexHeader()}${indexEntries.map(({ filename, lastmod }) => `
   <sitemap>
@@ -286,6 +365,7 @@ serve(async (req) => {
       categories: categoryEntries.length,
       blog: blogEntries.length,
       vacancies: vacancyEntries.length,
+      videos: videoEntries.length,
     }
     const totalUrls = Object.values(counts).reduce((a, b) => a + b, 0)
     const subSitemaps = indexEntries.length
