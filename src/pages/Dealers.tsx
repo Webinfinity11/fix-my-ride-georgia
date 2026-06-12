@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ServicePageNavigation } from "@/components/services/ServicePageNavigation";
 import { Car, CheckCircle2, Award, ThumbsUp, FileCheck } from "lucide-react";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { DEALERS_CONTENT } from "@/utils/staticPagesSeoContent";
 
 const Dealers = () => {
   const canonicalUrl = generateCanonicalURL('dealers', {});
@@ -64,11 +66,23 @@ const Dealers = () => {
 
           <div className="container mx-auto px-4 relative z-10">
             {/* Badge */}
-            <div className="flex justify-center pt-8 mb-8">
+            <div className="flex justify-center pt-8 mb-4">
               <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-2 text-sm font-medium">
                 <Car className="h-4 w-4 mr-2" />
                 ავტომობილების ოფიციალური დილერები
               </Badge>
+            </div>
+
+            {/* SEO H1 */}
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3">
+                {DEALERS_CONTENT.h1}
+              </h1>
+              {DEALERS_CONTENT.h1Subtitle && (
+                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                  {DEALERS_CONTENT.h1Subtitle}
+                </p>
+              )}
             </div>
 
             {/* Service Navigation */}
@@ -106,6 +120,19 @@ const Dealers = () => {
             </div>
           </div>
         </section>
+
+        {/* SEO content block — intro + highlights + tips + FAQ + related blogs */}
+        <StaticPageSeoBlock
+          introHeading={DEALERS_CONTENT.introHeading}
+          introHtml={DEALERS_CONTENT.introHtml}
+          highlights={DEALERS_CONTENT.highlights}
+          highlightsHeading={DEALERS_CONTENT.highlightsHeading}
+          tips={DEALERS_CONTENT.tips}
+          tipsHeading={DEALERS_CONTENT.tipsHeading}
+          faqItems={DEALERS_CONTENT.faqItems}
+          faqHeading={DEALERS_CONTENT.faqHeading}
+          topicName={DEALERS_CONTENT.topicName}
+        />
       </main>
 
       <Footer />

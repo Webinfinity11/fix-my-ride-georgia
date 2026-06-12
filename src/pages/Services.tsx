@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { PhoneCall } from "lucide-react";
 import { toast } from "sonner";
 import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { SERVICES_CONTENT } from "@/utils/staticPagesSeoContent";
 
 type ServiceCategory = {
   id: number;
@@ -153,8 +155,21 @@ const Services = () => {
         ) : (
           <ServiceCategories categories={categories} />
         )}
+
+        {/* Long-form SEO content — intro + highlights + tips + FAQ + related blogs */}
+        <StaticPageSeoBlock
+          introHeading={SERVICES_CONTENT.introHeading}
+          introHtml={SERVICES_CONTENT.introHtml}
+          highlights={SERVICES_CONTENT.highlights}
+          highlightsHeading={SERVICES_CONTENT.highlightsHeading}
+          tips={SERVICES_CONTENT.tips}
+          tipsHeading={SERVICES_CONTENT.tipsHeading}
+          faqItems={SERVICES_CONTENT.faqItems}
+          faqHeading={SERVICES_CONTENT.faqHeading}
+          topicName={SERVICES_CONTENT.topicName}
+        />
       </main>
-      
+
       <Footer />
       <ServicesPageBanner />
     </div>

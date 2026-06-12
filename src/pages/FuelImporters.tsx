@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, X, Fuel, RefreshCw, Calculator, TrendingUp, ArrowUpDown } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { FUEL_IMPORTERS_CONTENT } from "@/utils/staticPagesSeoContent";
 import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { PullToRefreshIndicator } from "@/components/mobile/PullToRefreshIndicator";
@@ -171,6 +173,19 @@ const FuelImporters = () => {
 
       {/* Fuel Brand Voting Banner */}
       <FuelBrandVotingBanner />
+
+      {/* Long-form SEO content — intro + highlights + tips + FAQ + related blogs */}
+      <StaticPageSeoBlock
+        introHeading={FUEL_IMPORTERS_CONTENT.introHeading}
+        introHtml={FUEL_IMPORTERS_CONTENT.introHtml}
+        highlights={FUEL_IMPORTERS_CONTENT.highlights}
+        highlightsHeading={FUEL_IMPORTERS_CONTENT.highlightsHeading}
+        tips={FUEL_IMPORTERS_CONTENT.tips}
+        tipsHeading={FUEL_IMPORTERS_CONTENT.tipsHeading}
+        faqItems={FUEL_IMPORTERS_CONTENT.faqItems}
+        faqHeading={FUEL_IMPORTERS_CONTENT.faqHeading}
+        topicName={FUEL_IMPORTERS_CONTENT.topicName}
+      />
     </Layout>
   );
 };

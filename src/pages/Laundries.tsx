@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, X, MapPin } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { LAUNDRIES_CONTENT } from "@/utils/staticPagesSeoContent";
 import "leaflet/dist/leaflet.css";
 
 // Add custom styles for markers
@@ -398,6 +400,19 @@ const Laundries = () => {
           </div>
         </div>
       </div>
+
+      {/* Long-form SEO content — intro + highlights + tips + FAQ + related blogs */}
+      <StaticPageSeoBlock
+        introHeading={LAUNDRIES_CONTENT.introHeading}
+        introHtml={LAUNDRIES_CONTENT.introHtml}
+        highlights={LAUNDRIES_CONTENT.highlights}
+        highlightsHeading={LAUNDRIES_CONTENT.highlightsHeading}
+        tips={LAUNDRIES_CONTENT.tips}
+        tipsHeading={LAUNDRIES_CONTENT.tipsHeading}
+        faqItems={LAUNDRIES_CONTENT.faqItems}
+        faqHeading={LAUNDRIES_CONTENT.faqHeading}
+        topicName={LAUNDRIES_CONTENT.topicName}
+      />
     </Layout>
   );
 };

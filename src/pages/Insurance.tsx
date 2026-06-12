@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ServicePageNavigation } from "@/components/services/ServicePageNavigation";
 import { Shield, CheckCircle2, Zap, TrendingDown, Award } from "lucide-react";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { INSURANCE_CONTENT } from "@/utils/staticPagesSeoContent";
 
 const Insurance = () => {
   const canonicalUrl = generateCanonicalURL('insurance', {});
@@ -64,11 +66,22 @@ const Insurance = () => {
 
           <div className="container mx-auto px-4 relative z-10">
             {/* Badge */}
-            <div className="flex justify-center pt-8 mb-8">
+            <div className="flex justify-center pt-8 mb-4">
               <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-2 text-sm font-medium">
                 <Shield className="h-4 w-4 mr-2" />
                 ავტომობილის დაზღვევა
               </Badge>
+            </div>
+
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3">
+                {INSURANCE_CONTENT.h1}
+              </h1>
+              {INSURANCE_CONTENT.h1Subtitle && (
+                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                  {INSURANCE_CONTENT.h1Subtitle}
+                </p>
+              )}
             </div>
 
             {/* Service Navigation */}
@@ -106,6 +119,18 @@ const Insurance = () => {
             </div>
           </div>
         </section>
+
+        <StaticPageSeoBlock
+          introHeading={INSURANCE_CONTENT.introHeading}
+          introHtml={INSURANCE_CONTENT.introHtml}
+          highlights={INSURANCE_CONTENT.highlights}
+          highlightsHeading={INSURANCE_CONTENT.highlightsHeading}
+          tips={INSURANCE_CONTENT.tips}
+          tipsHeading={INSURANCE_CONTENT.tipsHeading}
+          faqItems={INSURANCE_CONTENT.faqItems}
+          faqHeading={INSURANCE_CONTENT.faqHeading}
+          topicName={INSURANCE_CONTENT.topicName}
+        />
       </main>
 
       <Footer />

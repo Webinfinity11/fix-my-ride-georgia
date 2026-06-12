@@ -12,6 +12,8 @@ import { useMechanics } from "@/hooks/useMechanics";
 import { Filter, RefreshCw, MapPin } from "lucide-react";
 import SEOHead from "@/components/seo/SEOHead";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { MECHANICS_CONTENT } from "@/utils/staticPagesSeoContent";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -358,8 +360,21 @@ const Mechanics = () => {
             )}
           </div>
         </div>
+
+        {/* Long-form SEO content — intro + highlights + tips + FAQ + related blogs */}
+        <StaticPageSeoBlock
+          introHeading={MECHANICS_CONTENT.introHeading}
+          introHtml={MECHANICS_CONTENT.introHtml}
+          highlights={MECHANICS_CONTENT.highlights}
+          highlightsHeading={MECHANICS_CONTENT.highlightsHeading}
+          tips={MECHANICS_CONTENT.tips}
+          tipsHeading={MECHANICS_CONTENT.tipsHeading}
+          faqItems={MECHANICS_CONTENT.faqItems}
+          faqHeading={MECHANICS_CONTENT.faqHeading}
+          topicName={MECHANICS_CONTENT.topicName}
+        />
       </main>
-      
+
       <Footer />
     </div>
   );

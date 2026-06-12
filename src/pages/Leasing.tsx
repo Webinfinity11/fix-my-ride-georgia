@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ServicePageNavigation } from "@/components/services/ServicePageNavigation";
 import { DollarSign, CheckCircle2, Clock, Shield } from "lucide-react";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { LEASING_CONTENT } from "@/utils/staticPagesSeoContent";
 
 const Leasing = () => {
   const canonicalUrl = generateCanonicalURL('leasing', {});
@@ -64,11 +66,22 @@ const Leasing = () => {
 
           <div className="container mx-auto px-4 relative z-10">
             {/* Badge */}
-            <div className="flex justify-center pt-8 mb-8">
+            <div className="flex justify-center pt-8 mb-4">
               <Badge className="bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-2 text-sm font-medium">
                 <DollarSign className="h-4 w-4 mr-2" />
                 ავტომობილის ლიზინგი
               </Badge>
+            </div>
+
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3">
+                {LEASING_CONTENT.h1}
+              </h1>
+              {LEASING_CONTENT.h1Subtitle && (
+                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                  {LEASING_CONTENT.h1Subtitle}
+                </p>
+              )}
             </div>
 
             {/* Service Navigation */}
@@ -106,6 +119,18 @@ const Leasing = () => {
             </div>
           </div>
         </section>
+
+        <StaticPageSeoBlock
+          introHeading={LEASING_CONTENT.introHeading}
+          introHtml={LEASING_CONTENT.introHtml}
+          highlights={LEASING_CONTENT.highlights}
+          highlightsHeading={LEASING_CONTENT.highlightsHeading}
+          tips={LEASING_CONTENT.tips}
+          tipsHeading={LEASING_CONTENT.tipsHeading}
+          faqItems={LEASING_CONTENT.faqItems}
+          faqHeading={LEASING_CONTENT.faqHeading}
+          topicName={LEASING_CONTENT.topicName}
+        />
       </main>
 
       <Footer />
