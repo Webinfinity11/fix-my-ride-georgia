@@ -20,7 +20,6 @@ import {
   Award,
   Search,
   Megaphone,
-  MapIcon,
   Briefcase,
   FileText,
   Mail,
@@ -197,11 +196,6 @@ const DashboardSidebar = () => {
                 <NavLink to="/dashboard/admin/banners" className={navLinkClasses}>
                   <Megaphone size={18} />
                   <span className="text-sm md:text-base">რეკლამების მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/sitemap" className={navLinkClasses}>
-                  <MapIcon size={18} />
-                  <span className="text-sm md:text-base">Sitemap მართვა</span>
                 </NavLink>
 
                 <NavLink to="/dashboard/admin/blog" className={navLinkClasses}>

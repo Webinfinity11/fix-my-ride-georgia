@@ -26,7 +26,6 @@ import FuelImporterManagement from "@/components/dashboard/admin/FuelImporterMan
 import { AdminFuelBrands } from "@/components/dashboard/admin/AdminFuelBrands";
 import SEOManagement from "@/components/dashboard/admin/SEOManagement";
 import BannerManagement from "@/components/dashboard/admin/BannerManagement";
-import SitemapManagement from "@/components/dashboard/admin/SitemapManagement";
 import AdminLeads from "@/components/dashboard/admin/AdminLeads";
 import AdminRequests from "@/components/dashboard/admin/AdminRequests";
 import { AdminPartsOrders } from "@/components/dashboard/admin/AdminPartsOrders";
@@ -344,16 +343,6 @@ const Dashboard = () => {
                   element={
                     user.role === "admin" ? (
                       <BannerManagement />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
-                  }
-                />
-                <Route
-                  path="/admin/sitemap"
-                  element={
-                    user.role === "admin" ? (
-                      <SitemapManagement />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

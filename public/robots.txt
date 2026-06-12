@@ -40,5 +40,3 @@ Sitemap: https://fixup.ge/sitemap_index.xml
 
 # Crawl-delay for better server performance
 Crawl-delay: 1
-
-# Deploy marker: 20260612-130407
