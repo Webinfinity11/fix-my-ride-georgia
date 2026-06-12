@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Wrench, ArrowRight, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FooterTopCategories } from "@/components/seo/InternalLinkWidgets";
 
 const Footer = () => {
   return (
@@ -28,7 +28,7 @@ const Footer = () => {
 
         {/* Main Footer */}
         <div className="py-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10">
             {/* Logo and Description */}
             <div className="col-span-1 md:col-span-1 lg:col-span-1">
               <Link to="/" className="flex items-center mb-6">
@@ -153,6 +153,9 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
+
+            {/* Top Categories — sitewide internal link equity for SEO. */}
+            <FooterTopCategories limit={10} />
 
             {/* User Links */}
             <div className="col-span-1">

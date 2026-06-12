@@ -42,6 +42,7 @@ import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "
 import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
 import { SaveServiceButton } from "@/components/services/SaveServiceButton";
 import ServiceDetailBanner from "@/components/banners/ServiceDetailBanner";
+import { RelatedBlogPosts, MechanicOtherServices } from "@/components/seo/InternalLinkWidgets";
 
 interface ServiceType {
   id: number;
@@ -1054,6 +1055,15 @@ const ServiceDetail = () => {
             )}
           </div>
         </div>
+
+        {/* SEO internal-link widgets — keep visitors browsing + boost link equity. */}
+        {service.mechanic?.id && (
+          <MechanicOtherServices
+            mechanicId={service.mechanic.id}
+            excludeServiceId={service.id}
+          />
+        )}
+        <RelatedBlogPosts limit={3} />
       </div>
     </Layout>
   );

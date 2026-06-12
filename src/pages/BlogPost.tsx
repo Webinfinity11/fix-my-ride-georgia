@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { RelatedServices } from '@/components/seo/InternalLinkWidgets';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -87,7 +88,9 @@ export default function BlogPost() {
   }
 
   const readTime = calculateReadTime(post.content);
-  const related = relatedPosts?.filter(p => p.id !== post.id && p.author_id === post.author_id).slice(0, 3) || [];
+  // Recent posts excluding the current one — broader than author-only so the widget
+  // actually has content to show when authors are spread across the small post pool.
+  const related = relatedPosts?.filter(p => p.id !== post.id).slice(0, 3) || [];
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -251,7 +254,7 @@ export default function BlogPost() {
         {related.length > 0 && (
           <>
             <Separator className="my-12" />
-            <h2 className="text-2xl font-bold mb-6">სხვა სტატიები ამ ავტორისგან</h2>
+            <h2 className="text-2xl font-bold mb-6">სხვა სტატიები</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {related.map((relatedPost) => (
                 <BlogCard key={relatedPost.id} post={relatedPost} />
@@ -259,6 +262,9 @@ export default function BlogPost() {
             </div>
           </>
         )}
+
+        {/* Related Services — internal link bridge from blog → commercial pages */}
+        <RelatedServices limit={6} />
       </article>
     </Layout>
   );
