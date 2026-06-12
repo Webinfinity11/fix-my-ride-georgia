@@ -112,6 +112,8 @@ function wrapUrlset(entries) {
 
 // Static pages — all single landing pages (including dealers/insurance/leasing/laundries/fuel-*).
 // No detail routes for these → they belong in the static sitemap.
+// Map tabs (services/laundries/drives/chargers/stations) are real URL paths; keep in sync
+// with validTabs in src/pages/Map.tsx.
 const STATIC_PAGES = [
   '/',
   '/services',
@@ -120,6 +122,11 @@ const STATIC_PAGES = [
   '/about',
   '/contact',
   '/map',
+  '/map/services',
+  '/map/laundries',
+  '/map/drives',
+  '/map/chargers',
+  '/map/stations',
   '/category',
   '/blog',
   '/vacancies',
@@ -182,9 +189,8 @@ async function main() {
       .select('id, name')
       .order('id'),
     supabase.from('mechanic_profiles')
-      .select('id, display_id, updated_at, profiles!inner(role, is_verified, first_name, last_name)')
+      .select('id, display_id, updated_at, profiles!inner(role, first_name, last_name)')
       .eq('profiles.role', 'mechanic')
-      .eq('profiles.is_verified', true)
       .order('display_id'),
     supabase.from('blog_posts')
       .select('slug, updated_at, featured_image')

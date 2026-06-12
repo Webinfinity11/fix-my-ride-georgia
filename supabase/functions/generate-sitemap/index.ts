@@ -83,8 +83,11 @@ function wrapUrlset(entries: string[]): string {
 `
 }
 
+// Map tabs (services/laundries/drives/chargers/stations) are real URL paths;
+// keep in sync with validTabs in src/pages/Map.tsx.
 const STATIC_PAGES = [
-  '/', '/services', '/mechanic', '/search', '/about', '/contact', '/map',
+  '/', '/services', '/mechanic', '/search', '/about', '/contact',
+  '/map', '/map/services', '/map/laundries', '/map/drives', '/map/chargers', '/map/stations',
   '/category', '/blog', '/vacancies', '/laundries', '/leasing', '/dealers',
   '/insurance', '/fuel-importers', '/fuel-brands', '/community', '/privacy-policy',
 ]
@@ -130,9 +133,8 @@ serve(async (req) => {
         .select('id, name')
         .order('id'),
       supabase.from('mechanic_profiles')
-        .select('id, display_id, updated_at, profiles!inner(role, is_verified, first_name, last_name)')
+        .select('id, display_id, updated_at, profiles!inner(role, first_name, last_name)')
         .eq('profiles.role', 'mechanic')
-        .eq('profiles.is_verified', true)
         .order('display_id'),
       supabase.from('blog_posts')
         .select('slug, updated_at, featured_image')
