@@ -32,6 +32,22 @@ const XSL_HREF = '//fixup.ge/main-sitemap.xsl';
 // IndexNow key — file lives at public/{KEY}.txt for ownership verification.
 const INDEXNOW_KEY = 'a3f7e2b9c4d6e8f1a2b3c4d5e6f78901';
 
+// District landing pages — mirror src/utils/districts.ts. Keep in sync.
+// Only districts with ≥10 services site-wide qualify; the per-category
+// combination still needs ≥1 service for its URL to ship.
+const DISTRICTS = [
+  { slug: 'gldani',      name: 'გლდანი' },
+  { slug: 'varketili',   name: 'ვარკეთილი' },
+  { slug: 'digomi',      name: 'დიღომი' },
+  { slug: 'didube',      name: 'დიდუბე' },
+  { slug: 'saburtalo',   name: 'საბურთალო' },
+  { slug: 'nadzaladevi', name: 'ნაძალადევი' },
+  { slug: 'samgori',     name: 'სამგორი' },
+  { slug: 'isani',       name: 'ისანი' },
+  { slug: 'chughureti',  name: 'ჩუღურეთი' },
+];
+const DISTRICT_NAME_TO_SLUG = Object.fromEntries(DISTRICTS.map((d) => [d.name, d.slug]));
+
 // Keep in sync with src/utils/slugUtils.ts AND supabase/functions/_shared/slug.ts.
 const georgianToLatin = {
   'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
@@ -226,7 +242,7 @@ async function main() {
     { data: vacancies, error: vacanciesErr },
   ] = await Promise.all([
     supabase.from('mechanic_services')
-      .select('id, name, slug, description, updated_at, created_at, photos, videos')
+      .select('id, name, slug, description, updated_at, created_at, photos, videos, category_id, district')
       .eq('is_active', true)
       .order('id'),
     supabase.from('service_categories')
@@ -326,15 +342,40 @@ async function main() {
   });
   await writePaginated('mechanic', mechanicEntries, maxLastmod(mechanics));
 
-  // ---- Categories ----
+  // ---- Categories + district landing pages ----
   // service_categories has no updated_at; use current timestamp as fallback.
-  const categoryEntries = (categories || []).map((c) => {
-    const slug = createSlug(c.name);
-    return urlEntry({
-      loc: `${SITE_URL}/category/${slug}`,
+  // Parent category URL ships first, then any (category, district) combination
+  // that has at least one active service. Empty combinations are skipped so
+  // Google never crawls a "0 services" landing page.
+  const categoryEntries = [];
+  // Pre-index services by (category_id → district name → count) so we don't
+  // re-scan the full list once per category.
+  const districtsByCategory = new Map();
+  for (const s of services || []) {
+    if (!s.category_id || !s.district) continue;
+    const districtSlug = DISTRICT_NAME_TO_SLUG[s.district];
+    if (!districtSlug) continue; // unsupported district — skip
+    if (!districtsByCategory.has(s.category_id)) {
+      districtsByCategory.set(s.category_id, new Set());
+    }
+    districtsByCategory.get(s.category_id).add(districtSlug);
+  }
+  for (const c of categories || []) {
+    const categorySlug = createSlug(c.name);
+    categoryEntries.push(urlEntry({
+      loc: `${SITE_URL}/category/${categorySlug}`,
       lastmod: now,
-    });
-  });
+    }));
+    const activeDistricts = districtsByCategory.get(c.id);
+    if (activeDistricts) {
+      for (const districtSlug of activeDistricts) {
+        categoryEntries.push(urlEntry({
+          loc: `${SITE_URL}/category/${categorySlug}/${districtSlug}`,
+          lastmod: now,
+        }));
+      }
+    }
+  }
   await writePaginated('category', categoryEntries, now);
 
   // ---- Blog posts ----

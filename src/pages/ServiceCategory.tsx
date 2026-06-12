@@ -27,7 +27,9 @@ import {
   type FAQItem,
 } from "@/utils/categoryContent";
 import { CATEGORY_OVERRIDES } from "@/utils/categoryOverrides";
+import { DISTRICTS, getDistrictBySlug } from "@/utils/districts";
 import { CategoryIntroSection, CategoryFAQSection, RelatedCategories } from "@/components/seo/CategorySeoSections";
+import { DistrictsNav } from "@/components/seo/DistrictsNav";
 import { RelatedBlogPosts } from "@/components/seo/InternalLinkWidgets";
 
 type CategoryType = {
@@ -42,14 +44,19 @@ type CategoryType = {
 };
 
 const ServiceCategory = () => {
-  const { categoryId, categorySlug } = useParams<{ categoryId?: string; categorySlug?: string }>();
+  const { categoryId, categorySlug, district: districtSlug } = useParams<{
+    categoryId?: string;
+    categorySlug?: string;
+    district?: string;
+  }>();
+  const districtInfo = getDistrictBySlug(districtSlug);
   const [category, setCategory] = useState<CategoryType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     searchTerm: "",
     selectedCity: null as string | null,
-    selectedDistrict: null as string | null,
+    selectedDistrict: districtInfo?.name ?? (null as string | null),
     selectedBrands: [] as string[],
     onSiteOnly: false,
     minRating: null as number | null
@@ -295,11 +302,15 @@ const ServiceCategory = () => {
     );
   }
 
-  // Breadcrumb data
+  // Breadcrumb data — district pages extend the parent crumb chain.
   const breadcrumbItems = [
     { name: 'მთავარი', url: 'https://fixup.ge/' },
     { name: 'კატეგორიები', url: 'https://fixup.ge/category' },
-    { name: category.name, url: `https://fixup.ge/category/${createCategorySlug(category.name)}` }
+    { name: category.name, url: `https://fixup.ge/category/${createCategorySlug(category.name)}` },
+    ...(districtInfo ? [{
+      name: districtInfo.name,
+      url: `https://fixup.ge/category/${createCategorySlug(category.name)}/${districtInfo.slug}`,
+    }] : []),
   ];
 
   // SEO content — DB override OR template fallback. Price range computed from
@@ -326,20 +337,35 @@ const ServiceCategory = () => {
   // DB row wins so editorial can hot-fix without a deploy; code overrides cover
   // high-traffic categories (Search Console top queries) before the DB is filled.
   const override = CATEGORY_OVERRIDES[category.name];
-  const metaTitle = getCategoryMetaTitle(seoStats, category.seo_meta_title ?? override?.seo_meta_title);
-  const metaDescription = getCategoryMetaDescription(seoStats, category.seo_meta_description ?? override?.seo_meta_description);
+  const baseMetaTitle = getCategoryMetaTitle(seoStats, category.seo_meta_title ?? override?.seo_meta_title);
+  const baseMetaDescription = getCategoryMetaDescription(seoStats, category.seo_meta_description ?? override?.seo_meta_description);
   const introHtml = getCategoryIntro(seoStats, category.seo_intro ?? override?.seo_intro);
   const highlights = getCategoryHighlights(seoStats);
   const tips = getCategoryTips(seoStats);
   const faqItems = getCategoryFAQ(seoStats, category.seo_faq ?? override?.seo_faq);
+
+  // District-aware SEO: rewrite title/meta/H1/URL when a district slug is present.
+  // The district name uses the locative case ("გლდანში") so the sentence reads
+  // naturally rather than appearing as a slapped-on suffix.
+  const categoryUrl = `https://fixup.ge/category/${createCategorySlug(category.name)}`;
+  const canonicalUrl = districtInfo ? `${categoryUrl}/${districtInfo.slug}` : categoryUrl;
+  const metaTitle = districtInfo
+    ? `${category.name} ${districtInfo.nameLocative} — ${services.length} ხელოსანი | FixUp`
+    : baseMetaTitle;
+  const metaDescription = districtInfo
+    ? `${category.name} ${districtInfo.nameLocative} — ${services.length} ვერიფიცირებული ხელოსანი. ფასები, შეფასებები, ჯავშანი ონლაინ. FixUp-ის პლატფორმაზე.`
+    : baseMetaDescription;
 
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
         title={metaTitle}
         description={metaDescription}
-        keywords={`${category.name}, ავტოსერვისი, მექანიკოსი, ${category.name} ფასები, ${category.name} თბილისი, ${category.name} ბათუმი, ავტომობილის რემონტი`}
-        url={`https://fixup.ge/category/${createCategorySlug(category.name)}`}
+        keywords={districtInfo
+          ? `${category.name} ${districtInfo.name}, ${category.name} ${districtInfo.nameLocative}, ავტოსერვისი ${districtInfo.name}, ხელოსანი ${districtInfo.name}, ${category.name} თბილისი`
+          : `${category.name}, ავტოსერვისი, მექანიკოსი, ${category.name} ფასები, ${category.name} თბილისი, ${category.name} ბათუმი, ავტომობილის რემონტი`}
+        url={canonicalUrl}
+        canonical={canonicalUrl}
       />
 
       {/* CollectionPage Schema for category */}
@@ -386,7 +412,7 @@ const ServiceCategory = () => {
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                {category.name} თბილისში
+                {category.name} {districtInfo ? districtInfo.nameLocative : 'თბილისში'}
                 {services.length > 0 && (
                   <span className="block text-2xl md:text-3xl font-semibold text-primary mt-2">
                     {services.length} ვერიფიცირებული ხელოსანი
@@ -394,7 +420,9 @@ const ServiceCategory = () => {
                 )}
               </h1>
               <p className="text-lg text-muted-foreground mb-6">
-                {category.description || `იპოვეთ საუკეთესო ${category.name}-ის ხელოსანი თბილისში, ბათუმში, ქუთაისში და მთელ საქართველოში — გამჭვირვალე ფასებით და რეალური შეფასებებით.`}
+                {districtInfo
+                  ? `${category.name} ${districtInfo.nameLocative} — იპოვეთ უახლოესი ხელოსანი თქვენი მახლობლად, წინასწარი ჯავშნით და გამჭვირვალე ფასებით.`
+                  : category.description || `იპოვეთ საუკეთესო ${category.name}-ის ხელოსანი თბილისში, ბათუმში, ქუთაისში და მთელ საქართველოში — გამჭვირვალე ფასებით და რეალური შეფასებებით.`}
               </p>
               <div className="text-sm text-muted-foreground">
                 {services.length} სერვისი ამ კატეგორიაში
@@ -465,6 +493,16 @@ const ServiceCategory = () => {
             </Card>
           )}
         </div>
+
+        {/* Districts internal-link grid — Tbilisi-only, hides empty districts.
+            On the parent /category/:slug page it offers 9 deeper landing pages;
+            on a /category/:slug/:district page it offers the other 8 siblings. */}
+        <DistrictsNav
+          categoryId={category.id}
+          categorySlug={createCategorySlug(category.name)}
+          categoryName={category.name}
+          currentDistrictSlug={districtInfo?.slug}
+        />
 
         {/* SEO content sections — long-form copy + FAQ + internal links.
             Order: intro → FAQ → related categories → related blog posts.

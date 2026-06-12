@@ -104,6 +104,7 @@ function App() {
                   <Route path="/mechanic/:id" element={<MechanicProfile />} />
                   <Route path="/category" element={<CategoryList />} />
                   <Route path="/category/:categorySlug" element={<ServiceCategory />} />
+                  <Route path="/category/:categorySlug/:district" element={<ServiceCategory />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>
