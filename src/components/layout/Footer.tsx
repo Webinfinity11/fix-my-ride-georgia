@@ -230,11 +230,31 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-white/20 pt-8 pb-10 text-center text-blue-200">
+        <div className="border-t border-white/20 pt-8 pb-10 text-center text-blue-200 space-y-2">
           <p className="flex items-center justify-center gap-1 text-sm">
             &copy; {new Date().getFullYear()} FixUp. შექმნილია
             <Heart className="h-4 w-4 text-secondary mx-1" fill="currentColor" />
             -ით. ყველა უფლება დაცულია.
+          </p>
+          <p className="text-xs text-blue-200/80">
+            <a
+              href="https://infinity.ge/services/saitis-damzadeba/"
+              target="_blank"
+              rel="noopener"
+              className="hover:text-secondary transition-colors"
+              title="საიტის დამზადება — Infinity"
+            >
+              საიტის დამზადება
+            </a>
+            {" "}—{" "}
+            <a
+              href="https://infinity.ge"
+              target="_blank"
+              rel="noopener"
+              className="hover:text-secondary transition-colors font-medium"
+            >
+              INFINITY
+            </a>
           </p>
         </div>
       </div>
