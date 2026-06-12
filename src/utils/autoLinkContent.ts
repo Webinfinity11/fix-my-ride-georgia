@@ -45,7 +45,13 @@ export function autoLinkContent(html: string, terms: LinkableTerm[]): string {
     });
 
   // One link per href per post — keep crawl signal clean.
+  // Pre-seed with hrefs already present in the source HTML so authored anchors
+  // take precedence over auto-injected ones (no duplicate links to same page).
   const linkedHrefs = new Set<string>();
+  root.querySelectorAll('a[href]').forEach((a) => {
+    const h = a.getAttribute('href');
+    if (h) linkedHrefs.add(h);
+  });
 
   function walk(node: Node) {
     if (node.nodeType === 3 /* TEXT_NODE */) {
