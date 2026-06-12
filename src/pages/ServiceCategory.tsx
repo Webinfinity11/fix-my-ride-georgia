@@ -16,12 +16,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { getCategoryFromSlug, createCategorySlug, createSlug } from "@/utils/slugUtils";
 import { ServiceType } from "@/hooks/useServices";
+import {
+  getCategoryMetaTitle,
+  getCategoryMetaDescription,
+  getCategoryIntro,
+  getCategoryHighlights,
+  getCategoryTips,
+  getCategoryFAQ,
+  type CategoryStats,
+  type FAQItem,
+} from "@/utils/categoryContent";
+import { CategoryIntroSection, CategoryFAQSection, RelatedCategories } from "@/components/seo/CategorySeoSections";
+import { RelatedBlogPosts } from "@/components/seo/InternalLinkWidgets";
 
 type CategoryType = {
   id: number;
   name: string;
   description: string;
   icon: string;
+  seo_intro?: string | null;
+  seo_faq?: FAQItem[] | null;
+  seo_meta_title?: string | null;
+  seo_meta_description?: string | null;
 };
 
 const ServiceCategory = () => {
@@ -285,11 +301,37 @@ const ServiceCategory = () => {
     { name: category.name, url: `https://fixup.ge/category/${createCategorySlug(category.name)}` }
   ];
 
+  // SEO content — DB override OR template fallback. Price range computed from
+  // the actual services in this category so the meta description reflects reality.
+  const priceMin = services.reduce<number | null>(
+    (m, s) => (s.price_from != null && (m == null || s.price_from < m) ? s.price_from : m),
+    null
+  );
+  const priceMax = services.reduce<number | null>(
+    (m, s) => (s.price_to != null && (m == null || s.price_to > m) ? s.price_to : m),
+    null
+  );
+  const cities = Array.from(new Set(services.map((s) => s.city).filter(Boolean) as string[]));
+
+  const seoStats: CategoryStats = {
+    name: category.name,
+    serviceCount: services.length,
+    priceMin,
+    priceMax,
+    cities,
+  };
+  const metaTitle = getCategoryMetaTitle(seoStats, category.seo_meta_title);
+  const metaDescription = getCategoryMetaDescription(seoStats, category.seo_meta_description);
+  const introHtml = getCategoryIntro(seoStats, category.seo_intro);
+  const highlights = getCategoryHighlights(seoStats);
+  const tips = getCategoryTips(seoStats);
+  const faqItems = getCategoryFAQ(seoStats, category.seo_faq);
+
   return (
     <div className="min-h-screen flex flex-col">
       <SEOHead
-        title={`${category.name} - ${services.length} სერვისი საქართველოში`}
-        description={category.description || `იპოვეთ საუკეთესო ${category.name} სერვისები საქართველოში. ${services.length}+ დადასტურებული ხელოსანი, მაღალი ხარისხის მომსახურება, სამართლიანი ფასები.`}
+        title={metaTitle}
+        description={metaDescription}
         keywords={`${category.name}, ავტოსერვისი, მექანიკოსი, ${category.name} ფასები, ${category.name} თბილისი, ${category.name} ბათუმი, ავტომობილის რემონტი`}
         url={`https://fixup.ge/category/${createCategorySlug(category.name)}`}
       />
@@ -333,13 +375,20 @@ const ServiceCategory = () => {
           </div>
         </div>
 
-        {/* Header Section */}
+        {/* Header Section — keyword-rich H1 with city + count, plus subtitle */}
         <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-4xl font-bold mb-4">{category.name} — ავტოსერვისები საქართველოში</h1>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                {category.name} თბილისში
+                {services.length > 0 && (
+                  <span className="block text-2xl md:text-3xl font-semibold text-primary mt-2">
+                    {services.length} ვერიფიცირებული ხელოსანი
+                  </span>
+                )}
+              </h1>
               <p className="text-lg text-muted-foreground mb-6">
-                {category.description || `იპოვეთ საუკეთესო ${category.name}-ის ხელოსანი თბილისში, ბათუმში, ქუთაისში და მთელ საქართველოში`}
+                {category.description || `იპოვეთ საუკეთესო ${category.name}-ის ხელოსანი თბილისში, ბათუმში, ქუთაისში და მთელ საქართველოში — გამჭვირვალე ფასებით და რეალური შეფასებებით.`}
               </p>
               <div className="text-sm text-muted-foreground">
                 {services.length} სერვისი ამ კატეგორიაში
@@ -410,8 +459,24 @@ const ServiceCategory = () => {
             </Card>
           )}
         </div>
+
+        {/* SEO content sections — long-form copy + FAQ + internal links.
+            Order: intro → FAQ → related categories → related blog posts.
+            Sections render only when meaningful content exists. */}
+        <CategoryIntroSection
+          stats={seoStats}
+          introHtml={introHtml}
+          highlights={highlights}
+          tips={tips}
+        />
+
+        <CategoryFAQSection items={faqItems} categoryName={category.name} />
+
+        <RelatedCategories currentId={category.id} limit={6} />
+
+        <RelatedBlogPosts limit={3} />
       </main>
-      
+
       <Footer />
     </div>
   );
