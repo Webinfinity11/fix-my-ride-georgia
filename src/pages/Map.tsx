@@ -21,6 +21,8 @@ import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Se
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
+import { StaticPageSeoBlock } from "@/components/seo/StaticPageSeoBlock";
+import { MAP_TABS_CONTENT } from "@/utils/staticPagesSeoContent";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createServiceSlug } from "@/utils/slugUtils";
 import { escapeHtml as esc, safeUrl } from "@/lib/sanitize";
@@ -820,10 +822,21 @@ const Map = () => {
     };
     updateMarkers();
   }, [map, viewMode, services, laundries, drives, chargers, filteredChargers, filteredStations, selectedService, selectedCharger, selectedStation]);
+  const tabSeo = MAP_TABS_CONTENT[viewMode];
+
   return (
     <Layout>
       <SEOHead title={seoData[viewMode].title} description={seoData[viewMode].description} />
-      
+
+      {/* SEO H1 per tab — visually hidden so the full-viewport map layout
+          stays untouched, but Google still picks up a unique heading per
+          /map/{tab} URL. */}
+      {tabSeo?.h1 && (
+        <h1 className="sr-only">
+          {tabSeo.h1}{tabSeo.h1Subtitle ? ` — ${tabSeo.h1Subtitle}` : ''}
+        </h1>
+      )}
+
       <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row">
         {/* Left Sidebar - Services/Laundries List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
@@ -1238,6 +1251,23 @@ const Map = () => {
           </div>
         </div>
       </div>
+
+      {/* Per-tab SEO content block — scrolls into view below the full
+          viewport map. Distinct copy per /map/{tab} URL so Google doesn't
+          dedupe the 5 sub-routes as the same page. */}
+      {tabSeo && (
+        <StaticPageSeoBlock
+          introHeading={tabSeo.introHeading}
+          introHtml={tabSeo.introHtml}
+          highlights={tabSeo.highlights}
+          highlightsHeading={tabSeo.highlightsHeading}
+          tips={tabSeo.tips}
+          tipsHeading={tabSeo.tipsHeading}
+          faqItems={tabSeo.faqItems}
+          faqHeading={tabSeo.faqHeading}
+          topicName={tabSeo.topicName}
+        />
+      )}
     </Layout>
   );
 };
