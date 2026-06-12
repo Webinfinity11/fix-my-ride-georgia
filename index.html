@@ -38,9 +38,8 @@
     <!-- Preload critical assets -->
     <link rel="preload" href="/icons/service-pin.png" as="image" type="image/png">
     
-    <!-- Fonts with display=swap for CLS optimization -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all';this.onload=null">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap"></noscript>
+    <!-- Fonts with display=swap for LCP optimization — loaded immediately since they affect hero text -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap">
     
     <!-- Leaflet CSS loaded dynamically only on Map page -->
     
