@@ -26,6 +26,7 @@ import {
   type CategoryStats,
   type FAQItem,
 } from "@/utils/categoryContent";
+import { CATEGORY_OVERRIDES } from "@/utils/categoryOverrides";
 import { CategoryIntroSection, CategoryFAQSection, RelatedCategories } from "@/components/seo/CategorySeoSections";
 import { RelatedBlogPosts } from "@/components/seo/InternalLinkWidgets";
 
@@ -320,12 +321,17 @@ const ServiceCategory = () => {
     priceMax,
     cities,
   };
-  const metaTitle = getCategoryMetaTitle(seoStats, category.seo_meta_title);
-  const metaDescription = getCategoryMetaDescription(seoStats, category.seo_meta_description);
-  const introHtml = getCategoryIntro(seoStats, category.seo_intro);
+
+  // Resolution order: DB row → code override → template fallback.
+  // DB row wins so editorial can hot-fix without a deploy; code overrides cover
+  // high-traffic categories (Search Console top queries) before the DB is filled.
+  const override = CATEGORY_OVERRIDES[category.name];
+  const metaTitle = getCategoryMetaTitle(seoStats, category.seo_meta_title ?? override?.seo_meta_title);
+  const metaDescription = getCategoryMetaDescription(seoStats, category.seo_meta_description ?? override?.seo_meta_description);
+  const introHtml = getCategoryIntro(seoStats, category.seo_intro ?? override?.seo_intro);
   const highlights = getCategoryHighlights(seoStats);
   const tips = getCategoryTips(seoStats);
-  const faqItems = getCategoryFAQ(seoStats, category.seo_faq);
+  const faqItems = getCategoryFAQ(seoStats, category.seo_faq ?? override?.seo_faq);
 
   return (
     <div className="min-h-screen flex flex-col">

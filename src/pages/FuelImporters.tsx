@@ -56,9 +56,9 @@ const FuelImporters = () => {
   return (
     <Layout>
       <SEOHead
-        title="საწვავის ფასები დღეს FixUp აირჩიეთ საუკეთესო ფასი"
-        description="იხილეთ საწვავის ფასები დღეს LIVE საქართველოში. სუპერი, პრემიუმი და რეგულარი საწვავის ფასების შედარება."
-        keywords="საწვავის ფასები დღეს, ბენზინი, დიზელი, საწვავის ფასი, RON 98, RON 96, RON 93, საწვავის იმპორტიორები,LIVE საქართველო"
+        title="საწვავის ფასები დღეს საქართველოში — Live | FixUp"
+        description={`საწვავის ფასები ცოცხალი მონაცემებით — ${importers.length}+ კომპანია (SOCAR, WISSOL, GULF, ROMPETROL, Lukoil). სუპერი, პრემიუმი, რეგულარი, დიზელი, აირი. ფასების შედარება და დღევანდელი ცვლილებები.`}
+        keywords="საწვავის ფასები დღეს, ბენზინი, დიზელი, საწვავის ფასი, ბენზინის ფასები დღეს, საწვავის ფასები live, საწვავის ფასები ონლაინ, საწვავის ფასები საქართველოში, RON 98, RON 96, RON 93, SOCAR, WISSOL, GULF, ROMPETROL"
       />
 
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} threshold={80} />
@@ -66,7 +66,16 @@ const FuelImporters = () => {
       <FuelHero />
 
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">საწვავის ფასები დღეს</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3">
+          საწვავის ფასები დღეს საქართველოში
+        </h1>
+        <p className="flex items-center gap-2 text-sm md:text-base text-muted-foreground mb-3">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 text-green-700 font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+            LIVE
+          </span>
+          <span>ცოცხალი ფასები {importers.length}+ კომპანიიდან — ბენზინი, დიზელი, აირი</span>
+        </p>
         <h2 className="hidden md:block text-lg text-muted-foreground mb-6">
           შეარჩიეთ საწვავის ფასები ონლაინ, LIVE მონიტორინგი მთალი საქართველოს მასშტაბით        {" "}
         </h2>
