@@ -170,7 +170,16 @@ const ServicesDetail = () => {
   };
   const sortServices = (services: any[]) => {
     console.log("📊 Sorting services by:", sortBy);
+    const vipRank = (s: any) => {
+      if (!s?.is_vip_active) return 2;
+      if (s.vip_status === "super_vip") return 0;
+      if (s.vip_status === "vip") return 1;
+      return 2;
+    };
     return [...services].sort((a, b) => {
+      // Always show super_vip first, then vip, regardless of chosen sort
+      const rankDiff = vipRank(a) - vipRank(b);
+      if (rankDiff !== 0) return rankDiff;
       switch (sortBy) {
         case "newest":
           return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
