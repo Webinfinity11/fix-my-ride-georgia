@@ -43,17 +43,33 @@
     <!-- Preload critical assets -->
     <link rel="preload" href="/icons/service-pin.png" as="image" type="image/png">
 
-    <!-- Preload Georgian font file (woff2) so LCP text paints without waiting on the CSS
-         file. Falls back to the stylesheet load below if the woff2 source moves. -->
-    <link
-      rel="preload"
-      href="https://fonts.gstatic.com/s/notosansgeorgian/v44/PlIaFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zWn-8YDB09HFNcb.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    <!-- Preload critical Georgian font files (woff2) for LCP text optimization with high fetch priority -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/notosansgeorgian/v48/PlIVFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zcGyUkdjo.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+    <link rel="preload" href="https://fonts.gstatic.com/s/notosansgeorgian/v48/PlIaFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zWn-8YDB09HFNdpsAy2jmdZS60A.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
 
-    <!-- Fonts with display=swap for LCP optimization — loaded immediately since they affect hero text -->
+    <!-- Inline critical @font-face rules with font-display: swap for LCP optimization -->
+    <style>
+      @font-face {
+        font-family: 'Noto Sans Georgian';
+        font-style: normal;
+        font-weight: 400;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/notosansgeorgian/v48/PlIVFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zcGyUkdjo.woff2) format('woff2');
+        unicode-range: U+0589, U+10A0-10FF, U+1C90-1CBA, U+1CBD-1CBF, U+205A, U+2D00-2D2F, U+2E31;
+      }
+      @font-face {
+        font-family: 'Noto Sans Georgian';
+        font-style: normal;
+        font-weight: 700;
+        font-stretch: 100%;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/notosansgeorgian/v48/PlIaFke5O6RzLfvNNVSitxkr76PRHBC4Ytyq-Gof7PUs4S7zWn-8YDB09HFNdpsAy2jmdZS60A.woff2) format('woff2');
+        unicode-range: U+0589, U+10A0-10FF, U+1C90-1CBA, U+1CBD-1CBF, U+205A, U+2D00-2D2F, U+2E31;
+      }
+    </style>
+
+    <!-- Full stylesheet for remaining weights and unicode ranges -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@300;400;500;600;700&display=swap">
     
     <!-- Leaflet CSS loaded dynamically only on Map page -->
