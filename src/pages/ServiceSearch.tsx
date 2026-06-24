@@ -128,8 +128,8 @@ const BrandBox = ({ selected, options, onToggle, onClear }: {
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[min(92vw,420px)]" align="start">
-        <div className="p-2 border-b flex items-center gap-2">
+      <PopoverContent className="p-0 w-[min(94vw,520px)]" align="start">
+        <div className="p-2.5 border-b flex items-center gap-2">
           <SearchIcon className="h-4 w-4 text-muted-foreground shrink-0 ml-1" />
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="მარკის ძებნა..."
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
@@ -137,16 +137,18 @@ const BrandBox = ({ selected, options, onToggle, onClear }: {
             <button onClick={onClear} className="text-xs text-muted-foreground hover:text-foreground shrink-0 px-1">გასუფთავება ({selected.length})</button>
           )}
         </div>
-        <div className="max-h-[320px] overflow-y-auto p-2 grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+        <div className="max-h-[60vh] overflow-y-auto p-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {filtered.map(b => {
             const active = selected.includes(b);
             return (
               <button key={b} onClick={() => onToggle(b)}
-                className={cn("relative flex flex-col items-center justify-center gap-1 rounded-lg border p-2 h-[72px] transition-colors",
-                  active ? "border-primary bg-primary/5" : "border-transparent hover:bg-muted")}>
-                {active && <Check className="absolute top-1 right-1 h-3.5 w-3.5 text-primary" />}
-                <BrandLogo brand={b} className="h-7 w-7" />
-                <span className="text-[10px] text-center leading-tight line-clamp-1 w-full">{b}</span>
+                className={cn("relative flex items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+                  active ? "border-primary bg-primary/5" : "border-border hover:bg-muted")}>
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white border">
+                  <BrandLogo brand={b} className="h-9 w-9" />
+                </span>
+                <span className="text-sm font-medium flex-1 truncate">{b}</span>
+                {active && <Check className="h-5 w-5 text-primary shrink-0" />}
               </button>
             );
           })}
