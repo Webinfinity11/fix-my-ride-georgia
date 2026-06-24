@@ -2,7 +2,6 @@
 -- they are EXACT regardless of row volume / PostgREST max-rows caps.
 -- Idempotent (CREATE OR REPLACE).
 
--- Daily counts for the last (2 * p_days) days (current + previous period for trend).
 CREATE OR REPLACE FUNCTION public.get_admin_analytics(p_days int)
 RETURNS TABLE(
   day date,
@@ -24,24 +23,23 @@ BEGIN
 
   RETURN QUERY
   WITH d AS (
-    SELECT generate_series(v_start, CURRENT_DATE, interval '1 day')::date AS day
+    SELECT generate_series(v_start, CURRENT_DATE, interval '1 day')::date AS bucket
   ),
-  sv AS (SELECT created_at::date AS day, count(*) c FROM service_views        WHERE created_at >= v_start GROUP BY 1),
-  sc AS (SELECT created_at::date AS day, count(*) c FROM service_phone_views   WHERE created_at >= v_start GROUP BY 1),
-  mc AS (SELECT created_at::date AS day, count(*) c FROM mechanic_phone_views  WHERE created_at >= v_start GROUP BY 1),
-  pv AS (SELECT created_at::date AS day, count(*) c FROM mechanic_profile_views WHERE created_at >= v_start GROUP BY 1)
-  SELECT d.day,
+  sv AS (SELECT created_at::date AS bucket, count(*) AS c FROM service_views         WHERE created_at >= v_start GROUP BY 1),
+  sc AS (SELECT created_at::date AS bucket, count(*) AS c FROM service_phone_views    WHERE created_at >= v_start GROUP BY 1),
+  mc AS (SELECT created_at::date AS bucket, count(*) AS c FROM mechanic_phone_views   WHERE created_at >= v_start GROUP BY 1),
+  pv AS (SELECT created_at::date AS bucket, count(*) AS c FROM mechanic_profile_views WHERE created_at >= v_start GROUP BY 1)
+  SELECT d.bucket AS day,
     COALESCE(sv.c, 0), COALESCE(sc.c, 0), COALESCE(mc.c, 0), COALESCE(pv.c, 0)
   FROM d
-  LEFT JOIN sv ON sv.day = d.day
-  LEFT JOIN sc ON sc.day = d.day
-  LEFT JOIN mc ON mc.day = d.day
-  LEFT JOIN pv ON pv.day = d.day
-  ORDER BY d.day;
+  LEFT JOIN sv ON sv.bucket = d.bucket
+  LEFT JOIN sc ON sc.bucket = d.bucket
+  LEFT JOIN mc ON mc.bucket = d.bucket
+  LEFT JOIN pv ON pv.bucket = d.bucket
+  ORDER BY d.bucket;
 END;
 $$;
 
--- Top services by call clicks within the last p_days (current period).
 CREATE OR REPLACE FUNCTION public.get_top_called_services(p_days int, p_limit int)
 RETURNS TABLE(service_id int, name text, calls bigint)
 LANGUAGE plpgsql
