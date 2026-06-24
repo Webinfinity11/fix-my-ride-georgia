@@ -12,6 +12,7 @@ export type MechanicType = {
     city?: string;
     district?: string;
     avatar_url?: string;
+    phone?: string;
     is_verified?: boolean;
   };
   specialization?: string;

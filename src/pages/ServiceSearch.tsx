@@ -5,13 +5,12 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search as SearchIcon, Star, MapPin, Clock, CreditCard, Banknote, Car } from "lucide-react";
+import { Search as SearchIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
+import ServiceCard from "@/components/services/ServiceCard";
 import { 
   Select,
   SelectContent,
@@ -37,6 +36,9 @@ type ServiceType = {
   accepts_cash_payment: boolean;
   rating: number | null;
   review_count: number | null;
+  address: string | null;
+  photos: string[] | null;
+  slug?: string | null;
   category: {
     id: number;
     name: string;
@@ -48,6 +50,7 @@ type ServiceType = {
     rating: number | null;
     is_mobile: boolean;
     display_id?: number;
+    phone_number?: string | null;
   };
 };
 
@@ -173,11 +176,14 @@ const ServiceSearch = () => {
           accepts_cash_payment,
           rating,
           review_count,
+          address,
+          photos,
           service_categories(id, name),
           profiles!mechanic_services_mechanic_id_fkey(
             id,
             first_name,
             last_name,
+            phone,
             mechanic_profiles(display_id, rating, is_mobile)
           )
         `)
@@ -230,6 +236,8 @@ const ServiceSearch = () => {
           accepts_cash_payment: service.accepts_cash_payment,
           rating: service.rating,
           review_count: service.review_count,
+          address: service.address,
+          photos: service.photos || [],
           category: service.service_categories,
           mechanic: {
             id: profile?.id || "",
@@ -237,7 +245,8 @@ const ServiceSearch = () => {
             last_name: profile?.last_name || "",
             rating: profile?.mechanic_profiles?.rating || null,
             is_mobile: profile?.mechanic_profiles?.is_mobile || false,
-            display_id: profile?.mechanic_profiles?.display_id || undefined
+            display_id: profile?.mechanic_profiles?.display_id || undefined,
+            phone_number: profile?.phone || null
           }
         };
       }) || [];
@@ -443,93 +452,7 @@ const ServiceSearch = () => {
                 <p className="text-sm text-muted-foreground mb-6">ნაპოვნია {services.length} სერვისი</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {services.slice(0, visibleServicesCount).map(service => (
-                    <Card key={service.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-3">
-                          <Link 
-                            to={`/service/${createServiceSlug(service.id, service.name)}`}
-                            className="text-lg font-semibold hover:text-primary transition-colors"
-                          >
-                            {service.name}
-                          </Link>
-                          {service.rating && (
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span className="text-sm font-medium">{service.rating}</span>
-                              <span className="text-xs text-muted-foreground">({service.review_count})</span>
-                            </div>
-                          )}
-                        </div>
-
-                        {service.category && (
-                          <Badge variant="secondary" className="mb-3">{service.category.name}</Badge>
-                        )}
-
-                        {service.description && (
-                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                            {service.description}
-                          </p>
-                        )}
-
-                        <div className="space-y-2 mb-4">
-                          <div className="flex items-center justify-between text-sm">
-                            <span>ფასი:</span>
-                            <span className="font-medium">{formatPrice(service.price_from, service.price_to)}</span>
-                          </div>
-                          
-                          {service.estimated_hours && (
-                            <div className="flex items-center justify-between text-sm">
-                              <span>დრო:</span>
-                              <span>{service.estimated_hours} საათი</span>
-                            </div>
-                          )}
-
-                          {(service.city || service.district) && (
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <MapPin className="h-3 w-3" />
-                              <span>{service.city}{service.district ? `, ${service.district}` : ''}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 mb-4">
-                          {service.accepts_cash_payment && (
-                            <div className="flex items-center gap-1 text-xs">
-                              <Banknote className="h-3 w-3 text-green-600" />
-                              <span>ნაღდი</span>
-                            </div>
-                          )}
-                          {service.accepts_card_payment && (
-                            <div className="flex items-center gap-1 text-xs">
-                              <CreditCard className="h-3 w-3 text-blue-600" />
-                              <span>ბარათი</span>
-                            </div>
-                          )}
-                          {service.on_site_service && (
-                            <Badge variant="outline" className="text-xs">ადგილზე მისვლა</Badge>
-                          )}
-                        </div>
-
-                        <div className="border-t pt-3">
-                          <Link 
-                            to={`/mechanic/${createMechanicSlug(service.mechanic.display_id || 0, service.mechanic.first_name, service.mechanic.last_name)}`}
-                            className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-                          >
-                            <span>ხელოსანი: {service.mechanic.first_name} {service.mechanic.last_name}</span>
-                            {service.mechanic.rating && (
-                              <div className="flex items-center gap-1">
-                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                <span className="text-xs">{service.mechanic.rating}</span>
-                              </div>
-                            )}
-                          </Link>
-                        </div>
-
-                        <Link to={`/service/${createServiceSlug(service.id, service.name)}`}>
-                          <Button className="w-full mt-4">დეტალები</Button>
-                        </Link>
-                      </CardContent>
-                    </Card>
+                    <ServiceCard key={service.id} service={service} />
                   ))}
                 </div>
 

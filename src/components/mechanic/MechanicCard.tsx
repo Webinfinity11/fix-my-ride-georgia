@@ -5,8 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MapPin, Star, Clock, DollarSign } from "lucide-react";
-import { SendMessageButton } from "./SendMessageButton";
+import { MapPin, Star, Clock, DollarSign, Phone, BadgeCheck } from "lucide-react";
 import { createMechanicSlug } from "@/utils/slugUtils";
 
 interface MechanicCardProps {
@@ -19,6 +18,8 @@ interface MechanicCardProps {
       city?: string;
       district?: string;
       avatar_url?: string;
+      phone?: string;
+      is_verified?: boolean;
     };
     specialization?: string;
     hourly_rate?: number;
@@ -41,8 +42,6 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
     return uuidRegex.test(uuid);
   };
 
-  console.log("🔧 MechanicCard - Mechanic ID:", mechanic.id, "Is valid UUID:", isValidUUID(mechanic.id));
-
   return (
     <Card className="h-full hover:shadow-lg transition-shadow">
       <CardContent className="p-4">
@@ -55,23 +54,36 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
           </Avatar>
           
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg mb-1 truncate">{fullName}</h3>
+            <div className="flex items-center gap-1.5 mb-1">
+              <h3 className="font-semibold text-lg truncate">{fullName}</h3>
+              {mechanic.profiles.is_verified && (
+                <BadgeCheck
+                  className="h-5 w-5 text-green-600 shrink-0"
+                  aria-label="დადასტურებული ხელოსანი"
+                />
+              )}
+            </div>
             {mechanic.specialization && (
               <p className="text-sm text-muted-foreground mb-2">{mechanic.specialization}</p>
             )}
-            
+
             <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
               <MapPin className="h-4 w-4" />
               <span className="truncate">{location}</span>
             </div>
 
-            {mechanic.rating && (
+            {mechanic.rating ? (
               <div className="flex items-center gap-1 mb-2">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm font-medium">{mechanic.rating}</span>
                 <span className="text-sm text-muted-foreground">
                   ({mechanic.review_count || 0} შეფასება)
                 </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 mb-2">
+                <Star className="h-4 w-4 text-muted-foreground/40" />
+                <span className="text-sm text-muted-foreground">ახალი · შეფასების გარეშე</span>
               </div>
             )}
           </div>
@@ -103,14 +115,18 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
                 დეტალები
               </Button>
             </Link>
-            
-            <SendMessageButton 
-              mechanicId={mechanic.id}
-              mechanicName={fullName}
-              variant="default"
-              size="default"
-              className="flex-1"
-            />
+
+            {mechanic.profiles.phone && (
+              <Button
+                className="flex-1"
+                onClick={() => {
+                  window.location.href = `tel:${mechanic.profiles.phone}`;
+                }}
+              >
+                <Phone className="h-4 w-4 mr-1" />
+                დარეკვა
+              </Button>
+            )}
           </>
         ) : (
           <div className="flex-1 text-center text-sm text-muted-foreground">

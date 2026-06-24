@@ -20,17 +20,17 @@ const StationsPromo = lazy(() => import("@/components/home/StationsPromo"));
 const HomeCenterBanner = lazy(() => import("@/components/banners/HomeCenterBanner"));
 const MobileBanner = lazy(() => import("@/components/banners/MobileBanner"));
 
-// სტატისტიკა
+// სტატისტიკა (შესაბამისობაშია /about გვერდის რიცხვებთან)
 const stats = [{
-  number: "500+",
+  number: "200+",
   label: "ხელოსანი",
   icon: Users
 }, {
-  number: "500+",
+  number: "450+",
   label: "სერვისი",
   icon: Zap
 }, {
-  number: "50,000+",
+  number: "3,000+",
   label: "მომხმარებელი",
   icon: Shield
 }, {
@@ -87,6 +87,16 @@ const Index = () => {
                   <SimplifiedSearch onEvacuatorClick={() => setEvacuatorDialogOpen(true)} />
                 </CardContent>
               </Card>
+
+              {/* Trust strip — surfaces credibility right under the search box */}
+              <div className="mt-6 grid grid-cols-4 gap-2 md:gap-4 max-w-2xl mx-auto">
+                {stats.map((stat, index) => (
+                  <div key={index} className="text-center">
+                    <div className="text-lg md:text-2xl font-bold text-primary">{stat.number}</div>
+                    <div className="text-[11px] leading-tight md:text-sm text-muted-foreground">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
