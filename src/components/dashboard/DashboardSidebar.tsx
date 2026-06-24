@@ -49,6 +49,39 @@ const DashboardSidebar = () => {
       isActive ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
     }`;
 
+  // Grouped admin navigation — pending/action items first, then content/catalog/management.
+  const adminGroups: { label: string | null; items: { to: string; icon: typeof Shield; label: string; badge?: number }[] }[] = [
+    { label: null, items: [
+      { to: "/dashboard/admin", icon: Shield, label: "მიმოხილვა" },
+    ]},
+    { label: "მოთხოვნები", items: [
+      { to: "/dashboard/admin/leads", icon: Mail, label: "ლიდები", badge: oldLeadsCount },
+      { to: "/dashboard/admin/requests", icon: FileText, label: "მოთხოვნები", badge: newRequestsCount },
+      { to: "/dashboard/admin/parts-orders", icon: Package, label: "ნაწილების შეკვეთები", badge: newPartsOrdersCount },
+      { to: "/dashboard/admin/evacuator-requests", icon: Truck, label: "ევაკუატორი", badge: newEvacuatorRequestsCount },
+      { to: "/dashboard/admin/booking-management", icon: CalendarCog, label: "ჯავშნების მართვა" },
+    ]},
+    { label: "შინაარსი", items: [
+      { to: "/dashboard/admin/service-details", icon: Cog, label: "სერვისები" },
+      { to: "/dashboard/admin/blog", icon: PenSquare, label: "ბლოგი" },
+      { to: "/dashboard/admin/banners", icon: Megaphone, label: "რეკლამები" },
+      { to: "/dashboard/admin/seo", icon: Search, label: "SEO მართვა" },
+      { to: "/dashboard/admin/community", icon: MessageSquare, label: "Community" },
+    ]},
+    { label: "კატალოგი", items: [
+      { to: "/dashboard/admin/laundries", icon: Settings, label: "სამრეცხაოები" },
+      { to: "/dashboard/admin/drives", icon: Car, label: "დრაივები" },
+      { to: "/dashboard/admin/fuel-importers", icon: Fuel, label: "საწვავის იმპორტიორები" },
+      { to: "/dashboard/admin/fuel-brands", icon: Award, label: "საწვავის ბრენდები" },
+      { to: "/dashboard/admin/vip-management", icon: Crown, label: "VIP მართვა" },
+    ]},
+    { label: "მართვა", items: [
+      { to: "/dashboard/admin/users", icon: Users, label: "მომხმარებლები" },
+      { to: "/dashboard/admin/chat-management", icon: MessageCircle, label: "ჩატის მართვა" },
+      { to: "/dashboard/admin/saved-services", icon: Bookmark, label: "შენახული სერვისები" },
+    ]},
+  ];
+
   return (
     <div className="w-full md:w-64 bg-background rounded-lg shadow-sm p-4 md:p-6 h-fit">
       <div className="mb-4 md:mb-6">
@@ -128,128 +161,26 @@ const DashboardSidebar = () => {
                 ადმინისტრაცია
               </AccordionTrigger>
               <AccordionContent className="space-y-1 pb-2">
-                <NavLink to="/dashboard/admin" className={navLinkClasses}>
-                  <Shield size={18} />
-                  <span className="text-sm md:text-base">მიმოხილვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/service-details" className={navLinkClasses}>
-                  <Cog size={18} />
-                  <span className="text-sm md:text-base">სერვისის დეტალები</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/chat-management" className={navLinkClasses}>
-                  <MessageCircle size={18} />
-                  <span className="text-sm md:text-base">ჩატის მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/laundries" className={navLinkClasses}>
-                  <Settings size={18} />
-                  <span className="text-sm md:text-base">სამრეცხაოები</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/drives" className={navLinkClasses}>
-                  <Car size={18} />
-                  <span className="text-sm md:text-base">დრაივები</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/booking-management" className={navLinkClasses}>
-                  <CalendarCog size={18} />
-                  <span className="text-sm md:text-base">ჯავშნების მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/vip-management" className={navLinkClasses}>
-                  <Crown size={18} />
-                  <span className="text-sm md:text-base">VIP მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/community" className={navLinkClasses}>
-                  <MessageSquare size={18} />
-                  <span className="text-sm md:text-base">Community მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/fuel-importers" className={navLinkClasses}>
-                  <Fuel size={18} />
-                  <span className="text-sm md:text-base">საწვავის იმპორტიორები</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/fuel-brands" className={navLinkClasses}>
-                  <Award size={18} />
-                  <span className="text-sm md:text-base">საწვავის ბრენდები</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/users" className={navLinkClasses}>
-                  <Users size={18} />
-                  <span className="text-sm md:text-base">მომხმარებლები</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/saved-services" className={navLinkClasses}>
-                  <Bookmark size={18} />
-                  <span className="text-sm md:text-base">შენახული სერვისების მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/seo" className={navLinkClasses}>
-                  <Search size={18} />
-                  <span className="text-sm md:text-base">SEO მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/banners" className={navLinkClasses}>
-                  <Megaphone size={18} />
-                  <span className="text-sm md:text-base">რეკლამების მართვა</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/blog" className={navLinkClasses}>
-                  <PenSquare size={18} />
-                  <span className="text-sm md:text-base">ბლოგი</span>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/leads" className={navLinkClasses}>
-                  <Mail size={18} />
-                  <div className="flex items-center gap-2 flex-1">
-                    <span className="text-sm md:text-base">ლიდები</span>
-                    {oldLeadsCount > 0 && (
-                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
-                        {oldLeadsCount}
-                      </Badge>
+                {adminGroups.map((group, gi) => (
+                  <div key={gi} className={group.label ? "pt-1.5" : ""}>
+                    {group.label && (
+                      <p className="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+                        {group.label}
+                      </p>
                     )}
+                    {group.items.map((item) => (
+                      <NavLink key={item.to} to={item.to} end={item.to === "/dashboard/admin"} className={navLinkClasses}>
+                        <item.icon size={18} className="shrink-0" />
+                        <span className="text-sm md:text-base flex-1">{item.label}</span>
+                        {item.badge ? (
+                          <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
+                            {item.badge}
+                          </Badge>
+                        ) : null}
+                      </NavLink>
+                    ))}
                   </div>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/requests" className={navLinkClasses}>
-                  <FileText size={18} />
-                  <div className="flex items-center gap-2 flex-1">
-                    <span className="text-sm md:text-base">მოთხოვნები</span>
-                    {newRequestsCount > 0 && (
-                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
-                        {newRequestsCount}
-                      </Badge>
-                    )}
-                  </div>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/parts-orders" className={navLinkClasses}>
-                  <Package size={18} />
-                  <div className="flex items-center gap-2 flex-1">
-                    <span className="text-sm md:text-base">ნაწილების შეკვეთები</span>
-                    {newPartsOrdersCount > 0 && (
-                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
-                        {newPartsOrdersCount}
-                      </Badge>
-                    )}
-                  </div>
-                </NavLink>
-
-                <NavLink to="/dashboard/admin/evacuator-requests" className={navLinkClasses}>
-                  <Truck size={18} />
-                  <div className="flex items-center gap-2 flex-1">
-                    <span className="text-sm md:text-base">ევაკუატორი</span>
-                    {newEvacuatorRequestsCount > 0 && (
-                      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
-                        {newEvacuatorRequestsCount}
-                      </Badge>
-                    )}
-                  </div>
-                </NavLink>
+                ))}
               </AccordionContent>
             </AccordionItem>
           )}

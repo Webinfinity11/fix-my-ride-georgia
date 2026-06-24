@@ -32,57 +32,27 @@ const AdminStats = () => {
   }
 
   const statCards = [
-    {
-      title: "მომხმარებლები",
-      value: stats?.total_customers || 0,
-      icon: Users,
-      color: "text-blue-600",
-    },
-    {
-      title: "მექანიკოსები",
-      value: stats?.total_mechanics || 0,
-      icon: Wrench,
-      color: "text-green-600",
-    },
-    {
-      title: "სერვისები",
-      value: stats?.total_services || 0,
-      icon: Wrench,
-      color: "text-purple-600",
-    },
-    {
-      title: "ჯამური ჯავშნები",
-      value: stats?.total_bookings || 0,
-      icon: Calendar,
-      color: "text-orange-600",
-    },
-    {
-      title: "მოლოდინში",
-      value: stats?.pending_bookings || 0,
-      icon: Clock,
-      color: "text-yellow-600",
-    },
-    {
-      title: "დასრულებული",
-      value: stats?.completed_bookings || 0,
-      icon: CheckCircle,
-      color: "text-green-600",
-    },
+    { title: "მომხმარებლები", value: stats?.total_customers || 0, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+    { title: "ხელოსნები", value: stats?.total_mechanics || 0, icon: Wrench, color: "text-green-600", bg: "bg-green-50" },
+    { title: "სერვისები", value: stats?.total_services || 0, icon: Wrench, color: "text-purple-600", bg: "bg-purple-50" },
+    { title: "ჯამური ჯავშნები", value: stats?.total_bookings || 0, icon: Calendar, color: "text-orange-600", bg: "bg-orange-50" },
+    { title: "მოლოდინში", value: stats?.pending_bookings || 0, icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
+    { title: "დასრულებული", value: stats?.completed_bookings || 0, icon: CheckCircle, color: "text-green-600", bg: "bg-green-50" },
   ];
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {statCards.map((stat, index) => (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 sm:pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold">{stat.value}</div>
+          <Card key={index} className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4 flex items-center gap-3">
+              <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${stat.bg} ${stat.color}`}>
+                <stat.icon className="h-5 w-5" />
+              </span>
+              <div className="min-w-0">
+                <div className="text-2xl font-bold leading-none">{stat.value}</div>
+                <div className="text-xs text-muted-foreground mt-1 truncate">{stat.title}</div>
+              </div>
             </CardContent>
           </Card>
         ))}
