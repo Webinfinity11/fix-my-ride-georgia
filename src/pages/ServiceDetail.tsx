@@ -33,7 +33,6 @@ import ServiceReviews from "@/components/reviews/ServiceReviews";
 import ServiceGallery from "@/components/services/ServiceGallery";
 import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
 import Layout from "@/components/layout/Layout";
-import { SendMessageButton } from "@/components/mechanic/SendMessageButton";
 import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
 import { ServiceSchema, BreadcrumbSchema, ProductSchema, FAQSchema } from "@/components/seo/StructuredData";
@@ -469,27 +468,20 @@ const ServiceDetail = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
-          {service.mechanic.phone && (
-            <Button
-              size="sm"
-              onClick={async (e) => {
-                e.preventDefault();
-                await trackPhoneView(service.id);
-                window.location.href = `tel:${service.mechanic.phone}`;
-              }}
-            >
-              <Phone className="h-4 w-4 mr-1" />
-              დარეკვა
-            </Button>
-          )}
-          <SendMessageButton 
-            mechanicId={service.mechanic.id}
-            mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
-            variant="outline"
+        {service.mechanic.phone && (
+          <Button
+            className="w-full"
             size="sm"
-          />
-        </div>
+            onClick={async (e) => {
+              e.preventDefault();
+              await trackPhoneView(service.id);
+              window.location.href = `tel:${service.mechanic.phone}`;
+            }}
+          >
+            <Phone className="h-4 w-4 mr-1" />
+            დარეკვა
+          </Button>
+        )}
 
         {isValidUUID(service.mechanic.id) ? (
           <Button
@@ -1088,12 +1080,6 @@ const ServiceDetail = () => {
                 <Phone className="h-4 w-4 mr-2" />
                 დარეკვა
               </Button>
-              <SendMessageButton
-                mechanicId={service.mechanic.id}
-                mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
-                variant="outline"
-                className="flex-1"
-              />
             </div>
           </>
         )}
