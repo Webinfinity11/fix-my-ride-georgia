@@ -137,18 +137,18 @@ const BrandBox = ({ selected, options, onToggle, onClear }: {
             <button onClick={onClear} className="text-xs text-muted-foreground hover:text-foreground shrink-0 px-1">გასუფთავება ({selected.length})</button>
           )}
         </div>
-        <div className="max-h-[60vh] overflow-y-auto p-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div className="max-h-[60vh] overflow-y-auto p-2 grid grid-cols-2 gap-2">
           {filtered.map(b => {
             const active = selected.includes(b);
             return (
               <button key={b} onClick={() => onToggle(b)}
-                className={cn("relative flex items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+                className={cn("relative flex items-center gap-2.5 rounded-xl border p-2.5 text-left transition-colors",
                   active ? "border-primary bg-primary/5" : "border-border hover:bg-muted")}>
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white border">
-                  <BrandLogo brand={b} className="h-9 w-9" />
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white border">
+                  <BrandLogo brand={b} className="h-8 w-8" />
                 </span>
                 <span className="text-sm font-medium flex-1 truncate">{b}</span>
-                {active && <Check className="h-5 w-5 text-primary shrink-0" />}
+                {active && <Check className="h-4 w-4 text-primary shrink-0" />}
               </button>
             );
           })}
