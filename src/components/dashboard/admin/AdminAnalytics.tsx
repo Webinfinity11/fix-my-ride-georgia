@@ -11,24 +11,30 @@ import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid, Le
 
 const PERIODS = [{ d: 7, label: "7 დღე" }, { d: 30, label: "30 დღე" }, { d: 90, label: "90 დღე" }];
 const DAY = 864e5;
-type Ev = { service_id?: number; created_at: string };
+type Daily = { day: string; service_views: number; service_calls: number; mechanic_calls: number; profile_views: number };
 
 const AdminAnalytics = () => {
   const [days, setDays] = useState(30);
 
-  // Pull raw events for a 2× window (current + previous, for trend). Graceful if a table is missing.
-  const eventsFetcher = (table: string, withService: boolean) => async () => {
-    const since = new Date(Date.now() - days * 2 * DAY).toISOString();
-    const cols = withService ? "service_id, created_at" : "created_at";
-    const { data, error } = await supabase.from(table).select(cols).gte("created_at", since).limit(50000);
-    if (error) return null;
-    return (data || []) as unknown as Ev[];
-  };
+  // EXACT server-side daily aggregation (admin-only RPC). 2*days rows: prev + current period.
+  const daily = useQuery({
+    queryKey: ["an-daily", days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_admin_analytics", { p_days: days });
+      if (error) throw error;
+      return (data || []) as Daily[];
+    },
+  });
 
-  const calls = useQuery({ queryKey: ["an-calls", days], queryFn: eventsFetcher("service_phone_views", true) });
-  const mcalls = useQuery({ queryKey: ["an-mcalls", days], queryFn: eventsFetcher("mechanic_phone_views", false) });
-  const sviews = useQuery({ queryKey: ["an-sviews", days], queryFn: eventsFetcher("service_views", true) });
-  const pviews = useQuery({ queryKey: ["an-pviews", days], queryFn: eventsFetcher("mechanic_profile_views", false) });
+  const top = useQuery({
+    queryKey: ["an-top", days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_top_called_services", { p_days: days, p_limit: 8 });
+      if (error) throw error;
+      return (data || []) as { service_id: number; name: string; calls: number }[];
+    },
+  });
+
   const searches = useQuery({
     queryKey: ["an-searches"],
     queryFn: async () => {
@@ -37,75 +43,48 @@ const AdminAnalytics = () => {
     },
   });
 
-  const metric = (rows: Ev[] | null | undefined) => {
-    if (!rows) return { cur: null as number | null, change: null as number | null };
-    const now = Date.now(), curStart = now - days * DAY;
-    let cur = 0, prev = 0;
-    for (const r of rows) { const t = +new Date(r.created_at); if (t >= curStart) cur++; else prev++; }
-    return { cur, change: prev ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0 };
-  };
-
-  // "დარეკვები" = service calls + mechanic calls combined
-  const allCallRows = useMemo(() => [...(calls.data || []), ...(mcalls.data || [])], [calls.data, mcalls.data]);
-  const mCalls = metric(allCallRows);
-  const mServiceCalls = metric(calls.data); // service-only, for the view→call funnel
-  const mViews = metric(sviews.data);
-  const mProfile = metric(pviews.data);
-  const conv = mViews.cur && mViews.cur > 0 && mServiceCalls.cur != null ? Math.round((mServiceCalls.cur / mViews.cur) * 100) : null;
-
-  const series = useMemo(() => {
-    // `days` UTC calendar-day buckets ENDING today (inclusive). created_at is UTC,
-    // so bucketing by the UTC date keeps events and buckets consistent.
-    const t = new Date();
-    const startToday = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate());
-    const startBucket = startToday - (days - 1) * DAY;
-    const buckets: Record<string, { key: string; label: string; ნახვები: number; დარეკვები: number }> = {};
-    const out: { key: string; label: string; ნახვები: number; დარეკვები: number }[] = [];
-    for (let i = 0; i < days; i++) {
-      const d = new Date(startBucket + i * DAY);
-      const key = d.toISOString().slice(0, 10);
-      const o = { key, label: `${d.getUTCDate()}/${d.getUTCMonth() + 1}`, ნახვები: 0, დარეკვები: 0 };
-      buckets[key] = o; out.push(o);
-    }
-    (sviews.data || []).forEach(r => { const k = String(r.created_at).slice(0, 10); if (buckets[k]) buckets[k].ნახვები++; });
-    allCallRows.forEach(r => { const k = String(r.created_at).slice(0, 10); if (buckets[k]) buckets[k].დარეკვები++; });
-    return out;
-  }, [sviews.data, allCallRows, days]);
-
-  const topServiceIds = useMemo(() => {
-    const curStart = Date.now() - days * DAY;
-    const cnt: Record<number, number> = {};
-    (calls.data || []).forEach(r => { if (r.service_id && +new Date(r.created_at) >= curStart) cnt[r.service_id] = (cnt[r.service_id] || 0) + 1; });
-    return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([id, c]) => ({ id: Number(id), calls: c }));
-  }, [calls.data, days]);
-
-  const topServices = useQuery({
-    queryKey: ["an-top-services", topServiceIds.map(s => s.id).join(",")],
-    enabled: topServiceIds.length > 0,
+  // Recent service calls — for the (secondary) hour/city/category breakdowns.
+  const recentCalls = useQuery({
+    queryKey: ["an-recent-calls", days],
     queryFn: async () => {
-      const ids = topServiceIds.map(s => s.id);
-      const { data } = await supabase.from("mechanic_services").select("id, name").in("id", ids);
-      const names = Object.fromEntries((data || []).map(s => [s.id, s.name]));
-      return topServiceIds.map(s => ({ ...s, name: names[s.id] || `#${s.id}` }));
+      const since = new Date(Date.now() - days * DAY).toISOString();
+      const { data, error } = await supabase.from("service_phone_views")
+        .select("service_id, created_at").gte("created_at", since)
+        .order("created_at", { ascending: false }).limit(10000);
+      if (error) return [] as { service_id: number; created_at: string }[];
+      return (data || []) as { service_id: number; created_at: string }[];
     },
   });
 
-  // Peak call hours (local time, current period)
+  const rows = daily.data || [];
+  const half = Math.floor(rows.length / 2);
+  const curRows = rows.slice(half);
+  const prevRows = rows.slice(0, half);
+  const sumKeys = (arr: Daily[], keys: (keyof Daily)[]) =>
+    arr.reduce((s, r) => s + keys.reduce((a, k) => a + (Number(r[k]) || 0), 0), 0);
+  const kpi = (keys: (keyof Daily)[]) => {
+    const cur = sumKeys(curRows, keys), prev = sumKeys(prevRows, keys);
+    return { cur, change: prev ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0 };
+  };
+  const mViews = kpi(["service_views"]);
+  const mCalls = kpi(["service_calls", "mechanic_calls"]);
+  const mServiceCalls = kpi(["service_calls"]);
+  const mProfile = kpi(["profile_views"]);
+  const conv = mViews.cur > 0 ? Math.round((mServiceCalls.cur / mViews.cur) * 100) : null;
+
+  const series = useMemo(() => curRows.map(r => {
+    const [, m, d] = r.day.split("-");
+    return { label: `${+d}/${+m}`, ნახვები: Number(r.service_views) || 0, დარეკვები: (Number(r.service_calls) || 0) + (Number(r.mechanic_calls) || 0) };
+  }), [curRows]);
+
+  // Secondary breakdowns from recent calls
   const byHour = useMemo(() => {
-    const curStart = Date.now() - days * DAY;
     const hours = Array.from({ length: 24 }, (_, h) => ({ h, label: `${h}`, n: 0 }));
-    allCallRows.forEach(r => { const t = +new Date(r.created_at); if (t >= curStart) hours[new Date(r.created_at).getHours()].n++; });
+    (recentCalls.data || []).forEach(r => { hours[new Date(r.created_at).getHours()].n++; });
     return hours;
-  }, [allCallRows, days]);
+  }, [recentCalls.data]);
 
-  // Called service ids (current period) → fetch city/category meta for breakdowns
-  const callServiceIds = useMemo(() => {
-    const curStart = Date.now() - days * DAY;
-    const ids = new Set<number>();
-    (calls.data || []).forEach(r => { if (r.service_id && +new Date(r.created_at) >= curStart) ids.add(r.service_id); });
-    return [...ids];
-  }, [calls.data, days]);
-
+  const callServiceIds = useMemo(() => [...new Set((recentCalls.data || []).map(r => r.service_id).filter(Boolean))], [recentCalls.data]);
   const serviceMeta = useQuery({
     queryKey: ["an-svc-meta", callServiceIds.join(",")],
     enabled: callServiceIds.length > 0,
@@ -117,52 +96,34 @@ const AdminAnalytics = () => {
       return map;
     },
   });
-
   const breakdown = (pick: (m: { city: string | null; category: string | null }) => string | null) => {
     const meta = serviceMeta.data;
     if (!meta) return [];
-    const curStart = Date.now() - days * DAY;
     const cnt: Record<string, number> = {};
-    (calls.data || []).forEach(r => {
-      if (!r.service_id || +new Date(r.created_at) < curStart) return;
-      const key = (meta[r.service_id] && pick(meta[r.service_id])) || "უცნობი";
+    (recentCalls.data || []).forEach(r => {
+      const key = (r.service_id && meta[r.service_id] && pick(meta[r.service_id])) || "უცნობი";
       cnt[key] = (cnt[key] || 0) + 1;
     });
     return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([name, n]) => ({ name, n }));
   };
-  const byCity = useMemo(() => breakdown(m => m.city), [serviceMeta.data, calls.data, days]); // eslint-disable-line react-hooks/exhaustive-deps
-  const byCategory = useMemo(() => breakdown(m => m.category), [serviceMeta.data, calls.data, days]); // eslint-disable-line react-hooks/exhaustive-deps
+  const byCity = useMemo(() => breakdown(m => m.city), [serviceMeta.data, recentCalls.data]); // eslint-disable-line react-hooks/exhaustive-deps
+  const byCategory = useMemo(() => breakdown(m => m.category), [serviceMeta.data, recentCalls.data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const exportCsv = () => {
-    const rows: string[] = ["სექცია,დასახელება,რაოდენობა"];
-    series.forEach(d => rows.push(`დღე,${d.key},ნახვები=${d.ნახვები} დარეკვები=${d.დარეკვები}`));
-    (topServices.data || []).forEach(s => rows.push(`top-სერვისი,"${s.name.replace(/"/g, "'")}",${s.calls}`));
-    byCity.forEach(c => rows.push(`ქალაქი,${c.name},${c.n}`));
-    byCategory.forEach(c => rows.push(`კატეგორია,${c.name},${c.n}`));
-    const blob = new Blob(["﻿" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    const lines: string[] = ["სექცია,დასახელება,რაოდენობა"];
+    series.forEach(d => lines.push(`დღე,${d.label},ნახვები=${d.ნახვები} დარეკვები=${d.დარეკვები}`));
+    (top.data || []).forEach(s => lines.push(`top-სერვისი,"${s.name.replace(/"/g, "'")}",${s.calls}`));
+    byCity.forEach(c => lines.push(`ქალაქი,${c.name},${c.n}`));
+    byCategory.forEach(c => lines.push(`კატეგორია,${c.name},${c.n}`));
+    const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url; a.download = `analytics-${days}d.csv`; a.click();
     URL.revokeObjectURL(url);
   };
 
-  const loading = calls.isLoading || pviews.isLoading;
-
+  const loading = daily.isLoading;
   const maxHour = Math.max(1, ...byHour.map(h => h.n));
-  const Bar = ({ items }: { items: { name: string; n: number }[] }) => {
-    const max = Math.max(1, ...items.map(i => i.n));
-    return (
-      <div className="space-y-2">
-        {items.length === 0 ? <p className="text-sm text-muted-foreground py-3">მონაცემი არ არის</p> : items.map((it, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <span className="w-24 text-sm truncate shrink-0">{it.name}</span>
-            <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden"><div className="h-full bg-primary rounded-full" style={{ width: `${(it.n / max) * 100}%` }} /></div>
-            <span className="w-8 text-right text-sm font-medium">{it.n}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   const Kpi = ({ icon: Icon, label, value, change, color }: { icon: typeof Eye; label: string; value: number | null; change: number | null; color: string }) => (
     <Card>
@@ -180,6 +141,21 @@ const AdminAnalytics = () => {
       </CardContent>
     </Card>
   );
+
+  const Bars = ({ items }: { items: { name: string; n: number }[] }) => {
+    const max = Math.max(1, ...items.map(i => i.n));
+    return (
+      <div className="space-y-2">
+        {items.length === 0 ? <p className="text-sm text-muted-foreground py-3">მონაცემი არ არის</p> : items.map((it, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="w-24 text-sm truncate shrink-0">{it.name}</span>
+            <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden"><div className="h-full bg-primary rounded-full" style={{ width: `${(it.n / max) * 100}%` }} /></div>
+            <span className="w-8 text-right text-sm font-medium">{it.n}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -203,14 +179,13 @@ const AdminAnalytics = () => {
         </div>
       </div>
 
-      {sviews.data === null && (
+      {daily.isError && (
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
           <Info className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>სერვისის ნახვების აღრიცხვა ახლახ ჩაირთო — მონაცემი დაგროვებას იწყებს. ნახვები/კონვერსია მალე გამოჩნდება.</span>
+          <span>აგრეგაციის ფუნქცია ვერ ჩაიტვირთა — გაუშვი migration `get_admin_analytics` (SQL Editor), შემდეგ განაახლე გვერდი.</span>
         </div>
       )}
 
-      {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {loading ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />) : (
           <>
@@ -221,9 +196,8 @@ const AdminAnalytics = () => {
           </>
         )}
       </div>
-      {conv != null && <p className="text-xs text-muted-foreground -mt-3">კონვერსია = დარეკვები / ნახვები ({conv}% მნახველი რეკავს)</p>}
+      {conv != null && <p className="text-xs text-muted-foreground -mt-3">კონვერსია = სერვისის დარეკვები / ნახვები ({conv}% მნახველი რეკავს)</p>}
 
-      {/* Trend chart */}
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><TrendingUp className="h-5 w-5 text-primary" />ნახვები vs დარეკვები</CardTitle></CardHeader>
         <CardContent>
@@ -246,15 +220,14 @@ const AdminAnalytics = () => {
         </CardContent>
       </Card>
 
-      {/* Top services + searches */}
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Phone className="h-5 w-5 text-green-600" />Top სერვისები (დარეკვით)</CardTitle></CardHeader>
           <CardContent className="space-y-1">
-            {topServices.isLoading ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />) :
-              (topServices.data || []).length === 0 ? <p className="text-sm text-muted-foreground py-3">ამ პერიოდში დარეკვა არ ყოფილა</p> :
-                (topServices.data || []).map((s, i) => (
-                  <div key={s.id} className="flex items-center gap-3 py-1.5 border-b last:border-0">
+            {top.isLoading ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />) :
+              (top.data || []).length === 0 ? <p className="text-sm text-muted-foreground py-3">ამ პერიოდში დარეკვა არ ყოფილა</p> :
+                (top.data || []).map((s, i) => (
+                  <div key={s.service_id} className="flex items-center gap-3 py-1.5 border-b last:border-0">
                     <span className="w-5 text-center text-sm font-semibold text-muted-foreground">{i + 1}</span>
                     <span className="flex-1 text-sm truncate">{s.name}</span>
                     <span className="text-sm font-semibold">{s.calls}</span>
@@ -279,7 +252,6 @@ const AdminAnalytics = () => {
         </Card>
       </div>
 
-      {/* Peak call hours */}
       <Card>
         <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Clock className="h-5 w-5 text-primary" />დარეკვის peak საათები</CardTitle></CardHeader>
         <CardContent>
@@ -296,15 +268,14 @@ const AdminAnalytics = () => {
         </CardContent>
       </Card>
 
-      {/* Geography + category breakdown */}
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><MapPin className="h-5 w-5 text-blue-600" />დარეკვები ქალაქებით</CardTitle></CardHeader>
-          <CardContent>{serviceMeta.isLoading ? <Skeleton className="h-24 w-full" /> : <Bar items={byCity} />}</CardContent>
+          <CardContent>{serviceMeta.isLoading ? <Skeleton className="h-24 w-full" /> : <Bars items={byCity} />}</CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Layers className="h-5 w-5 text-purple-600" />დარეკვები კატეგორიებით</CardTitle></CardHeader>
-          <CardContent>{serviceMeta.isLoading ? <Skeleton className="h-24 w-full" /> : <Bar items={byCategory} />}</CardContent>
+          <CardContent>{serviceMeta.isLoading ? <Skeleton className="h-24 w-full" /> : <Bars items={byCategory} />}</CardContent>
         </Card>
       </div>
     </div>
