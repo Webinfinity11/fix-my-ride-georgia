@@ -263,7 +263,24 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
 
     fetchMechanicData();
   }, [id, navigate]);
-  
+
+  // Track a profile view (once per session, excluding the mechanic's own visits)
+  useEffect(() => {
+    if (!mechanic?.id) return;
+    const key = `mpv_${mechanic.id}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.id === mechanic.id) return; // don't count self-views
+      await supabase.from("mechanic_profile_views").insert({
+        mechanic_id: mechanic.id,
+        viewer_id: user?.id || null,
+        user_agent: navigator.userAgent,
+      });
+    })().catch(() => {});
+  }, [mechanic?.id]);
+
   // Generate initials from name for avatar fallback
   const initials = mechanic
     ? `${mechanic.profile.first_name.charAt(0)}${mechanic.profile.last_name.charAt(0)}`

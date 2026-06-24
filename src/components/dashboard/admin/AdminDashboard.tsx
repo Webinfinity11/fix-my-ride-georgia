@@ -141,7 +141,7 @@ const AdminDashboard = () => {
                 <Tooltip
                   contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", fontSize: 12 }}
                   labelFormatter={(l) => `${l}`} formatter={(v) => [`${v}`, "რეგისტრაცია"]} />
-                <Area type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#sg)" />
+                <Area type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#sg)" dot={{ r: 2, fill: "hsl(var(--primary))", strokeWidth: 0 }} activeDot={{ r: 4 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

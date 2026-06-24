@@ -234,8 +234,8 @@ const AdminAnalytics = () => {
                 <XAxis dataKey="label" tick={{ fontSize: 11 }} interval={Math.max(0, Math.floor(days / 10))} tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Area type="monotone" dataKey="ნახვები" stroke="#2563eb" strokeWidth={2} fill="url(#gv)" />
-                <Area type="monotone" dataKey="დარეკვები" stroke="#16a34a" strokeWidth={2} fill="url(#gc)" />
+                <Area type="monotone" dataKey="ნახვები" stroke="#2563eb" strokeWidth={2} fill="url(#gv)" dot={{ r: 2, fill: "#2563eb", strokeWidth: 0 }} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="დარეკვები" stroke="#16a34a" strokeWidth={2} fill="url(#gc)" dot={{ r: 2, fill: "#16a34a", strokeWidth: 0 }} activeDot={{ r: 4 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
