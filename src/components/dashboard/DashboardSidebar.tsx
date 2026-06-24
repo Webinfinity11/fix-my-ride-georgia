@@ -1,42 +1,44 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
 import {
-  User,
-  Car,
-  PenSquare,
-  Wrench,
-  Calendar,
-  LogOut,
-  Settings,
-  Shield,
-  Users,
-  Cog,
-  MessageCircle,
-  CalendarCog,
-  Bookmark,
-  Crown,
-  MessageSquare,
-  Fuel,
-  Award,
-  Search,
-  Megaphone,
-  Briefcase,
-  FileText,
-  Mail,
-  Package,
-  Truck,
-  BarChart3,
+  User, Car, PenSquare, Wrench, Calendar, LogOut, Settings, Shield, Users,
+  Cog, MessageCircle, CalendarCog, Bookmark, Crown, MessageSquare, Fuel,
+  Award, Search, Megaphone, Briefcase, FileText, Mail, Package, Truck, BarChart3,
 } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { useOldLeadsCount, useNewRequestsCount } from "@/hooks/useAutoLeads";
 import { useNewPartsOrdersCount } from "@/hooks/usePartsOrders";
 import { useNewEvacuatorRequestsCount } from "@/hooks/useEvacuatorRequests";
+
+type IconType = typeof Shield;
+type Item = { to: string; icon: IconType; label: string; badge?: number; end?: boolean; extraActive?: boolean };
+
+const itemClass = (active: boolean) =>
+  cn(
+    "relative flex items-center gap-3 rounded-lg px-3 py-2 transition-colors",
+    "before:absolute before:left-0 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-r before:bg-primary before:transition-opacity",
+    active
+      ? "bg-primary/10 text-primary font-medium before:opacity-100"
+      : "text-muted-foreground hover:bg-muted hover:text-foreground before:opacity-0",
+  );
+
+const NavItem = ({ to, icon: Icon, label, badge, end, extraActive }: Item) => (
+  <NavLink to={to} end={end} className={({ isActive }) => itemClass(isActive || !!extraActive)}>
+    <Icon size={18} className="shrink-0" />
+    <span className="flex-1 truncate text-sm">{label}</span>
+    {badge ? (
+      <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">{badge}</Badge>
+    ) : null}
+  </NavLink>
+);
+
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <p className="px-3 pt-5 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 first:pt-1">{children}</p>
+);
+const SubLabel = ({ children }: { children: React.ReactNode }) => (
+  <p className="px-3 pt-3 pb-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/40">{children}</p>
+);
 
 const DashboardSidebar = () => {
   const { user, signOut } = useAuth();
@@ -45,15 +47,26 @@ const DashboardSidebar = () => {
   const { data: newPartsOrdersCount = 0 } = useNewPartsOrdersCount();
   const { data: newEvacuatorRequestsCount = 0 } = useNewEvacuatorRequestsCount();
 
-  const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
-      isActive ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
-    }`;
+  const onAddService = typeof window !== "undefined" && window.location.pathname === "/add-service";
 
-  // Grouped admin navigation — pending/action items first, then content/catalog/management.
-  const adminGroups: { label: string | null; items: { to: string; icon: typeof Shield; label: string; badge?: number }[] }[] = [
+  const mainItems: Item[] = [
+    { to: "/dashboard", icon: Settings, label: "მთავარი", end: true },
+    { to: "/dashboard/profile", icon: User, label: "პროფილი" },
+    ...(user?.role === "customer" ? [{ to: "/dashboard/cars", icon: Car, label: "ჩემი ავტომობილები" }] : []),
+    ...(user?.role === "mechanic" ? [
+      { to: "/dashboard/services", icon: Wrench, label: "სერვისები", extraActive: onAddService },
+      { to: "/dashboard/vacancies", icon: Briefcase, label: "ვაკანსიები" },
+    ] : []),
+    { to: "/dashboard/bookings", icon: Calendar, label: "ჯავშნები" },
+    ...((user?.role === "customer" || user?.role === "mechanic") ? [
+      { to: "/dashboard/saved-services", icon: Bookmark, label: "შენახული სერვისები" },
+      { to: "/dashboard/saved-posts", icon: MessageSquare, label: "შენახული პოსტები" },
+    ] : []),
+  ];
+
+  const adminGroups: { label: string | null; items: Item[] }[] = [
     { label: null, items: [
-      { to: "/dashboard/admin", icon: Shield, label: "მიმოხილვა" },
+      { to: "/dashboard/admin", icon: Shield, label: "მიმოხილვა", end: true },
       { to: "/dashboard/admin/analytics", icon: BarChart3, label: "ანალიტიკა" },
     ]},
     { label: "მოთხოვნები", items: [
@@ -85,117 +98,33 @@ const DashboardSidebar = () => {
   ];
 
   return (
-    <div className="w-full md:w-64 bg-background rounded-lg shadow-sm p-4 md:p-6 h-fit">
-      <div className="mb-4 md:mb-6">
-        <h2 className="font-semibold text-lg md:text-xl">მენიუ</h2>
-      </div>
+    <div className="w-full md:w-64 bg-background rounded-xl border border-border/60 shadow-sm p-3 h-fit">
+      <nav className="space-y-0.5">
+        <SectionLabel>ძირითადი</SectionLabel>
+        {mainItems.map((it) => <NavItem key={it.to} {...it} />)}
 
-      <nav className="space-y-1">
-        <Accordion type="single" collapsible className="w-full" defaultValue="main">
-          <AccordionItem value="main" className="border-none">
-            <AccordionTrigger className="py-2 px-1 hover:no-underline text-sm font-semibold text-muted-foreground">
-              ძირითადი
-            </AccordionTrigger>
-            <AccordionContent className="space-y-1 pb-2">
-              <NavLink to="/dashboard" end className={navLinkClasses}>
-                <Settings size={18} />
-                <span className="text-sm md:text-base">მთავარი</span>
-              </NavLink>
+        {user?.role === "admin" && (
+          <>
+            <SectionLabel>ადმინისტრაცია</SectionLabel>
+            {adminGroups.map((group, gi) => (
+              <div key={gi}>
+                {group.label && <SubLabel>{group.label}</SubLabel>}
+                {group.items.map((it) => <NavItem key={it.to} {...it} />)}
+              </div>
+            ))}
+          </>
+        )}
+      </nav>
 
-              <NavLink to="/dashboard/profile" className={navLinkClasses}>
-                <User size={18} />
-                <span className="text-sm md:text-base">პროფილი</span>
-              </NavLink>
-
-              {user?.role === "customer" && (
-                <NavLink to="/dashboard/cars" className={navLinkClasses}>
-                  <Car size={18} />
-                  <span className="text-sm md:text-base">ჩემი ავტომობილები</span>
-                </NavLink>
-              )}
-
-              {user?.role === "mechanic" && (
-                <>
-                  <NavLink
-                    to="/dashboard/services"
-                    className={({ isActive }) => {
-                      const isServicesPage = window.location.pathname === '/add-service' || isActive;
-                      return `flex items-center gap-2 px-3 md:px-4 py-2 rounded-md transition-colors ${
-                        isServicesPage ? "bg-primary/10 text-primary font-medium" : "text-muted-foreground hover:bg-muted-foreground/10"
-                      }`;
-                    }}
-                  >
-                    <Wrench size={18} />
-                    <span className="text-sm md:text-base">სერვისები</span>
-                  </NavLink>
-
-                  <NavLink to="/dashboard/vacancies" className={navLinkClasses}>
-                    <Briefcase size={18} />
-                    <span className="text-sm md:text-base">ვაკანსიები</span>
-                  </NavLink>
-                </>
-              )}
-
-              <NavLink to="/dashboard/bookings" className={navLinkClasses}>
-                <Calendar size={18} />
-                <span className="text-sm md:text-base">ჯავშნები</span>
-              </NavLink>
-
-              {(user?.role === "customer" || user?.role === "mechanic") && (
-                <>
-                  <NavLink to="/dashboard/saved-services" className={navLinkClasses}>
-                    <Bookmark size={18} />
-                    <span className="text-sm md:text-base">შენახული სერვისები</span>
-                  </NavLink>
-                  
-                  <NavLink to="/dashboard/saved-posts" className={navLinkClasses}>
-                    <MessageSquare size={18} />
-                    <span className="text-sm md:text-base">შენახული პოსტები</span>
-                  </NavLink>
-                </>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-
-          {user?.role === "admin" && (
-            <AccordionItem value="admin" className="border-none">
-              <AccordionTrigger className="py-2 px-1 hover:no-underline text-sm font-semibold text-muted-foreground">
-                ადმინისტრაცია
-              </AccordionTrigger>
-              <AccordionContent className="space-y-1 pb-2">
-                {adminGroups.map((group, gi) => (
-                  <div key={gi} className={group.label ? "pt-1.5" : ""}>
-                    {group.label && (
-                      <p className="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/60">
-                        {group.label}
-                      </p>
-                    )}
-                    {group.items.map((item) => (
-                      <NavLink key={item.to} to={item.to} end={item.to === "/dashboard/admin"} className={navLinkClasses}>
-                        <item.icon size={18} className="shrink-0" />
-                        <span className="text-sm md:text-base flex-1">{item.label}</span>
-                        {item.badge ? (
-                          <Badge variant="destructive" className="h-5 min-w-5 flex items-center justify-center px-1.5 text-xs">
-                            {item.badge}
-                          </Badge>
-                        ) : null}
-                      </NavLink>
-                    ))}
-                  </div>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          )}
-        </Accordion>
-
+      <div className="mt-3 pt-3 border-t border-border/60">
         <button
           onClick={() => signOut()}
-          className="flex w-full items-center gap-2 px-3 md:px-4 py-2 rounded-md text-destructive hover:bg-destructive/10 transition-colors mt-4"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
         >
-          <LogOut size={18} />
-          <span className="text-sm md:text-base">გასვლა</span>
+          <LogOut size={18} className="shrink-0" />
+          <span>გასვლა</span>
         </button>
-      </nav>
+      </div>
     </div>
   );
 };
