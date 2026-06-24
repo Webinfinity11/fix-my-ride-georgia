@@ -179,7 +179,7 @@ const ServiceSearch = () => {
           address,
           photos,
           service_categories(id, name),
-          profiles!mechanic_services_mechanic_id_fkey(
+          profiles!mechanic_id(
             id,
             first_name,
             last_name,
