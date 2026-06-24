@@ -174,6 +174,14 @@ export function RelatedServices({ limit = 6, excludeId }: { limit?: number; excl
 
 /* -------------------- Footer Top Categories (sitewide internal links) ----------- */
 
+// Shared footer list styling: on mobile the link list becomes a single
+// horizontal-scroll row (shrinks footer height); on md+ it's a normal
+// vertical list. Arrows hidden on mobile for a clean chip-like row.
+export const footerScrollListClass =
+  "flex gap-x-5 overflow-x-auto pb-2 [&>li]:shrink-0 [&>li]:whitespace-nowrap [&_svg]:hidden " +
+  "md:block md:space-y-3 md:gap-0 md:overflow-visible md:pb-0 md:[&_svg]:block " +
+  "[scrollbar-width:thin] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/30";
+
 export function FooterTopCategories({ limit = 10 }: { limit?: number }) {
   const { data: categories, isLoading } = useQuery({
     queryKey: ['footer-top-categories', limit],
@@ -208,7 +216,7 @@ export function FooterTopCategories({ limit = 10 }: { limit?: number }) {
         <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
         პოპულარული კატეგორიები
       </h3>
-      <ul className="space-y-3">
+      <ul className={footerScrollListClass}>
         {categories.map((c) => (
           <li key={c.id}>
             <Link

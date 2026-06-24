@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Wrench, ArrowRight, Heart } from "lucide-react";
-import { FooterTopCategories } from "@/components/seo/InternalLinkWidgets";
+import { FooterTopCategories, footerScrollListClass } from "@/components/seo/InternalLinkWidgets";
 
 const Footer = () => {
   return (
@@ -74,7 +74,7 @@ const Footer = () => {
                 <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
                 სწრაფი ბმულები
               </h3>
-              <ul className="space-y-3">
+              <ul className={footerScrollListClass}>
                 <li>
                   <Link
                     to="/mechanic"
@@ -165,7 +165,7 @@ const Footer = () => {
                 <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
                 მომხმარებლები
               </h3>
-              <ul className="space-y-3">
+              <ul className={footerScrollListClass}>
                 <li>
                   <Link
                     to="/register?type=mechanic"
