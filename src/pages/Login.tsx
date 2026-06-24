@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Wrench, Facebook, Mail } from "lucide-react";
+import { Wrench } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
@@ -124,29 +124,7 @@ const Login = () => {
                 {loading ? 'მიმდინარეობს...' : 'შესვლა'}
               </Button>
             </form>
-            
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-muted-foreground">ან</span>
-                </div>
-              </div>
-              
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <Button variant="outline" className="w-full">
-                  <Facebook size={16} className="mr-2" />
-                  Facebook
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <Mail size={16} className="mr-2" />
-                  Google
-                </Button>
-              </div>
-            </div>
-            
+
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">არ გაქვთ ანგარიში? </span>
               <Link to="/register" className="text-primary hover:text-primary-light font-semibold">
