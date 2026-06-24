@@ -708,19 +708,19 @@ const ServiceDetail = () => {
         <BreadcrumbSchema items={breadcrumbItems} />
 
       <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumbs */}
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
+        {/* Breadcrumbs — single line with horizontal scroll on overflow (no wrap) */}
+        <Breadcrumb className="mb-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <BreadcrumbList className="flex-nowrap whitespace-nowrap">
+            <BreadcrumbItem className="shrink-0">
               <BreadcrumbLink href="/">მთავარი</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
+            <BreadcrumbSeparator className="shrink-0" />
+            <BreadcrumbItem className="shrink-0">
               <BreadcrumbLink href="/services">სერვისები</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{service.name}</BreadcrumbPage>
+            <BreadcrumbSeparator className="shrink-0" />
+            <BreadcrumbItem className="shrink-0">
+              <BreadcrumbPage className="whitespace-nowrap">{service.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -737,7 +737,7 @@ const ServiceDetail = () => {
             უკან
           </Button>
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 whitespace-nowrap overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:whitespace-normal md:overflow-visible">
               {seoData?.h1_title || service.name}
             </h1>
             {seoData?.h2_description && (
