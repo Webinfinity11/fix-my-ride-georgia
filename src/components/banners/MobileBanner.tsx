@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useActiveBanner } from "@/hooks/useSiteBanners";
 import { useBannerTracking } from "@/hooks/useBannerAnalytics";
@@ -39,6 +39,14 @@ const MobileBanner = () => {
             style={{ maxHeight: '80px', objectFit: 'contain', backgroundColor: '#f3f4f6' }}
           />
         </div>
+        <a
+          href="tel:+995574047994"
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center justify-center gap-2 bg-primary text-primary-foreground text-sm font-semibold py-2 border-t hover:bg-primary-light transition-colors"
+        >
+          <Phone className="h-4 w-4" />
+          დარეკვა: +995 574 04 79 94
+        </a>
         <Button
           variant="ghost"
           size="icon"
