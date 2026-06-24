@@ -239,21 +239,13 @@ const Footer = () => {
             -ით. ყველა უფლება დაცულია.
           </p>
           <p className="text-xs text-blue-200/80">
+            საიტი დაამზადა{" "}—{" "}
             <a
               href="https://infinity.ge/services/saitis-damzadeba/"
               target="_blank"
               rel="noopener"
-              className="hover:text-secondary transition-colors"
-              title="საიტის დამზადება — Infinity"
-            >
-              საიტის დამზადება
-            </a>
-            {" "}—{" "}
-            <a
-              href="https://infinity.ge"
-              target="_blank"
-              rel="noopener"
               className="hover:text-secondary transition-colors font-medium"
+              title="საიტის დამზადება — INFINITY"
             >
               INFINITY
             </a>
