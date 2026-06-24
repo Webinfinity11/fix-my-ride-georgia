@@ -225,8 +225,9 @@ export const MapBottomSheet = ({
 
   return (
     <>
-      {/* Collapsed Peek Bar */}
-      {!isOpen && (
+      {/* Collapsed Peek Bar — hidden while a preview card is open so its
+          "მარშრუტი" button isn't covered on mobile */}
+      {!isOpen && !selectedId && (
         <div 
           className="fixed bottom-16 left-0 right-0 bg-background border-t rounded-t-2xl shadow-lg z-40 cursor-pointer"
           onClick={() => setIsOpen(true)}
