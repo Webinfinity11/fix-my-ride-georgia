@@ -129,12 +129,14 @@ const BrandBox = ({ selected, options, onToggle, onClear }: {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0 w-[min(94vw,520px)]" align="start">
-        <div className="p-2.5 border-b flex items-center gap-2">
-          <SearchIcon className="h-4 w-4 text-muted-foreground shrink-0 ml-1" />
-          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="მარკის ძებნა..."
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+        <div className="p-2 border-b flex items-center gap-2">
+          <div className="flex flex-1 items-center gap-2 rounded-lg bg-muted h-9 px-2.5">
+            <SearchIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="მარკის ძებნა..."
+              className="flex-1 bg-transparent text-sm border-0 outline-none focus:outline-none focus:ring-0 placeholder:text-muted-foreground" />
+          </div>
           {selected.length > 0 && (
-            <button onClick={onClear} className="text-xs text-muted-foreground hover:text-foreground shrink-0 px-1">გასუფთავება ({selected.length})</button>
+            <button onClick={onClear} className="text-xs text-muted-foreground hover:text-foreground shrink-0 px-1.5">გასუფთავება ({selected.length})</button>
           )}
         </div>
         <div className="max-h-[60vh] overflow-y-auto p-2 grid grid-cols-2 gap-2">
@@ -330,11 +332,11 @@ const ServiceSearch = () => {
     setSortBy("recommended"); setUserLoc(null);
   };
 
-  type Chip = { key: string; label: string; clear: () => void };
+  type Chip = { key: string; label: string; logo?: string; clear: () => void };
   const activeChips: Chip[] = useMemo(() => {
     const c: Chip[] = [];
     if (selectedCategory) c.push({ key: "cat", label: categories.find(x => x.id === selectedCategory)?.name || "კატეგორია", clear: () => setSelectedCategory(null) });
-    selectedBrands.forEach(b => c.push({ key: "b-" + b, label: b, clear: () => toggleBrand(b) }));
+    selectedBrands.forEach(b => c.push({ key: "b-" + b, label: b, logo: CAR_BRAND_LOGOS[b], clear: () => toggleBrand(b) }));
     if (selectedCity) c.push({ key: "city", label: selectedCity, clear: () => setSelectedCity(null) });
     if (selectedDistrict) c.push({ key: "dist", label: selectedDistrict, clear: () => setSelectedDistrict(null) });
     if (withPhotos) c.push({ key: "photo", label: "ფოტოებით", clear: () => setWithPhotos(false) });
@@ -412,7 +414,8 @@ const ServiceSearch = () => {
             <div className="flex flex-wrap gap-2 mb-4">
               {activeChips.map(chip => (
                 <button key={chip.key} onClick={chip.clear}
-                  className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary text-xs px-2.5 py-1 hover:bg-primary/20 transition-colors">
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 text-primary text-xs pl-1.5 pr-2.5 py-1 hover:bg-primary/20 transition-colors">
+                  {chip.logo && <img src={chip.logo} alt="" className="h-4 w-4 object-contain rounded-sm bg-white" />}
                   {chip.label}<X className="h-3 w-3" />
                 </button>
               ))}
