@@ -708,8 +708,8 @@ const ServiceDetail = () => {
         <BreadcrumbSchema items={breadcrumbItems} />
 
       <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumbs — single line with horizontal scroll on overflow (no wrap) */}
-        <Breadcrumb className="mb-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* Breadcrumbs — single line with horizontal scroll + thin visible scrollbar */}
+        <Breadcrumb className="mb-6 overflow-x-auto pb-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300">
           <BreadcrumbList className="flex-nowrap whitespace-nowrap">
             <BreadcrumbItem className="shrink-0">
               <BreadcrumbLink href="/">მთავარი</BreadcrumbLink>
@@ -725,51 +725,49 @@ const ServiceDetail = () => {
           </BreadcrumbList>
         </Breadcrumb>
 
-        {/* Header */}
-        <div className="flex items-start gap-4 mb-8">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/services")}
-            className="shrink-0 mt-1"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            უკან
-          </Button>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 whitespace-nowrap overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:whitespace-normal md:overflow-visible">
-              {seoData?.h1_title || service.name}
-            </h1>
-            {seoData?.h2_description && (
-              <h2 className="text-lg text-gray-600 mb-3">
-                {seoData.h2_description}
-              </h2>
+        {/* Header — title spans full width; back button moved into the action row */}
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 whitespace-nowrap overflow-x-auto pb-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 md:whitespace-normal md:overflow-visible md:pb-0">
+            {seoData?.h1_title || service.name}
+          </h1>
+          {seoData?.h2_description && (
+            <h2 className="text-lg text-gray-600 mb-3">
+              {seoData.h2_description}
+            </h2>
+          )}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            {service.category && (
+              <Badge variant="secondary" className="bg-primary/10 text-primary">
+                {service.category.name}
+              </Badge>
             )}
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              {service.category && (
-                <Badge variant="secondary" className="bg-primary/10 text-primary">
-                  {service.category.name}
-                </Badge>
-              )}
-              {service.on_site_service && (
-                <Badge variant="outline">
-                  ადგილზე მომსახურება
-                </Badge>
-              )}
-              {!shouldShowPrice(service.price_from, service.price_to) && (
-                <Badge variant="outline">
-                  ფასი შეთანხმებით
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <ServiceShareButtons 
-                serviceName={service.name}
-                serviceUrl={canonicalUrl}
-                serviceDescription={service.description || undefined}
-              />
-              <SaveServiceButton serviceId={service.id} />
-            </div>
+            {service.on_site_service && (
+              <Badge variant="outline">
+                ადგილზე მომსახურება
+              </Badge>
+            )}
+            {!shouldShowPrice(service.price_from, service.price_to) && (
+              <Badge variant="outline">
+                ფასი შეთანხმებით
+              </Badge>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/services")}
+              className="shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              უკან
+            </Button>
+            <ServiceShareButtons
+              serviceName={service.name}
+              serviceUrl={canonicalUrl}
+              serviceDescription={service.description || undefined}
+            />
+            <SaveServiceButton serviceId={service.id} />
           </div>
         </div>
 
