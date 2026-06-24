@@ -18,6 +18,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { VIPPlanType } from "@/hooks/useVIPRequests";
+import { CAR_BRAND_LOGOS, CAR_BRANDS_BY_POPULARITY } from "@/data/carBrandLogos";
+
+const brandRank = (b: string) => {
+  const i = CAR_BRANDS_BY_POPULARITY.indexOf(b);
+  return i === -1 ? 999 : i;
+};
 
 type ServiceType = {
   id: number; name: string; description: string | null;
@@ -97,43 +103,55 @@ const CategoryBox = ({ value, options, onChange }: {
   );
 };
 
-/* ---- Brand multi-select (searchable) ---- */
+/* ---- Brand picker with LOGOS (visual grid + search) ---- */
+const BrandLogo = ({ brand, className }: { brand: string; className?: string }) => {
+  const src = CAR_BRAND_LOGOS[brand];
+  if (!src) return <Car className={cn("text-muted-foreground", className)} />;
+  return <img src={src} alt={brand} loading="lazy" className={cn("object-contain", className)} />;
+};
+
 const BrandBox = ({ selected, options, onToggle, onClear }: {
   selected: string[]; options: string[]; onToggle: (b: string) => void; onClear: () => void;
 }) => {
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const sorted = useMemo(() => [...options].sort((a, b) => brandRank(a) - brandRank(b)), [options]);
+  const filtered = q ? sorted.filter(b => b.toLowerCase().includes(q.toLowerCase())) : sorted;
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQ(""); }}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" className={cn("h-11 w-full justify-between font-normal", selected.length === 0 && "text-muted-foreground")}>
           <span className="flex items-center gap-2 truncate">
-            <Car className="h-4 w-4 shrink-0 text-primary" />
+            {selected.length === 1 ? <BrandLogo brand={selected[0]} className="h-5 w-5 shrink-0" /> : <Car className="h-4 w-4 shrink-0 text-primary" />}
             {selected.length === 0 ? "მანქანის მარკა" : selected.length === 1 ? selected[0] : `${selected.length} მარკა არჩეული`}
           </span>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]" align="start">
-        <Command>
-          <CommandInput placeholder="მარკის ძებნა..." />
-          <CommandList>
-            <CommandEmpty>ვერ მოიძებნა</CommandEmpty>
-            {selected.length > 0 && (
-              <CommandGroup>
-                <CommandItem onSelect={onClear} className="text-muted-foreground">
-                  <X className="mr-2 h-4 w-4" />მონიშვნის გასუფთავება ({selected.length})
-                </CommandItem>
-              </CommandGroup>
-            )}
-            <CommandGroup>
-              {options.map(b => (
-                <CommandItem key={b} value={b} onSelect={() => onToggle(b)}>
-                  <Check className={cn("mr-2 h-4 w-4", selected.includes(b) ? "opacity-100" : "opacity-0")} />{b}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+      <PopoverContent className="p-0 w-[min(92vw,420px)]" align="start">
+        <div className="p-2 border-b flex items-center gap-2">
+          <SearchIcon className="h-4 w-4 text-muted-foreground shrink-0 ml-1" />
+          <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="მარკის ძებნა..."
+            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+          {selected.length > 0 && (
+            <button onClick={onClear} className="text-xs text-muted-foreground hover:text-foreground shrink-0 px-1">გასუფთავება ({selected.length})</button>
+          )}
+        </div>
+        <div className="max-h-[320px] overflow-y-auto p-2 grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+          {filtered.map(b => {
+            const active = selected.includes(b);
+            return (
+              <button key={b} onClick={() => onToggle(b)}
+                className={cn("relative flex flex-col items-center justify-center gap-1 rounded-lg border p-2 h-[72px] transition-colors",
+                  active ? "border-primary bg-primary/5" : "border-transparent hover:bg-muted")}>
+                {active && <Check className="absolute top-1 right-1 h-3.5 w-3.5 text-primary" />}
+                <BrandLogo brand={b} className="h-7 w-7" />
+                <span className="text-[10px] text-center leading-tight line-clamp-1 w-full">{b}</span>
+              </button>
+            );
+          })}
+          {filtered.length === 0 && <p className="col-span-full text-center text-sm text-muted-foreground py-6">ვერ მოიძებნა</p>}
+        </div>
       </PopoverContent>
     </Popover>
   );
