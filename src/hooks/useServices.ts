@@ -38,6 +38,7 @@ export type ServiceType = {
     last_name: string;
     rating: number | null;
     phone: string | null;
+    phone_number: string | null;
   };
 };
 
@@ -281,6 +282,7 @@ export const useServices = () => {
             last_name: mechanic?.last_name || "",
             rating: mechanicProfile?.rating || null,
             phone: mechanic?.phone || null,
+            phone_number: mechanic?.phone || null,
           }
         };
       });
