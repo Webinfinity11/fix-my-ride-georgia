@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { performRedirect, needsCanonicalRedirect } from "@/utils/redirectUtils";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { createSlug, createMechanicSlug } from "@/utils/slugUtils";
+import { createSlug, createMechanicSlug, createCategorySlug } from "@/utils/slugUtils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -402,7 +402,7 @@ const ServiceDetail = () => {
   const breadcrumbItems = [
     { name: 'მთავარი', url: 'https://fixup.ge/' },
     { name: 'სერვისები', url: 'https://fixup.ge/services' },
-    ...(service.category ? [{ name: service.category.name, url: `https://fixup.ge/category/${service.category.id}` }] : []),
+    ...(service.category ? [{ name: service.category.name, url: `https://fixup.ge/category/${createCategorySlug(service.category.name)}` }] : []),
     { name: service.name, url: canonicalUrl }
   ];
 
@@ -718,6 +718,16 @@ const ServiceDetail = () => {
             <BreadcrumbItem className="shrink-0">
               <BreadcrumbLink href="/services">სერვისები</BreadcrumbLink>
             </BreadcrumbItem>
+            {service.category && (
+              <>
+                <BreadcrumbSeparator className="shrink-0" />
+                <BreadcrumbItem className="shrink-0">
+                  <BreadcrumbLink href={`/category/${createCategorySlug(service.category.name)}`}>
+                    {service.category.name}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            )}
             <BreadcrumbSeparator className="shrink-0" />
             <BreadcrumbItem className="shrink-0">
               <BreadcrumbPage className="whitespace-nowrap">{service.name}</BreadcrumbPage>
