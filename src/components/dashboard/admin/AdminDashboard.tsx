@@ -61,15 +61,16 @@ const AdminDashboard = () => {
   const { data: chartData } = useQuery({
     queryKey: ["admin-signups-14d"],
     queryFn: async () => {
-      const since = new Date();
-      since.setDate(since.getDate() - 13);
-      since.setHours(0, 0, 0, 0);
-      const { data } = await supabase.from("profiles").select("created_at").gte("created_at", since.toISOString());
+      // 14 UTC calendar-day buckets ending today (inclusive); consistent with UTC created_at.
+      const DAY = 864e5;
+      const t = new Date();
+      const startToday = Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate());
+      const startBucket = startToday - 13 * DAY;
+      const { data } = await supabase.from("profiles").select("created_at").gte("created_at", new Date(startBucket).toISOString());
       const days: { key: string; label: string; count: number }[] = [];
       for (let i = 0; i < 14; i++) {
-        const d = new Date(since);
-        d.setDate(since.getDate() + i);
-        days.push({ key: d.toISOString().slice(0, 10), label: `${d.getDate()}/${d.getMonth() + 1}`, count: 0 });
+        const d = new Date(startBucket + i * DAY);
+        days.push({ key: d.toISOString().slice(0, 10), label: `${d.getUTCDate()}/${d.getUTCMonth() + 1}`, count: 0 });
       }
       const map = Object.fromEntries(days.map(d => [d.key, d]));
       (data || []).forEach(r => { const k = String(r.created_at).slice(0, 10); if (map[k]) map[k].count++; });
