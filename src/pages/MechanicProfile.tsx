@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 // Fixed: removed useChat dependency
 import MechanicReviews from "@/components/reviews/MechanicReviews";
 import { extractMechanicDisplayId, createMechanicSlug } from "@/utils/slugUtils";
+import { trackMechanicPhone } from "@/utils/tracking";
 import SEOHead from "@/components/seo/SEOHead";
 import { PersonSchema, LocalBusinessSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
@@ -777,7 +778,8 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
                       <div>
                         <p className="font-medium">ტელეფონი</p>
                         <p className="text-muted-foreground">
-                          <a href={`tel:${mechanic.profile.phone}`} className="hover:text-primary">
+                          <a href={`tel:${mechanic.profile.phone}`} className="hover:text-primary"
+                            onClick={() => trackMechanicPhone(mechanic.id)}>
                             {mechanic.profile.phone}
                           </a>
                         </p>

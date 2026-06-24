@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MapPin, Star, Clock, DollarSign, Phone, BadgeCheck } from "lucide-react";
 import { createMechanicSlug } from "@/utils/slugUtils";
+import { trackMechanicPhone } from "@/utils/tracking";
 
 interface MechanicCardProps {
   mechanic: {
@@ -120,6 +121,7 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
               <Button
                 className="flex-1"
                 onClick={() => {
+                  trackMechanicPhone(mechanic.id);
                   window.location.href = `tel:${mechanic.profiles.phone}`;
                 }}
               >

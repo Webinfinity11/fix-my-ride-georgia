@@ -26,6 +26,7 @@ const AdminAnalytics = () => {
   };
 
   const calls = useQuery({ queryKey: ["an-calls", days], queryFn: eventsFetcher("service_phone_views", true) });
+  const mcalls = useQuery({ queryKey: ["an-mcalls", days], queryFn: eventsFetcher("mechanic_phone_views", false) });
   const sviews = useQuery({ queryKey: ["an-sviews", days], queryFn: eventsFetcher("service_views", true) });
   const pviews = useQuery({ queryKey: ["an-pviews", days], queryFn: eventsFetcher("mechanic_profile_views", false) });
   const searches = useQuery({
@@ -44,10 +45,13 @@ const AdminAnalytics = () => {
     return { cur, change: prev ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0 };
   };
 
-  const mCalls = metric(calls.data);
+  // "დარეკვები" = service calls + mechanic calls combined
+  const allCallRows = useMemo(() => [...(calls.data || []), ...(mcalls.data || [])], [calls.data, mcalls.data]);
+  const mCalls = metric(allCallRows);
+  const mServiceCalls = metric(calls.data); // service-only, for the view→call funnel
   const mViews = metric(sviews.data);
   const mProfile = metric(pviews.data);
-  const conv = mViews.cur && mViews.cur > 0 && mCalls.cur != null ? Math.round((mCalls.cur / mViews.cur) * 100) : null;
+  const conv = mViews.cur && mViews.cur > 0 && mServiceCalls.cur != null ? Math.round((mServiceCalls.cur / mViews.cur) * 100) : null;
 
   const series = useMemo(() => {
     // `days` UTC calendar-day buckets ENDING today (inclusive). created_at is UTC,
@@ -64,9 +68,9 @@ const AdminAnalytics = () => {
       buckets[key] = o; out.push(o);
     }
     (sviews.data || []).forEach(r => { const k = String(r.created_at).slice(0, 10); if (buckets[k]) buckets[k].ნახვები++; });
-    (calls.data || []).forEach(r => { const k = String(r.created_at).slice(0, 10); if (buckets[k]) buckets[k].დარეკვები++; });
+    allCallRows.forEach(r => { const k = String(r.created_at).slice(0, 10); if (buckets[k]) buckets[k].დარეკვები++; });
     return out;
-  }, [sviews.data, calls.data, days]);
+  }, [sviews.data, allCallRows, days]);
 
   const topServiceIds = useMemo(() => {
     const curStart = Date.now() - days * DAY;
@@ -90,9 +94,9 @@ const AdminAnalytics = () => {
   const byHour = useMemo(() => {
     const curStart = Date.now() - days * DAY;
     const hours = Array.from({ length: 24 }, (_, h) => ({ h, label: `${h}`, n: 0 }));
-    (calls.data || []).forEach(r => { const t = +new Date(r.created_at); if (t >= curStart) hours[new Date(r.created_at).getHours()].n++; });
+    allCallRows.forEach(r => { const t = +new Date(r.created_at); if (t >= curStart) hours[new Date(r.created_at).getHours()].n++; });
     return hours;
-  }, [calls.data, days]);
+  }, [allCallRows, days]);
 
   // Called service ids (current period) → fetch city/category meta for breakdowns
   const callServiceIds = useMemo(() => {
