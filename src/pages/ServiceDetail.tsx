@@ -471,8 +471,7 @@ const ServiceDetail = () => {
 
         <div className="grid grid-cols-2 gap-2">
           {service.mechanic.phone && (
-            <Button 
-              variant="outline" 
+            <Button
               size="sm"
               onClick={async (e) => {
                 e.preventDefault();
@@ -493,8 +492,8 @@ const ServiceDetail = () => {
         </div>
 
         {isValidUUID(service.mechanic.id) ? (
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={() => navigate(`/mechanic/${createMechanicSlug(service.mechanic.display_id || 0, service.mechanic.first_name, service.mechanic.last_name)}`)}
           >
@@ -1072,6 +1071,32 @@ const ServiceDetail = () => {
           />
         )}
         <RelatedBlogPosts limit={3} />
+
+        {/* Mobile sticky contact CTA — always-reachable primary conversion */}
+        {service.mechanic?.phone && (
+          <>
+            {/* spacer so content isn't hidden behind the fixed bar */}
+            <div className="h-20 lg:hidden" aria-hidden="true" />
+            <div className="lg:hidden fixed bottom-[70px] md:bottom-0 left-0 right-0 z-40 flex gap-2 border-t border-border bg-background/95 p-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+              <Button
+                className="flex-1"
+                onClick={async () => {
+                  await trackPhoneView(service.id);
+                  window.location.href = `tel:${service.mechanic.phone}`;
+                }}
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                დარეკვა
+              </Button>
+              <SendMessageButton
+                mechanicId={service.mechanic.id}
+                mechanicName={`${service.mechanic.first_name} ${service.mechanic.last_name}`}
+                variant="outline"
+                className="flex-1"
+              />
+            </div>
+          </>
+        )}
       </div>
     </Layout>
   );
