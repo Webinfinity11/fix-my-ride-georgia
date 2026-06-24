@@ -5,6 +5,7 @@ import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, Im
 import { LazyImage } from "@/components/ui/lazy-image";
 import { useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { SaveServiceButton } from "./SaveServiceButton";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
@@ -77,8 +78,16 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
     }
 
     if (!showPhone) {
-      // First click - show phone number
+      // First click - reveal number + record the call-intent (phone view)
       setShowPhone(true);
+      (async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from("service_phone_views").insert({
+          service_id: service.id,
+          viewer_id: user?.id || null,
+          user_agent: navigator.userAgent,
+        });
+      })().catch(() => {});
     } else {
       // Second click - make the call
       window.location.href = `tel:${service.mechanic.phone_number}`;
