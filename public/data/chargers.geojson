@@ -1843,6 +1843,2522 @@
         "status": "level2",
         "source": "espace"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8338755,
+          41.689342
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ისნის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.7956424,
+          41.9514044
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ყვარლის მუნიციპალიტეტი",
+        "name_en": "EV Charger — Georgia",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7583617,
+          41.7255762
+        ]
+      },
+      "properties": {
+        "name_ka": "ChargePoint — ელექტრო დამტენი",
+        "name_en": "ChargePoint — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8233361,
+          41.7884135
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — გლდანის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.6347972,
+          41.6501834
+        ]
+      },
+      "properties": {
+        "name_ka": "ProCredit — ელექტრო დამტენი",
+        "name_en": "ProCredit — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.6135657,
+          41.6373459
+        ]
+      },
+      "properties": {
+        "name_ka": "ElectroGeorgia — ელექტრო დამტენი",
+        "name_en": "ElectroGeorgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.743893,
+          41.9051505
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საირმე",
+        "name_en": "EV Charger — Georgia",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.7434009,
+          41.9044365
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საირმე",
+        "name_en": "EV Charger — Georgia",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.601297,
+          41.6281732
+        ]
+      },
+      "properties": {
+        "name_ka": "ElectroUA Georgia — ელექტრო დამტენი",
+        "name_en": "ElectroUA Georgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8406659,
+          41.683284
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ისნის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.6368686,
+          41.6539912
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ძველი ბათუმი",
+        "name_en": "EV Charger — Batumi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.6383514,
+          41.6536646
+        ]
+      },
+      "properties": {
+        "name_ka": "E-Space — ელექტრო დამტენი",
+        "name_en": "E-Space — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7145947,
+          41.7201362
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7246398,
+          41.7213342
+        ]
+      },
+      "properties": {
+        "name_ka": "მარტივი (MartEV) — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8217319,
+          41.7966963
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — გლდანის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7719026,
+          41.7073104
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7460288,
+          41.7257268
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8080167,
+          41.701085
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ჩუღურეთის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7846276,
+          41.7102509
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — მთაწმინდის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7621246,
+          41.7102954
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7536889,
+          41.7255598
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.6683321,
+          42.2587188
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — გამარჯვება",
+        "name_en": "EV Charger — Kutaisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.9273641,
+          41.69271
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.9243384,
+          41.6886282
+        ]
+      },
+      "properties": {
+        "name_ka": "Electrify Georgia — ელექტრო დამტენი",
+        "name_en": "Electrify Georgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.7050304,
+          42.2715754
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ქალაქ-მუზეუმი",
+        "name_en": "EV Charger — Kutaisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7804427,
+          41.7542499
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ნაძალადევის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7935767,
+          41.7143767
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ჩუღურეთის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7872818,
+          41.7067071
+        ]
+      },
+      "properties": {
+        "name_ka": "მარტივი (MartEV) — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7592217,
+          41.7258367
+        ]
+      },
+      "properties": {
+        "name_ka": "ProCredit — ელექტრო დამტენი",
+        "name_en": "ProCredit — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7726228,
+          41.7157591
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7899305,
+          41.7032642
+        ]
+      },
+      "properties": {
+        "name_ka": "Infinite Charge — ელექტრო დამტენი",
+        "name_en": "Infinite Charge — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7437804,
+          41.723312
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7923706,
+          41.703272
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — მთაწმინდის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7679717,
+          41.722138
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.798251,
+          41.7099267
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ჩუღურეთის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7918018,
+          41.7037254
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — მთაწმინდის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7693688,
+          41.7269722
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.800231,
+          41.70596
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ჩუღურეთის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7589479,
+          41.709977
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7541188,
+          41.7394043
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.753328,
+          41.7403596
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7749155,
+          41.708926
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8012772,
+          41.7704685
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ნაძალადევის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8774481,
+          41.6889776
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7534083,
+          41.7090412
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7138987,
+          41.7249946
+        ]
+      },
+      "properties": {
+        "name_ka": "AutoEnterprise — ელექტრო დამტენი",
+        "name_en": "AutoEnterprise — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.717673,
+          41.7174776
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7534034,
+          41.7119271
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7864686,
+          41.7013382
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — მთაწმინდის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7948626,
+          41.7408704
+        ]
+      },
+      "properties": {
+        "name_ka": "AutoEnterprise — ელექტრო დამტენი",
+        "name_en": "AutoEnterprise — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.734292,
+          41.7293042
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7621372,
+          41.7964102
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7885871,
+          41.7214831
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7720057,
+          41.7096734
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8486971,
+          41.7033369
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ისნის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7668708,
+          41.7129277
+        ]
+      },
+      "properties": {
+        "name_ka": "EcoCars — ელექტრო დამტენი",
+        "name_en": "EcoCars — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8031253,
+          41.7136372
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ჩუღურეთის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7700537,
+          41.7084313
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7766194,
+          41.7454837
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7741063,
+          41.7439168
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7444186,
+          41.7214876
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7741928,
+          41.7310206
+        ]
+      },
+      "properties": {
+        "name_ka": "Electrify Georgia — ელექტრო დამტენი",
+        "name_en": "Electrify Georgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7969266,
+          41.7142663
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ჩუღურეთის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.3756927,
+          42.0324422
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ალავერდი",
+        "name_en": "EV Charger — Georgia",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.731841,
+          41.723973
+        ]
+      },
+      "properties": {
+        "name_ka": "E-Space — ელექტრო დამტენი",
+        "name_en": "E-Space — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7776153,
+          41.7402679
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7773688,
+          41.7408213
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.0002685,
+          41.6931321
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8807047,
+          41.6837534
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.0023549,
+          41.6917129
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8813404,
+          41.7019342
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8753455,
+          41.689294
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7906093,
+          41.7268846
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7820827,
+          41.7341788
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8519119,
+          41.6545301
+        ]
+      },
+      "properties": {
+        "name_ka": "E-Space — ელექტრო დამტენი",
+        "name_en": "E-Space — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8287824,
+          41.6564996
+        ]
+      },
+      "properties": {
+        "name_ka": "E-Space — ელექტრო დამტენი",
+        "name_en": "E-Space — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.6216716,
+          41.9901117
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ხაშური",
+        "name_en": "EV Charger — Khashuri",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8578337,
+          41.6876682
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ისნის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7595832,
+          41.7195614
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.9272088,
+          41.6934789
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7779115,
+          41.7449678
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.8142309,
+          41.9464953
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ყვარელი",
+        "name_en": "EV Charger — Kvareli",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.8248877,
+          41.925317
+        ]
+      },
+      "properties": {
+        "name_ka": "და-თენე — ელექტრო დამტენი",
+        "name_en": "Da-tene — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7166729,
+          41.7283215
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7314984,
+          41.7314703
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.5651943,
+          41.5541509
+        ]
+      },
+      "properties": {
+        "name_ka": "E-Space — ელექტრო დამტენი",
+        "name_en": "E-Space — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7363714,
+          41.7272207
+        ]
+      },
+      "properties": {
+        "name_ka": "EC Power — ელექტრო დამტენი",
+        "name_en": "EC Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7388781,
+          41.7274771
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8240441,
+          41.6807893
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — კრწანისის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8016299,
+          41.689707
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — მთაწმინდის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8184238,
+          41.6965286
+        ]
+      },
+      "properties": {
+        "name_ka": "C+ — ელექტრო დამტენი",
+        "name_en": "C+ — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.9274312,
+          41.6956793
+        ]
+      },
+      "properties": {
+        "name_ka": "Joint — ელექტრო დამტენი",
+        "name_en": "Joint — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7787267,
+          41.7083265
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7708275,
+          41.7082896
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7789847,
+          41.7064828
+        ]
+      },
+      "properties": {
+        "name_ka": "Charge2Moov — ელექტრო დამტენი",
+        "name_en": "Charge2Moov — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7771436,
+          41.7070798
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7798273,
+          41.704467
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8147412,
+          41.6937149
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ისნის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7448789,
+          41.7274012
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.832945,
+          41.6854796
+        ]
+      },
+      "properties": {
+        "name_ka": "AutoEnterprise — ელექტრო დამტენი",
+        "name_en": "AutoEnterprise — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4731771,
+          41.9270412
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — თელავი",
+        "name_en": "EV Charger — Telavi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4762282,
+          41.9168913
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — თელავი",
+        "name_en": "EV Charger — Telavi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.4685457,
+          41.9194551
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — თელავი",
+        "name_en": "EV Charger — Telavi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.4930546,
+          42.4701754
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ახალი გუდაური",
+        "name_en": "EV Charger — Georgia",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.9850007,
+          41.554447
+        ]
+      },
+      "properties": {
+        "name_ka": "Electrify Georgia — ელექტრო დამტენი",
+        "name_en": "Electrify Georgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7919683,
+          41.7024017
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8842377,
+          41.6723332
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სამგორის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7828914,
+          41.7091575
+        ]
+      },
+      "properties": {
+        "name_ka": "მარტივი (MartEV) — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7614995,
+          41.7092086
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7800737,
+          41.7389168
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — დიდუბის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7888638,
+          41.7069268
+        ]
+      },
+      "properties": {
+        "name_ka": "მარტივი (MartEV) — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7758783,
+          41.787205
+        ]
+      },
+      "properties": {
+        "name_ka": "Electrify Georgia — ელექტრო დამტენი",
+        "name_en": "Electrify Georgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7867807,
+          41.7486155
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7730424,
+          41.7071793
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7150737,
+          41.7135313
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7356803,
+          41.7179563
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7703769,
+          41.72909
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7679374,
+          41.7275752
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7690353,
+          41.7085398
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7383417,
+          41.7402723
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7660025,
+          41.7242899
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.829806,
+          41.6772596
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — კრწანისის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.9223318,
+          41.6197475
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — სიღნაღი",
+        "name_en": "EV Charger — Sighnaghi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.804362,
+          41.6971812
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7575212,
+          41.7305585
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7727977,
+          41.7063548
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8315508,
+          41.6856302
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.9618736,
+          41.67357
+        ]
+      },
+      "properties": {
+        "name_ka": "Electrify Georgia — ელექტრო დამტენი",
+        "name_en": "Electrify Georgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7708979,
+          41.7060156
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "fast_charger",
+        "source": "osm",
+        "status": "fast"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8217301,
+          41.776226
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ნაძალადევის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7536426,
+          41.7101279
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7921334,
+          41.6954686
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7910418,
+          41.7431835
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7813434,
+          41.7396167
+        ]
+      },
+      "properties": {
+        "name_ka": "Autel — ელექტრო დამტენი",
+        "name_en": "Autel — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7806292,
+          41.750225
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7891403,
+          41.7008972
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — მთაწმინდის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          41.8678571,
+          42.5041164
+        ]
+      },
+      "properties": {
+        "name_ka": "Electrify Georgia — ელექტრო დამტენი",
+        "name_en": "Electrify Georgia — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7709835,
+          41.7072311
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7624413,
+          41.729114
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — საბურთალოს რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7674062,
+          41.7088322
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7912846,
+          41.7465291
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8021822,
+          41.7067854
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7358031,
+          41.7217505
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7560441,
+          41.7086971
+        ]
+      },
+      "properties": {
+        "name_ka": "MartEV — ელექტრო დამტენი",
+        "name_en": "MartEV — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.8070468,
+          41.7020725
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ჩუღურეთის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7959707,
+          41.6991423
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — მთაწმინდის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7117094,
+          41.709044
+        ]
+      },
+      "properties": {
+        "name_ka": "ელექტრო დამტენი — ვაკის რაიონი",
+        "name_en": "EV Charger — Tbilisi",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.7789292,
+          41.7177199
+        ]
+      },
+      "properties": {
+        "name_ka": "EV Power — ელექტრო დამტენი",
+        "name_en": "EV Power — EV Charger",
+        "type": "charger",
+        "source": "osm",
+        "status": "level2"
+      }
     }
   ]
 }
