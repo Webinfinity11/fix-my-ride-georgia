@@ -1,17 +1,17 @@
 import { Phone } from "lucide-react";
 
-// Fills a banner slot with a direct call-to-action for the platform phone number.
+// "სარეკლამო ადგილი" placeholder with a clickable phone number beneath it.
 const BannerCallCTA = () => (
-  <a
-    href="tel:+995574047994"
-    className="flex items-center justify-center gap-3 h-full px-6 text-primary-foreground hover:opacity-90 transition-opacity"
-  >
-    <Phone className="h-6 w-6 shrink-0" />
-    <div className="text-center leading-tight">
-      <p className="text-base sm:text-lg font-bold">დაგვირეკეთ: +995 574 04 79 94</p>
-      <p className="text-xs sm:text-sm opacity-90">გჭირდებათ დახმარება? ჩვენ დაგეხმარებით</p>
-    </div>
-  </a>
+  <div className="flex flex-col items-center justify-center h-full px-6 text-center leading-tight text-primary-foreground">
+    <p className="text-lg font-bold">სარეკლამო ადგილი</p>
+    <a
+      href="tel:+995574047994"
+      className="mt-1 inline-flex items-center gap-1.5 text-sm sm:text-base font-medium opacity-95 hover:opacity-100 transition-opacity"
+    >
+      <Phone className="h-4 w-4" />
+      +995 574 04 79 94
+    </a>
+  </div>
 );
 
 export default BannerCallCTA;
