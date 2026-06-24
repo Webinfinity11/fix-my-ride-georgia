@@ -17,7 +17,7 @@ type Stats = {
 const BASELINE: Stats = {
   mechanics: 200,
   customers: 3000,
-  services: 450,
+  services: 530,
   completedBookings: 1500,
 };
 
