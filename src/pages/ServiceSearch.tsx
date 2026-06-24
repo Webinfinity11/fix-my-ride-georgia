@@ -16,7 +16,6 @@ import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { VIPPlanType } from "@/hooks/useVIPRequests";
 import { CAR_BRAND_LOGOS, CAR_BRANDS_BY_POPULARITY } from "@/data/carBrandLogos";
 
@@ -67,37 +66,41 @@ const distanceKm = (aLat: number, aLng: number, bLat: number, bLng: number): num
   return 2 * R * Math.asin(Math.sqrt(x));
 };
 
-/* ---- Category combobox (single, searchable) ---- */
-const CategoryBox = ({ value, options, onChange }: {
-  value: number | null; options: { id: number; name: string }[]; onChange: (v: number | null) => void;
+/* ---- Generic single-select combobox (category, city) — unified style ---- */
+const Combo = ({ value, options, onChange, placeholder, allLabel, icon: Icon }: {
+  value: string | null; options: { value: string; label: string }[];
+  onChange: (v: string | null) => void; placeholder: string; allLabel: string; icon: typeof Layers;
 }) => {
   const [open, setOpen] = useState(false);
-  const label = value ? options.find(o => o.id === value)?.name : null;
+  const [q, setQ] = useState("");
+  const label = value ? options.find(o => o.value === value)?.label : null;
+  const filtered = q ? options.filter(o => o.label.toLowerCase().includes(q.toLowerCase())) : options;
+  const Row = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
+    <button onClick={onClick} className={cn("flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-sm text-left hover:bg-muted transition-colors", active && "font-medium")}>
+      <Check className={cn("h-4 w-4 shrink-0 text-primary", active ? "opacity-100" : "opacity-0")} /><span className="truncate">{children}</span>
+    </button>
+  );
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) setQ(""); }}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" className={cn("h-11 w-full justify-between font-normal", !label && "text-muted-foreground")}>
-          <span className="flex items-center gap-2 truncate"><Layers className="h-4 w-4 shrink-0 text-primary" />{label || "კატეგორია"}</span>
+          <span className="flex items-center gap-2 truncate"><Icon className="h-4 w-4 shrink-0 text-primary" />{label || placeholder}</span>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]" align="start">
-        <Command>
-          <CommandInput placeholder="კატეგორიის ძებნა..." />
-          <CommandList>
-            <CommandEmpty>ვერ მოიძებნა</CommandEmpty>
-            <CommandGroup>
-              <CommandItem onSelect={() => { onChange(null); setOpen(false); }}>
-                <Check className={cn("mr-2 h-4 w-4", !value ? "opacity-100" : "opacity-0")} />ყველა კატეგორია
-              </CommandItem>
-              {options.map(o => (
-                <CommandItem key={o.id} value={o.name} onSelect={() => { onChange(o.id); setOpen(false); }}>
-                  <Check className={cn("mr-2 h-4 w-4", value === o.id ? "opacity-100" : "opacity-0")} />{o.name}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+      <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)] min-w-[220px]" align="start">
+        <div className="p-2 border-b">
+          <div className="flex items-center gap-2 rounded-lg bg-muted h-9 px-2.5">
+            <SearchIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="ძებნა..."
+              className="flex-1 bg-transparent text-sm border-0 outline-none focus:outline-none focus:ring-0 placeholder:text-muted-foreground" />
+          </div>
+        </div>
+        <div className="max-h-[320px] overflow-y-auto p-1.5">
+          <Row active={!value} onClick={() => { onChange(null); setOpen(false); }}>{allLabel}</Row>
+          {filtered.map(o => <Row key={o.value} active={value === o.value} onClick={() => { onChange(o.value); setOpen(false); }}>{o.label}</Row>)}
+          {filtered.length === 0 && <p className="text-center text-sm text-muted-foreground py-4">ვერ მოიძებნა</p>}
+        </div>
       </PopoverContent>
     </Popover>
   );
@@ -365,12 +368,11 @@ const ServiceSearch = () => {
           {/* PRIMARY FILTERS — priority order: კატეგორია → ბრენდი → მდებარეობა → ფოტოები */}
           <div className="bg-background rounded-xl border p-3 md:p-4 mb-3">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-              <CategoryBox value={selectedCategory} options={categories} onChange={setSelectedCategory} />
+              <Combo value={selectedCategory?.toString() || null} options={categories.map(c => ({ value: c.id.toString(), label: c.name }))}
+                onChange={(v) => setSelectedCategory(v ? Number(v) : null)} placeholder="კატეგორია" allLabel="ყველა კატეგორია" icon={Layers} />
               <BrandBox selected={selectedBrands} options={brandOptions} onToggle={toggleBrand} onClear={() => setSelectedBrands([])} />
-              <Select value={selectedCity || "all"} onValueChange={(v) => setSelectedCity(v === "all" ? null : v)}>
-                <SelectTrigger className="h-11"><span className="flex items-center gap-2 truncate"><MapPin className="h-4 w-4 shrink-0 text-primary" /><SelectValue placeholder="მდებარეობა" /></span></SelectTrigger>
-                <SelectContent className="max-h-72"><SelectItem value="all">ყველა ქალაქი</SelectItem>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-              </Select>
+              <Combo value={selectedCity} options={cities.map(c => ({ value: c, label: c }))}
+                onChange={setSelectedCity} placeholder="მდებარეობა" allLabel="ყველა ქალაქი" icon={MapPin} />
               <button onClick={() => setWithPhotos(v => !v)} className={cn(
                 "h-11 inline-flex items-center justify-center gap-2 rounded-md border text-sm font-medium transition-colors",
                 withPhotos ? "bg-primary text-primary-foreground border-primary" : "bg-background border-input hover:bg-muted",

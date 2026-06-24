@@ -40,7 +40,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 210 80% 28%;
 
     --radius: 0.75rem;
 
@@ -137,9 +137,9 @@
     @apply min-h-[12px] touch-manipulation;
   }
 
-  /* Focus Visible Improvements */
+  /* Focus Visible Improvements — keyboard focus only, on-brand & subtle */
   *:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    @apply outline-none ring-2 ring-ring ring-offset-1 ring-offset-background;
   }
 
   /* Enhanced Button Styling */
@@ -157,11 +157,7 @@
     @apply transition-all duration-300 min-h-[44px];
   }
 
-  input:focus,
-  select:focus,
-  textarea:focus {
-    @apply ring-2 ring-ring ring-offset-2;
-  }
+  /* Mouse/tap focus stays clean — keyboard focus handled by :focus-visible above */
 
   /* Card Enhancements */
   .card {
