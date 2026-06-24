@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { performRedirect, needsCanonicalRedirect } from "@/utils/redirectUtils";
 import { Helmet } from "react-helmet-async";
@@ -83,7 +83,28 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
-  
+  // Scroll hint: show the thin scrollbar briefly on load, then hide it so it
+  // doesn't visually nag. Re-shown on actual scroll via onScroll below.
+  const [showScrollHint, setShowScrollHint] = useState(true);
+  const scrollHintTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const pingScrollHint = () => {
+    setShowScrollHint(true);
+    if (scrollHintTimer.current) clearTimeout(scrollHintTimer.current);
+    scrollHintTimer.current = setTimeout(() => setShowScrollHint(false), 1500);
+  };
+
+  useEffect(() => {
+    scrollHintTimer.current = setTimeout(() => setShowScrollHint(false), 2500);
+    return () => {
+      if (scrollHintTimer.current) clearTimeout(scrollHintTimer.current);
+    };
+  }, []);
+
+  const scrollbarHintClass = showScrollHint
+    ? "[scrollbar-width:thin] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300"
+    : "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
   const { seoData } = useSEOData('service', service?.id.toString() || '');
 
   useEffect(() => {
@@ -699,8 +720,8 @@ const ServiceDetail = () => {
         <BreadcrumbSchema items={breadcrumbItems} />
 
       <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumbs — single line with horizontal scroll + thin visible scrollbar */}
-        <Breadcrumb className="mb-6 overflow-x-auto pb-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300">
+        {/* Breadcrumbs — single line; scrollbar shown briefly then hidden */}
+        <Breadcrumb onScroll={pingScrollHint} className={`mb-6 overflow-x-auto pb-1 transition-colors ${scrollbarHintClass}`}>
           <BreadcrumbList className="flex-nowrap whitespace-nowrap">
             <BreadcrumbItem className="shrink-0">
               <BreadcrumbLink href="/">მთავარი</BreadcrumbLink>
@@ -728,7 +749,7 @@ const ServiceDetail = () => {
 
         {/* Header — title spans full width; back button moved into the action row */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 whitespace-nowrap overflow-x-auto pb-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 md:whitespace-normal md:overflow-visible md:pb-0">
+          <h1 onScroll={pingScrollHint} className={`text-2xl md:text-3xl font-bold text-gray-900 mb-2 whitespace-nowrap overflow-x-auto pb-1 ${scrollbarHintClass} md:whitespace-normal md:overflow-visible md:pb-0`}>
             {seoData?.h1_title || service.name}
           </h1>
           {seoData?.h2_description && (
