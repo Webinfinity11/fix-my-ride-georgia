@@ -114,6 +114,22 @@ const ServiceDetail = () => {
     if (id) fetchServiceBySlugOrId(id);
   }, [id]);
 
+  // Track a service-page view (once per session per service) for analytics
+  useEffect(() => {
+    if (!service?.id) return;
+    const key = `sv_${service.id}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from("service_views").insert({
+        service_id: service.id,
+        viewer_id: user?.id || null,
+        user_agent: navigator.userAgent,
+      });
+    })().catch(() => {});
+  }, [service?.id]);
+
   const isValidUUID = (uuid: string) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(uuid);

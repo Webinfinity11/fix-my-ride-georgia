@@ -6,6 +6,7 @@ import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import CustomerDashboard from "@/components/dashboard/customer/CustomerDashboard";
 import MechanicDashboard from "@/components/dashboard/mechanic/MechanicDashboard";
 import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
+import AdminAnalytics from "@/components/dashboard/admin/AdminAnalytics";
 import CustomerProfile from "@/components/dashboard/customer/CustomerProfile";
 import MechanicProfile from "@/components/dashboard/mechanic/MechanicProfile";
 import CustomerCars from "@/components/dashboard/customer/CustomerCars";
@@ -213,6 +214,16 @@ const Dashboard = () => {
                   element={
                     user.role === "admin" ? (
                       <AdminDashboard />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/analytics"
+                  element={
+                    user.role === "admin" ? (
+                      <AdminAnalytics />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

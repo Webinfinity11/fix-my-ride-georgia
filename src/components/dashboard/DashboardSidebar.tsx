@@ -25,6 +25,7 @@ import {
   Mail,
   Package,
   Truck,
+  BarChart3,
 } from "lucide-react";
 import {
   Accordion,
@@ -53,6 +54,7 @@ const DashboardSidebar = () => {
   const adminGroups: { label: string | null; items: { to: string; icon: typeof Shield; label: string; badge?: number }[] }[] = [
     { label: null, items: [
       { to: "/dashboard/admin", icon: Shield, label: "მიმოხილვა" },
+      { to: "/dashboard/admin/analytics", icon: BarChart3, label: "ანალიტიკა" },
     ]},
     { label: "მოთხოვნები", items: [
       { to: "/dashboard/admin/leads", icon: Mail, label: "ლიდები", badge: oldLeadsCount },
