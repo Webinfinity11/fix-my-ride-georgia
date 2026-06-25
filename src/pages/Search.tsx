@@ -27,6 +27,7 @@ import {
 import { toast } from "sonner";
 import { createMechanicSlug } from "@/utils/slugUtils";
 import { useSearchTracking } from "@/hooks/useSearchTracking";
+import { trackSearch as logSearch } from "@/utils/tracking";
 import SEOHead from "@/components/seo/SEOHead";
 
 type MechanicType = {
@@ -117,6 +118,8 @@ const Search = () => {
       saveRecentSearch(searchTerm.trim());
       // Track search for sitemap generation
       trackSearch(searchTerm.trim());
+      // Per-event analytics log
+      logSearch(searchTerm.trim(), "search-page");
     }
 
     if (activeTab === "services") {

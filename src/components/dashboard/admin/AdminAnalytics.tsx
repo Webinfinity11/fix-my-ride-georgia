@@ -42,7 +42,7 @@ const AdminAnalytics = () => {
   const [preset, setPreset] = useState<Preset>("30");
   const [range, setRange] = useState<DateRange | undefined>();
   const [calOpen, setCalOpen] = useState(false);
-  const [evFilter, setEvFilter] = useState<"all" | "view" | "call">("all");
+  const [evFilter, setEvFilter] = useState<"all" | "view" | "call" | "search">("all");
 
   const { from, to } = useMemo(() => {
     const t = todayUTC();
@@ -83,14 +83,6 @@ const AdminAnalytics = () => {
     },
   });
 
-  const searches = useQuery({
-    queryKey: ["an-searches"],
-    queryFn: async () => {
-      const { data } = await supabase.from("search_queries").select("query, search_count").order("search_count", { ascending: false }).limit(10);
-      return data || [];
-    },
-  });
-
   const rows = daily.data || [];
   const curRows = rows.filter(r => r.day >= from);
   const prevRows = rows.filter(r => r.day < from);
@@ -110,11 +102,17 @@ const AdminAnalytics = () => {
     დარეკვები: (Number(r.service_calls) || 0) + (Number(r.mechanic_calls) || 0),
   })), [curRows]);
 
-  // top services (calls) computed from the event feed
+  // top services (calls) + top searches computed from the event feed (period-aware)
   const topServices = useMemo(() => {
     const cnt: Record<string, number> = {};
     (events.data || []).forEach(e => { if (e.kind.startsWith("დარეკვა")) cnt[e.target] = (cnt[e.target] || 0) + 1; });
     return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, n]) => ({ name, n }));
+  }, [events.data]);
+
+  const topSearches = useMemo(() => {
+    const cnt: Record<string, number> = {};
+    (events.data || []).forEach(e => { if (e.kind === "ძიება") cnt[e.target] = (cnt[e.target] || 0) + 1; });
+    return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, n]) => ({ name, n }));
   }, [events.data]);
 
   const byHour = useMemo(() => {
@@ -125,7 +123,10 @@ const AdminAnalytics = () => {
   const maxHour = Math.max(1, ...byHour.map(h => h.n));
 
   const filteredEvents = useMemo(() => (events.data || []).filter(e =>
-    evFilter === "all" ? true : evFilter === "view" ? e.kind === "ნახვა" : e.kind.startsWith("დარეკვა")
+    evFilter === "all" ? true
+      : evFilter === "view" ? e.kind === "ნახვა"
+        : evFilter === "search" ? e.kind === "ძიება"
+          : e.kind.startsWith("დარეკვა")
   ), [events.data, evFilter]);
 
   const periodLabel = preset === "custom" && range?.from
@@ -235,7 +236,7 @@ const AdminAnalytics = () => {
           <div className="flex items-center justify-between gap-2">
             <CardTitle className="text-base flex items-center gap-2"><ListFilter className="h-5 w-5 text-primary" />დეტალური აქტივობა</CardTitle>
             <div className="flex gap-1 bg-muted rounded-lg p-0.5 text-xs">
-              {([["all", "ყველა"], ["view", "ნახვები"], ["call", "დარეკვები"]] as const).map(([k, l]) => (
+              {([["all", "ყველა"], ["view", "ნახვები"], ["call", "დარეკვები"], ["search", "ძიებები"]] as const).map(([k, l]) => (
                 <button key={k} onClick={() => setEvFilter(k)} className={`px-2.5 py-1 rounded-md transition-colors ${evFilter === k ? "bg-background shadow-sm font-medium" : "text-muted-foreground"}`}>{l}</button>
               ))}
             </div>
@@ -255,8 +256,8 @@ const AdminAnalytics = () => {
                       <tr key={i} className="border-b last:border-0">
                         <td className="py-1.5 pr-2 whitespace-nowrap text-muted-foreground">{evTime(e.ts)}</td>
                         <td className="py-1.5 px-2 whitespace-nowrap">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${e.kind === "ნახვა" ? "bg-blue-50 text-blue-700" : "bg-green-50 text-green-700"}`}>
-                            {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${e.kind === "ნახვა" ? "bg-blue-50 text-blue-700" : e.kind === "ძიება" ? "bg-purple-50 text-purple-700" : "bg-green-50 text-green-700"}`}>
+                            {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : e.kind === "ძიება" ? <Search className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
                           </span>
                         </td>
                         <td className="py-1.5 px-2 truncate max-w-[260px]">
@@ -290,15 +291,16 @@ const AdminAnalytics = () => {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Search className="h-5 w-5 text-primary" />Top ძიებები</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Search className="h-5 w-5 text-primary" />Top ძიებები (რას ეძებენ)</CardTitle></CardHeader>
           <CardContent className="space-y-1">
-            {(searches.data || []).map((s, i) => (
-              <div key={i} className="flex items-center gap-3 py-1.5 border-b last:border-0">
-                <span className="w-5 text-center text-sm font-semibold text-muted-foreground">{i + 1}</span>
-                <span className="flex-1 text-sm truncate">{s.query}</span>
-                <span className="text-sm font-semibold">{s.search_count}</span>
-              </div>
-            ))}
+            {topSearches.length === 0 ? <p className="text-sm text-muted-foreground py-3">ამ პერიოდში ძიება არ ყოფილა</p> :
+              topSearches.map((s, i) => (
+                <div key={i} className="flex items-center gap-3 py-1.5 border-b last:border-0">
+                  <span className="w-5 text-center text-sm font-semibold text-muted-foreground">{i + 1}</span>
+                  <span className="flex-1 text-sm truncate">{s.name}</span>
+                  <span className="text-sm font-semibold">{s.n}</span>
+                </div>
+              ))}
           </CardContent>
         </Card>
       </div>

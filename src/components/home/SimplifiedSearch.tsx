@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, startTransition } from "react";
 import { useNavigate } from "react-router-dom";
+import { trackSearch } from "@/utils/tracking";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -60,6 +61,7 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (searchTerm) trackSearch(searchTerm, "home");
     const params = new URLSearchParams();
 
     if (searchTerm) params.set("q", searchTerm);

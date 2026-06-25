@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ServiceCard from "@/components/services/ServiceCard";
 import ServiceCardSkeleton from "@/components/services/ServiceCardSkeleton";
+import { trackSearch } from "@/utils/tracking";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { VIPPlanType } from "@/hooks/useVIPRequests";
@@ -200,7 +201,11 @@ const ServiceSearch = () => {
   const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
-    const t = setTimeout(() => setSearchQuery(searchInput.trim()), 350);
+    const t = setTimeout(() => {
+      const q = searchInput.trim();
+      setSearchQuery(q);
+      if (q.length >= 2) trackSearch(q, "service-search");
+    }, 600);
     return () => clearTimeout(t);
   }, [searchInput]);
 
