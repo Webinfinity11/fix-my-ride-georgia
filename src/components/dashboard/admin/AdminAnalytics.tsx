@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   BarChart3, Eye, Phone, UserRound, Repeat, Search,
-  TrendingUp, TrendingDown, Info, Download, Clock, CalendarDays, ListFilter,
+  TrendingUp, TrendingDown, Info, Download, Clock, CalendarDays, ListFilter, ChartNoAxesColumn,
 } from "lucide-react";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
@@ -43,6 +44,7 @@ const AdminAnalytics = () => {
   const [range, setRange] = useState<DateRange | undefined>();
   const [calOpen, setCalOpen] = useState(false);
   const [evFilter, setEvFilter] = useState<"all" | "view" | "call" | "search">("all");
+  const [activeSvc, setActiveSvc] = useState<{ id: number; name: string } | null>(null);
 
   const { from, to } = useMemo(() => {
     const t = todayUTC();
@@ -82,6 +84,21 @@ const AdminAnalytics = () => {
       return (data || []) as Ev[];
     },
   });
+
+  const svcActivity = useQuery({
+    queryKey: ["svc-activity", activeSvc?.id, from, to],
+    enabled: !!activeSvc,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_service_activity", {
+        p_service_id: activeSvc!.id, p_from: from + "T00:00:00Z", p_to: addDays(to, 1) + "T00:00:00Z", p_limit: 1000,
+      });
+      if (error) throw error;
+      return (data || []) as { ts: string; kind: string; viewer: string }[];
+    },
+  });
+  const svcViews = (svcActivity.data || []).filter(e => e.kind === "ნახვა").length;
+  const svcCalls = (svcActivity.data || []).filter(e => e.kind === "დარეკვა").length;
+  const svcConv = svcViews > 0 ? Math.round((svcCalls / svcViews) * 100) : null;
 
   const rows = daily.data || [];
   const curRows = rows.filter(r => r.day >= from);
@@ -260,10 +277,21 @@ const AdminAnalytics = () => {
                             {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : e.kind === "ძიება" ? <Search className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
                           </span>
                         </td>
-                        <td className="py-1.5 px-2 truncate max-w-[260px]">
-                          {e.link ? (
-                            <Link to={e.link} target="_blank" className="text-primary hover:underline">{e.target}</Link>
-                          ) : e.target}
+                        <td className="py-1.5 px-2 max-w-[260px]">
+                          <div className="flex items-center gap-1.5">
+                            {e.link ? (
+                              <Link to={e.link} target="_blank" className="text-primary hover:underline truncate">{e.target}</Link>
+                            ) : <span className="truncate">{e.target}</span>}
+                            {e.link?.startsWith("/service/") && (
+                              <button
+                                onClick={() => setActiveSvc({ id: Number(e.link!.split("/").pop()), name: e.target })}
+                                title="სერვისის ანალიტიკა"
+                                className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+                              >
+                                <ChartNoAxesColumn className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
                         </td>
                         <td className="py-1.5 px-3 truncate max-w-[160px] text-muted-foreground">{e.viewer}</td>
                       </tr>
@@ -320,6 +348,62 @@ const AdminAnalytics = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Per-service drill-down */}
+      <Dialog open={!!activeSvc} onOpenChange={(o) => !o && setActiveSvc(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="pr-6 text-base leading-snug">{activeSvc?.name}</DialogTitle>
+            <p className="text-xs text-muted-foreground">სერვისის ანალიტიკა · {periodLabel}</p>
+          </DialogHeader>
+          {svcActivity.isLoading ? (
+            <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}</div>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: "ნახვები", value: svcViews, color: "text-blue-600", icon: Eye },
+                  { label: "დარეკვები", value: svcCalls, color: "text-green-600", icon: Phone },
+                  { label: "კონვერსია", value: svcConv == null ? "—" : `${svcConv}%`, color: "text-purple-600", icon: Repeat },
+                ].map((s, i) => (
+                  <div key={i} className="rounded-lg border p-3 text-center">
+                    <s.icon className={`h-4 w-4 mx-auto mb-1 ${s.color}`} />
+                    <div className="text-xl font-bold">{s.value}</div>
+                    <div className="text-[11px] text-muted-foreground">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              {activeSvc && (
+                <Link to={`/service/${activeSvc.id}`} target="_blank" className="text-xs text-primary hover:underline">სერვისის გვერდი →</Link>
+              )}
+              <div className="max-h-[300px] overflow-y-auto rounded-lg border mt-1">
+                {(svcActivity.data || []).length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-6 text-center">ამ პერიოდში აქტივობა არ ყოფილა</p>
+                ) : (
+                  <table className="w-full text-sm">
+                    <thead className="sticky top-0 bg-background"><tr className="text-left text-xs text-muted-foreground border-b">
+                      <th className="py-2 px-3 font-medium">დრო</th><th className="py-2 px-2 font-medium">ტიპი</th><th className="py-2 px-3 font-medium">მომხმარებელი</th>
+                    </tr></thead>
+                    <tbody>
+                      {(svcActivity.data || []).map((e, i) => (
+                        <tr key={i} className="border-b last:border-0">
+                          <td className="py-1.5 px-3 whitespace-nowrap text-muted-foreground">{evTime(e.ts)}</td>
+                          <td className="py-1.5 px-2 whitespace-nowrap">
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${e.kind === "ნახვა" ? "bg-blue-50 text-blue-700" : "bg-green-50 text-green-700"}`}>
+                              {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
+                            </span>
+                          </td>
+                          <td className="py-1.5 px-3 truncate max-w-[180px] text-muted-foreground">{e.viewer}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
