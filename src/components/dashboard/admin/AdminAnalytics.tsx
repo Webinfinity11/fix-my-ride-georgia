@@ -39,6 +39,25 @@ const evTime = (iso: string) => {
   return `${p(d.getDate())}/${p(d.getMonth() + 1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
 };
 
+const TopList = ({ items, emptyText, loading }: { items: { name: string; n: number; link?: string }[]; emptyText: string; loading?: boolean }) => (
+  <CardContent className="p-0">
+    {loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-7 w-full" />)}</div> :
+      items.length === 0 ? <p className="text-sm text-muted-foreground py-6 text-center">{emptyText}</p> : (
+        <div className="max-h-[300px] overflow-y-auto px-4 pb-3">
+          {items.map((s, i) => (
+            <div key={i} className="flex items-center gap-3 py-1.5 border-b last:border-0">
+              <span className="w-5 text-center text-sm font-semibold text-muted-foreground">{i + 1}</span>
+              {s.link
+                ? <Link to={s.link} target="_blank" className="flex-1 text-sm truncate hover:text-primary hover:underline">{s.name}</Link>
+                : <span className="flex-1 text-sm truncate">{s.name}</span>}
+              <span className="text-sm font-semibold">{s.n}</span>
+            </div>
+          ))}
+        </div>
+      )}
+  </CardContent>
+);
+
 const AdminAnalytics = () => {
   const [preset, setPreset] = useState<Preset>("30");
   const [range, setRange] = useState<DateRange | undefined>();
@@ -119,17 +138,29 @@ const AdminAnalytics = () => {
     დარეკვები: (Number(r.service_calls) || 0) + (Number(r.mechanic_calls) || 0),
   })), [curRows]);
 
-  // top services (calls) + top searches computed from the event feed (period-aware)
-  const topServices = useMemo(() => {
-    const cnt: Record<string, number> = {};
-    (events.data || []).forEach(e => { if (e.kind.startsWith("დარეკვა")) cnt[e.target] = (cnt[e.target] || 0) + 1; });
-    return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([name, n]) => ({ name, n }));
-  }, [events.data]);
+  // Top viewed / called services — exact server-side aggregation (period-aware).
+  const topViewed = useQuery({
+    queryKey: ["an-top", "view", from, to],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_top_services", { p_metric: "view", p_from: from, p_to: to, p_limit: 25 });
+      if (error) throw error;
+      return (data || []) as { service_id: number; name: string; n: number }[];
+    },
+  });
+  const topCalled = useQuery({
+    queryKey: ["an-top", "call", from, to],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_top_services", { p_metric: "call", p_from: from, p_to: to, p_limit: 25 });
+      if (error) throw error;
+      return (data || []) as { service_id: number; name: string; n: number }[];
+    },
+  });
 
+  // Top searches from the event feed (lower volume → feed is sufficient).
   const topSearches = useMemo(() => {
     const cnt: Record<string, number> = {};
     (events.data || []).forEach(e => { if (e.kind === "ძიება") cnt[e.target] = (cnt[e.target] || 0) + 1; });
-    return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, n]) => ({ name, n }));
+    return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, n]) => ({ name, n }));
   }, [events.data]);
 
   const byHour = useMemo(() => {
@@ -304,32 +335,20 @@ const AdminAnalytics = () => {
         </CardContent>
       </Card>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-3 gap-6">
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Phone className="h-5 w-5 text-green-600" />Top სერვისები (დარეკვით)</CardTitle></CardHeader>
-          <CardContent className="space-y-1">
-            {topServices.length === 0 ? <p className="text-sm text-muted-foreground py-3">ამ პერიოდში დარეკვა არ ყოფილა</p> :
-              topServices.map((s, i) => (
-                <div key={i} className="flex items-center gap-3 py-1.5 border-b last:border-0">
-                  <span className="w-5 text-center text-sm font-semibold text-muted-foreground">{i + 1}</span>
-                  <span className="flex-1 text-sm truncate">{s.name}</span>
-                  <span className="text-sm font-semibold">{s.n}</span>
-                </div>
-              ))}
-          </CardContent>
+          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Eye className="h-5 w-5 text-blue-600" />Top ნახვები</CardTitle></CardHeader>
+          <TopList loading={topViewed.isLoading} emptyText="ამ პერიოდში ნახვა არ ყოფილა"
+            items={(topViewed.data || []).map(s => ({ name: s.name, n: s.n, link: `/service/${s.service_id}` }))} />
         </Card>
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Search className="h-5 w-5 text-primary" />Top ძიებები (რას ეძებენ)</CardTitle></CardHeader>
-          <CardContent className="space-y-1">
-            {topSearches.length === 0 ? <p className="text-sm text-muted-foreground py-3">ამ პერიოდში ძიება არ ყოფილა</p> :
-              topSearches.map((s, i) => (
-                <div key={i} className="flex items-center gap-3 py-1.5 border-b last:border-0">
-                  <span className="w-5 text-center text-sm font-semibold text-muted-foreground">{i + 1}</span>
-                  <span className="flex-1 text-sm truncate">{s.name}</span>
-                  <span className="text-sm font-semibold">{s.n}</span>
-                </div>
-              ))}
-          </CardContent>
+          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Phone className="h-5 w-5 text-green-600" />Top დარეკვები</CardTitle></CardHeader>
+          <TopList loading={topCalled.isLoading} emptyText="ამ პერიოდში დარეკვა არ ყოფილა"
+            items={(topCalled.data || []).map(s => ({ name: s.name, n: s.n, link: `/service/${s.service_id}` }))} />
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Search className="h-5 w-5 text-primary" />Top ძიებები</CardTitle></CardHeader>
+          <TopList emptyText="ამ პერიოდში ძიება არ ყოფილა" items={topSearches} />
         </Card>
       </div>
 
