@@ -39,6 +39,8 @@ END;
 $$;
 
 -- Per-event feed: who viewed / called which service or mechanic, in [p_from, p_to).
+-- DROP first because the return type (added `link`) changed.
+DROP FUNCTION IF EXISTS public.get_admin_events(timestamptz, timestamptz, int);
 CREATE OR REPLACE FUNCTION public.get_admin_events(p_from timestamptz, p_to timestamptz, p_limit int)
 RETURNS TABLE(ts timestamptz, kind text, target text, viewer text, link text)
 LANGUAGE plpgsql
