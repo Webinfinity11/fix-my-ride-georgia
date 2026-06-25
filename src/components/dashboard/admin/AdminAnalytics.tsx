@@ -245,16 +245,16 @@ const AdminAnalytics = () => {
         <CardContent>
           {events.isLoading ? <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}</div> :
             filteredEvents.length === 0 ? <p className="text-sm text-muted-foreground py-4 text-center">ამ პერიოდში აქტივობა არ ყოფილა</p> : (
-              <div className="overflow-x-auto">
+              <div className="max-h-[420px] overflow-y-auto overflow-x-auto rounded-lg border">
                 <table className="w-full text-sm">
-                  <thead><tr className="text-left text-xs text-muted-foreground border-b">
-                    <th className="py-2 pr-2 font-medium">დრო</th><th className="py-2 px-2 font-medium">ტიპი</th>
-                    <th className="py-2 px-2 font-medium">სამიზნე</th><th className="py-2 pl-2 font-medium">მომხმარებელი</th>
+                  <thead className="sticky top-0 z-10 bg-background"><tr className="text-left text-xs text-muted-foreground border-b">
+                    <th className="py-2 px-3 font-medium">დრო</th><th className="py-2 px-2 font-medium">ტიპი</th>
+                    <th className="py-2 px-2 font-medium">სამიზნე</th><th className="py-2 px-3 font-medium">მომხმარებელი</th>
                   </tr></thead>
                   <tbody>
                     {filteredEvents.slice(0, 200).map((e, i) => (
-                      <tr key={i} className="border-b last:border-0">
-                        <td className="py-1.5 pr-2 whitespace-nowrap text-muted-foreground">{evTime(e.ts)}</td>
+                      <tr key={i} className="border-b last:border-0 hover:bg-muted/40">
+                        <td className="py-1.5 px-3 whitespace-nowrap text-muted-foreground">{evTime(e.ts)}</td>
                         <td className="py-1.5 px-2 whitespace-nowrap">
                           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${e.kind === "ნახვა" ? "bg-blue-50 text-blue-700" : e.kind === "ძიება" ? "bg-purple-50 text-purple-700" : "bg-green-50 text-green-700"}`}>
                             {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : e.kind === "ძიება" ? <Search className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
@@ -265,14 +265,14 @@ const AdminAnalytics = () => {
                             <Link to={e.link} target="_blank" className="text-primary hover:underline">{e.target}</Link>
                           ) : e.target}
                         </td>
-                        <td className="py-1.5 pl-2 truncate max-w-[160px] text-muted-foreground">{e.viewer}</td>
+                        <td className="py-1.5 px-3 truncate max-w-[160px] text-muted-foreground">{e.viewer}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                {filteredEvents.length > 200 && <p className="text-xs text-muted-foreground pt-2 text-center">ნაჩვენებია ბოლო 200 (სულ {filteredEvents.length}). CSV-ში ყველაა.</p>}
               </div>
             )}
+            {filteredEvents.length > 200 && <p className="text-xs text-muted-foreground pt-2 text-center">ნაჩვენებია ბოლო 200 (სულ {filteredEvents.length}). CSV-ში ყველაა.</p>}
         </CardContent>
       </Card>
 
