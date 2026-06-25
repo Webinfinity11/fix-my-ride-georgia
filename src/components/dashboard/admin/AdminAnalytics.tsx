@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import type { DateRange } from "react-day-picker";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +14,7 @@ import {
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 
 type Daily = { day: string; service_views: number; service_calls: number; mechanic_calls: number; profile_views: number };
-type Ev = { ts: string; kind: string; target: string; viewer: string };
+type Ev = { ts: string; kind: string; target: string; viewer: string; link: string | null };
 type Preset = "today" | "yesterday" | "7" | "30" | "90" | "custom";
 
 const PRESETS: { k: Preset; label: string }[] = [
@@ -258,7 +259,11 @@ const AdminAnalytics = () => {
                             {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
                           </span>
                         </td>
-                        <td className="py-1.5 px-2 truncate max-w-[260px]">{e.target}</td>
+                        <td className="py-1.5 px-2 truncate max-w-[260px]">
+                          {e.link ? (
+                            <Link to={e.link} target="_blank" className="text-primary hover:underline">{e.target}</Link>
+                          ) : e.target}
+                        </td>
                         <td className="py-1.5 pl-2 truncate max-w-[160px] text-muted-foreground">{e.viewer}</td>
                       </tr>
                     ))}
