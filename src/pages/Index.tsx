@@ -13,7 +13,6 @@ import SimplifiedSearch from "@/components/home/SimplifiedSearch";
 import CategoryCarousel from "@/components/home/CategoryCarousel";
 import VIPServicesCarousel from "@/components/home/VIPServicesCarousel";
 import { Zap, Shield, Users, Star, ArrowRight, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
-import { EvacuatorDialog } from "@/components/evacuator/EvacuatorDialog";
 
 // Lazy load below-fold components
 const StationsPromo = lazy(() => import("@/components/home/StationsPromo"));
@@ -41,7 +40,6 @@ const stats = [{
 
 const Index = () => {
   const navigate = useNavigate();
-  const [evacuatorDialogOpen, setEvacuatorDialogOpen] = useState(false);
   const canonicalUrl = generateCanonicalURL("home", {});
 
   return <div className="min-h-screen flex flex-col bg-gradient-to-br from-muted via-background to-accent/30 pb-[70px] md:pb-0">
@@ -84,7 +82,7 @@ const Index = () => {
 
               <Card className="shadow-xl border-0 bg-card/95 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-4 md:p-6 lg:p-8">
-                  <SimplifiedSearch onEvacuatorClick={() => setEvacuatorDialogOpen(true)} />
+                  <SimplifiedSearch />
                 </CardContent>
               </Card>
 
@@ -230,7 +228,6 @@ const Index = () => {
         <MobileBanner />
       </Suspense>
       <MobileBottomNav />
-      <EvacuatorDialog open={evacuatorDialogOpen} onOpenChange={setEvacuatorDialogOpen} />
     </div>;
 };
 export default Index;

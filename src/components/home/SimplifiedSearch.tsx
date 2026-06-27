@@ -4,7 +4,7 @@ import { trackSearch } from "@/utils/tracking";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MapPin, Truck } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ServiceCategory {
@@ -12,11 +12,7 @@ interface ServiceCategory {
   name: string;
 }
 
-interface SimplifiedSearchProps {
-  onEvacuatorClick: () => void;
-}
-
-const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
+const SimplifiedSearch = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -123,26 +119,14 @@ const SimplifiedSearch = ({ onEvacuatorClick }: SimplifiedSearchProps) => {
           </Select>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button
-            type="submit"
-            className="flex-1 h-12 bg-primary hover:bg-primary-dark text-primary-foreground rounded-xl text-base font-semibold"
-          >
-            <Search className="h-5 w-5 mr-2" />
-            ძიება
-          </Button>
-
-          <Button
-            type="button"
-            onClick={onEvacuatorClick}
-            variant="destructive"
-            className="h-12 px-4 md:px-6 rounded-xl"
-          >
-            <Truck className="h-5 w-5 md:mr-2" />
-            <span className="hidden md:inline">ევაკუატორი</span>
-          </Button>
-        </div>
+        {/* Action Button */}
+        <Button
+          type="submit"
+          className="w-full h-12 bg-primary hover:bg-primary-dark text-primary-foreground rounded-xl text-base font-semibold"
+        >
+          <Search className="h-5 w-5 mr-2" />
+          ძიება
+        </Button>
       </form>
     </div>
   );
