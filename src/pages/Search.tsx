@@ -221,6 +221,27 @@ const Search = () => {
     setMinRating(null);
   };
 
+  // Clear only the text search and re-show results (other filters kept).
+  const handleClearSearch = async () => {
+    setSearchQuery("");
+    if (activeTab === "services") {
+      await fetchServices({
+        searchTerm: "",
+        selectedCategory,
+        selectedCity,
+        selectedDistrict,
+        selectedBrands,
+        onSiteOnly,
+        minRating,
+      });
+    } else {
+      await searchMechanics("");
+    }
+    const params = new URLSearchParams();
+    if (activeTab !== "services") params.set("tab", activeTab);
+    setSearchParams(params);
+  };
+
   const clearRecentSearches = () => {
     setRecentSearches([]);
     localStorage.removeItem("recent_searches");
@@ -394,6 +415,7 @@ const Search = () => {
                           minRating={minRating}
                           setMinRating={setMinRating}
                           onSearch={performSearch}
+                          onClearSearch={handleClearSearch}
                           onResetFilters={handleResetFilters}
                         />
                       </CardContent>

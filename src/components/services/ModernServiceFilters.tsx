@@ -32,6 +32,7 @@ interface ModernServiceFiltersProps {
   minRating: number | null;
   setMinRating: (rating: number | null) => void;
   onSearch: () => void;
+  onClearSearch: () => void;
   onResetFilters: () => void;
 }
 
@@ -58,7 +59,7 @@ const ModernServiceFilters = ({
   selectedBrands, setSelectedBrands,
   onSiteOnly, setOnSiteOnly,
   minRating, setMinRating,
-  onSearch, onResetFilters,
+  onSearch, onClearSearch, onResetFilters,
 }: ModernServiceFiltersProps) => {
   const [showFilters, setShowFilters] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
@@ -162,8 +163,18 @@ const ModernServiceFilters = ({
             placeholder="სერვისის ძიება..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-10 border-2 border-primary/20 focus-visible:ring-primary text-sm"
+            className={`pl-10 h-10 border-2 border-primary/20 focus-visible:ring-primary text-sm ${searchTerm ? "pr-9" : ""}`}
           />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={onClearSearch}
+              aria-label="ძიების გასუფთავება"
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
         <Button type="submit" className="h-10 px-4 shrink-0">
           <Search className="h-4 w-4" />

@@ -221,7 +221,7 @@ export default function BlogPost() {
               width={1200}
               height={675}
               loading="eager"
-              fetchPriority="high"
+              {...({ fetchpriority: "high" } as Record<string, string>)}
               className="w-full h-auto"
             />
           </div>

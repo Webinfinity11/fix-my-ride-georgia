@@ -67,7 +67,10 @@ const LazyImage = ({
           style={style}
           loading={priority ? "eager" : "lazy"}
           decoding={priority ? "sync" : "async"}
-          fetchPriority={priority ? "high" : "auto"}
+          // lowercase `fetchpriority`: this React runtime drops the camelCase
+          // `fetchPriority` prop (and warns). The lowercase HTML attribute is
+          // what actually reaches the DOM and is read by the browser.
+          {...({ fetchpriority: priority ? "high" : "auto" } as Record<string, string>)}
           onLoad={() => setIsLoaded(true)}
           onError={(e) => {
             setIsLoaded(true);

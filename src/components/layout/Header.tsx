@@ -41,7 +41,7 @@ const Header = () => {
               alt="FixUp Auto Service"
               width="164"
               height="80"
-              fetchPriority="high"
+              {...({ fetchpriority: "high" } as Record<string, string>)}
               className="h-8 md:h-10 w-auto object-contain"
             />
           </Link>
@@ -83,8 +83,10 @@ const Header = () => {
           </Link>
         </nav>
 
-        {/* Auth Section */}
-        {user ? (
+        {/* Right-side actions */}
+        <div className="flex items-center gap-2">
+          {/* Auth Section */}
+          {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-10 w-10 p-0 rounded-full" aria-label="პროფილის მენიუ">
@@ -127,18 +129,29 @@ const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        ) : (
-          <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                შესვლა
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm">რეგისტრაცია</Button>
-            </Link>
-          </div>
-        )}
+          ) : (
+            <>
+              {/* Mobile: register as a plain text link (no button shape) */}
+              <Link
+                to="/register"
+                className="md:hidden text-sm font-medium text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
+              >
+                რეგისტრაცია
+              </Link>
+              {/* Desktop: login + register */}
+              <div className="hidden md:flex items-center space-x-4">
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    შესვლა
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm">რეგისტრაცია</Button>
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

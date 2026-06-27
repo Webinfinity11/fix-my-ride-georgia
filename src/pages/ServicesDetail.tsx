@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -141,10 +141,10 @@ const ServicesDetail = () => {
     await fetchServices(filters);
     updateURL();
   };
-  const updateURL = () => {
+  const updateURL = (term: string = searchTerm) => {
     console.log("🔗 Updating URL with current filters");
     const params = new URLSearchParams();
-    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    if (term.trim()) params.set("q", term.trim());
     if (selectedCategory !== "all") params.set("category", selectedCategory.toString());
     if (selectedCity) params.set("city", selectedCity);
     if (selectedDistrict) params.set("district", selectedDistrict);
@@ -153,6 +153,21 @@ const ServicesDetail = () => {
     if (minRating) params.set("minRating", minRating.toString());
     console.log("🔗 New URL params:", params.toString());
     setSearchParams(params);
+  };
+  // Clear only the text search and re-show results (other filters kept).
+  const handleClearSearch = async () => {
+    console.log("❌ Clearing search term");
+    setSearchTerm("");
+    await fetchServices({
+      searchTerm: "",
+      selectedCategory,
+      selectedCity,
+      selectedDistrict,
+      selectedBrands,
+      onSiteOnly,
+      minRating,
+    });
+    updateURL("");
   };
   const handleResetFilters = async () => {
     console.log("🧹 Resetting all filters");
@@ -278,6 +293,7 @@ const ServicesDetail = () => {
                 minRating={minRating}
                 setMinRating={setMinRating}
                 onSearch={handleSearch}
+                onClearSearch={handleClearSearch}
                 onResetFilters={handleResetFilters}
               />
             </div>
@@ -344,11 +360,11 @@ const ServicesDetail = () => {
                 {/* Services Grid */}
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {sortedServices.slice(0, visibleServicesCount).map((service, index) => (
-                    <>
-                      <ServiceCard key={service.id} service={service} />
+                    <Fragment key={service.id}>
+                      <ServiceCard service={service} />
                       {/* Banner after first row (after 4th item for 4-column grid) */}
-                      {index === 3 && <ServicesGridBanner key="banner-row-1" />}
-                    </>
+                      {index === 3 && <ServicesGridBanner />}
+                    </Fragment>
                   ))}
                 </div>
 
