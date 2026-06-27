@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LazyImage } from '@/components/ui/lazy-image';
 import { ArrowRight, Calendar, Star, Wrench } from 'lucide-react';
 import { BlogCard } from '@/components/blog/BlogCard';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { createSlug } from '@/utils/slugUtils';
 import { formatDate } from '@/utils/blogHelpers';
 import type { BlogPost } from '@/hooks/useBlogPosts';
@@ -39,7 +40,14 @@ export function RelatedBlogPosts({ limit = 3 }: { limit?: number }) {
     return (
       <section className="mt-12">
         <h2 className="text-2xl font-bold mb-6">სასარგებლო სტატიები ბლოგიდან</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Mobile: horizontal row (matches the carousel, no page stretch) */}
+        <div className="flex md:hidden gap-3 overflow-hidden">
+          {Array.from({ length: limit }).map((_, i) => (
+            <Skeleton key={i} className="h-72 basis-[85%] shrink-0" />
+          ))}
+        </div>
+        {/* Desktop: 3-column grid */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6">
           {Array.from({ length: limit }).map((_, i) => (
             <Skeleton key={i} className="h-72 w-full" />
           ))}
@@ -61,7 +69,20 @@ export function RelatedBlogPosts({ limit = 3 }: { limit?: number }) {
           ყველა სტატია <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Mobile: swipeable carousel (keeps the section from stretching the page).
+          The next card peeks at 85% width to signal swipeability. */}
+      <Carousel opts={{ align: 'start', loop: false }} className="md:hidden">
+        <CarouselContent className="-ml-3">
+          {posts.map((p) => (
+            <CarouselItem key={p.id} className="pl-3 basis-[85%] sm:basis-1/2">
+              <BlogCard post={p} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+
+      {/* Desktop: unchanged 3-column grid */}
+      <div className="hidden md:grid md:grid-cols-3 gap-6">
         {posts.map((p) => (
           <BlogCard key={p.id} post={p} />
         ))}
@@ -274,39 +295,57 @@ export function MechanicOtherServices({
     return base ? `/service/${s.id}-${base}` : `/service/${s.id}`;
   };
 
+  const renderCard = (s: LiteService) => {
+    const photo = Array.isArray(s.photos)
+      ? s.photos.find((p) => typeof p === 'string' && p.startsWith('http'))
+      : null;
+    return (
+      <Link to={serviceUrl(s)} className="block h-full">
+        <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
+          {photo ? (
+            <div className="aspect-[4/3] overflow-hidden bg-muted">
+              <LazyImage src={photo} alt={s.name} className="h-full w-full object-cover" />
+            </div>
+          ) : (
+            <div className="aspect-[4/3] flex items-center justify-center bg-muted">
+              <Wrench className="h-8 w-8 text-muted-foreground" />
+            </div>
+          )}
+          <div className="p-3">
+            <h3 className="text-sm font-medium line-clamp-2">{s.name}</h3>
+            {s.rating ? (
+              <div className="flex items-center gap-0.5 text-xs text-muted-foreground mt-1">
+                <Star className="h-3 w-3 fill-secondary text-secondary" />
+                {Number(s.rating).toFixed(1)}
+              </div>
+            ) : null}
+          </div>
+        </Card>
+      </Link>
+    );
+  };
+
   return (
     <section className="mt-12">
       <h2 className="text-2xl font-bold mb-6">ამ ხელოსნის სხვა სერვისები</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {services.map((s) => {
-          const photo = Array.isArray(s.photos)
-            ? s.photos.find((p) => typeof p === 'string' && p.startsWith('http'))
-            : null;
-          return (
-            <Link key={s.id} to={serviceUrl(s)}>
-              <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
-                {photo ? (
-                  <div className="aspect-[4/3] overflow-hidden bg-muted">
-                    <LazyImage src={photo} alt={s.name} className="h-full w-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="aspect-[4/3] flex items-center justify-center bg-muted">
-                    <Wrench className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                )}
-                <div className="p-3">
-                  <h3 className="text-sm font-medium line-clamp-2">{s.name}</h3>
-                  {s.rating ? (
-                    <div className="flex items-center gap-0.5 text-xs text-muted-foreground mt-1">
-                      <Star className="h-3 w-3 fill-secondary text-secondary" />
-                      {Number(s.rating).toFixed(1)}
-                    </div>
-                  ) : null}
-                </div>
-              </Card>
-            </Link>
-          );
-        })}
+
+      {/* Mobile: swipeable carousel (avoids a tall stacked grid). Two cards
+          fit with the next one peeking at ~45% width. */}
+      <Carousel opts={{ align: 'start', loop: false }} className="md:hidden">
+        <CarouselContent className="-ml-3">
+          {services.map((s) => (
+            <CarouselItem key={s.id} className="pl-3 basis-[45%]">
+              {renderCard(s)}
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+
+      {/* Desktop: unchanged 4-column grid */}
+      <div className="hidden md:grid md:grid-cols-4 gap-4">
+        {services.map((s) => (
+          <div key={s.id}>{renderCard(s)}</div>
+        ))}
       </div>
     </section>
   );

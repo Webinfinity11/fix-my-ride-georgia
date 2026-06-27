@@ -104,7 +104,8 @@ const ServicesDetail = () => {
     }
   }, [selectedCity, fetchDistricts]);
 
-  // Trigger search when any filter changes
+  // Auto-search when a filter changes (NOT searchTerm — text search is manual,
+  // triggered only by the search button / Enter via handleSearch).
   useEffect(() => {
     console.log("🔄 Filters changed, triggering search...");
     console.log("📊 Current filter values:", {
@@ -123,7 +124,8 @@ const ServicesDetail = () => {
     } else {
       console.log("⏳ Waiting for categories to load...");
     }
-  }, [searchTerm, selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories]);
   const performSearch = async () => {
     console.log("🔍 Performing search with current filters");
     const filters = {
@@ -162,7 +164,18 @@ const ServicesDetail = () => {
     setOnSiteOnly(false);
     setMinRating(null);
     setSearchParams({});
-    console.log("✅ Filters reset, search will trigger via useEffect");
+    // Explicitly refetch with empty filters — state updates are async, and the
+    // auto-search effect no longer watches searchTerm, so a text-only reset
+    // wouldn't otherwise re-trigger a search.
+    await fetchServices({
+      searchTerm: "",
+      selectedCategory: "all",
+      selectedCity: null,
+      selectedDistrict: null,
+      selectedBrands: [],
+      onSiteOnly: false,
+      minRating: null,
+    });
   };
   const handleSearch = async () => {
     console.log("🚀 Manual search button clicked");

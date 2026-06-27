@@ -29,9 +29,9 @@ export const useSEOData = (pageType: string, pageId: string) => {
           .select('*')
           .eq('page_type', pageType)
           .eq('page_id', pageId)
-          .single();
+          .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           throw error;
         }
 

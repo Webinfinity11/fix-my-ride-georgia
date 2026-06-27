@@ -473,7 +473,10 @@ export const checkApiHealth = async (): Promise<HealthCheckResponse> => {
 
 // Get all supported companies
 export const getSupportedCompanies = (): CompanyName[] => {
-  return ["wissol", "portal", "connect", "socar", "gulf", "rompetrol"];
+  // NOTE: "connect" is temporarily disabled — connect.com.ge changed its page
+  // structure, so the backend scraper returns HTTP 500 ("No fuel prices found
+  // on Connect page"). Re-add "connect" once the backend scraper is fixed.
+  return ["wissol", "portal", "socar", "gulf", "rompetrol"];
 };
 
 // Check if historical data is available for a company
