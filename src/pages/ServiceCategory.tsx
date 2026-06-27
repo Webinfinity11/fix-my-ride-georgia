@@ -10,7 +10,10 @@ import { CollectionPageSchema, BreadcrumbSchema } from "@/components/seo/Structu
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Search as SearchIcon, X } from "lucide-react";
+import { trackSearch } from "@/utils/tracking";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -61,6 +64,9 @@ const ServiceCategory = () => {
     onSiteOnly: false,
     minRating: null as number | null
   });
+  // Text search is decoupled from `filters` so typing doesn't auto-fetch;
+  // it's applied to filters.searchTerm only on manual submit (button/Enter).
+  const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
     const param = categoryId || categorySlug;
@@ -437,12 +443,38 @@ const ServiceCategory = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="search">ძებნა</Label>
-                <Input
-                  id="search"
-                  placeholder="ძებნა სერვისებში..."
-                  value={filters.searchTerm}
-                  onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-                />
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const q = searchInput.trim();
+                    setFilters(prev => ({ ...prev, searchTerm: q }));
+                    if (q.length >= 2) trackSearch(q, "category");
+                  }}
+                  className="flex gap-2"
+                >
+                  <div className="relative flex-1">
+                    <Input
+                      id="search"
+                      placeholder="ძებნა სერვისებში..."
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      className={searchInput ? "pr-9" : ""}
+                    />
+                    {searchInput && (
+                      <button
+                        type="button"
+                        onClick={() => { setSearchInput(""); setFilters(prev => ({ ...prev, searchTerm: "" })); }}
+                        aria-label="ძიების გასუფთავება"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                  <Button type="submit" size="icon" className="shrink-0" aria-label="ძებნა">
+                    <SearchIcon className="h-4 w-4" />
+                  </Button>
+                </form>
               </div>
               <div>
                 <Label htmlFor="city">ქალაქი</Label>

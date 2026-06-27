@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search as SearchIcon, MapPin, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { trackSearch } from "@/utils/tracking";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -64,6 +65,7 @@ const SearchFilter = () => {
     if (selectedCategory) params.set("category", selectedCategory.toString());
     if (selectedCity) params.set("city", selectedCity);
 
+    if (searchQuery.trim()) trackSearch(searchQuery, "home");
     navigate(`/services?${params.toString()}`);
   };
 

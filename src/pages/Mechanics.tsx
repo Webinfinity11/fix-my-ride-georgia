@@ -9,6 +9,7 @@ import { MechanicCard } from "@/components/mechanic/MechanicCard";
 import MechanicCardSkeleton from "@/components/mechanic/MechanicCardSkeleton";
 import MechanicFilters from "@/components/mechanic/MechanicFilters";
 import { useMechanics } from "@/hooks/useMechanics";
+import { trackSearch } from "@/utils/tracking";
 import { Filter, RefreshCw, MapPin } from "lucide-react";
 import SEOHead from "@/components/seo/SEOHead";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -116,7 +117,8 @@ const Mechanics = () => {
     } else {
       console.log("⏳ Waiting for data to load...");
     }
-  }, [searchTerm, selectedCity, selectedDistrict, selectedSpecialization, mobileServiceOnly, minRating, verifiedOnly, cities]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity, selectedDistrict, selectedSpecialization, mobileServiceOnly, minRating, verifiedOnly, cities]);
 
   const performSearch = async () => {
     console.log("🔍 Performing search with current filters");
@@ -163,12 +165,23 @@ const Mechanics = () => {
     setMinRating(null);
     setVerifiedOnly(false);
     setSearchParams({});
-    
-    console.log("✅ Filters reset, search will trigger via useEffect");
+
+    // Explicitly refetch with empty filters — the auto-search effect no longer
+    // watches searchTerm, so a text-only reset wouldn't otherwise re-trigger.
+    await fetchMechanics({
+      searchTerm: "",
+      selectedCity: null,
+      selectedDistrict: null,
+      selectedSpecialization: null,
+      mobileServiceOnly: false,
+      minRating: null,
+      verifiedOnly: false,
+    });
   };
 
   const handleSearch = async () => {
     console.log("🚀 Manual search button clicked");
+    if (searchTerm.trim()) trackSearch(searchTerm, "mechanics");
     await performSearch();
   };
 

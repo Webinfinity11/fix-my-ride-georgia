@@ -200,14 +200,12 @@ const ServiceSearch = () => {
   const [districts, setDistricts] = useState<string[]>([]);
   const [visibleCount, setVisibleCount] = useState(12);
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      const q = searchInput.trim();
-      setSearchQuery(q);
-      if (q.length >= 2) trackSearch(q, "service-search");
-    }, 600);
-    return () => clearTimeout(t);
-  }, [searchInput]);
+  // Manual search — runs only on button click / Enter (no live as-you-type).
+  const handleSearch = () => {
+    const q = searchInput.trim();
+    setSearchQuery(q);
+    if (q.length >= 2) trackSearch(q, "service-search");
+  };
 
   useEffect(() => {
     const p = new URLSearchParams();
@@ -364,11 +362,24 @@ const ServiceSearch = () => {
           <h1 className="text-2xl md:text-3xl font-bold mb-5 text-center">სერვისების ძიება</h1>
 
           {/* Search */}
-          <div className="relative mb-3 max-w-2xl mx-auto">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="ჩაწერეთ სერვისის სახელი ან აღწერა..." value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)} className="pl-10 h-12 bg-background" />
-          </div>
+          <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="relative mb-3 max-w-2xl mx-auto flex gap-2">
+            <div className="relative flex-1">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="ჩაწერეთ სერვისის სახელი ან აღწერა..." value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)} className="pl-10 h-12 bg-background" />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => { setSearchInput(""); setSearchQuery(""); }}
+                  aria-label="ძიების გასუფთავება"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <Button type="submit" className="h-12 px-5 shrink-0">ძებნა</Button>
+          </form>
 
           {/* PRIMARY FILTERS — priority order: კატეგორია → ბრენდი → მდებარეობა → ფოტოები */}
           <div className="bg-background rounded-xl border p-3 md:p-4 mb-3">

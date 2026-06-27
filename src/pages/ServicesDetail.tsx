@@ -12,6 +12,7 @@ import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 import { useServices } from "@/hooks/useServices";
 import { RefreshCw } from "lucide-react";
 import SEOHead from "@/components/seo/SEOHead";
+import { trackSearch } from "@/utils/tracking";
 
 // საქართველოს მთავარი ქალაქები
 const georgianCities = [
@@ -194,6 +195,7 @@ const ServicesDetail = () => {
   };
   const handleSearch = async () => {
     console.log("🚀 Manual search button clicked");
+    if (searchTerm.trim()) trackSearch(searchTerm, "services");
     await performSearch();
   };
   const sortServices = (services: any[]) => {
