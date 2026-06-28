@@ -1,50 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
 import { Crown, Zap, Loader2 } from 'lucide-react';
-import { useState } from 'react';
 import { useServiceVIPRequest, useCreateVIPRequest, VIPPlanType } from '@/hooks/useVIPRequests';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
 
 interface VIPRequestCardProps {
   serviceId: number;
   serviceName: string;
 }
 
-export function VIPRequestCard({ serviceId, serviceName }: VIPRequestCardProps) {
+export function VIPRequestCard({ serviceId }: VIPRequestCardProps) {
   const { data: existingRequest, isLoading } = useServiceVIPRequest(serviceId);
   const createRequest = useCreateVIPRequest();
-  
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<VIPPlanType>('vip');
-  const [message, setMessage] = useState('');
-  
-  const handleRequestVIP = (plan: VIPPlanType) => {
-    setSelectedPlan(plan);
-    setDialogOpen(true);
-  };
-  
-  const handleSubmit = async () => {
-    await createRequest.mutateAsync({
-      serviceId,
-      plan: selectedPlan,
-      message,
-    });
-    setDialogOpen(false);
-    setMessage('');
+
+  const handleRequestVIP = async (plan: VIPPlanType) => {
+    try {
+      await createRequest.mutateAsync({
+        serviceId,
+        plan,
+        message: '',
+      });
+    } catch {
+      // The mutation displays the error toast.
+    }
   };
   
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="p-6 flex justify-center">
+        <CardContent className="flex justify-center p-4 sm:p-6">
           <Loader2 className="h-6 w-6 animate-spin" />
         </CardContent>
       </Card>
@@ -55,13 +39,13 @@ export function VIPRequestCard({ serviceId, serviceName }: VIPRequestCardProps) 
   if (existingRequest) {
     return (
       <Card className="border-primary/40 bg-primary/5">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Crown className="h-5 w-5 text-yellow-500" />
             VIP მოთხოვნა
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 p-4 pt-0 sm:p-6 sm:pt-0">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">სტატუსი:</span>
             <Badge variant={existingRequest.status === 'pending' ? 'secondary' : 'default'}>
@@ -105,120 +89,50 @@ export function VIPRequestCard({ serviceId, serviceName }: VIPRequestCardProps) 
   return (
     <>
       <Card className="border-yellow-500/40">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
+        <CardHeader className="p-3 pb-2 sm:p-6 sm:pb-3">
+          <CardTitle className="flex items-start gap-2 text-base leading-snug sm:items-center sm:text-lg">
             <Crown className="h-5 w-5 text-yellow-500" />
             გაზარდე სერვისის ხილვადობა
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            მოითხოვე VIP სტატუსი სერვისისთვის და გაზარდე მისი ხილვადობა პლატფორმაზე.
-          </p>
-          
+        <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Button
+              type="button"
               onClick={() => handleRequestVIP('vip')}
+              disabled={createRequest.isPending}
               variant="outline"
-              className="h-auto p-4 flex-col items-start gap-2 hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950"
+              className="h-12 w-full justify-start whitespace-normal px-4 text-left hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950"
             >
               <div className="flex items-center gap-2 font-semibold">
-                <Crown className="h-4 w-4 text-yellow-500" />
+                {createRequest.isPending && createRequest.variables?.plan === 'vip' ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Crown className="h-4 w-4 text-yellow-500" />
+                )}
                 VIP
               </div>
-              <ul className="text-xs text-left space-y-1 text-muted-foreground">
-                <li>• პრიორიტეტული ჩვენება</li>
-                <li>• VIP Badge</li>
-                <li>• გაზრდილი ხილვადობა</li>
-              </ul>
             </Button>
             
             <Button
+              type="button"
               onClick={() => handleRequestVIP('super_vip')}
+              disabled={createRequest.isPending}
               variant="outline"
-              className="h-auto p-4 flex-col items-start gap-2 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950"
+              className="h-12 w-full justify-start whitespace-normal px-4 text-left hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950"
             >
               <div className="flex items-center gap-2 font-semibold">
-                <Zap className="h-4 w-4 text-purple-500" />
+                {createRequest.isPending && createRequest.variables?.plan === 'super_vip' ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Zap className="h-4 w-4 text-purple-500" />
+                )}
                 Super VIP
               </div>
-              <ul className="text-xs text-left space-y-1 text-muted-foreground">
-                <li>• ყველაფერი VIP-დან</li>
-                <li>• Top პოზიცია</li>
-                <li>• Super VIP Badge</li>
-                <li>• მაქსიმალური ხილვადობა</li>
-              </ul>
             </Button>
           </div>
         </CardContent>
       </Card>
-      
-      {/* Request Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {selectedPlan === 'super_vip' ? (
-                <>
-                  <Zap className="h-5 w-5 text-purple-500" />
-                  Super VIP მოთხოვნა
-                </>
-              ) : (
-                <>
-                  <Crown className="h-5 w-5 text-yellow-500" />
-                  VIP მოთხოვნა
-                </>
-              )}
-            </DialogTitle>
-            <DialogDescription>
-              სერვისი: <strong>{serviceName}</strong>
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">
-                დამატებითი ინფორმაცია (არასავალდებულო)
-              </label>
-              <Textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="მიუთითეთ რატომ გსურთ VIP სტატუსი ამ სერვისისთვის..."
-                rows={4}
-              />
-            </div>
-            
-            <p className="text-xs text-muted-foreground">
-              თქვენი მოთხოვნა გაიგზავნება ადმინისტრაციაში განსახილველად. 
-              ჩვენ დაგიკავშირდებით დამატებითი დეტალებისთვის.
-            </p>
-            
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-                className="flex-1"
-              >
-                გაუქმება
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={createRequest.isPending}
-                className="flex-1"
-              >
-                {createRequest.isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    იგზავნება...
-                  </>
-                ) : (
-                  'გაგზავნა'
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

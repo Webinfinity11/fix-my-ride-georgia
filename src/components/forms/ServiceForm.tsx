@@ -8,6 +8,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -16,7 +28,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, DollarSign, Clock, Calendar, Car, CreditCard, Banknote, MapPin } from "lucide-react";
+import { ArrowLeft, DollarSign, Clock, Calendar, Car, CreditCard, Banknote, MapPin, Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import PhotoUpload from "@/components/forms/PhotoUpload";
 import VideoUpload from "@/components/forms/VideoUpload";
 import LocationSelector from "@/components/forms/LocationSelector";
@@ -110,6 +123,11 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
   const [selectAllBrands, setSelectAllBrands] = useState(false);
   const [otherBrand, setOtherBrand] = useState("");
   const [showOtherInput, setShowOtherInput] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+
+  const selectedCategory = categories.find(
+    (category) => category.id.toString() === formData.category_id.toString()
+  );
 
   useEffect(() => {
     // Check if all brands are selected
@@ -307,21 +325,58 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
 
             <div className="space-y-2">
               <Label htmlFor="category">კატეგორია *</Label>
-              <Select
-                value={formData.category_id.toString()}
-                onValueChange={(value) => handleInputChange("category_id", parseInt(value))}
-              >
-                <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
-                  <SelectValue placeholder="აირჩიეთ კატეგორია" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(category => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="category"
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={categoryOpen}
+                    className={cn(
+                      "w-full justify-between border-primary/20 font-normal focus-visible:ring-primary",
+                      !selectedCategory && "text-muted-foreground"
+                    )}
+                  >
+                    <span className="truncate">
+                      {selectedCategory?.name || "აირჩიეთ კატეგორია"}
+                    </span>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-[--radix-popover-trigger-width] p-0"
+                  align="start"
+                >
+                  <Command>
+                    <CommandInput placeholder="კატეგორიის ძებნა..." />
+                    <CommandList>
+                      <CommandEmpty>კატეგორია ვერ მოიძებნა</CommandEmpty>
+                      {categories.map((category) => (
+                        <CommandItem
+                          key={category.id}
+                          value={category.name}
+                          className="mb-1 cursor-pointer rounded-md border border-border/60 px-3 py-2.5 last:mb-0"
+                          onSelect={() => {
+                            handleInputChange("category_id", category.id);
+                            setCategoryOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              formData.category_id === category.id
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {category.name}
+                        </CommandItem>
+                      ))}
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
