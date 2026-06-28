@@ -25,7 +25,7 @@ const stats = [{
   label: "ხელოსანი",
   icon: Users
 }, {
-  number: "530+",
+  number: "550+",
   label: "სერვისი",
   icon: Zap
 }, {
