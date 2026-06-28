@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { VIPRequestCard } from "@/components/dashboard/mechanic/VIPRequestCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Sparkles } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 type ServiceCategoryType = {
   id: number;
@@ -145,41 +145,25 @@ const AddService = () => {
 
       {/* Success Dialog with VIP Request Option */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="z-[100000] w-[calc(100%-1rem)] max-h-[calc(100dvh-1rem)] overflow-y-auto rounded-xl p-3 gap-3 sm:max-w-[600px] sm:p-6 sm:gap-4">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl">
-              <CheckCircle className="text-green-500" size={28} />
+            <DialogTitle className="flex items-center gap-2 pr-7 text-lg leading-snug sm:text-2xl">
+              <CheckCircle className="h-5 w-5 shrink-0 text-green-500 sm:h-7 sm:w-7" />
               სერვისი წარმატებით დაემატა!
             </DialogTitle>
           </DialogHeader>
           
           {newServiceId && (
-            <div className="space-y-6 py-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-foreground">
-                  თქვენი სერვისი <span className="font-semibold">{newServiceName}</span> წარმატებით დაემატა და ხელმისაწვდომია მომხმარებლებისთვის.
-                </p>
-              </div>
+            <div className="space-y-3 py-1 sm:space-y-6 sm:py-4">
+              <VIPRequestCard
+                serviceId={newServiceId}
+                serviceName={newServiceName}
+              />
 
-              <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <Sparkles className="text-primary mt-1" size={24} />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-2">გსურთ VIP სტატუსის მოთხოვნა?</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      VIP სერვისები ჩანს პირველ ადგილებზე და იძლევა მეტ ხილვადობას. შეგიძლიათ მოითხოვოთ VIP ან Super VIP სტატუსი ამ სერვისისთვის.
-                    </p>
-                    <VIPRequestCard 
-                      serviceId={newServiceId} 
-                      serviceName={newServiceName}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end">
                 <Button
                   variant="outline"
+                  className="w-full sm:w-auto"
                   onClick={() => {
                     setShowSuccessDialog(false);
                     navigate("/dashboard/services");

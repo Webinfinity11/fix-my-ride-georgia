@@ -1,5 +1,18 @@
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -8,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 interface LocationSelectorProps {
   selectedCity: string;
@@ -51,6 +66,7 @@ const LocationSelector = ({
   const [showDistrict, setShowDistrict] = useState(false);
   const [cities, setCities] = useState<string[]>([]);
   const [loadingCities, setLoadingCities] = useState(true);
+  const [cityOpen, setCityOpen] = useState(false);
 
   // Fetch cities from database
   useEffect(() => {
@@ -89,18 +105,57 @@ const LocationSelector = ({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-2">
         <Label htmlFor="city">ქალაქი *</Label>
-        <Select value={selectedCity} onValueChange={onCityChange} disabled={loadingCities}>
-          <SelectTrigger className="border-primary/20 focus-visible:ring-primary">
-            <SelectValue placeholder={loadingCities ? "იტვირთება..." : "აირჩიეთ ქალაქი"} />
-          </SelectTrigger>
-          <SelectContent>
-            {cities.map((city) => (
-              <SelectItem key={city} value={city}>
-                {city}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Popover open={cityOpen} onOpenChange={setCityOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              id="city"
+              type="button"
+              variant="outline"
+              role="combobox"
+              aria-expanded={cityOpen}
+              disabled={loadingCities}
+              className={cn(
+                "w-full justify-between border-primary/20 font-normal focus-visible:ring-primary",
+                !selectedCity && "text-muted-foreground"
+              )}
+            >
+              <span className="truncate">
+                {loadingCities ? "იტვირთება..." : selectedCity || "აირჩიეთ ქალაქი"}
+              </span>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-[--radix-popover-trigger-width] p-0"
+            align="start"
+          >
+            <Command>
+              <CommandInput placeholder="ქალაქის ძებნა..." />
+              <CommandList>
+                <CommandEmpty>ქალაქი ვერ მოიძებნა</CommandEmpty>
+                {cities.map((city) => (
+                  <CommandItem
+                    key={city}
+                    value={city}
+                    className="mb-1 cursor-pointer rounded-md border border-border/60 px-3 py-2.5 last:mb-0"
+                    onSelect={() => {
+                      onCityChange(city);
+                      setCityOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedCity === city ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {city}
+                  </CommandItem>
+                ))}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {showDistrict && (
