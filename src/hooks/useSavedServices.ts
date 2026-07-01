@@ -1,109 +1,67 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
+// Guest-friendly saved services: stored in localStorage (no account needed).
+// All SaveServiceButton instances + the header counter stay in sync via a
+// custom window event.
+const STORAGE_KEY = 'fixup_saved_services';
+const CHANGE_EVENT = 'saved-services-changed';
+
+const readIds = (): number[] => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr.filter((n) => typeof n === 'number') : [];
+  } catch {
+    return [];
+  }
+};
+
+const writeIds = (ids: number[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+  } catch {
+    /* storage may be unavailable (private mode) — fail silently */
+  }
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+};
+
 export const useSavedServices = () => {
-  const { user } = useAuth();
-  const [savedServiceIds, setSavedServiceIds] = useState<Set<number>>(new Set());
-  const [loading, setLoading] = useState(true);
+  const [savedServiceIds, setSavedServiceIds] = useState<Set<number>>(() => new Set(readIds()));
 
   useEffect(() => {
-    if (user) {
-      fetchSavedServices();
-    } else {
-      setSavedServiceIds(new Set());
-      setLoading(false);
-    }
-  }, [user]);
+    const sync = () => setSavedServiceIds(new Set(readIds()));
+    window.addEventListener(CHANGE_EVENT, sync);
+    window.addEventListener('storage', sync); // cross-tab
+    return () => {
+      window.removeEventListener(CHANGE_EVENT, sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
 
-  const fetchSavedServices = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('saved_services')
-        .select('service_id')
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      const ids = new Set(data.map(item => item.service_id));
-      setSavedServiceIds(ids);
-    } catch (error) {
-      console.error('Error fetching saved services:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const isSaved = (serviceId: number) => {
-    return savedServiceIds.has(serviceId);
-  };
+  const isSaved = (serviceId: number) => savedServiceIds.has(serviceId);
 
   const toggleSave = async (serviceId: number) => {
-    if (!user) {
-      toast.error('გთხოვთ გაიაროთ ავტორიზაცია', {
-        description: 'სერვისის შესანახად საჭიროა ავტორიზაცია',
-        action: {
-          label: 'რეგისტრაცია',
-          onClick: () => window.location.href = '/register',
-        },
-      });
-      return false;
+    const ids = readIds();
+    let next: number[];
+    if (ids.includes(serviceId)) {
+      next = ids.filter((x) => x !== serviceId);
+      toast.success('სერვისი წაიშალა შენახულებიდან');
+    } else {
+      next = [...ids, serviceId];
+      toast.success('სერვისი შენახულია');
     }
-
-    const saved = isSaved(serviceId);
-
-    try {
-      if (saved) {
-        // Remove from saved
-        const { error } = await supabase
-          .from('saved_services')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('service_id', serviceId);
-
-        if (error) throw error;
-
-        setSavedServiceIds(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(serviceId);
-          return newSet;
-        });
-
-        toast.success('სერვისი წაიშალა შენახულებიდან');
-      } else {
-        // Add to saved
-        const { error } = await supabase
-          .from('saved_services')
-          .insert({
-            user_id: user.id,
-            service_id: serviceId,
-          });
-
-        if (error) throw error;
-
-        setSavedServiceIds(prev => new Set(prev).add(serviceId));
-
-        toast.success('სერვისი შენახულია');
-      }
-
-      return true;
-    } catch (error: any) {
-      console.error('Error toggling saved service:', error);
-      toast.error('შეცდომა', {
-        description: error.message || 'სერვისის შენახვისას დაფიქსირდა შეცდომა',
-      });
-      return false;
-    }
+    writeIds(next);
+    setSavedServiceIds(new Set(next));
+    return true;
   };
 
   return {
     isSaved,
     toggleSave,
-    loading,
+    loading: false,
     savedServiceIds,
-    refetch: fetchSavedServices,
+    count: savedServiceIds.size,
+    refetch: () => setSavedServiceIds(new Set(readIds())),
   };
 };

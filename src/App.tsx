@@ -17,6 +17,7 @@ const ServicesDetail = lazy(() => import("./pages/ServicesDetail"));
 const ServiceSearch = lazy(() => import("./pages/ServiceSearch"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
 const Search = lazy(() => import("./pages/Search"));
+const Saved = lazy(() => import("./pages/Saved"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Login = lazy(() => import("./pages/Login"));
@@ -74,6 +75,7 @@ function App() {
                   <Route path="/service-search" element={<ServiceSearch />} />
                   <Route path="/service/:id" element={<ServiceDetail />} />
                   <Route path="/search" element={<Search />} />
+                  <Route path="/saved" element={<Saved />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/map" element={<Map />} />

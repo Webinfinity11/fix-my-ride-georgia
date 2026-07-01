@@ -11,12 +11,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, Settings, Plus, Map, Package } from "lucide-react";
+import { LogOut, User, Settings, Plus, Map, Package, Bookmark } from "lucide-react";
 import { toast } from "sonner";
+import { useSavedServices } from "@/hooks/useSavedServices";
 
 const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { count: savedCount } = useSavedServices();
 
   const handleSignOut = async () => {
     try {
@@ -83,6 +85,20 @@ const Header = () => {
 
         {/* Right-side actions */}
         <div className="flex items-center gap-2">
+          {/* Saved services (guest-friendly, localStorage) */}
+          <Link
+            to="/saved"
+            aria-label="შენახული სერვისები"
+            className="relative h-10 w-10 rounded-full grid place-items-center text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+          >
+            <Bookmark className="h-5 w-5" />
+            {savedCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold grid place-items-center">
+                {savedCount}
+              </span>
+            )}
+          </Link>
+
           {/* Auth Section */}
           {user ? (
           <DropdownMenu>

@@ -919,7 +919,7 @@ const ServiceDetail = () => {
                         </div>
                       </div>
                       {service.mechanic.phone ? (
-                        <button type="button" onClick={openPhone} className="mt-3 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დარეკე ხელოსანს</button>
+                        <button type="button" onClick={openPhone} className="mt-3 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დაურეკე ხელოსანს</button>
                       ) : (
                         <div className="mt-3 w-full h-11 rounded-btn bg-ink-100 text-ink-400 text-[12.5px] font-semibold inline-flex items-center justify-center">ნომერი მიუწვდომელია</div>
                       )}
@@ -1035,7 +1035,7 @@ const ServiceDetail = () => {
                       <div className="mt-4 w-full text-center text-[11.5px] text-ink-400 py-2">პროფილი მიუწვდომელია</div>
                     )}
                     {service.mechanic.phone && (
-                      <button type="button" onClick={openPhone} className="mt-2 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დარეკე ხელოსანს</button>
+                      <button type="button" onClick={openPhone} className="mt-2 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დაურეკე ხელოსანს</button>
                     )}
                   </div>
                 </div>
