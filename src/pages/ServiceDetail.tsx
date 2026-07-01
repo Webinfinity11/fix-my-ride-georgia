@@ -1099,11 +1099,12 @@ const ServiceDetail = () => {
                     <span className="block text-[28px] md:text-[32px] font-extrabold text-ink-900 font-mono tabular-nums tracking-tight leading-none">{formatPhone(service.mechanic.phone)}</span>
                   </a>
                   <button type="button" onClick={() => { navigator.clipboard?.writeText(service.mechanic.phone || ""); toast.success("ნომერი დაკოპირდა"); }} className="mt-2 w-full h-9 rounded-btn bg-white border border-ink-200 hover:border-ink-900 inline-flex items-center justify-center gap-1.5 text-ink-700 text-[12px] font-semibold"><Copy className="h-3.5 w-3.5" />ნომრის კოპირება</button>
-                  <div className="mt-3 rounded-xl bg-accent-50 border border-accent-200 p-3 flex items-center gap-3">
-                    <span className="h-9 w-9 rounded-lg bg-brand-500 grid place-items-center shrink-0"><Wrench className="h-4 w-4 text-white" /></span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[9.5px] uppercase tracking-[0.18em] font-bold text-accent-700">დარეკვისას</div>
-                      <div className="text-[13px] font-bold text-ink-900 leading-tight mt-0.5">ახსენე — <span className="tracking-tight">FIX<span className="text-accent-500">U</span>P</span>-დან გირეკავ</div>
+                  <div className="mt-3 rounded-xl bg-accent-50 border border-accent-200 p-3 text-center">
+                    <div className="text-[11px] font-bold text-ink-700">დარეკვისას ახსენეთ</div>
+                    <div className="mt-1.5">
+                      <span className="inline-flex items-center px-3 h-8 rounded-pill bg-brand-500 text-white text-[15px] font-extrabold tracking-wider animate-phone-glow">
+                        FIX<span className="text-accent-400">U</span>P&nbsp;GE
+                      </span>
                     </div>
                   </div>
                   <button type="button" onClick={doCall} className="mt-3 w-full h-11 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დარეკვა ახლავე</button>
