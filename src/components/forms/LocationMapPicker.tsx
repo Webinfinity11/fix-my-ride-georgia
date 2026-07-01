@@ -25,13 +25,16 @@ interface LocationMapPickerProps {
   longitude?: number;
   onLocationChange: (lat: number, lng: number) => void;
   interactive?: boolean;
+  /** Optional override for the map container classes (height/border/rounding). */
+  className?: string;
 }
 
 const LocationMapPicker = ({
   latitude,
   longitude,
   onLocationChange,
-  interactive = true
+  interactive = true,
+  className
 }: LocationMapPickerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -180,10 +183,10 @@ const LocationMapPicker = ({
         </div>
       )}
       
-      <div 
-        ref={mapRef} 
-        className="h-64 w-full rounded-lg border border-primary/20 relative z-10"
-        style={{ minHeight: '256px', zIndex: 1 }}
+      <div
+        ref={mapRef}
+        className={className ?? "h-64 w-full rounded-lg border border-primary/20 relative z-10"}
+        style={{ minHeight: className ? undefined : '256px', zIndex: 1 }}
       />
       
       {interactive && (

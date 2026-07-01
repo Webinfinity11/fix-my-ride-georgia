@@ -10,13 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { 
-  Clock, 
-  MapPin, 
-  Star, 
-  CreditCard, 
-  Banknote, 
-  Car, 
+import {
+  Clock,
+  MapPin,
+  Star,
+  CreditCard,
+  Banknote,
+  Car,
   ArrowLeft,
   Phone,
   Eye,
@@ -25,7 +25,18 @@ import {
   Video,
   Award,
   CheckCircle,
-  Navigation
+  Navigation,
+  Heart,
+  Share2,
+  Flag,
+  Maximize2,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Home,
+  ArrowRight,
+  Wrench
 } from "lucide-react";
 import { toast } from "sonner";
 import LocationMapPicker from "@/components/forms/LocationMapPicker";
@@ -83,6 +94,11 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFullPhone, setShowFullPhone] = useState(false);
+  // New design (Planflow) interactive state
+  const [activeImg, setActiveImg] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
+  const [phoneOpen, setPhoneOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   // Scroll hint: show the thin scrollbar briefly on load, then hide it so it
   // doesn't visually nag. Re-shown on actual scroll via onScroll below.
   const [showScrollHint, setShowScrollHint] = useState(true);
@@ -299,6 +315,34 @@ const ServiceDetail = () => {
     }
   };
 
+  // Group a Georgian mobile number for readability: 577611515 → 577 61 15 15
+  // (keeps an optional +995 country code prefix; falls back to the raw value).
+  const formatPhone = (raw: string | null) => {
+    if (!raw) return raw || "";
+    const digits = raw.replace(/\D/g, "");
+    let cc = "";
+    let local = digits;
+    if (digits.length === 12 && digits.startsWith("995")) { cc = "+995 "; local = digits.slice(3); }
+    else if (digits.length === 10 && digits.startsWith("0")) { local = digits.slice(1); }
+    if (local.length === 9) {
+      return `${cc}${local.slice(0, 3)} ${local.slice(3, 5)} ${local.slice(5, 7)} ${local.slice(7, 9)}`;
+    }
+    return raw;
+  };
+
+  // Masked + grouped teaser: 577611515 → +995 *** ** *5 15 (last 3 digits shown).
+  const formatMaskedPhone = (raw: string | null) => {
+    if (!raw) return "";
+    const digits = raw.replace(/\D/g, "");
+    let local = digits;
+    if (digits.length === 12 && digits.startsWith("995")) local = digits.slice(3);
+    else if (digits.length === 10 && digits.startsWith("0")) local = digits.slice(1);
+    if (local.length !== 9) return maskPhoneNumber(raw);
+    const visible = 3;
+    const chars = local.split("").map((d, i) => (i < local.length - visible ? "*" : d)).join("");
+    return `+995 ${chars.slice(0, 3)} ${chars.slice(3, 5)} ${chars.slice(5, 7)} ${chars.slice(7, 9)}`;
+  };
+
   const maskPhoneNumber = (phone: string) => {
     if (!phone || phone.length < 3) return phone;
     const maskedPart = phone.slice(0, -3).replace(/\d/g, '*');
@@ -324,6 +368,11 @@ const ServiceDetail = () => {
     } catch (err) {
       console.error('Error tracking phone view:', err);
     }
+  };
+
+  const openPhone = () => {
+    if (service) trackPhoneView(service.id);
+    setPhoneOpen(true);
   };
 
   const togglePhoneVisibility = async () => {
@@ -735,392 +784,358 @@ const ServiceDetail = () => {
         
         <BreadcrumbSchema items={breadcrumbItems} />
 
-      <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumbs — single line; scrollbar shown briefly then hidden */}
-        <Breadcrumb onScroll={pingScrollHint} className={`mb-6 overflow-x-auto pb-1 transition-colors ${scrollbarHintClass}`}>
-          <BreadcrumbList className="flex-nowrap whitespace-nowrap">
-            <BreadcrumbItem className="shrink-0">
-              <BreadcrumbLink href="/">მთავარი</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="shrink-0" />
-            <BreadcrumbItem className="shrink-0">
-              <BreadcrumbLink href="/services">სერვისები</BreadcrumbLink>
-            </BreadcrumbItem>
-            {service.category && (
-              <>
-                <BreadcrumbSeparator className="shrink-0" />
-                <BreadcrumbItem className="shrink-0">
-                  <BreadcrumbLink href={`/category/${createCategorySlug(service.category.name)}`}>
-                    {service.category.name}
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            )}
-            <BreadcrumbSeparator className="shrink-0" />
-            <BreadcrumbItem className="shrink-0">
-              <BreadcrumbPage className="whitespace-nowrap">{service.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      {(() => {
+        const photos = (service.photos && service.photos.length > 0) ? service.photos : [];
+        const hasPhotos = photos.length > 0;
+        const idx = Math.min(activeImg, Math.max(0, photos.length - 1));
+        const priceDisplay = formatPrice(service.price_from, service.price_to);
+        const mechName = `${service.mechanic.first_name} ${service.mechanic.last_name}`.trim();
+        const initials = `${service.mechanic.first_name?.charAt(0) || ""}${service.mechanic.last_name?.charAt(0) || ""}`.toUpperCase();
+        const locationText = [service.city, service.district].filter(Boolean).join(" · ") || "მდებარეობა შეთანხმებით";
+        const paymentText = [service.accepts_cash_payment && "ნაღდი", service.accepts_card_payment && "ბარათი"].filter(Boolean).join(", ") || "ნაღდი";
+        const carText = service.car_brands && service.car_brands.length > 0
+          ? (service.car_brands.length >= 15 ? "ყველა ბრენდი" : service.car_brands.join(", "))
+          : "ყველა ბრენდი";
+        const hasProfile = isValidUUID(service.mechanic.id);
+        const goProfile = () => navigate(`/mechanic/${createMechanicSlug(service.mechanic.display_id || 0, service.mechanic.first_name, service.mechanic.last_name)}`);
+        const doCall = () => { window.location.href = `tel:${service.mechanic.phone}`; };
 
-        {/* Header — title spans full width; back button moved into the action row */}
-        <div className="mb-8">
-          <h1 onScroll={pingScrollHint} className={`text-2xl md:text-3xl font-bold text-gray-900 mb-2 whitespace-nowrap overflow-x-auto pb-1 ${scrollbarHintClass} md:whitespace-normal md:overflow-visible md:pb-0`}>
-            {seoData?.h1_title || service.name}
-          </h1>
-          {seoData?.h2_description && (
-            <h2 className="text-lg text-gray-600 mb-3">
-              {seoData.h2_description}
-            </h2>
-          )}
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            {service.category && (
-              <Badge variant="secondary" className="bg-primary/10 text-primary">
-                {service.category.name}
-              </Badge>
-            )}
-            {service.on_site_service && (
-              <Badge variant="outline">
-                ადგილზე მომსახურება
-              </Badge>
-            )}
-            {!shouldShowPrice(service.price_from, service.price_to) && (
-              <Badge variant="outline">
-                ფასი შეთანხმებით
-              </Badge>
-            )}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/services")}
-              className="shrink-0"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              უკან
-            </Button>
-            <ServiceShareButtons
-              serviceName={service.name}
-              serviceUrl={canonicalUrl}
-              serviceDescription={service.description || undefined}
-            />
-            <SaveServiceButton serviceId={service.id} />
-          </div>
-        </div>
+        return (
+        <div className="font-sans bg-ink-50 text-ink-900 antialiased pb-[88px] lg:pb-0">
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Mobile Contact & Price/Rating - Only visible on mobile */}
-            <div className="lg:hidden space-y-4">
-              {shouldShowPrice(service.price_from, service.price_to) ? (
-                <PriceCard />
-              ) : (
-                <RatingCard />
-              )}
-              <ContactCard />
+          {/* ═════════ HERO ═════════ */}
+          <section className="relative bg-white overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-50/50 via-white to-accent-50/30" />
+              <div className="absolute -top-32 -right-32 h-[440px] w-[440px] rounded-full bg-accent-500/8 blur-3xl" />
+              <div className="absolute -bottom-40 -left-20 h-[420px] w-[420px] rounded-full bg-brand-500/8 blur-3xl" />
             </div>
 
-            {/* Service Photos */}
-            {service.photos && service.photos.length > 0 && (
-              <div className="lg:bg-card/30 lg:backdrop-blur-sm lg:rounded-xl lg:border lg:border-border/40 lg:overflow-hidden">
-                {/* Mobile version - keep as card */}
-                <div className="lg:hidden">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Image className="h-5 w-5" />
-                        სურათები ({service.photos.length})
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-4">
-                      <ServiceGallery 
-                        photos={service.photos} 
-                        serviceName={service.name} 
-                      />
-                    </CardContent>
-                  </Card>
+            <div className="relative max-w-[1280px] mx-auto px-4 lg:px-8 pt-5 pb-7">
+              {/* Breadcrumb */}
+              <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-ink-500 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <a href="/" className="hover:text-ink-900 inline-flex items-center gap-1 shrink-0"><Home className="h-3 w-3" />მთავარი</a>
+                <span className="text-ink-300 shrink-0">/</span>
+                <a href="/services" className="hover:text-ink-900 shrink-0">სერვისები</a>
+                {service.category && (<>
+                  <span className="text-ink-300 shrink-0">/</span>
+                  <a href={`/category/${createCategorySlug(service.category.name)}`} className="hover:text-ink-900 shrink-0">{service.category.name}</a>
+                </>)}
+                <span className="text-ink-300 shrink-0">/</span>
+                <span aria-current="page" className="text-ink-900 font-semibold truncate">{service.name}</span>
+              </nav>
+
+              {/* Title — single line, horizontal scroll with right fade mask */}
+              <div className="mt-5">
+                <div
+                  className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  style={{ maskImage: "linear-gradient(to right, black 0%, black 88%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, black 0%, black 88%, transparent 100%)" }}
+                >
+                  <h1 className="text-[22px] md:text-[30px] lg:text-[40px] font-bold tracking-[-0.02em] leading-[1.1] text-ink-900 whitespace-nowrap">
+                    {seoData?.h1_title || service.name}<span className="text-accent-500">.</span>
+                  </h1>
                 </div>
-                
-                {/* Desktop version - modern design without title */}
-                <div className="hidden lg:block lg:p-6">
-                  <ServiceGallery 
-                    photos={service.photos} 
-                    serviceName={service.name} 
-                  />
+                {seoData?.h2_description && (
+                  <p className="mt-2 text-[14px] md:text-[15px] text-ink-500 leading-relaxed">{seoData.h2_description}</p>
+                )}
+                <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
+                  {/* Actions */}
+                  <div className="flex items-center gap-1.5">
+                    <button type="button" onClick={() => navigate("/services")} className="h-8 px-3 rounded-pill bg-white/80 backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-700 text-[11.5px] font-semibold inline-flex items-center gap-1.5"><ArrowLeft className="h-3.5 w-3.5" />უკან</button>
+                    <SaveServiceButton serviceId={service.id} />
+                    <ServiceShareButtons serviceName={service.name} serviceUrl={canonicalUrl} serviceDescription={service.description || undefined} />
+                    <button type="button" onClick={() => setReportOpen(true)} className="h-8 w-8 rounded-pill bg-white/80 hover:bg-white backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-500 grid place-items-center" aria-label="დააფიქსირე პრობლემა"><Flag className="h-3.5 w-3.5" /></button>
+                  </div>
+                  {/* Meta — single line, horizontal scroll with right fade mask */}
+                  <div
+                    className="flex items-center gap-x-4 text-[12.5px] text-ink-600 overflow-x-auto whitespace-nowrap lg:justify-end max-w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    style={{ maskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)" }}
+                  >
+                    <span className="inline-flex items-center gap-1.5 shrink-0"><MapPin className="h-3.5 w-3.5 text-ink-400" />{locationText}{service.address ? ` · ${service.address}` : ""}</span>
+                    <span className="text-ink-300 shrink-0">·</span>
+                    <span className="inline-flex items-center gap-1.5 font-mono tabular-nums text-ink-400 shrink-0">განცხადება #{service.id}</span>
+                  </div>
                 </div>
               </div>
-            )}
 
-            {/* Ad Banner - below photos */}
-            <ServiceDetailBanner />
-
-            {/* Service Videos */}
-            {service.videos && service.videos.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Video className="h-5 w-5" />
-                    ვიდეოები ({service.videos.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="max-w-4xl">
-                    <ServiceVideoGallery 
-                      videos={service.videos} 
-                      serviceName={service.name} 
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Service Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>სერვისის აღწერა</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {service.description || "დეტალური აღწერა არ არის მითითებული"}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Service Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>დეტალები</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Clock className="h-5 w-5 text-primary shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium">დრო</div>
-                      <div className="text-sm text-gray-600">
-                        {service.estimated_hours ? `${service.estimated_hours} საათი` : "შეთანხმებით"}
+              {/* Bento */}
+              <div className="mt-5 grid grid-cols-12 gap-3">
+                {/* Gallery */}
+                <div className="col-span-12 lg:col-span-8">
+                  <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-ink-200/60 bg-ink-100 shadow-card group">
+                    {hasPhotos ? (
+                      <img src={photos[idx]} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 grid place-items-center text-ink-300"><Image className="h-14 w-14" /></div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink-950/30 via-transparent to-transparent pointer-events-none" />
+                    {hasPhotos && (
+                      <div className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-pill bg-white/85 backdrop-blur border border-white/60 text-ink-900 text-[10.5px] font-mono tabular-nums font-semibold">
+                        {String(idx + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}
                       </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <MapPin className="h-5 w-5 text-primary shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium">ადგილი</div>
-                       <div className="text-sm text-gray-600">
-                         {service.city && service.district ? `${service.city}, ${service.district}` : service.city}
-                         {service.address && (
-                           <div className="mt-1">{service.address}</div>
-                         )}
-                       </div>
-                    </div>
+                    )}
+                    {hasPhotos && (
+                      <button type="button" onClick={() => setLightbox(true)} className="absolute top-3 right-3 h-8 px-3 rounded-pill bg-white/85 hover:bg-white backdrop-blur border border-white/60 text-ink-900 text-[11.5px] font-semibold inline-flex items-center gap-1.5"><Maximize2 className="h-3.5 w-3.5" />გადიდება</button>
+                    )}
+                    {photos.length > 1 && (<>
+                      <button type="button" onClick={() => setActiveImg(i => (i - 1 + photos.length) % photos.length)} className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 hover:bg-white backdrop-blur border border-white/60 grid place-items-center text-ink-900 opacity-0 group-hover:opacity-100 transition shadow-pop"><ChevronLeft className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => setActiveImg(i => (i + 1) % photos.length)} className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 hover:bg-white backdrop-blur border border-white/60 grid place-items-center text-ink-900 opacity-0 group-hover:opacity-100 transition shadow-pop"><ChevronRight className="h-4 w-4" /></button>
+                      <div className="absolute left-3 right-3 bottom-3 flex gap-1.5">
+                        {photos.slice(0, 6).map((g, i) => (
+                          <button key={i} type="button" onClick={() => setActiveImg(i)} className={`relative flex-1 h-12 rounded-lg overflow-hidden ring-2 transition ${i === idx ? "ring-accent-500" : "ring-white/70 hover:ring-white"}`}>
+                            <img src={g} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                            {i !== idx && <span className="absolute inset-0 bg-ink-950/35" />}
+                          </button>
+                        ))}
+                      </div>
+                    </>)}
                   </div>
                 </div>
 
-                <Separator />
+                {/* Right stack */}
+                <div className="col-span-12 lg:col-span-4 grid grid-cols-2 lg:grid-cols-1 gap-3">
+                  {/* Price + provider */}
+                  <div className="col-span-2 lg:col-span-1 rounded-2xl bg-white/85 backdrop-blur-xl border border-ink-200/60 shadow-card p-4">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400">ფასი</div>
+                      <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-success-700"><span className="h-1.5 w-1.5 rounded-full bg-success-500" />აქტიური</span>
+                    </div>
+                    <div className="mt-1 text-[22px] font-bold tracking-tight text-ink-900 leading-tight">{priceDisplay || "შეთანხმებით"}</div>
 
-                {/* Payment Methods */}
-                <div>
-                  <h4 className="font-medium mb-3">გადახდის მეთოდები</h4>
-                  <div className="flex gap-2">
-                    {service.accepts_cash_payment && (
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <Banknote className="h-3 w-3" />
-                        ნაღდი
-                      </Badge>
-                    )}
-                    {service.accepts_card_payment && (
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <CreditCard className="h-3 w-3" />
-                        ბარათი
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-
-                {/* Car Brands */}
-                {service.car_brands && service.car_brands.length > 0 && (
-                  <>
-                    <Separator />
-                    <div>
-                      <h4 className="font-medium mb-3 flex items-center gap-2">
-                        <Car className="h-4 w-4" />
-                        მანქანის მარკები
-                      </h4>
-                      {service.car_brands.length >= 15 ? (
-                        <div className="p-4 bg-gray-50 rounded-lg border">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm text-gray-700 font-medium">
-                              ყველა მარკის ავტომობილზე მუშაობა
-                            </span>
-                          </div>
+                    <div className="mt-4 pt-4 border-t border-ink-100">
+                      <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-2">გამოაქვეყნა</div>
+                      <div className="flex items-center gap-2.5">
+                        <div className="h-10 w-10 rounded-xl bg-brand-500 text-white grid place-items-center text-[13px] font-bold tracking-wider shrink-0">{initials || "?"}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[13px] font-bold text-ink-900 truncate">{mechName}</div>
+                          {service.mechanic.phone && (
+                            <button type="button" onClick={openPhone} className="mt-1.5 w-full group flex items-center justify-between gap-2 rounded-xl border border-accent-200 bg-accent-50/50 hover:bg-accent-50 px-3 py-2 transition">
+                              <span className="text-[16px] font-bold font-mono tabular-nums tracking-tight text-ink-900">{formatMaskedPhone(service.mechanic.phone)}</span>
+                              <span className="inline-flex items-center gap-1 px-2.5 h-7 rounded-pill bg-accent-500 text-white text-[11px] font-bold animate-phone-glow shrink-0">
+                                <Eye className="h-3.5 w-3.5" />ჩვენება
+                              </span>
+                            </button>
+                          )}
                         </div>
+                      </div>
+                      {service.mechanic.phone ? (
+                        <button type="button" onClick={openPhone} className="mt-3 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დარეკე ხელოსანს</button>
                       ) : (
-                        <div className="flex flex-wrap gap-2">
-                          {service.car_brands.map((brand, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {brand}
-                            </Badge>
-                          ))}
+                        <div className="mt-3 w-full h-11 rounded-btn bg-ink-100 text-ink-400 text-[12.5px] font-semibold inline-flex items-center justify-center">ნომერი მიუწვდომელია</div>
+                      )}
+                      {hasProfile ? (
+                        <button type="button" onClick={goProfile} className="mt-2 w-full text-[11.5px] text-ink-600 hover:text-ink-900 underline underline-offset-2 decoration-ink-200">სრული პროფილი</button>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {/* Details chips */}
+                  <div className="col-span-2 lg:col-span-1 rounded-2xl bg-white/85 backdrop-blur-xl border border-ink-200/60 shadow-card p-4">
+                    <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">სამუშაო დეტალები</div>
+                    <dl className="space-y-2.5 text-[12.5px]">
+                      <div className="flex items-start justify-between gap-3">
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><Clock className="h-3.5 w-3.5 text-ink-400" />დრო</dt>
+                        <dd className="text-ink-900 font-semibold text-right">{service.estimated_hours ? `${service.estimated_hours} საათი` : "შეთანხმებით"}</dd>
+                      </div>
+                      <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><MapPin className="h-3.5 w-3.5 text-ink-400" />ლოკაცია</dt>
+                        <dd className="text-ink-900 font-semibold text-right">{locationText}</dd>
+                      </div>
+                      <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><CreditCard className="h-3.5 w-3.5 text-ink-400" />გადახდა</dt>
+                        <dd className="text-ink-900 font-semibold text-right">{paymentText}</dd>
+                      </div>
+                      <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><Car className="h-3.5 w-3.5 text-ink-400" />მანქანა</dt>
+                        <dd className="text-ink-900 font-semibold text-right">{carText}</dd>
+                      </div>
+                      {service.on_site_service && (
+                        <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
+                          <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><CheckCircle className="h-3.5 w-3.5 text-ink-400" />ადგილზე</dt>
+                          <dd className="text-success-700 font-semibold text-right">კი</dd>
                         </div>
                       )}
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Service Reviews */}
-            <ServiceReviews 
-              serviceId={service.id} 
-              onReviewAdded={handleReviewAdded}
-            />
-
-            {/* Mobile Location Map - Only visible on mobile */}
-            {service.latitude && service.longitude && (
-              <Card className="lg:hidden">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    ადგილმდებარეობა
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4">
-                  {service.address && (
-                    <p className="text-sm text-gray-600 mb-4 p-3 bg-gray-50 rounded-lg">
-                      📍 {service.address}
-                    </p>
-                  )}
-                  <div className="rounded-lg overflow-hidden border mb-4">
-                    <LocationMapPicker
-                      latitude={service.latitude}
-                      longitude={service.longitude}
-                      onLocationChange={handleLocationChange}
-                      interactive={false}
-                    />
+                    </dl>
                   </div>
-                  <Button 
-                    onClick={handleGetDirections}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Navigation className="h-4 w-4 mr-2" />
-                    მარშრუტის ნახვა
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Desktop Sidebar - Hidden on mobile */}
-          <div className="space-y-6 hidden lg:block">
-            {/* Show Price Card if available, otherwise show Rating Card */}
-            {shouldShowPrice(service.price_from, service.price_to) ? (
-              <PriceCard />
-            ) : (
-              <RatingCard />
-            )}
-            
-            <ContactCard />
-            
-            {/* Location Info */}
-            {(service.city || service.district) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    მისამართი
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {service.city && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">ქალაქი:</span>
-                        <span className="font-medium">{service.city}</span>
-                      </div>
-                    )}
-                    {service.district && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">რაიონი:</span>
-                        <span className="font-medium">{service.district}</span>
-                      </div>
-                    )}
-                    {service.address && (
-                      <div>
-                        <span className="text-gray-600 block mb-1">მისამართი:</span>
-                        <span className="font-medium text-sm">{service.address}</span>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Location Map */}
-            {service.latitude && service.longitude && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    ადგილმდებარეობა
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4">
-                  <div className="rounded-lg overflow-hidden border mb-4">
-                    <LocationMapPicker
-                      latitude={service.latitude}
-                      longitude={service.longitude}
-                      onLocationChange={handleLocationChange}
-                      interactive={false}
-                    />
-                  </div>
-                  <Button 
-                    onClick={handleGetDirections}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Navigation className="h-4 w-4 mr-2" />
-                    მარშრუტის ნახვა
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
-
-        {/* SEO internal-link widgets — keep visitors browsing + boost link equity. */}
-        {service.mechanic?.id && (
-          <MechanicOtherServices
-            mechanicId={service.mechanic.id}
-            excludeServiceId={service.id}
-          />
-        )}
-        <RelatedBlogPosts limit={3} />
-
-        {/* Mobile sticky contact CTA — always-reachable primary conversion */}
-        {service.mechanic?.phone && (
-          <>
-            {/* spacer so content isn't hidden behind the fixed bar */}
-            <div className="h-20 lg:hidden" aria-hidden="true" />
-            <div className="lg:hidden fixed bottom-[70px] md:bottom-0 left-0 right-0 z-40 flex gap-2 border-t border-border bg-background/95 p-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-              <Button
-                className="flex-1"
-                onClick={async () => {
-                  await trackPhoneView(service.id);
-                  window.location.href = `tel:${service.mechanic.phone}`;
-                }}
-              >
-                <Phone className="h-4 w-4 mr-2" />
-                დარეკვა
-              </Button>
+                </div>
+              </div>
             </div>
-          </>
-        )}
-      </div>
+          </section>
+
+          {/* ═════════ DESCRIPTION + ASIDE ═════════ */}
+          <section className="bg-ink-50 border-t border-ink-200/60">
+            <div className="max-w-[1280px] mx-auto px-4 lg:px-8 py-8 grid grid-cols-12 gap-5">
+              <div className="col-span-12 lg:col-span-8 space-y-5">
+                {/* Description */}
+                <div className="rounded-2xl bg-white border border-ink-200/60 p-6">
+                  <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">აღწერა</div>
+                  <h2 className="mt-1 text-[20px] font-bold tracking-tight text-ink-900 mb-3">{service.name}</h2>
+                  <p className="text-[14px] leading-[1.75] text-ink-700 whitespace-pre-wrap">
+                    {service.description || "დეტალური აღწერა არ არის მითითებული."}
+                  </p>
+                </div>
+
+                {/* Ad banner */}
+                <ServiceDetailBanner />
+
+                {/* Videos */}
+                {service.videos && service.videos.length > 0 && (
+                  <div className="rounded-2xl bg-white border border-ink-200/60 p-6">
+                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3 inline-flex items-center gap-1.5"><Video className="h-3.5 w-3.5" />ვიდეოები ({service.videos.length})</div>
+                    <ServiceVideoGallery videos={service.videos} serviceName={service.name} />
+                  </div>
+                )}
+
+                {/* Map */}
+                {service.latitude && service.longitude && (
+                  <div className="rounded-2xl bg-white border border-ink-200/60 overflow-hidden">
+                    <div className="px-6 pt-5 pb-3 flex items-end justify-between gap-3 border-b border-ink-100">
+                      <div>
+                        <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">ლოკაცია</div>
+                        <h3 className="mt-1 text-[18px] font-bold tracking-tight text-ink-900">{locationText}{service.address ? `, ${service.address}` : ""}</h3>
+                      </div>
+                      <button type="button" onClick={handleGetDirections} className="h-9 px-3.5 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[12px] font-semibold inline-flex items-center gap-1.5">მარშრუტი<ArrowRight className="h-3.5 w-3.5" /></button>
+                    </div>
+                    <LocationMapPicker
+                      latitude={service.latitude}
+                      longitude={service.longitude}
+                      onLocationChange={handleLocationChange}
+                      interactive={false}
+                      className="h-[300px] md:h-[380px] w-full"
+                    />
+                  </div>
+                )}
+
+                {/* Reviews */}
+                <ServiceReviews serviceId={service.id} onReviewAdded={handleReviewAdded} />
+              </div>
+
+              {/* Aside — provider */}
+              <aside className="col-span-12 lg:col-span-4">
+                <div className="lg:sticky lg:top-[88px] space-y-3">
+                  <div className="rounded-2xl bg-white border border-ink-200/60 p-5">
+                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">გამოაქვეყნა</div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-xl bg-brand-500 text-white grid place-items-center text-[15px] font-bold tracking-wider shrink-0">{initials || "?"}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[14px] font-bold text-ink-900 truncate">{mechName}</div>
+                        <div className="text-[11.5px] text-ink-500">ხელოსანი{service.city ? ` · ${service.city}` : ""}</div>
+                      </div>
+                    </div>
+                    {service.mechanic.rating ? (
+                      <div className="mt-3 inline-flex items-center gap-1.5 text-[12.5px]">
+                        <Star className="h-4 w-4 fill-accent-500 text-accent-500" />
+                        <span className="font-bold text-ink-900">{service.mechanic.rating}</span>
+                        <span className="text-ink-400">შეფასება</span>
+                      </div>
+                    ) : null}
+                    {hasProfile ? (
+                      <button type="button" onClick={goProfile} className="mt-4 w-full h-10 rounded-btn border border-ink-300 hover:border-ink-900 text-ink-900 text-[12.5px] font-semibold inline-flex items-center justify-center gap-1.5">სრული პროფილი<ArrowRight className="h-3.5 w-3.5" /></button>
+                    ) : (
+                      <div className="mt-4 w-full text-center text-[11.5px] text-ink-400 py-2">პროფილი მიუწვდომელია</div>
+                    )}
+                    {service.mechanic.phone && (
+                      <button type="button" onClick={openPhone} className="mt-2 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დარეკე ხელოსანს</button>
+                    )}
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          {/* ═════════ RELATED + BLOG (existing widgets, real data) ═════════ */}
+          <section className="bg-white border-t border-ink-200/60">
+            <div className="max-w-[1280px] mx-auto px-4 lg:px-8 py-8 space-y-10">
+              {service.mechanic?.id && (
+                <MechanicOtherServices mechanicId={service.mechanic.id} excludeServiceId={service.id} />
+              )}
+              <RelatedBlogPosts limit={3} />
+            </div>
+          </section>
+
+          {/* ═════════ MOBILE STICKY ═════════ */}
+          {service.mechanic?.phone && (
+            <div className="lg:hidden fixed bottom-[70px] md:bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-xl border-t border-ink-200/60 px-3 py-2.5 flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="h-9 w-9 rounded-lg bg-brand-500 text-white grid place-items-center text-[11px] font-bold shrink-0">{initials || "?"}</div>
+                <div className="min-w-0">
+                  <div className="text-[12px] font-bold text-ink-900 truncate">{mechName}</div>
+                  <div className="text-[10px] text-ink-500 truncate">ფასი: {priceDisplay || "შეთანხმებით"}</div>
+                </div>
+              </div>
+              <button type="button" onClick={openPhone} className="ml-auto h-10 px-4 rounded-pill bg-brand-500 text-white text-[12.5px] font-bold inline-flex items-center gap-1.5 shrink-0"><Phone className="h-3.5 w-3.5" />დარეკე</button>
+            </div>
+          )}
+
+          {/* ═════════ LIGHTBOX ═════════ */}
+          {lightbox && hasPhotos && (
+            <div className="fixed inset-0 z-50 grid place-items-center p-4" onClick={() => setLightbox(false)}>
+              <div className="absolute inset-0 bg-ink-950/85 backdrop-blur-sm" />
+              <div className="relative w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
+                <button type="button" onClick={() => setLightbox(false)} className="absolute -top-12 right-0 h-10 px-3 rounded-pill bg-white text-ink-900 inline-flex items-center gap-2 text-[12px] font-semibold border border-ink-200"><X className="h-4 w-4" />დახურვა</button>
+                <div className="rounded-2xl overflow-hidden bg-white border border-ink-200">
+                  <img src={photos[idx]} alt={service.name} className="w-full max-h-[640px] object-contain bg-ink-50" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═════════ PHONE REVEAL ═════════ */}
+          {phoneOpen && service.mechanic.phone && (
+            <div className="fixed inset-0 z-50 grid place-items-center p-4" onClick={() => setPhoneOpen(false)}>
+              <div className="absolute inset-0 bg-ink-950/55 backdrop-blur-sm" />
+              <div className="relative w-full max-w-sm rounded-2xl bg-white shadow-float overflow-hidden border border-ink-200/60" onClick={(e) => e.stopPropagation()}>
+                <div className="p-5">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="h-11 w-11 rounded-xl bg-brand-500 text-white grid place-items-center text-[14px] font-bold tracking-wider shrink-0">{initials || "?"}</div>
+                    <div className="min-w-0">
+                      <div className="text-[14px] font-bold text-ink-900 truncate">{mechName}</div>
+                      <div className="text-[11.5px] text-ink-500">ხელოსანი{service.city ? ` · ${service.city}` : ""}</div>
+                    </div>
+                    <button type="button" onClick={() => setPhoneOpen(false)} className="ml-auto h-8 w-8 rounded-btn hover:bg-ink-100 grid place-items-center"><X className="h-4 w-4" /></button>
+                  </div>
+                  <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-success-700 mb-1.5 inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-success-500" />გახსნილი ნომერი</div>
+                  <a href={`tel:${service.mechanic.phone}`} className="block rounded-xl bg-ink-50 border border-ink-200/60 px-4 py-4 text-center hover:border-brand-500 transition">
+                    <span className="block text-[28px] md:text-[32px] font-extrabold text-ink-900 font-mono tabular-nums tracking-tight leading-none">{formatPhone(service.mechanic.phone)}</span>
+                  </a>
+                  <button type="button" onClick={() => { navigator.clipboard?.writeText(service.mechanic.phone || ""); toast.success("ნომერი დაკოპირდა"); }} className="mt-2 w-full h-9 rounded-btn bg-white border border-ink-200 hover:border-ink-900 inline-flex items-center justify-center gap-1.5 text-ink-700 text-[12px] font-semibold"><Copy className="h-3.5 w-3.5" />ნომრის კოპირება</button>
+                  <div className="mt-3 rounded-xl bg-accent-50 border border-accent-200 p-3 flex items-center gap-3">
+                    <span className="h-9 w-9 rounded-lg bg-brand-500 grid place-items-center shrink-0"><Wrench className="h-4 w-4 text-white" /></span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[9.5px] uppercase tracking-[0.18em] font-bold text-accent-700">დარეკვისას</div>
+                      <div className="text-[13px] font-bold text-ink-900 leading-tight mt-0.5">ახსენე — <span className="tracking-tight">FIX<span className="text-accent-500">U</span>P</span>-დან გირეკავ</div>
+                    </div>
+                  </div>
+                  <button type="button" onClick={doCall} className="mt-3 w-full h-11 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დარეკვა ახლავე</button>
+                  <p className="mt-2.5 text-[10.5px] text-ink-500 text-center">დარეკვის ღილაკი გაუშვებს სატელეფონო აპლიკაციას</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═════════ REPORT ═════════ */}
+          {reportOpen && (
+            <div className="fixed inset-0 z-50 grid place-items-center p-4" onClick={() => setReportOpen(false)}>
+              <div className="absolute inset-0 bg-ink-950/55 backdrop-blur-sm" />
+              <div className="relative w-full max-w-sm rounded-2xl bg-white shadow-float p-5 border border-ink-200/60" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="h-8 w-8 rounded-lg bg-danger-50 text-danger-600 grid place-items-center"><Flag className="h-4 w-4" /></span>
+                  <span className="text-[14px] font-bold text-ink-900">დააფიქსირე პრობლემა</span>
+                  <button type="button" onClick={() => setReportOpen(false)} className="ml-auto h-8 w-8 rounded-btn hover:bg-ink-100 grid place-items-center"><X className="h-4 w-4" /></button>
+                </div>
+                <p className="text-[12px] text-ink-600 mb-3">თუ ცრუ ინფორმაცია ან მავნე ქცევა შენიშნე — გვითხარი.</p>
+                <div className="space-y-1.5">
+                  {["ცრუ ინფორმაცია", "არ პასუხობს", "დახურულია, მაგრამ აქტიური ჩანს", "სხვა"].map(r => (
+                    <button key={r} type="button" onClick={() => { toast.success("მადლობა, მიღებულია"); setReportOpen(false); }} className="w-full px-3 py-2.5 rounded-xl border border-ink-200 hover:border-ink-900 text-left text-[12.5px] font-semibold text-ink-900">{r}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+        );
+      })()}
     </Layout>
   );
 };

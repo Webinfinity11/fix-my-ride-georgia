@@ -4,7 +4,10 @@ import { trackSearch } from "@/utils/tracking";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MapPin } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from "@/components/ui/command";
+import { Search, MapPin, ChevronDown, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ServiceCategory {
@@ -23,6 +26,12 @@ const SimplifiedSearch = () => {
   const [cities, setCities] = useState<string[]>([]);
 
   const [dataFetched, setDataFetched] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+
+  const selectedCategoryLabel =
+    selectedCategory === "all"
+      ? "ყველა კატეგორია"
+      : categories.find((c) => c.id.toString() === selectedCategory)?.name || "კატეგორია";
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -85,20 +94,51 @@ const SimplifiedSearch = () => {
 
         {/* Filter Row */}
         <div className="grid grid-cols-2 gap-3 md:gap-4">
-          {/* Category Select */}
-          <Select value={selectedCategory} onValueChange={setSelectedCategory} onOpenChange={(open) => { if (open) fetchData(); }}>
-            <SelectTrigger className="h-12 border-primary/20 bg-white rounded-lg">
-              <SelectValue placeholder="კატეგორია" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">ყველა კატეგორია</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.id.toString()}>
-                  {cat.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Category — searchable combobox (39 categories, type to filter) */}
+          <Popover
+            open={categoryOpen}
+            onOpenChange={(open) => { setCategoryOpen(open); if (open) fetchData(); }}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                role="combobox"
+                aria-expanded={categoryOpen}
+                className="h-12 w-full justify-between border-primary/20 bg-white rounded-lg font-normal px-3"
+              >
+                <span className={cn("truncate", selectedCategory === "all" && "text-muted-foreground")}>
+                  {selectedCategoryLabel}
+                </span>
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+              <Command>
+                <CommandInput placeholder="კატეგორიის ძებნა..." />
+                <CommandList>
+                  <CommandEmpty>კატეგორია ვერ მოიძებნა</CommandEmpty>
+                  <CommandItem
+                    value="ყველა კატეგორია"
+                    onSelect={() => { setSelectedCategory("all"); setCategoryOpen(false); }}
+                  >
+                    <Check className={cn("mr-2 h-4 w-4", selectedCategory === "all" ? "opacity-100" : "opacity-0")} />
+                    ყველა კატეგორია
+                  </CommandItem>
+                  {categories.map((cat) => (
+                    <CommandItem
+                      key={cat.id}
+                      value={cat.name}
+                      onSelect={() => { setSelectedCategory(cat.id.toString()); setCategoryOpen(false); }}
+                    >
+                      <Check className={cn("mr-2 h-4 w-4", selectedCategory === cat.id.toString() ? "opacity-100" : "opacity-0")} />
+                      {cat.name}
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
 
           {/* City Select */}
           <Select value={selectedCity} onValueChange={setSelectedCity} onOpenChange={(open) => { if (open) fetchData(); }}>

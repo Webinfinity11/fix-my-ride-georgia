@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User, Settings, Plus, Map, Package } from "lucide-react";
 import { toast } from "sonner";
-import { MobileMenu } from "./MobileMenu";
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -32,9 +31,8 @@ const Header = () => {
   return (
     <header className="bg-white border-b h-16 md:h-20 flex items-center sticky top-0 z-50">
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Mobile Menu & Logo */}
+        {/* Logo & add listing */}
         <div className="flex items-center gap-3">
-          <MobileMenu />
           <Link to="/" className="flex items-center">
             <img
               src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
