@@ -59,7 +59,8 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     { icon: Home, label: "მთავარი", path: "/" },
     { icon: Wrench, label: "სერვისები", path: "/services" },
     { icon: Map, label: "რუკა", path: "/map" },
-    { icon: Sparkles, label: "სამრეცხაო", path: "/laundries" },
+    // TEMP: სამრეცხაო დამალულია — ჯერ საკმარისი რაოდენობა არ არის
+    // { icon: Sparkles, label: "სამრეცხაო", path: "/laundries" },
     { icon: Briefcase, label: "ვაკანსიები", path: "/vacancies" },
     { icon: Fuel, label: "საწვავის ფასები", path: "/fuel-importers" },
     { icon: Package, label: "ნაწილის შეკვეთა", path: "/order-parts" },

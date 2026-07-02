@@ -126,6 +126,7 @@ const Footer = () => {
                     რუკა
                   </Link>
                 </li>
+                {/* TEMP: სამრეცხაოები დამალულია — ჯერ საკმარისი რაოდენობა არ არის
                 <li>
                   <Link
                     to="/laundries"
@@ -135,6 +136,7 @@ const Footer = () => {
                     სამრეცხაოები
                   </Link>
                 </li>
+                */}
                 <li>
                   <Link
                     to="/fuel-importers"

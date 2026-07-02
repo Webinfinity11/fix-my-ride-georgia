@@ -49,6 +49,7 @@ export const MobileMenu = () => {
               <span>რუკა</span>
             </Link>
 
+            {/* TEMP: სამრეცხაო დამალულია — ჯერ საკმარისი რაოდენობა არ არის
             <Link
               to="/laundries"
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted transition-colors"
@@ -56,6 +57,7 @@ export const MobileMenu = () => {
               <Sparkles className="h-5 w-5" />
               <span>სამრეცხაო</span>
             </Link>
+            */}
 
             <Link
               to="/vacancies"

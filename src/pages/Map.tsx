@@ -1020,6 +1020,8 @@ const Map = () => {
                     <span className="hidden sm:inline">სადგურები</span>
                     <span className="sm:hidden">⛽</span>
                   </TabsTrigger>
+                  {/* TEMP: სამრეცხაოები + დრაივები დამალულია — ჯერ საკმარისი
+                      რაოდენობა არ არის. tab-ები დაბრუნდება, როცა ჩანაწერები გაიზრდება.
                   <TabsTrigger value="laundries" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-cyan-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
                     <Droplet className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">სამრეცხაოები</span>
@@ -1030,6 +1032,7 @@ const Map = () => {
                     <span className="hidden sm:inline">დრაივები</span>
                     <span className="sm:hidden">დრაივი</span>
                   </TabsTrigger>
+                  */}
                 </TabsList>
               </Tabs>
               
