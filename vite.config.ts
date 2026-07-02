@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     target: 'es2020',
-    sourcemap: true,
+    sourcemap: mode !== 'production',
     rollupOptions: {
       output: {
         manualChunks: {
