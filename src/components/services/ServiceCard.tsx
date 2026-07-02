@@ -6,6 +6,7 @@ import { LazyImage } from "@/components/ui/lazy-image";
 import { useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
 import { trackServicePhone } from "@/utils/tracking";
+import { PhoneRevealDialog } from "@/components/services/PhoneRevealDialog";
 import { createServiceSlug, createMechanicSlug } from "@/utils/slugUtils";
 import { SaveServiceButton } from "./SaveServiceButton";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
@@ -53,7 +54,7 @@ interface ServiceCardProps {
 
 const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCardProps) => {
   const navigate = useNavigate();
-  const [showPhone, setShowPhone] = useState(false);
+  const [phoneOpen, setPhoneOpen] = useState(false);
 
   const handleViewDetails = useCallback(() => {
     const slug = createServiceSlug(service.id, service.name);
@@ -72,19 +73,11 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
 
   const handlePhoneClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    if (!service.mechanic.phone_number) {
-      return;
-    }
-
-    if (!showPhone) {
-      // First click - reveal number + record the call-intent (phone view)
-      setShowPhone(true);
-      trackServicePhone(service.id);
-    } else {
-      // Second click - make the call
-      window.location.href = `tel:${service.mechanic.phone_number}`;
-    }
+    if (!service.mechanic.phone_number) return;
+    // Open the shared contact popup (same as the service detail page) and
+    // record the call-intent (phone view).
+    trackServicePhone(service.id);
+    setPhoneOpen(true);
   };
 
   const formatLocation = () => {
@@ -250,7 +243,7 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
                 className="flex-1 border-green-500 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-600 transition-colors"
               >
                 <Phone className="w-4 h-4 mr-2" />
-                {showPhone ? formatPhoneNumber(service.mechanic.phone_number) : "დარეკვა"}
+                დარეკვა
               </Button>
             )}
 
@@ -261,6 +254,16 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
           </div>
         </div>
       </CardContent>
+
+      {service.mechanic.phone_number && (
+        <PhoneRevealDialog
+          open={phoneOpen}
+          onOpenChange={setPhoneOpen}
+          name={`${service.mechanic.first_name} ${service.mechanic.last_name}`.trim()}
+          city={service.city}
+          phone={service.mechanic.phone_number}
+        />
+      )}
     </Card>
   );
 };

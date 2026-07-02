@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -18,7 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { getCategoryFromSlug, createCategorySlug, createSlug } from "@/utils/slugUtils";
-import { ServiceType } from "@/hooks/useServices";
+import { useServices, ServiceType } from "@/hooks/useServices";
 import {
   getCategoryMetaTitle,
   getCategoryMetaDescription,
@@ -54,8 +54,11 @@ const ServiceCategory = () => {
   }>();
   const districtInfo = getDistrictBySlug(districtSlug);
   const [category, setCategory] = useState<CategoryType | null>(null);
-  const [services, setServices] = useState<ServiceType[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Reuse the shared services pipeline (same as /services) so the cards render
+  // identically (VIP badges/sorting included) and the fetch/transform logic
+  // isn't duplicated here.
+  const { services, loading: servicesLoading, fetchServices } = useServices();
+  const [categoryLoading, setCategoryLoading] = useState(true);
   const [filters, setFilters] = useState({
     searchTerm: "",
     selectedCity: null as string | null,
@@ -77,8 +80,15 @@ const ServiceCategory = () => {
 
   useEffect(() => {
     if (category) {
-      console.log("Category loaded, fetching services for:", category.name);
-      fetchServicesWithFilters();
+      fetchServices({
+        searchTerm: filters.searchTerm,
+        selectedCategory: category.id,
+        selectedCity: filters.selectedCity,
+        selectedDistrict: filters.selectedDistrict,
+        selectedBrands: filters.selectedBrands,
+        onSiteOnly: filters.onSiteOnly,
+        minRating: filters.minRating,
+      });
     }
   }, [filters, category]);
 
@@ -87,7 +97,7 @@ const ServiceCategory = () => {
     if (!param) return;
 
     try {
-      setLoading(true);
+      setCategoryLoading(true);
       console.log("🔍 Looking for category with param:", param);
       
       // Use slug utility to get category (supports both ID and slug)
@@ -105,175 +115,11 @@ const ServiceCategory = () => {
       console.error("Error fetching category:", error);
       toast.error("კატეგორიის ჩატვირთვისას შეცდომა დაფიქსირდა");
     } finally {
-      setLoading(false);
+      setCategoryLoading(false);
     }
   };
 
-  const fetchServicesWithFilters = async () => {
-    if (!category) return;
-
-    try {
-      console.log("🔍 Fetching services for category:", category.name);
-      
-      let query = supabase
-        .from("mechanic_services")
-        .select(`
-          id,
-          name,
-          slug,
-          description,
-          price_from,
-          price_to,
-          estimated_hours,
-          city,
-          district,
-          address,
-          latitude,
-          longitude,
-          car_brands,
-          on_site_service,
-          accepts_card_payment,
-          accepts_cash_payment,
-          rating,
-          review_count,
-          photos,
-          category_id,
-          mechanic_id,
-          service_categories(id, name)
-        `)
-        .eq("category_id", category.id)
-        .eq("is_active", true);
-
-      if (filters.selectedCity) {
-        query = query.eq("city", filters.selectedCity);
-      }
-
-      if (filters.selectedDistrict) {
-        query = query.eq("district", filters.selectedDistrict);
-      }
-
-      if (filters.onSiteOnly) {
-        query = query.eq("on_site_service", true);
-      }
-
-      if (filters.minRating) {
-        query = query.gte("rating", filters.minRating);
-      }
-
-      const { data: servicesData, error: servicesError } = await query.order("created_at", { ascending: false });
-
-      if (servicesError) {
-        console.error("❌ Services query failed:", servicesError);
-        throw servicesError;
-      }
-
-      console.log("✅ Raw services data:", servicesData);
-
-      if (!servicesData) {
-        console.log("⚠️ No services data returned");
-        setServices([]);
-        return;
-      }
-
-      // Now fetch mechanic profiles separately
-      console.log("👨‍🔧 Fetching mechanic profiles...");
-      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))];
-      
-      const { data: mechanicsData, error: mechanicsError } = await supabase
-        .from("profiles")
-        .select(`
-          id,
-          first_name,
-          last_name,
-          phone,
-          mechanic_profiles(rating)
-        `)
-        .in("id", mechanicIds);
-
-      if (mechanicsError) {
-        console.error("❌ Mechanics query failed:", mechanicsError);
-      }
-
-      console.log("✅ Mechanics data:", mechanicsData);
-
-      // Transform data to match ServiceType
-      let filteredServices = servicesData.map(service => {
-        const mechanic = mechanicsData?.find(m => m.id === service.mechanic_id);
-        const mechanicProfile = Array.isArray(mechanic?.mechanic_profiles) 
-          ? mechanic.mechanic_profiles[0] 
-          : mechanic?.mechanic_profiles;
-
-        const categoryData = Array.isArray(service.service_categories) 
-          ? service.service_categories[0] 
-          : service.service_categories;
-
-        return {
-          id: service.id,
-          name: service.name || "უცნობი სერვისი",
-          slug: service.slug || createSlug(service.name || ""),
-          description: service.description,
-          price_from: service.price_from,
-          price_to: service.price_to,
-          estimated_hours: service.estimated_hours,
-          city: service.city,
-          district: service.district,
-          address: service.address,
-          latitude: service.latitude,
-          longitude: service.longitude,
-          car_brands: service.car_brands,
-          on_site_service: service.on_site_service || false,
-          accepts_card_payment: service.accepts_card_payment || false,
-          accepts_cash_payment: service.accepts_cash_payment || true,
-          rating: service.rating,
-          review_count: service.review_count,
-          photos: service.photos || [],
-          vip_status: null,
-          vip_until: null,
-          is_vip_active: false,
-          category: categoryData ? {
-            id: categoryData.id,
-            name: categoryData.name
-          } : { id: category.id, name: category.name },
-          mechanic: {
-            id: mechanic?.id || "",
-            first_name: mechanic?.first_name || "",
-            last_name: mechanic?.last_name || "",
-            rating: mechanicProfile?.rating || null,
-            phone: mechanic?.phone || null,
-          }
-        };
-      });
-
-      // Client-side filtering for search term
-      if (filters.searchTerm) {
-        const searchLower = filters.searchTerm.toLowerCase().trim();
-        filteredServices = filteredServices.filter(service =>
-          service.name.toLowerCase().includes(searchLower) ||
-          service.description?.toLowerCase().includes(searchLower) ||
-          service.category?.name?.toLowerCase().includes(searchLower) ||
-          service.mechanic.first_name?.toLowerCase().includes(searchLower) ||
-          service.mechanic.last_name?.toLowerCase().includes(searchLower)
-        );
-      }
-
-      // Client-side filtering for car brands
-      if (filters.selectedBrands.length > 0) {
-        filteredServices = filteredServices.filter(service =>
-          service.car_brands?.some(brand =>
-            filters.selectedBrands.includes(brand)
-          )
-        );
-      }
-
-      console.log("✅ Final filtered services:", filteredServices);
-      setServices(filteredServices);
-    } catch (error: any) {
-      console.error("❌ Error fetching services:", error);
-      toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
-    }
-  };
-
-  if (loading) {
+  if (categoryLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -281,7 +127,7 @@ const ServiceCategory = () => {
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-muted rounded w-1/3"></div>
             <div className="h-4 bg-muted rounded w-2/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="h-64 bg-muted rounded"></div>
               ))}
@@ -503,14 +349,20 @@ const ServiceCategory = () => {
 
         {/* Services Grid */}
         <div className="container mx-auto px-4 pb-12">
-          {services.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {servicesLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-64 bg-muted rounded animate-pulse" />
+              ))}
+            </div>
+          ) : services.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {services.map((service, index) => (
-                <>
-                  <ServiceCard key={service.id} service={service} />
-                  {/* Banner after second row (after 6th item) */}
-                  {index === 5 && <ServicesGridBanner key="banner-row-2" />}
-                </>
+                <Fragment key={service.id}>
+                  <ServiceCard service={service} />
+                  {/* Banner after the first row (after 4th card, matches 4-col grid) */}
+                  {index === 3 && <ServicesGridBanner />}
+                </Fragment>
               ))}
             </div>
           ) : (
