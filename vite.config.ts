@@ -87,8 +87,32 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp}'],
+        // Precache ONLY the tiny app shell (html/css/manifest). Previously this
+        // globbed **/*.js + all images, so the service worker downloaded the
+        // ENTIRE ~2.8MB app on the first visit (killing mobile Speed Index).
+        // JS chunks + images now load on demand and are cached via runtimeCaching.
+        globPatterns: ['**/*.{css,html,webmanifest}'],
         runtimeCaching: [
+          {
+            // App JS/CSS chunks — cache after first use (fast repeat visits),
+            // but don't preload everything up front.
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && /\/assets\/.*\.(js|css)$/.test(url.pathname),
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'app-assets',
+              expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            // Local static images (logos, icons, uploads).
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && /\.(png|jpg|jpeg|svg|webp|ico)$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'app-images',
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/kwozniwtygkdoagjegom\.supabase\.co\/storage\/.*/i,
             handler: 'CacheFirst',
