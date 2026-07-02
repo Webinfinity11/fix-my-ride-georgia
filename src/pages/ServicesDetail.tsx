@@ -94,16 +94,18 @@ const ServicesDetail = () => {
     initializeData();
   }, []);
 
-  // Handle districts when city changes
+  // Handle districts when city changes.
+  // fetchDistricts is intentionally NOT a dependency — it's re-created every
+  // render, and depending on it caused an infinite loop (fetch → setDistricts →
+  // re-render → fetch …) whenever თბილისი was selected. Depend only on selectedCity.
   useEffect(() => {
-    console.log("🏙️ City changed to:", selectedCity);
     if (selectedCity === "თბილისი") {
       fetchDistricts(selectedCity);
     } else {
-      console.log("🧹 Clearing districts (city is not თბილისი)");
       setSelectedDistrict(null);
     }
-  }, [selectedCity, fetchDistricts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity]);
 
   // Auto-search when a filter changes (NOT searchTerm — text search is manual,
   // triggered only by the search button / Enter via handleSearch).

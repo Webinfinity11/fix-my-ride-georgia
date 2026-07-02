@@ -87,16 +87,19 @@ const Mechanics = () => {
     initializeData();
   }, []);
 
-  // Handle districts when city changes
+  // Handle districts when city changes.
+  // NOTE: fetchDistricts is intentionally NOT a dependency — it's re-created on
+  // every render (not memoized), and depending on it caused an infinite loop
+  // (fetch → setDistricts(new array) → re-render → fetch …) whenever თბილისი
+  // was selected. Depend only on selectedCity.
   useEffect(() => {
-    console.log("🏙️ City changed to:", selectedCity);
     if (selectedCity === "თბილისი") {
       fetchDistricts(selectedCity);
     } else {
-      console.log("🧹 Clearing districts (city is not თბილისი)");
       setSelectedDistrict(null);
     }
-  }, [selectedCity, fetchDistricts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity]);
 
   // Trigger search when any filter changes
   useEffect(() => {
@@ -111,14 +114,11 @@ const Mechanics = () => {
       verifiedOnly
     });
     
-    if (cities.length > 0 || searchTerm || selectedCity || selectedDistrict || selectedSpecialization || mobileServiceOnly || minRating || verifiedOnly) {
-      console.log("✅ Data loaded or filters applied, performing search");
-      performSearch();
-    } else {
-      console.log("⏳ Waiting for data to load...");
-    }
+    // Always run — mechanics load must NOT be gated on `cities` (if the cities
+    // list is empty/slow the results would otherwise never load).
+    performSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCity, selectedDistrict, selectedSpecialization, mobileServiceOnly, minRating, verifiedOnly, cities]);
+  }, [selectedCity, selectedDistrict, selectedSpecialization, mobileServiceOnly, minRating, verifiedOnly]);
 
   const performSearch = async () => {
     console.log("🔍 Performing search with current filters");

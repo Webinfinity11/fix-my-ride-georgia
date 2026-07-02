@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Wrench, FileCheck, Car, MessageCircle, Briefcase } from "lucide-react";
+import { Calendar, Check, MapPin, Phone, Mail, Star, Clock, Wrench, FileCheck, Car, MessageCircle, Briefcase, Home, ArrowLeft, ArrowRight, Share2, Flag, Eye, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,7 +15,9 @@ import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 // Fixed: removed useChat dependency
 import MechanicReviews from "@/components/reviews/MechanicReviews";
-import { extractMechanicDisplayId, createMechanicSlug } from "@/utils/slugUtils";
+import { extractMechanicDisplayId, createMechanicSlug, createSlug } from "@/utils/slugUtils";
+import { PhoneRevealDialog } from "@/components/services/PhoneRevealDialog";
+import { RelatedBlogPosts } from "@/components/seo/InternalLinkWidgets";
 import { trackMechanicPhone } from "@/utils/tracking";
 import SEOHead from "@/components/seo/SEOHead";
 import { PersonSchema, LocalBusinessSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -98,6 +101,8 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("services");
+  const [phoneOpen, setPhoneOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [mechanic, setMechanic] = useState<MechanicType | null>(null);
   const [services, setServices] = useState<ServiceType[]>([]);
   const [certificates, setCertificates] = useState<CertificateType[]>([]);
@@ -648,346 +653,337 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
 
       <Header />
       
-      {/* Hero section with mechanic info */}
-      <main className="flex-grow bg-muted">
-        <div className="bg-primary text-white py-12">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              <Avatar className="h-24 w-24 rounded-full border-4 border-white">
-                <AvatarImage src="" alt={`${mechanic?.profile.first_name || ''} ${mechanic?.profile.last_name || ''}`.trim() || 'Mechanic profile'} />
-                <AvatarFallback className="bg-secondary text-secondary-foreground text-xl">
-                  {mechanic?.profile.first_name.charAt(0)}{mechanic?.profile.last_name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <h1 className="text-2xl md:text-3xl font-bold">
-                    {mechanic?.profile.first_name} {mechanic?.profile.last_name}
-                    {mechanic?.profile.city && (
-                      <span className="text-lg md:text-xl font-normal text-blue-100 ml-2">
-                        — ავტოხელოსანი {mechanic.profile.city}-ში
-                      </span>
-                    )}
-                  </h1>
-                  {mechanic?.profile.is_verified && (
-                    <Badge className="bg-green-500 text-white flex items-center">
-                      <Check className="h-3 w-3 mr-1" /> დადასტურებული
-                    </Badge>
-                  )}
-                </div>
-                
-                <p className="text-blue-100 mb-2">
-                  {mechanic?.mechanic_profile.specialization || "ავტოხელოსანი"}
-                </p>
-                
-                <div className="flex flex-wrap items-center gap-4 mb-4">
-                  <div className="flex items-center">
-                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400 mr-1" />
-                    <span className="font-semibold">
-                      {mechanic?.mechanic_profile.rating?.toFixed(1) || "N/A"}
-                    </span>
-                    <span className="text-blue-100 ml-1">
-                      ({mechanic?.mechanic_profile.review_count} შეფასება)
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <MapPin className="h-5 w-5 mr-1 text-blue-200" />
-                    <span>
-                      {mechanic?.profile.city}
-                      {mechanic?.profile.district ? `, ${mechanic?.profile.district}` : ""}
-                    </span>
-                  </div>
-                  
-                  {mechanic?.mechanic_profile.experience_years && (
-                    <div className="flex items-center">
-                      <Wrench className="h-5 w-5 mr-1 text-blue-200" />
-                      <span>{mechanic.mechanic_profile.experience_years} წლიანი გამოცდილება</span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {certificates.slice(0, 2).map((cert) => (
-                    <Badge key={cert.id} variant="secondary" className="bg-blue-600 text-white">
-                      <FileCheck className="h-3 w-3 mr-1" /> {cert.title}
-                    </Badge>
-                  ))}
-                  {mechanic?.mechanic_profile.is_mobile && (
-                    <Badge variant="secondary" className="bg-blue-600 text-white">
-                      <Car className="h-3 w-3 mr-1" /> მობილური სერვისი
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="bg-white text-primary hover:bg-gray-100"
-                  onClick={handleStartChat}
-                >
-                  <MessageCircle className="h-5 w-5 mr-2" /> მიწერა
-                </Button>
-                <Button 
-                  size="lg" 
-                  className="bg-secondary hover:bg-secondary/90 text-white shrink-0"
-                  onClick={() => {
-                    if (!user) {
-                      toast.error("ჯავშნის გასაკეთებლად გთხოვთ გაიაროთ ავტორიზაცია");
-                      navigate("/login");
-                      return;
-                    }
-                    toast.success(`დაჯავშნის პროცესი დაიწყო!`);
-                  }}
-                >
-                  <Calendar className="h-5 w-5 mr-2" /> დაჯავშნა
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Main content */}
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left sidebar with contact info */}
-            <div className="order-2 lg:order-1 lg:col-span-1">
-              <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">საკონტაქტო ინფორმაცია</h3>
-                
-                <div className="space-y-4">
-                  {mechanic?.profile.street && (
-                    <div className="flex items-start">
-                      <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mr-3 mt-0.5" />
-                      <div>
-                        <p className="font-medium">მისამართი</p>
-                        <p className="text-muted-foreground">
-                          {mechanic.profile.street}, {mechanic.profile.city}
-                          {mechanic.profile.district ? `, ${mechanic.profile.district}` : ""}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {mechanic?.profile.phone && (
-                    <div className="flex items-start">
-                      <Phone className="h-5 w-5 text-muted-foreground shrink-0 mr-3 mt-0.5" />
-                      <div>
-                        <p className="font-medium">ტელეფონი</p>
-                        <p className="text-muted-foreground">
-                          <a href={`tel:${mechanic.profile.phone}`} className="hover:text-primary"
-                            onClick={() => trackMechanicPhone(mechanic.id)}>
-                            {mechanic.profile.phone}
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start">
-                    <Mail className="h-5 w-5 text-muted-foreground shrink-0 mr-3 mt-0.5" />
-                    <div>
-                      <p className="font-medium">ელ-ფოსტა</p>
-                      <p className="text-muted-foreground">
-                        <a href={`mailto:${mechanic?.profile.email}`} className="hover:text-primary">
-                          {mechanic?.profile.email}
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {mechanic?.mechanic_profile.working_hours && (
-                    <div className="flex items-start">
-                      <Clock className="h-5 w-5 text-muted-foreground shrink-0 mr-3 mt-0.5" />
-                      <div>
-                        <p className="font-medium">სამუშაო საათები</p>
-                        <p className="text-muted-foreground">
-                          {typeof mechanic.mechanic_profile.working_hours === 'string' 
-                            ? mechanic.mechanic_profile.working_hours
-                            : "ორშ-პარ: 10:00 - 18:00"}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {mechanic?.mechanic_profile.specialization && (
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-lg font-semibold mb-4">სპეციალიზაცია</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {mechanic.mechanic_profile.specialization.split(',').map((spec, i) => (
-                      <Badge key={i} variant="outline" className="bg-muted">
-                        <Car className="h-3 w-3 mr-1" /> {spec.trim()}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Main content area with tabs */}
-            <div className="order-1 lg:order-2 lg:col-span-2">
-              <div className="bg-white rounded-lg shadow overflow-hidden">
-                <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab}>
-                  <div className="px-6 pt-6 border-b">
-                    <TabsList className="grid grid-cols-4">
-                      <TabsTrigger value="services">სერვისები</TabsTrigger>
-                      <TabsTrigger value="vacancies">ვაკანსიები</TabsTrigger>
-                      <TabsTrigger value="about">შესახებ</TabsTrigger>
-                      <TabsTrigger value="reviews">შეფასებები</TabsTrigger>
-                    </TabsList>
-                  </div>
-                  
-                  <TabsContent value="services" className="p-6">
-                    {services.length > 0 ? (
-                      <div className="space-y-6">
-                        {services.map((service) => (
-                          <div key={service.id} className="border-b border-gray-100 last:border-0 pb-5 last:pb-0">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h4 className="text-lg font-medium">{service.name}</h4>
-                                {service.service_categories && (
-                                  <p className="text-sm text-muted-foreground">
-                                    {service.service_categories.name}
-                                  </p>
-                                )}
-                                {service.description && (
-                                  <p className="text-sm text-muted-foreground mt-1">
-                                    {service.description}
-                                  </p>
-                                )}
-                                <div className="flex items-center gap-6 mt-2 text-muted-foreground text-sm">
-                                  {service.estimated_hours && (
-                                    <div className="flex items-center">
-                                      <Clock className="h-4 w-4 mr-1" />
-                                      <span>
-                                        {service.estimated_hours > 1 
-                                          ? `${service.estimated_hours} საათი` 
-                                          : `${service.estimated_hours} საათი`}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-lg font-semibold">
-                                  {service.price_from && service.price_to
-                                    ? `${service.price_from} - ${service.price_to} ₾`
-                                    : service.price_from
-                                      ? `${service.price_from} ₾`
-                                      : "ფასი შეთანხმებით"}
-                                </p>
-                                <Button 
-                                  size="sm" 
-                                  className="mt-2 bg-secondary hover:bg-secondary/90"
-                                  onClick={() => {
-                                    if (!user) {
-                                      toast.error("ჯავშნის გასაკეთებლად გთხოვთ გაიაროთ ავტორიზაცია");
-                                      navigate("/login");
-                                      return;
-                                    }
-                                    toast.success(`დაჯავშნის პროცესი დაიწყო სერვისისთვის #${service.id}!`);
-                                  }}
-                                >
-                                  დაჯავშნა
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <p className="text-muted-foreground">
-                          ამ ხელოსანს ჯერ არ აქვს დამატებული სერვისები
-                        </p>
-                      </div>
-                    )}
-                  </TabsContent>
+      {(() => {
+        const m = mechanic;
+        const fullName = `${m.profile.first_name} ${m.profile.last_name}`.trim();
+        const initials = `${m.profile.first_name?.charAt(0) || ""}${m.profile.last_name?.charAt(0) || ""}`.toUpperCase();
+        const phone = m.profile.phone || "";
+        const hasPhone = !!phone;
+        const typeLabel = m.mechanic_profile.specialization || "ავტოხელოსანი";
+        const location = [m.profile.city, m.profile.district].filter(Boolean).join(" · ");
+        const serviceUrl = (s: ServiceType) => `/service/${s.id}-${createSlug(s.name)}`;
+        const openPhone = () => { if (hasPhone) { trackMechanicPhone(m.id); setPhoneOpen(true); } };
+        const maskedPhone = (() => {
+          const d = phone.replace(/\D/g, "");
+          const local = d.length === 12 && d.startsWith("995") ? d.slice(3) : d;
+          if (local.length !== 9) return phone;
+          const c = local.split("").map((x, i) => (i < 6 ? "•" : x)).join("");
+          return `+995 ${c.slice(0, 3)} ${c.slice(3, 5)} ${c.slice(5, 7)} ${c.slice(7, 9)}`;
+        })();
+        const doShare = async () => {
+          try {
+            if (navigator.share) await navigator.share({ title: fullName, url: canonicalUrl });
+            else { await navigator.clipboard?.writeText(canonicalUrl); toast.success("ბმული დაკოპირდა"); }
+          } catch { /* cancelled */ }
+        };
+        const tabs = [
+          { k: "services", l: "სერვისები", n: services.length },
+          { k: "reviews", l: "შეფასებები", n: m.mechanic_profile.review_count || 0 },
+          ...(vacancies.length > 0 ? [{ k: "vacancies", l: "ვაკანსიები", n: vacancies.length }] : []),
+        ];
 
-                  <TabsContent value="vacancies" className="p-6">
-                    {vacancies.length > 0 ? (
-                      <div className="space-y-6">
-                        {vacancies.map((vacancy) => (
-                          <div
-                            key={vacancy.id}
-                            className="border-b border-gray-100 last:border-0 pb-5 last:pb-0 group cursor-pointer hover:bg-muted/50 rounded-lg p-4 -m-4 transition-colors"
-                            onClick={() => navigate(`/vacancy/${vacancy.id}`)}
-                          >
-                            <div className="flex items-start gap-3 mb-2">
-                              <Briefcase className="h-5 w-5 text-primary mt-1" />
-                              <div className="flex-1">
-                                <h4 className="text-lg font-medium group-hover:text-primary transition-colors">
-                                  {vacancy.title}
-                                </h4>
-                                <p className="text-xs text-muted-foreground">
-                                  გამოქვეყნდა: {format(new Date(vacancy.created_at), "dd MMM, yyyy")}
-                                </p>
-                              </div>
-                            </div>
-                            {vacancy.description && (
-                              <p className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap line-clamp-3">
-                                {vacancy.description}
-                              </p>
-                            )}
-                            <div className="mt-3 text-sm text-primary font-medium group-hover:underline">
-                              დეტალურად ნახვა →
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Briefcase className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-muted-foreground">
-                          ამ ხელოსანს ამჟამად არ აქვს აქტიური ვაკანსიები
-                        </p>
-                      </div>
-                    )}
-                  </TabsContent>
+        return (
+        <main className="font-sans bg-ink-50 text-ink-900 antialiased pb-[88px] lg:pb-0">
 
-                  <TabsContent value="about" className="p-6">
-                    <h3 className="text-lg font-semibold mb-4">ჩემს შესახებ</h3>
-                    <p className="text-muted-foreground mb-6">
-                      {mechanic?.mechanic_profile.description || "ინფორმაცია არ არის მითითებული"}
-                    </p>
-                    
-                    {certificates.length > 0 && (
+          {/* ═════════ HERO ═════════ */}
+          <section className="relative bg-white overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-50/50 via-white to-accent-50/30" />
+              <div className="absolute -top-32 -right-32 h-[440px] w-[440px] rounded-full bg-accent-500/8 blur-3xl" />
+              <div className="absolute -bottom-40 -left-20 h-[420px] w-[420px] rounded-full bg-brand-500/8 blur-3xl" />
+            </div>
+
+            <div className="relative max-w-[1280px] mx-auto px-4 lg:px-8 pt-5 pb-7">
+              {/* Breadcrumb */}
+              <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-ink-500 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <a href="/" className="hover:text-ink-900 inline-flex items-center gap-1 shrink-0"><Home className="h-3 w-3" />მთავარი</a>
+                <span className="text-ink-300 shrink-0">/</span>
+                <a href="/mechanic" className="hover:text-ink-900 shrink-0">ხელოსნები</a>
+                <span className="text-ink-300 shrink-0">/</span>
+                <span aria-current="page" className="text-ink-900 font-semibold truncate">{fullName}</span>
+              </nav>
+
+              {/* Profile bento */}
+              <div className="mt-5 grid grid-cols-12 gap-3">
+                {/* LEFT — identity + actions */}
+                <div className="col-span-12 lg:col-span-8">
+                  <div className="rounded-2xl bg-white border border-ink-200/60 shadow-card p-5 md:p-7">
+                    <div className="flex items-start gap-4 md:gap-5 flex-wrap">
+                      <div className="relative shrink-0">
+                        <div className="h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-brand-500 text-white grid place-items-center shadow-card relative overflow-hidden">
+                          <div className="absolute inset-0 bg-[radial-gradient(120%_120%_at_0%_0%,rgba(255,255,255,0.18),transparent_60%)]" />
+                          <span className="relative text-[28px] md:text-[34px] font-bold tracking-[0.04em]">{initials || "?"}</span>
+                        </div>
+                        {m.profile.is_verified && <span className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-success-500 border-[3px] border-white" />}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-pill bg-ink-50 border border-ink-200 text-ink-700 text-[10.5px] font-bold uppercase tracking-[0.14em] mb-2">
+                          <Wrench className="h-3 w-3 text-ink-400" />{typeLabel}
+                        </div>
+                        <div className="overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" style={{ maskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)" }}>
+                          <h1 className="text-[24px] md:text-[34px] lg:text-[44px] font-bold tracking-[-0.02em] leading-[1.05] text-ink-900 whitespace-nowrap">
+                            {fullName}<span className="text-accent-500">.</span>
+                          </h1>
+                        </div>
+                        <div className="mt-2 flex items-center gap-3 text-[12px] text-ink-500 flex-wrap">
+                          {m.mechanic_profile.rating ? (
+                            <span className="inline-flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-accent-500 text-accent-500" /><span className="font-bold text-ink-900">{m.mechanic_profile.rating.toFixed(1)}</span></span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-success-500" />აქტიური პროფილი</span>
+                          )}
+                          {location && (<><span className="text-ink-300">·</span><span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5 text-ink-400" />{location}</span></>)}
+                          <span className="text-ink-300">·</span>
+                          <span className="font-mono tabular-nums">{services.length} სერვისი</span>
+                          {m.display_id && (<><span className="text-ink-300">·</span><span className="font-mono tabular-nums">#{m.display_id}</span></>)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action row */}
+                    <div className="mt-5 pt-5 border-t border-ink-100 flex items-center gap-2 flex-wrap">
+                      {hasPhone && (
+                        <button type="button" onClick={openPhone} className="h-11 px-5 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center gap-2"><Phone className="h-4 w-4" />დაურეკე ხელოსანს</button>
+                      )}
+                      <button type="button" onClick={() => navigate("/mechanic")} className="h-11 w-11 rounded-pill bg-white border border-ink-200/60 hover:border-ink-300 text-ink-700 grid place-items-center" aria-label="უკან"><ArrowLeft className="h-4 w-4" /></button>
+                      <button type="button" onClick={handleStartChat} className="h-11 px-3.5 rounded-pill bg-white border border-ink-200/60 hover:border-ink-300 text-ink-700 text-[12.5px] font-semibold inline-flex items-center gap-1.5"><MessageCircle className="h-4 w-4" />მიწერა</button>
+                      <button type="button" onClick={doShare} className="h-11 px-3.5 rounded-pill bg-white border border-ink-200/60 hover:border-ink-300 text-ink-700 text-[12.5px] font-semibold inline-flex items-center gap-1.5"><Share2 className="h-4 w-4" />გაზიარება</button>
+                      <button type="button" onClick={() => setReportOpen(true)} className="ml-auto h-11 w-11 rounded-pill bg-white border border-ink-200/60 hover:border-ink-300 text-ink-500 grid place-items-center" aria-label="დააფიქსირე პრობლემა"><Flag className="h-4 w-4" /></button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RIGHT — phone + summary */}
+                <aside className="col-span-12 lg:col-span-4 grid grid-cols-2 lg:grid-cols-1 gap-3">
+                  <div className="col-span-2 lg:col-span-1 rounded-2xl bg-white/85 backdrop-blur-xl border border-ink-200/60 shadow-card p-5">
+                    <div className="flex items-baseline justify-between gap-3 mb-2">
+                      <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400">სატელეფონო კონტაქტი</div>
+                      {hasPhone && <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-success-700"><span className="h-1.5 w-1.5 rounded-full bg-success-500" />ხელმისაწვდომი</span>}
+                    </div>
+                    {hasPhone ? (
                       <>
-                        <h3 className="text-lg font-semibold mb-4">სერტიფიკატები</h3>
-                        <ul className="list-disc list-inside text-muted-foreground ml-4 space-y-2">
-                          {certificates.map((cert) => (
-                            <li key={cert.id}>
-                              {cert.title}
-                              {cert.issuing_organization && ` - ${cert.issuing_organization}`}
-                              {cert.issue_date && ` (${format(new Date(cert.issue_date), "yyyy")})`}
-                            </li>
-                          ))}
-                        </ul>
+                        <button type="button" onClick={openPhone} className="w-full inline-flex items-center gap-2.5 text-left group">
+                          <span className="text-[16px] font-bold text-ink-900 font-mono tabular-nums tracking-tight flex-1 truncate">{maskedPhone}</span>
+                          <span className="inline-flex items-center gap-1 px-2 h-7 rounded-pill bg-accent-500 text-white transition text-[11px] font-bold animate-phone-glow shrink-0"><Eye className="h-3.5 w-3.5" />ჩვენება</span>
+                        </button>
+                        <button type="button" onClick={openPhone} className="mt-3 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დაურეკე ხელოსანს</button>
                       </>
+                    ) : (
+                      <div className="text-[12.5px] text-ink-500">ნომერი ხელმისაწვდომი არ არის</div>
                     )}
-                  </TabsContent>
-                  
-                  <TabsContent value="reviews" className="p-6">
-                    {id && (
-                      <MechanicReviews 
-                        mechanicId={mechanic?.id || ''} 
-                        onReviewAdded={handleReviewAdded}
-                      />
-                    )}
-                  </TabsContent>
-                </Tabs>
+                  </div>
+
+                  <div className="col-span-2 lg:col-span-1 rounded-2xl bg-white/85 backdrop-blur-xl border border-ink-200/60 shadow-card p-5">
+                    <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">პროფილის შესახებ</div>
+                    <dl className="space-y-2.5 text-[12.5px]">
+                      <div className="flex items-baseline justify-between gap-3"><dt className="text-ink-500">სერვისები</dt><dd className="text-ink-900 font-bold font-mono tabular-nums">{services.length}</dd></div>
+                      {m.mechanic_profile.experience_years ? (
+                        <div className="flex items-baseline justify-between gap-3 border-t border-ink-100 pt-2.5"><dt className="text-ink-500">გამოცდილება</dt><dd className="text-ink-900 font-semibold">{m.mechanic_profile.experience_years} წელი</dd></div>
+                      ) : null}
+                      <div className="flex items-baseline justify-between gap-3 border-t border-ink-100 pt-2.5"><dt className="text-ink-500">შეფასებები</dt><dd className="text-ink-900 font-bold font-mono tabular-nums">{m.mechanic_profile.review_count || 0}</dd></div>
+                      {m.mechanic_profile.is_mobile && (
+                        <div className="flex items-baseline justify-between gap-3 border-t border-ink-100 pt-2.5"><dt className="text-ink-500">მობილური სერვისი</dt><dd className="text-success-700 font-semibold">კი</dd></div>
+                      )}
+                    </dl>
+                  </div>
+                </aside>
               </div>
             </div>
+          </section>
+
+          {/* ═════════ TAB STRIP ═════════ */}
+          <div className="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-y border-ink-200/60">
+            <div className="max-w-[1280px] mx-auto px-4 lg:px-8 h-12 flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {tabs.map((s) => (
+                <button key={s.k} type="button" onClick={() => setActiveTab(s.k)} className={`px-3 h-8 rounded-pill text-[12.5px] font-semibold whitespace-nowrap transition inline-flex items-center gap-2 ${activeTab === s.k ? "bg-ink-900 text-white" : "text-ink-600 hover:text-ink-900 hover:bg-ink-100/70"}`}>
+                  {s.l}
+                  <span className={`px-1.5 py-0.5 rounded-pill text-[10px] font-mono tabular-nums ${activeTab === s.k ? "bg-white/15 text-white" : "bg-ink-100 text-ink-500"}`}>{s.n}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
-      
+
+          {/* ═════════ CONTENT ═════════ */}
+          <section className="bg-ink-50">
+            <div className="max-w-[1280px] mx-auto px-4 lg:px-8 py-8 grid grid-cols-12 gap-5">
+              {/* MAIN */}
+              <div className="col-span-12 lg:col-span-8 space-y-5">
+
+                {activeTab === "services" && (
+                  <div className="rounded-2xl bg-white border border-ink-200/60 overflow-hidden">
+                    <div className="px-6 pt-5 pb-3 flex items-end justify-between gap-3 border-b border-ink-100 flex-wrap">
+                      <div>
+                        <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">სრული სია</div>
+                        <h2 className="mt-1 text-[20px] font-bold tracking-tight text-ink-900">{services.length} სერვისი {fullName}-ისგან.</h2>
+                      </div>
+                    </div>
+                    {services.length > 0 ? (
+                      <ul className="divide-y divide-ink-100">
+                        {services.map((s, i) => (
+                          <li key={s.id} className="group">
+                            <button type="button" onClick={() => navigate(serviceUrl(s))} className="w-full px-5 md:px-6 py-3.5 flex items-center gap-4 text-left hover:bg-ink-50/50 transition">
+                              <span className="font-mono tabular-nums text-[10px] text-ink-400 font-semibold w-6 shrink-0">{String(i + 1).padStart(2, "0")}</span>
+                              <span className="h-9 w-9 rounded-lg bg-brand-50 border border-brand-100 text-brand-700 grid place-items-center shrink-0 group-hover:bg-brand-500 group-hover:border-brand-500 group-hover:text-white transition"><Wrench className="h-4 w-4" /></span>
+                              <span className="flex-1 min-w-0">
+                                <div className="text-[13.5px] font-semibold text-ink-900 leading-snug truncate">{s.name}</div>
+                                {s.service_categories?.name && <div className="text-[11px] text-ink-500 truncate">{s.service_categories.name}</div>}
+                              </span>
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-pill bg-ink-50 border border-ink-200 text-[11px] font-bold uppercase tracking-wider text-ink-700 shrink-0 hidden sm:inline-flex">{(s.price_from || s.price_to) ? `₾${s.price_from || s.price_to}` : "შეთანხმებით"}</span>
+                              <span className="shrink-0 text-ink-400 group-hover:text-ink-900 transition"><ArrowRight className="h-4 w-4" /></span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="px-6 py-10 text-center text-ink-500 text-[13px]">ამ ხელოსანს ჯერ არ აქვს დამატებული სერვისები</div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === "reviews" && (
+                  <div className="rounded-2xl bg-white border border-ink-200/60 p-6">
+                    <MechanicReviews mechanicId={m.id} onReviewAdded={handleReviewAdded} />
+                  </div>
+                )}
+
+                {activeTab === "vacancies" && (
+                  <div className="rounded-2xl bg-white border border-ink-200/60 overflow-hidden">
+                    <div className="px-6 pt-5 pb-3 border-b border-ink-100">
+                      <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">ვაკანსიები</div>
+                      <h2 className="mt-1 text-[20px] font-bold tracking-tight text-ink-900">{vacancies.length} აქტიური ვაკანსია.</h2>
+                    </div>
+                    <ul className="divide-y divide-ink-100">
+                      {vacancies.map((v) => (
+                        <li key={v.id}>
+                          <button type="button" onClick={() => navigate(`/vacancy/${v.id}`)} className="w-full px-5 md:px-6 py-4 flex items-start gap-3 text-left hover:bg-ink-50/50 transition group">
+                            <span className="h-9 w-9 rounded-lg bg-brand-50 border border-brand-100 text-brand-700 grid place-items-center shrink-0"><Briefcase className="h-4 w-4" /></span>
+                            <span className="flex-1 min-w-0">
+                              <div className="text-[14px] font-bold text-ink-900 group-hover:text-brand-700 transition">{v.title}</div>
+                              <div className="text-[11px] text-ink-400 font-mono tabular-nums mt-0.5">{format(new Date(v.created_at), "dd MMM, yyyy")}</div>
+                              {v.description && <p className="text-[12.5px] text-ink-600 mt-1.5 line-clamp-2 whitespace-pre-wrap">{v.description}</p>}
+                            </span>
+                            <span className="shrink-0 text-ink-400 group-hover:text-ink-900 transition"><ArrowRight className="h-4 w-4" /></span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* SIDEBAR */}
+              <aside className="col-span-12 lg:col-span-4">
+                <div className="lg:sticky lg:top-[68px] space-y-3">
+                  {/* About */}
+                  <div className="rounded-2xl bg-white border border-ink-200/60 p-5">
+                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">ხელოსანი</div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-xl bg-brand-500 text-white grid place-items-center text-[15px] font-bold tracking-wider shrink-0">{initials || "?"}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[14px] font-bold text-ink-900 truncate">{fullName}</div>
+                        <div className="text-[11.5px] text-ink-500 truncate">{typeLabel}</div>
+                      </div>
+                    </div>
+                    {m.mechanic_profile.description && <p className="mt-4 text-[12.5px] text-ink-600 leading-relaxed whitespace-pre-wrap">{m.mechanic_profile.description}</p>}
+                    {hasPhone && <button type="button" onClick={openPhone} className="mt-3 w-full h-10 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[12.5px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დაურეკე</button>}
+                  </div>
+
+                  {/* Contact info */}
+                  <div className="rounded-2xl bg-white border border-ink-200/60 p-5">
+                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">საკონტაქტო ინფორმაცია</div>
+                    <div className="space-y-3 text-[12.5px]">
+                      {m.profile.street && (
+                        <div className="flex items-start gap-2.5"><MapPin className="h-4 w-4 text-ink-400 mt-0.5 shrink-0" /><div><div className="text-ink-500 text-[10.5px]">მისამართი</div><div className="text-ink-900 font-medium">{m.profile.street}, {m.profile.city}{m.profile.district ? `, ${m.profile.district}` : ""}</div></div></div>
+                      )}
+                      {hasPhone && (
+                        <div className="flex items-start gap-2.5 border-t border-ink-100 pt-3"><Phone className="h-4 w-4 text-ink-400 mt-0.5 shrink-0" /><div><div className="text-ink-500 text-[10.5px]">ტელეფონი</div><button type="button" onClick={openPhone} className="text-ink-900 font-medium hover:text-brand-700 font-mono tabular-nums">{maskedPhone}</button></div></div>
+                      )}
+                      {m.profile.email && (
+                        <div className="flex items-start gap-2.5 border-t border-ink-100 pt-3"><Mail className="h-4 w-4 text-ink-400 mt-0.5 shrink-0" /><div className="min-w-0"><div className="text-ink-500 text-[10.5px]">ელ-ფოსტა</div><a href={`mailto:${m.profile.email}`} className="text-ink-900 font-medium hover:text-brand-700 break-all">{m.profile.email}</a></div></div>
+                      )}
+                      {m.mechanic_profile.working_hours && (
+                        <div className="flex items-start gap-2.5 border-t border-ink-100 pt-3"><Clock className="h-4 w-4 text-ink-400 mt-0.5 shrink-0" /><div><div className="text-ink-500 text-[10.5px]">სამუშაო საათები</div><div className="text-ink-900 font-medium">{typeof m.mechanic_profile.working_hours === "string" ? m.mechanic_profile.working_hours : "ორშ-პარ: 10:00 - 18:00"}</div></div></div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Certificates */}
+                  {certificates.length > 0 && (
+                    <div className="rounded-2xl bg-white border border-ink-200/60 p-5">
+                      <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">სერტიფიკატები</div>
+                      <ul className="space-y-2">
+                        {certificates.map((c) => (
+                          <li key={c.id} className="flex items-start gap-2 text-[12.5px]">
+                            <FileCheck className="h-4 w-4 text-success-600 mt-0.5 shrink-0" />
+                            <span className="text-ink-800">{c.title}{c.issuing_organization ? ` — ${c.issuing_organization}` : ""}{c.issue_date ? ` (${format(new Date(c.issue_date), "yyyy")})` : ""}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Specialization */}
+                  {m.mechanic_profile.specialization && (
+                    <div className="rounded-2xl bg-white border border-ink-200/60 p-5">
+                      <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">სპეციალიზაცია</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {m.mechanic_profile.specialization.split(",").map((sp, i) => (
+                          <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-pill bg-ink-50 border border-ink-200 text-[11.5px] font-semibold text-ink-700"><Car className="h-3 w-3 text-ink-400" />{sp.trim()}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          {/* ═════════ BLOG ═════════ */}
+          <section className="bg-white border-t border-ink-200/60">
+            <div className="max-w-[1280px] mx-auto px-4 lg:px-8 py-8">
+              <RelatedBlogPosts limit={3} />
+            </div>
+          </section>
+
+          {/* ═════════ MOBILE STICKY ═════════ */}
+          {hasPhone && (
+            <div className="lg:hidden fixed bottom-[70px] md:bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-xl border-t border-ink-200/60 px-3 py-2.5 flex items-center gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="h-9 w-9 rounded-lg bg-brand-500 text-white grid place-items-center text-[11px] font-bold shrink-0">{initials || "?"}</div>
+                <div className="min-w-0"><div className="text-[12px] font-bold text-ink-900 truncate">{fullName}</div><div className="text-[10px] text-ink-500 truncate">{typeLabel}</div></div>
+              </div>
+              <button type="button" onClick={openPhone} className="ml-auto h-10 px-4 rounded-pill bg-brand-500 text-white text-[12.5px] font-bold inline-flex items-center gap-1.5 shrink-0"><Phone className="h-3.5 w-3.5" />დაურეკე</button>
+            </div>
+          )}
+
+          {/* Phone reveal + report */}
+          {hasPhone && (
+            <PhoneRevealDialog open={phoneOpen} onOpenChange={setPhoneOpen} name={fullName} city={m.profile.city} phone={phone} />
+          )}
+          {reportOpen && (
+            <div className="fixed inset-0 z-50 grid place-items-center p-4" onClick={() => setReportOpen(false)}>
+              <div className="absolute inset-0 bg-ink-950/55 backdrop-blur-sm" />
+              <div className="relative w-full max-w-sm rounded-2xl bg-white shadow-float p-5 border border-ink-200/60" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="h-8 w-8 rounded-lg bg-danger-50 text-danger-600 grid place-items-center"><Flag className="h-4 w-4" /></span>
+                  <span className="text-[14px] font-bold text-ink-900">დააფიქსირე პრობლემა</span>
+                  <button type="button" onClick={() => setReportOpen(false)} className="ml-auto h-8 w-8 rounded-btn hover:bg-ink-100 grid place-items-center"><X className="h-4 w-4" /></button>
+                </div>
+                <p className="text-[12px] text-ink-600 mb-3">თუ ცრუ ინფორმაცია ან მავნე ქცევა შენიშნე — გვითხარი.</p>
+                <div className="space-y-1.5">
+                  {["ცრუ ინფორმაცია", "არ პასუხობს", "არასწორი მონაცემები", "სხვა"].map((r) => (
+                    <button key={r} type="button" onClick={() => { toast.success("მადლობა, მიღებულია"); setReportOpen(false); }} className="w-full px-3 py-2.5 rounded-xl border border-ink-200 hover:border-ink-900 text-left text-[12.5px] font-semibold text-ink-900">{r}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+        );
+      })()}
+
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 };
