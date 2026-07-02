@@ -12,7 +12,9 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="ავტოხელოსანი" />
     <meta name="language" content="ka" />
-    <link rel="canonical" href="https://fixup.ge/" />
+    <!-- No hardcoded canonical here: it made EVERY SPA route declare its
+         canonical as the homepage. Each page sets its own canonical via
+         SEOHead (react-helmet) instead. -->
 
     <!-- Open Graph (default) -->
     <meta property="og:title" content="ავტოხელოსანი — საქართველოს #1 ავტოსერვისების პლატფორმა" />

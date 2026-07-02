@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import SEOHead from "@/components/seo/SEOHead";
-import { OrganizationSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { OrganizationSchema, WebSiteSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import SimplifiedSearch from "@/components/home/SimplifiedSearch";
 import CategoryCarousel from "@/components/home/CategoryCarousel";
@@ -49,6 +49,8 @@ const Index = () => {
       contactType: "customer service",
       email: "info@fixup.ge"
     }} />
+
+      <WebSiteSchema />
 
       <BreadcrumbSchema items={[{
       name: "მთავარი",

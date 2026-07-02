@@ -50,6 +50,12 @@ export default function Blog() {
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 md:py-12">
+        {/* Page heading (single H1 for SEO) */}
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">ბლოგი — ავტომობილის რჩევები და სტატიები</h1>
+          <p className="mt-1 text-sm md:text-base text-muted-foreground">მოვლა-შენახვა, სერვისის არჩევა და საავტომობილო სიახლეები</p>
+        </div>
+
         {/* Hero Section */}
         {featuredPost && (
           <div className="mb-16">

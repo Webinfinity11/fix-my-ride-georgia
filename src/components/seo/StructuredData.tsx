@@ -53,6 +53,31 @@ export const OrganizationSchema = ({
   );
 };
 
+// WebSite schema (domain root) — enables Google Sitelinks Searchbox and
+// declares the canonical site entity. Render once, on the homepage.
+export const WebSiteSchema = ({ url = "https://fixup.ge", name = "FixUp — ავტოსერვისების პლატფორმა" }: { url?: string; name?: string }) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name,
+    url,
+    inLanguage: "ka-GE",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${url}/search?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(schema)}</script>
+    </Helmet>
+  );
+};
+
 interface LocalBusinessSchemaProps {
   name: string;
   address: {
