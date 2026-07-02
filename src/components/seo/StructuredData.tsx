@@ -78,6 +78,39 @@ export const WebSiteSchema = ({ url = "https://fixup.ge", name = "FixUp — ა�
   );
 };
 
+// VideoObject schema — for service pages that have videos. Emits one
+// VideoObject per video so Google understands the media.
+export const VideoSchema = ({
+  videos,
+  name,
+  description,
+  thumbnailUrl,
+  uploadDate,
+}: {
+  videos: string[];
+  name: string;
+  description?: string | null;
+  thumbnailUrl?: string | null;
+  uploadDate?: string | null;
+}) => {
+  const list = (videos || []).filter((v) => typeof v === "string" && v.startsWith("http"));
+  if (list.length === 0) return null;
+  const objects = list.map((v, i) => ({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: list.length > 1 ? `${name} — ვიდეო ${i + 1}` : name,
+    description: description || name,
+    ...(thumbnailUrl ? { thumbnailUrl } : {}),
+    contentUrl: v,
+    ...(uploadDate ? { uploadDate } : {}),
+  }));
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(objects.length === 1 ? objects[0] : objects)}</script>
+    </Helmet>
+  );
+};
+
 interface LocalBusinessSchemaProps {
   name: string;
   address: {

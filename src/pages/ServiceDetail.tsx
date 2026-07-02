@@ -46,7 +46,7 @@ import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
 import Layout from "@/components/layout/Layout";
 import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
-import { ServiceSchema, BreadcrumbSchema, ProductSchema, FAQSchema } from "@/components/seo/StructuredData";
+import { ServiceSchema, BreadcrumbSchema, ProductSchema, FAQSchema, VideoSchema } from "@/components/seo/StructuredData";
 import { generateServiceOGImage } from "@/utils/ogImageGenerator";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
 import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
@@ -783,6 +783,16 @@ const ServiceDetail = () => {
         
         {/* FAQ Schema for common questions */}
         <FAQSchema faqs={serviceFAQs} />
+
+        {/* Video schema — when the service has videos */}
+        {service.videos && service.videos.length > 0 && (
+          <VideoSchema
+            videos={service.videos}
+            name={service.name}
+            description={service.description}
+            thumbnailUrl={service.photos && service.photos.length > 0 ? service.photos[0] : undefined}
+          />
+        )}
         
         <BreadcrumbSchema items={breadcrumbItems} />
 
