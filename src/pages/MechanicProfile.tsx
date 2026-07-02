@@ -22,6 +22,7 @@ import { trackMechanicPhone } from "@/utils/tracking";
 import SEOHead from "@/components/seo/SEOHead";
 import { PersonSchema, LocalBusinessSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
+import { isMechanicIndexable } from "@/utils/seoQuality";
 import { generateMechanicOGImage } from "@/utils/ogImageGenerator";
 
 type MechanicType = {
@@ -578,6 +579,17 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
     last_name: mechanic.profile.last_name
   });
 
+  // Thin profiles (name only — no city, no description, no active service)
+  // render noindex,follow. Keep in sync with the mechanic quality filter in
+  // scripts/generate-sitemap.mjs.
+  const mechanicIndexable = isMechanicIndexable({
+    display_id: mechanic.display_id,
+    first_name: mechanic.profile.first_name,
+    city: mechanic.profile.city,
+    description: mechanic.mechanic_profile.description,
+    hasActiveService: services.length > 0,
+  });
+
   // Breadcrumb items
   const breadcrumbItems = [
     { name: 'მთავარი', url: 'https://fixup.ge/' },
@@ -603,6 +615,7 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
         url={canonicalUrl}
         canonical={canonicalUrl}
         type="profile"
+        noindex={!mechanicIndexable}
       />
 
       {/* Person Schema for mechanic */}

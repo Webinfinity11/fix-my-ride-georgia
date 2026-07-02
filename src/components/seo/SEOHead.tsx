@@ -11,8 +11,10 @@ interface SEOHeadProps {
   structuredData?: object;
   canonical?: string;
   /**
-   * Block indexing for low-value pages: search results with query params,
-   * filtered list views, internal tools. Defaults to false (index, follow).
+   * Block indexing for low-value / thin pages: search results with query
+   * params, filtered list views, internal tools, thin service/mechanic
+   * profiles. Emits `noindex, follow` (crawlable, not indexed) so link equity
+   * still flows. Defaults to false (index, follow).
    */
   noindex?: boolean;
 }
@@ -59,7 +61,7 @@ const SEOHead = ({
       {keywords && <meta name="keywords" content={keywords} />}
       <meta
         name="robots"
-        content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+        content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
       />
       <meta name="author" content="ავტოხელოსანი" />
       <meta name="language" content="ka" />

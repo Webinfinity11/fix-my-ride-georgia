@@ -13,19 +13,20 @@ import SimplifiedSearch from "@/components/home/SimplifiedSearch";
 import CategoryCarousel from "@/components/home/CategoryCarousel";
 import VIPServicesCarousel from "@/components/home/VIPServicesCarousel";
 import { Zap, Shield, Users, Star, ArrowRight, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
+import { SITE_STATS } from "@/config/siteStats";
 
 // Lazy load below-fold components
 const StationsPromo = lazy(() => import("@/components/home/StationsPromo"));
 const HomeCenterBanner = lazy(() => import("@/components/banners/HomeCenterBanner"));
 const MobileBanner = lazy(() => import("@/components/banners/MobileBanner"));
 
-// სტატისტიკა (შესაბამისობაშია /about გვერდის რიცხვებთან)
+// სტატისტიკა — ხელოსანი/სერვისი ერთ წყაროდან (SITE_STATS), რომ არ ეწინააღმდეგებოდეს SEO ტექსტებს
 const stats = [{
-  number: "200+",
+  number: SITE_STATS.mechanicsLabel,
   label: "ხელოსანი",
   icon: Users
 }, {
-  number: "550+",
+  number: SITE_STATS.servicesLabel,
   label: "სერვისი",
   icon: Zap
 }, {
@@ -45,7 +46,7 @@ const Index = () => {
   return <div className="min-h-screen flex flex-col bg-gradient-to-br from-muted via-background to-accent/30 pb-[70px] md:pb-0">
       <SEOHead title={generateSEOTitle("home", {})} description={generateSEODescription("home", {})} keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup" url={canonicalUrl} canonical={canonicalUrl} type="website" />
 
-      <OrganizationSchema name="ავტოხელოსანი" url="https://fixup.ge" description="საქართველოს უდიდესი ავტოსერვისების პლატფორმა" contactPoint={{
+      <OrganizationSchema name="ავტოხელოსანი" url="https://fixup.ge" description="საქართველოს სანდო ავტოსერვისების პლატფორმა" contactPoint={{
       contactType: "customer service",
       email: "info@fixup.ge"
     }} />
@@ -70,7 +71,7 @@ const Index = () => {
               <div className="text-center mb-8 md:mb-10">
                 <Badge className="mb-4 md:mb-6 bg-gradient-to-r from-primary to-primary-light text-primary-foreground px-4 md:px-6 py-1.5 md:py-2 text-xs md:text-sm font-medium">
                   <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1.5 md:mr-2" />
-                  საქართველოს #1 ავტო-სერვისის პლატფორმა
+                  საქართველოს სანდო ავტო-სერვისის პლატფორმა
                 </Badge>
                 <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
                   <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-transparent">

@@ -69,6 +69,34 @@ function createSlug(text) {
     .replace(/^-+|-+$/g, '');
 }
 
+// ---- SEO indexability thresholds (Phase 2 #10/#13/#14) ----
+// MIRROR of src/utils/seoQuality.ts. A URL ships in the sitemap ONLY if it
+// clears these bars, so sitemap membership matches the page's own robots
+// directive (thin pages render noindex,follow). Keep both files in sync.
+//
+// Tuned to fixup.ge's real data: verified_at (0/248) and specialization (7/248)
+// are unpopulated, so they are NOT gates — the real completeness signals are a
+// city, a description, or an active service.
+const MIN_DESCRIPTION_LEN = 20;
+
+function isServiceIndexable(s) {
+  if (s.is_active === false) return false;
+  if (!(s.name || '').trim()) return false;
+  if (s.category_id == null) return false;
+  const desc = (s.description || '').trim();
+  const photoCount = Array.isArray(s.photos) ? s.photos.length : 0;
+  if (desc.length < MIN_DESCRIPTION_LEN && photoCount === 0) return false;
+  return true;
+}
+
+function isMechanicIndexable(m, hasActiveService) {
+  if (m.display_id == null) return false;
+  if (!(m.first_name || '').trim()) return false;
+  const hasLocation = !!(m.city || '').trim();
+  const hasDescription = !!(m.description || '').trim();
+  return hasLocation || hasDescription || !!hasActiveService;
+}
+
 const xmlEscape = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -170,27 +198,23 @@ function videoUrlEntry({ loc, lastmod, videos, thumbnail, title, description, pu
   </url>`;
 }
 
-// Static pages — all single landing pages (including dealers/insurance/leasing/laundries/fuel-*).
-// No detail routes for these → they belong in the static sitemap.
-// Map tabs (services/laundries/drives/chargers/stations) are real URL paths; keep in sync
-// with validTabs in src/pages/Map.tsx.
+// Static pages — single landing pages with real, organic search intent.
+// EXCLUDED (Phase 2 #12 — sitemap cleanup):
+//   • /search               — query-based results page, no standalone intent
+//   • /map/{services,laundries,drives,chargers,stations} — utility map TABS
+//     (client-side tab switches of the same /map shell); the base /map ships
+//   • /laundries            — feature currently hidden in the UI
+// Keep in sync with validTabs in src/pages/Map.tsx.
 const STATIC_PAGES = [
   '/',
   '/services',
   '/mechanic',
-  '/search',
   '/about',
   '/contact',
   '/map',
-  '/map/services',
-  '/map/laundries',
-  '/map/drives',
-  '/map/chargers',
-  '/map/stations',
   '/category',
   '/blog',
   '/vacancies',
-  '/laundries',
   '/leasing',
   '/dealers',
   '/insurance',
@@ -242,14 +266,14 @@ async function main() {
     { data: vacancies, error: vacanciesErr },
   ] = await Promise.all([
     supabase.from('mechanic_services')
-      .select('id, name, slug, description, updated_at, created_at, photos, videos, category_id, district')
+      .select('id, name, slug, description, updated_at, created_at, photos, videos, category_id, district, mechanic_id')
       .eq('is_active', true)
       .order('id'),
     supabase.from('service_categories')
       .select('id, name')
       .order('id'),
     supabase.from('mechanic_profiles')
-      .select('id, display_id, updated_at, profiles!inner(role, first_name, last_name)')
+      .select('id, display_id, description, updated_at, profiles!inner(role, first_name, last_name, city)')
       .eq('profiles.role', 'mechanic')
       .order('display_id'),
     supabase.from('blog_posts')
@@ -309,8 +333,10 @@ async function main() {
   );
   await writeSitemap('static-sitemap.xml', staticEntries, now);
 
-  // ---- Services ----
-  const serviceEntries = (services || []).map((s) => {
+  // ---- Services ---- (#14 quality filter: active + name + category + real content)
+  const indexableServices = (services || []).filter(isServiceIndexable);
+  const excludedServiceCount = (services?.length || 0) - indexableServices.length;
+  const serviceEntries = indexableServices.map((s) => {
     let urlPart;
     if (s.slug && /^\d+-/.test(s.slug)) {
       urlPart = s.slug;
@@ -327,8 +353,19 @@ async function main() {
   });
   await writePaginated('service', serviceEntries, maxLastmod(services));
 
-  // ---- Mechanics ----
-  const mechanicEntries = (mechanics || []).map((m) => {
+  // ---- Mechanics ---- (#13 quality filter: display_id + name + (city|desc|active service))
+  const mechanicsWithActiveService = new Set(
+    (services || []).map((s) => s.mechanic_id).filter(Boolean)
+  );
+  const indexableMechanics = (mechanics || []).filter((m) => {
+    const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+    return isMechanicIndexable(
+      { display_id: m.display_id, first_name: profile?.first_name, city: profile?.city, description: m.description },
+      mechanicsWithActiveService.has(m.id)
+    );
+  });
+  const excludedMechanicCount = (mechanics?.length || 0) - indexableMechanics.length;
+  const mechanicEntries = indexableMechanics.map((m) => {
     const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
     const firstName = profile?.first_name || 'Mechanic';
     const lastName = profile?.last_name || '';
@@ -481,6 +518,9 @@ async function main() {
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   console.log(`[sitemap] ✓ Wrote ${indexEntries.length} sub-sitemaps, ${total} URLs total`);
   console.log(`[sitemap] breakdown: ${JSON.stringify(counts)}`);
+  // Audit (#10): report how many rows were excluded by the quality filters so a
+  // sudden drop (e.g. a bad migration) is visible in the build log.
+  console.log(`[sitemap] quality-filter excluded → services: ${excludedServiceCount}/${services?.length || 0}, mechanics: ${excludedMechanicCount}/${mechanics?.length || 0} (kept as noindex,follow)`);
 
   // IndexNow ping — non-fatal. Bing + Yandex pick up new URLs faster.
   // Skipped on build-time runs (CI doesn't need to ping) unless explicit env flag.

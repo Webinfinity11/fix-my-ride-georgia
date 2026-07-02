@@ -49,6 +49,7 @@ import SEOHead from "@/components/seo/SEOHead";
 import { ServiceSchema, BreadcrumbSchema, ProductSchema, FAQSchema, VideoSchema } from "@/components/seo/StructuredData";
 import { generateServiceOGImage } from "@/utils/ogImageGenerator";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
+import { isServiceIndexable } from "@/utils/seoQuality";
 import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
 import { SaveServiceButton } from "@/components/services/SaveServiceButton";
 import ServiceDetailBanner from "@/components/banners/ServiceDetailBanner";
@@ -485,6 +486,11 @@ const ServiceDetail = () => {
     name: service.name
   });
 
+  // Thin listings (no description AND no photo, or missing category) render
+  // noindex,follow so they don't dilute the sitemap. Keep in sync with the
+  // service quality filter in scripts/generate-sitemap.mjs.
+  const serviceIndexable = isServiceIndexable(service);
+
   // Generate breadcrumb items for SEO
   const breadcrumbItems = [
     { name: 'მთავარი', url: 'https://fixup.ge/' },
@@ -725,6 +731,7 @@ const ServiceDetail = () => {
           url={canonicalUrl}
           canonical={canonicalUrl}
           type="article"
+          noindex={!serviceIndexable}
         />
         
         {/* Rich Product Schema for better Google Rich Results */}

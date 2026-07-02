@@ -189,7 +189,7 @@ const Mechanics = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <SEOHead
         title="ხელოსნები — ავტოხელოსანი"
-        description="იპოვეთ საუკეთესო ხელოსანი საქართველოში. 500+ დადასტურებული ავტოხელოსანი, რეიტინგები, შეფასებები და კონტაქტი."
+        description="იპოვეთ საუკეთესო ხელოსანი საქართველოში. 200+ დადასტურებული ავტოხელოსანი, რეიტინგები, შეფასებები და კონტაქტი."
         keywords="ხელოსანი, ავტოხელოსანი, მექანიკოსი, თბილისი, ბათუმი, ქუთაისი, საქართველო"
         url="https://fixup.ge/mechanic"
         canonical="https://fixup.ge/mechanic"

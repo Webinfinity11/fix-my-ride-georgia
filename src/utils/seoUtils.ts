@@ -2,6 +2,7 @@
 import { ServiceType } from "@/hooks/useServices";
 import { supabase } from '@/integrations/supabase/client';
 import { createSlug, createCategorySlug, createMechanicSlug } from './slugUtils';
+import { SITE_STATS } from '@/config/siteStats';
 
 // Generate meta tags for SEO
 export const generateMetaTags = (
@@ -42,7 +43,7 @@ export const generateStructuredData = (type: string, data: any) => {
         name: 'ავტოხელოსანი',
         url: "https://fixup.ge",
         logo: "https://fixup.ge/fixup-logo.jpg",
-        description: 'საქართველოს უდიდესი ავტოსერვისების პლატფორმა',
+        description: 'საქართველოს სანდო ავტოსერვისების პლატფორმა',
         address: {
           "@type": "PostalAddress",
           addressCountry: "GE",
@@ -243,8 +244,11 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
   switch (pageType) {
     case 'service':
       return `${data.name} - ${data.city || 'საქართველო'} | ${data.mechanic?.name || 'ხელოსანი'} | ავტოხელოსანი`;
-    case 'mechanic':
-      return `${data.name} - ხელოსანი ${data.city || 'საქართველო'}-ში | რეიტინგი ${data.rating}/5 | ავტოხელოსანი`;
+    case 'mechanic': {
+      // Only add rating when a real numeric rating exists (no "null/5").
+      const ratingPart = data.rating ? ` | რეიტინგი ${data.rating}/5` : '';
+      return `${data.name} - ხელოსანი ${data.city || 'საქართველო'}-ში${ratingPart} | ავტოხელოსანი`;
+    }
     case 'category':
       return `${data.name} - ავტოსერვისები საქართველოში | ავტოხელოსანი`;
     case 'services':
@@ -258,7 +262,7 @@ export const generateSEOTitle = (pageType: string, data: any, customTitle?: stri
     case 'insurance':
       return `ავტოდაზღვევა - დააზღვიეთ თქვენი მანქანა საუკეთესო პირობებით | ავტოხელოსანი`;
     case 'home':
-      return `ავტოხელოსანი — საქართველოს #1 ავტოსერვისები`;
+      return `ავტოხელოსანი — ავტოსერვისები და ხელოსნები საქართველოში`;
     default:
       return `${data.title || 'ავტოხელოსანი'} | საქართველოს ავტოსერვისების პლატფორმა`;
   }
@@ -338,12 +342,18 @@ export const generateSEODescription = (pageType: string, data: any, customDescri
       return `${baseText}${description}`;
     }
     
-    case 'mechanic':
-      return `${data.name} - გამოცდილი ხელოსანი ${data.city || 'საქართველო'}-ში. რეიტინგი: ${data.rating}/5 (${data.review_count} შეფასება). ${data.specialization ? `სპეციალიზაცია: ${data.specialization}. ` : ''}დაუკავშირდით ახლავე!`;
+    case 'mechanic': {
+      // Build only from data that actually exists — no "null/5 (undefined შეფასება)".
+      const rt = data.rating && data.review_count
+        ? `რეიტინგი: ${data.rating}/5 (${data.review_count} შეფასება). `
+        : '';
+      const sp = data.specialization ? `სპეციალიზაცია: ${data.specialization}. ` : '';
+      return `${data.name} - გამოცდილი ხელოსანი ${data.city || 'საქართველო'}-ში. ${rt}${sp}დაუკავშირდით ახლავე!`;
+    }
     case 'category':
       return `${data.name} - იპოვეთ საუკეთესო ხელოსნები ${data.name}-ის სფეროში საქართველოში. ხარისხიანი სერვისი, მიმდინარე ფასები, დადასტურებული ხელოსნები.`;
     case 'services':
-      return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. 2500+ ხელოსანი, 15000+ სერვისი, 4.8★ საშუალო რეიტინგი. ჯავშანი ახლავე!`;
+      return `იპოვეთ საუკეთესო ავტოსერვისები საქართველოში. ${SITE_STATS.mechanicsLabel} ხელოსანი, ${SITE_STATS.servicesLabel} სერვისი. მოძებნეთ და დაუკავშირდით ახლავე!`;
     case 'vacancies':
       return `იპოვეთ სამუშაო ავტოსერვისის სფეროში. ხელოსნები ეძებენ კვალიფიციურ თანამშრომლებს. მიმდინარე ვაკანსიები საქართველოს მასშტაბით.`;
     case 'leasing':
@@ -353,7 +363,7 @@ export const generateSEODescription = (pageType: string, data: any, customDescri
     case 'insurance':
       return `ავტომობილის დაზღვევა საქართველოში. სრული და ნაწილობრივი დაზღვევა, ოპტიმალური ფასები, სწრაფი რეგისტრაცია. წამყვანი სადაზღვევო კომპანიები.`;
     case 'home':
-      return `საქართველოს უდიდესი ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში. სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
+      return `საქართველოს ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენს რაიონში — სწრაფი, საიმედო, ხარისხიანი მომსახურება.`;
     default:
       return `ავტოხელოსანი - საქართველოს ავტოსერვისების პლატფორმა. იპოვეთ საუკეთესო ხელოსანი თქვენი მანქანისთვის.`;
   }
@@ -367,7 +377,9 @@ export const generateCanonicalURL = (pageType: string, data: any) => {
     case 'service':
       return `${baseUrl}/service/${data.id}-${data.slug || createSlug(data.name)}`;
     case 'mechanic':
-      return `${baseUrl}/mechanic/${data.display_id || data.id}-${data.slug || createMechanicSlug(data.display_id, data.first_name, data.last_name)}`;
+      // createMechanicSlug ALREADY prefixes the display id ("238-g-wraps").
+      // Do NOT prepend the id again (that produced /mechanic/238-238-g-wraps).
+      return `${baseUrl}/mechanic/${createMechanicSlug(data.display_id, data.first_name, data.last_name)}`;
     case 'category':
       return `${baseUrl}/category/${data.slug || createCategorySlug(data.name)}`;
     case 'services':
