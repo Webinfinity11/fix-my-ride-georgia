@@ -65,6 +65,44 @@ function getCategoryRoutes() {
   }
 }
 
+// Georgian→Latin slug — kept in sync with src/utils/slugUtils.ts.
+const georgianToLatin = {
+  'ა':'a','ბ':'b','გ':'g','დ':'d','ე':'e','ვ':'v','ზ':'z','თ':'t','ი':'i','კ':'k','ლ':'l','მ':'m','ნ':'n','ო':'o','პ':'p','ჟ':'zh','რ':'r','ს':'s','ტ':'t','უ':'u','ფ':'p','ქ':'q','ღ':'gh','ყ':'q','შ':'sh','ჩ':'ch','ც':'ts','ძ':'dz','წ':'ts','ჭ':'ch','ხ':'kh','ჯ':'j','ჰ':'h'
+};
+function createSlug(text) {
+  if (!text) return '';
+  return text.toLowerCase().split('').map(c => georgianToLatin[c] || c).join('')
+    .replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+// Top-N service detail routes: VIP first, then most recent. Uses the public
+// (anon) Supabase key from env. Build-time only — new services added later get
+// full JS-rendered SEO immediately and are prerendered on the next deploy.
+async function getTopServiceRoutes(limit = 100) {
+  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) {
+    console.warn('[prerender] Supabase env missing — skipping service prerender.');
+    return [];
+  }
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(url, key);
+    const { data, error } = await supabase
+      .from('mechanic_services')
+      .select('id, name, slug, is_vip_active, created_at')
+      .eq('is_active', true)
+      .order('is_vip_active', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) { console.warn('[prerender] service query failed:', error.message); return []; }
+    return (data || []).map((s) => `/service/${s.id}-${s.slug || createSlug(s.name)}`);
+  } catch (e) {
+    console.warn('[prerender] service prerender skipped:', e.message);
+    return [];
+  }
+}
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js':   'application/javascript; charset=utf-8',
@@ -155,10 +193,13 @@ async function main() {
 
   let ok = 0, fail = 0;
   const categoryRoutes = getCategoryRoutes();
-  const allRoutes = [...ROUTES, ...categoryRoutes];
-  console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories = ${allRoutes.length}`);
+  const serviceRoutes = await getTopServiceRoutes(100);
+  const allRoutes = [...ROUTES, ...categoryRoutes, ...serviceRoutes];
+  console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories + ${serviceRoutes.length} services = ${allRoutes.length}`);
 
-  for (const route of allRoutes) {
+  // Render a single route (own page). Extracted so we can run a concurrency
+  // pool — sequential prerender of 140+ routes would take ~15 min.
+  const renderRoute = async (route) => {
     const page = await browser.newPage();
     try {
       // Block analytics / external trackers — they may hang networkidle.
@@ -179,8 +220,19 @@ async function main() {
       const url = `http://localhost:${PORT}${route}`;
       await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
 
+      // Wait until react-helmet has flushed the REAL <head> — i.e. the title is
+      // no longer the loading placeholder AND a canonical link exists. Data-heavy
+      // pages (service detail) render the body (H1) before the head settles, so
+      // networkidle alone can capture a stale "იტვირთება…" title.
+      await page
+        .waitForFunction(
+          () => !/იტვირთება/.test(document.title) && !!document.querySelector('link[rel="canonical"]'),
+          { timeout: 8000 }
+        )
+        .catch(() => {});
+
       // Extra settle time so any final Helmet meta updates land.
-      await new Promise((r) => setTimeout(r, 250));
+      await new Promise((r) => setTimeout(r, 300));
 
       let html = await page.content();
 
@@ -239,7 +291,20 @@ async function main() {
     } finally {
       await page.close();
     }
-  }
+  };
+
+  // Concurrency pool — process routes in parallel (bounded).
+  const CONCURRENCY = 5;
+  const queue = [...allRoutes];
+  await Promise.all(
+    Array.from({ length: CONCURRENCY }, async () => {
+      while (queue.length) {
+        const route = queue.shift();
+        if (route === undefined) break;
+        await renderRoute(route);
+      }
+    })
+  );
 
   await browser.close();
   server.close();
