@@ -302,7 +302,7 @@ const Mechanics = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Results Section */}
             {loading ? (
               <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -329,8 +329,8 @@ const Mechanics = () => {
                 {/* Mechanics Grid */}
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {mechanics.slice(0, visibleMechanicsCount).map(mechanic => (
-                    <MechanicCard 
-                      key={mechanic.id} 
+                    <MechanicCard
+                      key={mechanic.id}
                       mechanic={mechanic}
                     />
                   ))}
