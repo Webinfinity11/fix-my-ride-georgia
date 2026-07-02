@@ -851,12 +851,12 @@ const ServiceDetail = () => {
                   <p className="mt-2 text-[14px] md:text-[15px] text-ink-500 leading-relaxed">{seoData.h2_description}</p>
                 )}
                 <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
-                  {/* Actions */}
-                  <div className="flex items-center gap-1.5">
-                    <button type="button" onClick={() => navigate("/services")} className="h-8 px-3 rounded-pill bg-white/80 backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-700 text-[11.5px] font-semibold inline-flex items-center gap-1.5"><ArrowLeft className="h-3.5 w-3.5" />უკან</button>
+                  {/* Actions — min 40px tap targets + spacing for mobile */}
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => navigate("/services")} className="h-10 px-3.5 rounded-pill bg-white/80 backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-700 text-[12px] font-semibold inline-flex items-center gap-1.5"><ArrowLeft className="h-4 w-4" />უკან</button>
                     <SaveServiceButton serviceId={service.id} />
                     <ServiceShareButtons serviceName={service.name} serviceUrl={canonicalUrl} serviceDescription={service.description || undefined} />
-                    <button type="button" onClick={() => setReportOpen(true)} className="h-8 w-8 rounded-pill bg-white/80 hover:bg-white backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-500 grid place-items-center" aria-label="დააფიქსირე პრობლემა"><Flag className="h-3.5 w-3.5" /></button>
+                    <button type="button" onClick={() => setReportOpen(true)} className="h-10 w-10 rounded-pill bg-white/80 hover:bg-white backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-500 grid place-items-center" aria-label="დააფიქსირე პრობლემა"><Flag className="h-4 w-4" /></button>
                   </div>
                   {/* Meta — single line, horizontal scroll with right fade mask */}
                   <div

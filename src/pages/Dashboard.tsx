@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
@@ -111,6 +112,8 @@ const Dashboard = () => {
   try {
     return (
       <div className="min-h-screen flex flex-col">
+        {/* Private area — never index */}
+        <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
         {/* Desktop Header - only show on desktop */}
         <div className="hidden md:block">
           <Header />
