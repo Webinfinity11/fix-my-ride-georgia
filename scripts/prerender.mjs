@@ -40,6 +40,10 @@ const ROUTES = [
   '/about',
   '/contact',
   '/privacy-policy',
+  // Phase A.2 — first dynamic listing page (safe: it's a route folder, not the
+  // root SPA-fallback index.html). Bakes the H1 + services + canonical into
+  // raw HTML for fast LCP + reliable SEO.
+  '/services',
 ];
 
 const MIME = {
