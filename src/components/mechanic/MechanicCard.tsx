@@ -22,7 +22,7 @@ interface MechanicCardProps {
     rating?: number;
     review_count?: number;
     is_mobile?: boolean;
-    working_hours?: any;
+    working_hours?: unknown;
   };
 }
 
@@ -45,7 +45,22 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
     <div className="h-full flex flex-col rounded-2xl border border-gray-200 bg-white p-4">
       <div className="flex items-start gap-3">
         {p.avatar_url ? (
-          <img src={getOptimizedImageUrl(p.avatar_url, 120, 120, 70)} alt={fullName} loading="lazy" className="h-14 w-14 rounded-xl object-cover shrink-0 bg-gray-100" />
+          <img
+            src={getOptimizedImageUrl(p.avatar_url, 160, 160, 70)}
+            alt={fullName}
+            loading="lazy"
+            width={112}
+            height={112}
+            onError={(e) => {
+              // If the transformed thumbnail fails, fall back to the original once.
+              const img = e.currentTarget;
+              if (!img.dataset.fb && p.avatar_url && img.src !== p.avatar_url) {
+                img.dataset.fb = "1";
+                img.src = p.avatar_url;
+              }
+            }}
+            className="h-14 w-14 rounded-xl object-cover shrink-0 bg-gray-100"
+          />
         ) : (
           <div className="h-14 w-14 rounded-xl bg-primary text-white grid place-items-center text-base font-bold shrink-0">{initials || "?"}</div>
         )}

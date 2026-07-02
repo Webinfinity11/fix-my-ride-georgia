@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -33,18 +33,31 @@ const tbilisiDistricts = [
 const Mechanics = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [visibleMechanicsCount, setVisibleMechanicsCount] = useState(12);
+  const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(true);
-  
+
   const {
     mechanics,
     cities,
     districts,
     loading,
+    loadingMore,
+    hasMore,
     fetchInitialData,
     fetchDistricts,
     fetchMechanics,
   } = useMechanics();
+
+  // Filters used by the last executed search — "load more" reuses these.
+  const lastFiltersRef = useRef({
+    searchTerm: "",
+    selectedCity: null as string | null,
+    selectedDistrict: null as string | null,
+    selectedSpecialization: null as string | null,
+    mobileServiceOnly: false,
+    minRating: null as number | null,
+    verifiedOnly: false,
+  });
 
   // Filter states - initialized from URL params
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
@@ -67,24 +80,10 @@ const Mechanics = () => {
     searchParams.get("verified") === "true"
   );
 
-  console.log("🏁 Mechanics component mounted");
-  console.log("🔧 Initial filter states:", {
-    searchTerm,
-    selectedCity,
-    selectedDistrict,
-    selectedSpecialization,
-    mobileServiceOnly,
-    minRating,
-    verifiedOnly
-  });
-
   // Initialize data on component mount
   useEffect(() => {
-    console.log("🚀 Initializing component data...");
-    const initializeData = async () => {
-      await fetchInitialData();
-    };
-    initializeData();
+    fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle districts when city changes.
@@ -101,47 +100,32 @@ const Mechanics = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCity]);
 
-  // Trigger search when any filter changes
+  // Trigger search (page 0) when any filter changes.
   useEffect(() => {
-    console.log("🔄 Filters changed, triggering search...");
-    console.log("📊 Current filter values:", {
-      searchTerm,
-      selectedCity,
-      selectedDistrict,
-      selectedSpecialization,
-      mobileServiceOnly,
-      minRating,
-      verifiedOnly
-    });
-    
-    // Always run — mechanics load must NOT be gated on `cities` (if the cities
-    // list is empty/slow the results would otherwise never load).
     performSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCity, selectedDistrict, selectedSpecialization, mobileServiceOnly, minRating, verifiedOnly]);
 
+  const buildFilters = () => ({
+    searchTerm: searchTerm.trim(),
+    selectedCity,
+    selectedDistrict,
+    selectedSpecialization,
+    mobileServiceOnly,
+    minRating,
+    verifiedOnly,
+  });
+
   const performSearch = async () => {
-    console.log("🔍 Performing search with current filters");
-    
-    const filters = {
-      searchTerm: searchTerm.trim(),
-      selectedCity,
-      selectedDistrict,
-      selectedSpecialization,
-      mobileServiceOnly,
-      minRating,
-      verifiedOnly,
-    };
-    
-    console.log("📋 Search filters:", filters);
-    await fetchMechanics(filters);
+    const filters = buildFilters();
+    lastFiltersRef.current = filters; // remember for "load more"
+    setPage(0);
+    await fetchMechanics(filters, 0);
     updateURL();
   };
 
   const updateURL = () => {
-    console.log("🔗 Updating URL with current filters");
     const params = new URLSearchParams();
-    
     if (searchTerm.trim()) params.set("q", searchTerm.trim());
     if (selectedCity) params.set("city", selectedCity);
     if (selectedDistrict) params.set("district", selectedDistrict);
@@ -149,14 +133,10 @@ const Mechanics = () => {
     if (mobileServiceOnly) params.set("mobile", "true");
     if (minRating) params.set("minRating", minRating.toString());
     if (verifiedOnly) params.set("verified", "true");
-    
-    console.log("🔗 New URL params:", params.toString());
     setSearchParams(params);
   };
 
   const handleResetFilters = async () => {
-    console.log("🧹 Resetting all filters");
-    
     setSearchTerm("");
     setSelectedCity(null);
     setSelectedDistrict(null);
@@ -166,9 +146,7 @@ const Mechanics = () => {
     setVerifiedOnly(false);
     setSearchParams({});
 
-    // Explicitly refetch with empty filters — the auto-search effect no longer
-    // watches searchTerm, so a text-only reset wouldn't otherwise re-trigger.
-    await fetchMechanics({
+    const empty = {
       searchTerm: "",
       selectedCity: null,
       selectedDistrict: null,
@@ -176,18 +154,22 @@ const Mechanics = () => {
       mobileServiceOnly: false,
       minRating: null,
       verifiedOnly: false,
-    });
+    };
+    lastFiltersRef.current = empty;
+    setPage(0);
+    await fetchMechanics(empty, 0);
   };
 
   const handleSearch = async () => {
-    console.log("🚀 Manual search button clicked");
     if (searchTerm.trim()) trackSearch(searchTerm, "mechanics");
     await performSearch();
   };
 
   const loadMoreMechanics = () => {
-    console.log("📄 Loading more mechanics");
-    setVisibleMechanicsCount(prev => prev + 12);
+    const next = page + 1;
+    setPage(next);
+    // Reuse the exact filters from the last executed search (not the live input).
+    fetchMechanics(lastFiltersRef.current, next);
   };
 
   const hasActiveFilters = searchTerm || 
@@ -202,13 +184,6 @@ const Mechanics = () => {
   const availableDistricts = selectedCity === "თბილისი" 
     ? (districts.length > 0 ? districts : tbilisiDistricts)
     : [];
-
-  console.log("📈 Render stats:", {
-    mechanicsCount: mechanics.length,
-    loading,
-    hasActiveFilters,
-    citiesCount: availableCities.length
-  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
@@ -328,7 +303,7 @@ const Mechanics = () => {
                 
                 {/* Mechanics Grid */}
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {mechanics.slice(0, visibleMechanicsCount).map(mechanic => (
+                  {mechanics.map(mechanic => (
                     <MechanicCard
                       key={mechanic.id}
                       mechanic={mechanic}
@@ -336,16 +311,17 @@ const Mechanics = () => {
                   ))}
                 </div>
 
-                {/* Load More Button */}
-                {mechanics.length > visibleMechanicsCount && (
+                {/* Load More Button — server-paginated (or client-revealed while searching) */}
+                {hasMore && (
                   <div className="mt-12 text-center">
                     <Button
                       onClick={loadMoreMechanics}
+                      disabled={loadingMore}
                       variant="outline"
                       size="lg"
                       className="px-8 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors bg-white/80 backdrop-blur-sm"
                     >
-                      მეტის ჩვენება ({mechanics.length - visibleMechanicsCount} დარჩენილი)
+                      {loadingMore ? "იტვირთება..." : "მეტის ჩვენება"}
                     </Button>
                   </div>
                 )}

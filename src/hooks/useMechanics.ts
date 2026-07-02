@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -20,48 +19,98 @@ export type MechanicType = {
   rating?: number;
   review_count?: number;
   is_mobile?: boolean;
-  working_hours?: any;
+  working_hours?: unknown;
   experience_years?: number;
   description?: string;
   verified_at?: string;
 };
+
+type RawProfile = {
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  city?: string;
+  district?: string;
+  avatar_url?: string;
+  is_verified?: boolean;
+};
+type RawMechanicRow = {
+  id: string;
+  display_id?: number;
+  specialization?: string;
+  hourly_rate?: number;
+  rating?: number;
+  review_count?: number;
+  is_mobile?: boolean;
+  working_hours?: unknown;
+  experience_years?: number;
+  description?: string;
+  verified_at?: string;
+  profiles: RawProfile | RawProfile[];
+};
+
+type MechanicFilters = {
+  searchTerm: string;
+  selectedCity: string | null;
+  selectedDistrict: string | null;
+  selectedSpecialization: string | null;
+  mobileServiceOnly: boolean;
+  minRating: number | null;
+  verifiedOnly: boolean;
+};
+
+const PAGE_SIZE = 12;
+
+const SELECT = `
+  id, display_id, specialization, hourly_rate, rating, review_count,
+  is_mobile, working_hours, experience_years, description, verified_at,
+  profiles!inner(first_name, last_name, phone, city, district, avatar_url, is_verified)
+`;
+
+const transformRow = (m: RawMechanicRow): MechanicType => ({
+  id: m.id,
+  display_id: m.display_id,
+  profiles: Array.isArray(m.profiles) ? m.profiles[0] : m.profiles,
+  specialization: m.specialization,
+  hourly_rate: m.hourly_rate,
+  rating: m.rating,
+  review_count: m.review_count,
+  is_mobile: m.is_mobile,
+  working_hours: m.working_hours,
+  experience_years: m.experience_years,
+  description: m.description,
+  verified_at: m.verified_at,
+});
 
 export const useMechanics = () => {
   const [mechanics, setMechanics] = useState<MechanicType[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+
+  // Guard against stale responses overwriting fresh ones when filters change fast.
+  const reqIdRef = useRef(0);
+  // Full client-side search result set (search spans name + specialization +
+  // description, which can't be paginated server-side across the joined table).
+  const searchAllRef = useRef<MechanicType[]>([]);
 
   const fetchInitialData = async () => {
-    console.log("🔄 Fetching initial data...");
     try {
-      // Fetch unique cities from mechanic profiles
-      console.log("🏙️ Fetching cities...");
-      const { data: profilesData, error: profilesError } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("city")
         .eq("role", "mechanic")
         .not("city", "is", null);
-
-      if (profilesError) {
-        console.error("❌ Cities error:", profilesError);
-        // Don't throw here, just log and continue
-      } else {
-        const uniqueCities = Array.from(
-          new Set(profilesData?.map(p => p.city).filter(Boolean) as string[])
-        ).sort();
-        console.log("✅ Cities fetched:", uniqueCities);
-        setCities(uniqueCities);
-      }
-
-    } catch (error: any) {
-      console.error("❌ Error fetching initial data:", error);
-      toast.error("მონაცემების ჩატვირთვისას შეცდომა დაფიქსირდა");
+      if (error) throw error;
+      setCities(Array.from(new Set(data?.map((p) => p.city).filter(Boolean) as string[])).sort());
+    } catch (error) {
+      console.error("Error fetching cities:", error);
     }
   };
 
   const fetchDistricts = async (city: string) => {
-    console.log("🏘️ Fetching districts for city:", city);
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -69,157 +118,95 @@ export const useMechanics = () => {
         .eq("city", city)
         .eq("role", "mechanic")
         .not("district", "is", null);
-
-      if (error) {
-        console.error("❌ Districts error:", error);
-        return;
-      }
-      
-      const uniqueDistricts = Array.from(
-        new Set(data?.map(p => p.district).filter(Boolean) as string[])
-      ).sort();
-      console.log("✅ Districts fetched:", uniqueDistricts);
-      setDistricts(uniqueDistricts);
-    } catch (error: any) {
-      console.error("❌ Error fetching districts:", error);
+      if (error) throw error;
+      setDistricts(Array.from(new Set(data?.map((p) => p.district).filter(Boolean) as string[])).sort());
+    } catch (error) {
+      console.error("Error fetching districts:", error);
     }
   };
 
-  const fetchMechanics = async (filters: {
-    searchTerm: string;
-    selectedCity: string | null;
-    selectedDistrict: string | null;
-    selectedSpecialization: string | null;
-    mobileServiceOnly: boolean;
-    minRating: number | null;
-    verifiedOnly: boolean;
-  }) => {
-    console.log("🔍 Starting fetchMechanics with filters:", filters);
-    setLoading(true);
-    
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const applyFilters = (q: any, filters: MechanicFilters) => {
+    if (filters.selectedCity) q = q.eq("profiles.city", filters.selectedCity);
+    if (filters.selectedDistrict) q = q.eq("profiles.district", filters.selectedDistrict);
+    if (filters.mobileServiceOnly) q = q.eq("is_mobile", true);
+    if (filters.minRating) q = q.gte("rating", filters.minRating);
+    if (filters.verifiedOnly) q = q.not("verified_at", "is", null);
+    if (filters.selectedSpecialization) q = q.eq("specialization", filters.selectedSpecialization);
+    return q;
+  };
+
+  /**
+   * Paginated fetch. page 0 resets the list; page > 0 appends the next chunk.
+   *  - No search term → server-side pagination via .range() (+ exact count).
+   *  - Search term → fetch the matching set once (page 0), client-side search
+   *    across name/specialization/description, then reveal 12 at a time.
+   */
+  const fetchMechanics = async (filters: MechanicFilters, page = 0) => {
+    const myReq = ++reqIdRef.current;
+    const isFirst = page === 0;
+    if (isFirst) setLoading(true); else setLoadingMore(true);
+    const searching = !!filters.searchTerm?.trim();
+
     try {
-      console.log("🚀 Attempting main query...");
-      let query = supabase
-        .from("mechanic_profiles")
-        .select(`
-          id,
-          display_id,
-          specialization,
-          hourly_rate,
-          rating,
-          review_count,
-          is_mobile,
-          working_hours,
-          experience_years,
-          description,
-          verified_at,
-          profiles!inner(
-            first_name,
-            last_name,
-            phone,
-            city,
-            district,
-            avatar_url,
-            is_verified
+      if (searching) {
+        // Client-side search: fetch the full filtered set only on page 0.
+        if (isFirst) {
+          const { data, error } = await applyFilters(
+            supabase.from("mechanic_profiles").select(SELECT),
+            filters
           )
-        `);
+            .order("rating", { ascending: false, nullsFirst: false })
+            .limit(500);
+          if (error) throw error;
+          if (myReq !== reqIdRef.current) return; // stale
 
-      // Apply filters
-      if (filters.selectedCity) {
-        console.log("🏙️ Applying city filter:", filters.selectedCity);
-        query = query.eq("profiles.city", filters.selectedCity);
-      }
+          const term = filters.searchTerm.toLowerCase().trim();
+          searchAllRef.current = (data || []).map(transformRow).filter((m) => {
+            return (
+              m.profiles.first_name?.toLowerCase().includes(term) ||
+              m.profiles.last_name?.toLowerCase().includes(term) ||
+              m.specialization?.toLowerCase().includes(term) ||
+              m.description?.toLowerCase().includes(term)
+            );
+          });
+        }
+        if (myReq !== reqIdRef.current) return;
+        const shown = (page + 1) * PAGE_SIZE;
+        setMechanics(searchAllRef.current.slice(0, shown));
+        setHasMore(searchAllRef.current.length > shown);
+      } else {
+        // Server-side pagination.
+        const from = page * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+        const { data, error, count } = await applyFilters(
+          supabase.from("mechanic_profiles").select(SELECT, { count: "exact" }),
+          filters
+        )
+          .order("rating", { ascending: false, nullsFirst: false })
+          .range(from, to);
+        if (error) throw error;
+        if (myReq !== reqIdRef.current) return; // stale
 
-      if (filters.selectedDistrict) {
-        console.log("🏘️ Applying district filter:", filters.selectedDistrict);
-        query = query.eq("profiles.district", filters.selectedDistrict);
-      }
-
-      if (filters.mobileServiceOnly) {
-        console.log("🚗 Applying mobile service filter");
-        query = query.eq("is_mobile", true);
-      }
-
-      if (filters.minRating) {
-        console.log("⭐ Applying rating filter:", filters.minRating);
-        query = query.gte("rating", filters.minRating);
-      }
-
-      if (filters.verifiedOnly) {
-        console.log("✅ Applying verified filter");
-        query = query.not("verified_at", "is", null);
-      }
-
-      if (filters.selectedSpecialization) {
-        console.log("🔧 Applying specialization filter:", filters.selectedSpecialization);
-        query = query.eq("specialization", filters.selectedSpecialization);
-      }
-
-      // Order by rating descending (fixed the nullsLast error)
-      const { data: mechanicsData, error: mechanicsError } = await query.order("rating", { ascending: false, nullsFirst: false });
-
-      if (mechanicsError) {
-        console.error("❌ Main query failed:", mechanicsError);
-        throw mechanicsError;
-      }
-
-      console.log("✅ Raw mechanics data:", mechanicsData);
-
-      if (!mechanicsData) {
-        console.log("⚠️ No mechanics data returned");
-        setMechanics([]);
-        return;
-      }
-
-      // Transform the data
-      let transformedMechanics: MechanicType[] = mechanicsData.map(mechanic => ({
-        id: mechanic.id,
-        display_id: mechanic.display_id,
-        profiles: Array.isArray(mechanic.profiles) ? mechanic.profiles[0] : mechanic.profiles,
-        specialization: mechanic.specialization,
-        hourly_rate: mechanic.hourly_rate,
-        rating: mechanic.rating,
-        review_count: mechanic.review_count,
-        is_mobile: mechanic.is_mobile,
-        working_hours: mechanic.working_hours,
-        experience_years: mechanic.experience_years,
-        description: mechanic.description,
-        verified_at: mechanic.verified_at,
-      }));
-
-      // Enhanced client-side search filtering
-      if (filters.searchTerm && filters.searchTerm.trim()) {
-        const searchLower = filters.searchTerm.toLowerCase().trim();
-        console.log("🔍 Applying enhanced client-side search for:", searchLower);
-        
-        transformedMechanics = transformedMechanics.filter(mechanic => {
-          // Search in first name
-          const firstNameMatch = mechanic.profiles.first_name?.toLowerCase().includes(searchLower);
-          
-          // Search in last name
-          const lastNameMatch = mechanic.profiles.last_name?.toLowerCase().includes(searchLower);
-          
-          // Search in specialization
-          const specializationMatch = mechanic.specialization?.toLowerCase().includes(searchLower);
-          
-          // Search in description
-          const descriptionMatch = mechanic.description?.toLowerCase().includes(searchLower);
-          
-          return firstNameMatch || lastNameMatch || specializationMatch || descriptionMatch;
+        const rows = (data || []).map(transformRow);
+        setMechanics((prev) => {
+          if (isFirst) return rows;
+          const seen = new Set(prev.map((m) => m.id));
+          return [...prev, ...rows.filter((m) => !seen.has(m.id))];
         });
-        
-        console.log("✅ Enhanced search results:", transformedMechanics.length);
+        setHasMore(from + rows.length < (count ?? 0));
       }
-
-      console.log("✅ Final transformed mechanics:", transformedMechanics);
-      setMechanics(transformedMechanics);
-      
-    } catch (error: any) {
-      console.error("❌ Error fetching mechanics:", error);
-      toast.error("ხელოსნების ჩატვირთვისას შეცდომა დაფიქსირდა");
-      setMechanics([]);
+    } catch (error) {
+      console.error("Error fetching mechanics:", error);
+      if (isFirst) {
+        toast.error("ხელოსნების ჩატვირთვისას შეცდომა დაფიქსირდა");
+        setMechanics([]);
+        setHasMore(false);
+      }
     } finally {
-      setLoading(false);
+      if (myReq === reqIdRef.current) {
+        if (isFirst) setLoading(false); else setLoadingMore(false);
+      }
     }
   };
 
@@ -228,6 +215,8 @@ export const useMechanics = () => {
     cities,
     districts,
     loading,
+    loadingMore,
+    hasMore,
     fetchInitialData,
     fetchDistricts,
     fetchMechanics,
