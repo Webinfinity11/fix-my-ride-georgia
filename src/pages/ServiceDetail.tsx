@@ -54,6 +54,7 @@ import { SaveServiceButton } from "@/components/services/SaveServiceButton";
 import ServiceDetailBanner from "@/components/banners/ServiceDetailBanner";
 import { RelatedBlogPosts, MechanicOtherServices } from "@/components/seo/InternalLinkWidgets";
 import { PhoneRevealDialog } from "@/components/services/PhoneRevealDialog";
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 
 interface ServiceType {
   id: number;
@@ -865,7 +866,7 @@ const ServiceDetail = () => {
                 <div className="col-span-12 lg:col-span-8">
                   <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-ink-200/60 bg-ink-100 shadow-card group">
                     {hasPhotos ? (
-                      <img src={photos[idx]} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
+                      <img src={getOptimizedImageUrl(photos[idx], 900, 560, 75)} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
                     ) : (
                       <div className="absolute inset-0 grid place-items-center text-ink-300"><Image className="h-14 w-14" /></div>
                     )}
@@ -884,7 +885,7 @@ const ServiceDetail = () => {
                       <div className="absolute left-3 right-3 bottom-3 flex gap-1.5">
                         {photos.slice(0, 6).map((g, i) => (
                           <button key={i} type="button" onClick={() => setActiveImg(i)} className={`relative flex-1 h-12 rounded-lg overflow-hidden ring-2 transition ${i === idx ? "ring-accent-500" : "ring-white/70 hover:ring-white"}`}>
-                            <img src={g} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                            <img src={getOptimizedImageUrl(g, 160, 120, 60)} alt="" className="absolute inset-0 h-full w-full object-cover" />
                             {i !== idx && <span className="absolute inset-0 bg-ink-950/35" />}
                           </button>
                         ))}
@@ -1075,7 +1076,7 @@ const ServiceDetail = () => {
               <div className="relative w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
                 <button type="button" onClick={() => setLightbox(false)} className="absolute -top-12 right-0 h-10 px-3 rounded-pill bg-white text-ink-900 inline-flex items-center gap-2 text-[12px] font-semibold border border-ink-200"><X className="h-4 w-4" />დახურვა</button>
                 <div className="rounded-2xl overflow-hidden bg-white border border-ink-200">
-                  <img src={photos[idx]} alt={service.name} className="w-full max-h-[640px] object-contain bg-ink-50" />
+                  <img src={getOptimizedImageUrl(photos[idx], 1400, 1000, 82)} alt={service.name} className="w-full max-h-[640px] object-contain bg-ink-50" />
                 </div>
               </div>
             </div>

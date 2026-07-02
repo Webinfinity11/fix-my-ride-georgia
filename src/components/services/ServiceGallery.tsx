@@ -127,7 +127,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
 
             <div className="w-full h-full flex items-center justify-center p-4">
               <img
-                src={photos[currentImageIndex]}
+                src={getOptimizedImageUrl(photos[currentImageIndex], 1400, 1000, 82)}
                 alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
                 className="max-w-full max-h-full object-contain"
               />
