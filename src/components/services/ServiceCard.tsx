@@ -159,32 +159,30 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
         </div>
 
         <div className="p-4 space-y-3">
-          {/* Header - Title is now clickable */}
-          <div className="space-y-2">
-            <div className="flex items-start justify-between gap-2">
-              <h3
-                className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-2 cursor-pointer flex-1"
-                onClick={handleViewDetails}
-              >
+          {/* Header — name on its own line (single-line, horizontal scroll with
+              right fade if long); category on the line below (same behaviour). */}
+          <div className="space-y-1.5">
+            <div
+              onClick={handleViewDetails}
+              className="overflow-x-auto cursor-pointer [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ maskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)" }}
+            >
+              <h3 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors whitespace-nowrap">
                 {service.name}
               </h3>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {/* აქ VIP ბეიჯი აღარ ჩანს — რადგან გადავიტანეთ ფოტოზე */}
-                {service.category && (
-                  <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20">
-                    {service.category.name}
-                  </Badge>
-                )}
-              </div>
             </div>
+            {service.category && (
+              <div
+                className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                style={{ maskImage: "linear-gradient(to right, black 0%, black 92%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, black 0%, black 92%, transparent 100%)" }}
+              >
+                <Badge variant="outline" className="text-xs bg-primary/5 text-primary border-primary/20 whitespace-nowrap">
+                  {service.category.name}
+                </Badge>
+              </div>
+            )}
 
             {service.description && <p className="text-sm text-gray-600 line-clamp-2">{service.description}</p>}
-          </div>
-
-          {/* Location */}
-          <div className="flex items-start text-sm text-gray-600">
-            <MapPin className="w-4 h-4 mr-1 text-primary flex-shrink-0 mt-0.5" />
-            <span className="line-clamp-2">{formatLocation()}</span>
           </div>
 
           {/* Mechanic Info */}
@@ -208,26 +206,21 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
             </Button>
           </div>
 
-          {/* Features */}
-          <div className="flex flex-wrap gap-2">
+          {/* Features + location (moved here from above, in place of the
+              removed payment badges) */}
+          <div className="space-y-2">
             {service.on_site_service && (
-              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
-                <Car className="w-3 h-3 mr-1" />
-                ადგილზე მისვლა
-              </Badge>
+              <div>
+                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                  <Car className="w-3 h-3 mr-1" />
+                  ადგილზე მისვლა
+                </Badge>
+              </div>
             )}
-            {service.accepts_card_payment && (
-              <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                <CreditCard className="w-3 h-3 mr-1" />
-                ბარათი
-              </Badge>
-            )}
-            {service.accepts_cash_payment && (
-              <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-800">
-                <Banknote className="w-3 h-3 mr-1" />
-                ნაღდი
-              </Badge>
-            )}
+            <div className="flex items-start text-sm text-gray-600">
+              <MapPin className="w-4 h-4 mr-1 text-primary flex-shrink-0 mt-0.5" />
+              <span className="line-clamp-2">{formatLocation()}</span>
+            </div>
           </div>
 
           {/* Action Buttons */}
