@@ -12,6 +12,8 @@ import ServicesPageBanner from "@/components/banners/ServicesPageBanner";
 import { useServices } from "@/hooks/useServices";
 import { RefreshCw } from "lucide-react";
 import SEOHead from "@/components/seo/SEOHead";
+import { CollectionPageSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
+import { createSlug } from "@/utils/slugUtils";
 import { trackSearch } from "@/utils/tracking";
 
 // საქართველოს მთავარი ქალაქები
@@ -266,6 +268,21 @@ const ServicesDetail = () => {
       url="https://fixup.ge/services"
       canonical="https://fixup.ge/services"
     />
+    <CollectionPageSchema
+      name="ავტოსერვისები საქართველოში"
+      description="დაათვალიერე ავტოსერვისები ფილტრებით: კატეგორია, ქალაქი, ფასი, რეიტინგი."
+      numberOfItems={sortedServices.length}
+      itemList={sortedServices.slice(0, 20).map((s) => ({
+        name: s.name,
+        url: `https://fixup.ge/service/${s.id}-${createSlug(s.name)}`,
+        image: s.photos?.[0],
+        price: s.price_from || undefined,
+      }))}
+    />
+    <BreadcrumbSchema items={[
+      { name: "მთავარი", url: "https://fixup.ge/" },
+      { name: "სერვისები", url: "https://fixup.ge/services" },
+    ]} />
     <Layout>
       <div className="py-4 md:py-8">
         <div className="container mx-auto px-4">
