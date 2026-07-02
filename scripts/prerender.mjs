@@ -25,7 +25,7 @@
 // Rollback: remove `"postbuild"` line from package.json.
 
 import { writeFile, mkdir, stat } from 'node:fs/promises';
-import { createReadStream, existsSync, statSync } from 'node:fs';
+import { createReadStream, existsSync, statSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
@@ -45,6 +45,25 @@ const ROUTES = [
   // raw HTML for fast LCP + reliable SEO.
   '/services',
 ];
+
+// Read PARENT category routes (/category/<slug>, no district segment) from the
+// already-generated category-sitemap.xml. Keeps the exact slugs the sitemap
+// computed — no DB/slug duplication here. District variants are intentionally
+// excluded (too many to prerender every build).
+function getCategoryRoutes() {
+  try {
+    const xmlPath = join(DIST, 'category-sitemap.xml');
+    if (!existsSync(xmlPath)) return [];
+    const xml = readFileSync(xmlPath, 'utf8');
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    const routes = locs
+      .map((u) => { try { return new URL(u).pathname; } catch { return null; } })
+      .filter((p) => p && /^\/category\/[^/]+$/.test(p)); // parent only
+    return [...new Set(routes)];
+  } catch {
+    return [];
+  }
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -135,7 +154,11 @@ async function main() {
   }
 
   let ok = 0, fail = 0;
-  for (const route of ROUTES) {
+  const categoryRoutes = getCategoryRoutes();
+  const allRoutes = [...ROUTES, ...categoryRoutes];
+  console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories = ${allRoutes.length}`);
+
+  for (const route of allRoutes) {
     const page = await browser.newPage();
     try {
       // Block analytics / external trackers — they may hang networkidle.
