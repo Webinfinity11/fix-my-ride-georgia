@@ -82,10 +82,13 @@ export const useVIPServices = (limit: number = 10) => {
               rating
             )
           `)
-          .eq("is_vip_active", true)
+          // Show every service that has EVER been VIP (any tier), not only the
+          // currently-active ones — the homepage "VIP / recommended" showcase
+          // should stay full. Active VIPs are ordered first, then previously-VIP.
           .eq("is_active", true)
           .not("vip_status", "is", null)
-          .order("vip_status", { ascending: true }) // super_vip comes before vip alphabetically
+          .order("is_vip_active", { ascending: false, nullsFirst: false })
+          .order("vip_status", { ascending: true }) // super_vip vs vip resolved client-side below
           .limit(limit);
 
         if (fetchError) throw fetchError;
@@ -126,12 +129,10 @@ export const useVIPServices = (limit: number = 10) => {
           },
         }));
 
-        // Sort super_vip first
-        const sortedData = transformedData.sort((a, b) => {
-          if (a.vip_status === "super_vip" && b.vip_status !== "super_vip") return -1;
-          if (a.vip_status !== "super_vip" && b.vip_status === "super_vip") return 1;
-          return 0;
-        });
+        // Order: active super_vip → active vip → previously-VIP super_vip → vip.
+        const rank = (s: VIPService) =>
+          (s.is_vip_active ? 0 : 2) + (s.vip_status === "super_vip" ? 0 : 1);
+        const sortedData = [...transformedData].sort((a, b) => rank(a) - rank(b));
 
         setServices(sortedData);
       } catch (err: any) {

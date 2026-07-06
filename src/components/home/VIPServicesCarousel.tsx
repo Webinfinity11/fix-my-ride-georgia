@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const VIPServicesCarousel = () => {
   const navigate = useNavigate();
-  const { services, loading, error } = useVIPServices(10);
+  const { services, loading, error } = useVIPServices(30);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
