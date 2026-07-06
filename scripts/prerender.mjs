@@ -290,6 +290,13 @@ async function main() {
         }
       }
 
+      // Restore the non-blocking font-loading trick. index.html ships the
+      // Google Fonts stylesheet as `media="print" onload="this.media='all'"`
+      // (loads without blocking render). Puppeteer FIRES that onload before we
+      // snapshot, so the captured HTML has `media="all"` — i.e. render-blocking
+      // again. Reset it so prerendered pages keep the fast path.
+      html = html.replace(/media="all"(\s+onload="this\.media='all'")/g, 'media="print"$1');
+
       // Minimal sanity check — abort if shell is empty (something broke).
       if (!html.includes('<div id="root">') || html.length < 5000) {
         throw new Error(`output looks broken (${html.length} bytes)`);

@@ -66,6 +66,10 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Inject the service-worker registration as a deferred external script so
+      // it doesn't sit render-blocking in <head> (PSI: "render-blocking
+      // requests"). SW registration is not needed for first paint.
+      injectRegister: 'script-defer',
       includeAssets: ['icons/service-pin.png', 'fixup-logo.jpg'],
       manifest: {
         name: 'FixUp - ავტოსერვისების პლატფორმა',
