@@ -34,6 +34,13 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // clsx + tailwind-merge + cva power the `cn()` helper used by almost
+          // every component (eager graph). They MUST live in their own tiny
+          // chunk — otherwise Rollup folds clsx into charts-vendor (recharts
+          // also depends on it), and the eager entry then statically imports
+          // the whole ~384KB charts chunk just to get clsx. Keeping them here
+          // makes charts-vendor truly lazy-only (homepage no longer downloads it).
+          'utils-vendor': ['clsx', 'tailwind-merge', 'class-variance-authority'],
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select'],
           'query-vendor': ['@tanstack/react-query'],
           'form-vendor': ['react-hook-form', 'zod'],
@@ -42,7 +49,7 @@ export default defineConfig(({ mode }) => ({
           'embla': ['embla-carousel-react'],
           'helmet': ['react-helmet-async'],
           // recharts pulled in by FuelPriceHistory + admin charts; split out so
-          // pages that don't use it don't pay the ~150KB tax.
+          // pages that don't use it don't pay the ~384KB tax.
           'charts-vendor': ['recharts'],
           'date-vendor': ['date-fns'],
         },
