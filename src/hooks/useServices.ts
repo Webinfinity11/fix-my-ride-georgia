@@ -47,12 +47,46 @@ export type ServiceCategory = {
   name: string;
 };
 
+export type ServiceSortOption =
+  | "newest"
+  | "oldest"
+  | "price_low"
+  | "price_high"
+  | "rating"
+  | "popular";
+
+export type ServiceFilters = {
+  searchTerm: string;
+  selectedCategory: number | "all";
+  selectedCity: string | null;
+  selectedDistrict: string | null;
+  selectedBrands: string[];
+  onSiteOnly: boolean;
+  minRating: number | null;
+  sortBy?: ServiceSortOption;
+};
+
+const PAGE_SIZE = 24;
+
+// Chosen sort → (column, ascending). VIP tier always ranks above these.
+const SORT_MAP: Record<ServiceSortOption, [string, boolean]> = {
+  newest: ["created_at", false],
+  oldest: ["created_at", true],
+  price_low: ["price_from", true],
+  price_high: ["price_to", false],
+  rating: ["rating", false],
+  popular: ["review_count", false],
+};
+
 export const useServices = () => {
   const [services, setServices] = useState<ServiceType[]>([]);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
   const fetchInitialData = async () => {
     console.log("🔄 Fetching initial data...");
@@ -122,23 +156,19 @@ export const useServices = () => {
     }
   };
 
-  const fetchServices = async (filters: {
-    searchTerm: string;
-    selectedCategory: number | "all";
-    selectedCity: string | null;
-    selectedDistrict: string | null;
-    selectedBrands: string[];
-    onSiteOnly: boolean;
-    minRating: number | null;
-  }) => {
-    console.log("🔍 Starting fetchServices with filters:", filters);
-    setLoading(true);
-    
+  // Server-side paginated fetch. Previously this pulled EVERY active service
+  // (~1MB) so text search / brand filter / VIP sort could run client-side;
+  // that's now all done in the query and only one page (PAGE_SIZE) is fetched.
+  // `page` 0 replaces the list; higher pages append ("load more").
+  const fetchServices = async (filters: ServiceFilters, page = 0) => {
+    if (page === 0) setLoading(true);
+    else setLoadingMore(true);
+
     try {
-      console.log("🚀 Attempting main query...");
       let query = (supabase as any)
         .from("mechanic_services")
-        .select(`
+        .select(
+          `
           id,
           name,
           slug,
@@ -165,79 +195,74 @@ export const useServices = () => {
           is_vip_active,
           created_at,
           service_categories(id, name)
-        `)
+        `,
+          { count: "exact" },
+        )
         .eq("is_active", true);
 
-      // Enhanced search - Apply search term filtering only if provided
-      if (filters.searchTerm && filters.searchTerm.trim()) {
-        console.log("🔎 Applying enhanced search term:", filters.searchTerm);
-        // We'll do the enhanced search client-side to include categories and mechanic data
-      }
-
-      // Apply other filters
+      // Structured filters
       if (filters.selectedCategory && filters.selectedCategory !== "all") {
-        console.log("📂 Applying category filter:", filters.selectedCategory);
         query = query.eq("category_id", filters.selectedCategory);
       }
+      if (filters.selectedCity) query = query.eq("city", filters.selectedCity);
+      if (filters.selectedDistrict) query = query.eq("district", filters.selectedDistrict);
+      if (filters.onSiteOnly) query = query.eq("on_site_service", true);
+      if (filters.minRating) query = query.gte("rating", filters.minRating);
 
-      if (filters.selectedCity) {
-        console.log("🏙️ Applying city filter:", filters.selectedCity);
-        query = query.eq("city", filters.selectedCity);
+      // Brand filter — server-side overlap for specific brands. The "სხვა"
+      // (other = any brand not in the popular list) option can't be expressed
+      // as a single PostgREST filter, so when it's the ONLY selection we don't
+      // constrain by brand (rare).
+      const specificBrands = filters.selectedBrands.filter((b) => b !== "სხვა");
+      if (specificBrands.length > 0) {
+        query = query.overlaps("car_brands", specificBrands);
       }
 
-      if (filters.selectedDistrict) {
-        console.log("🏘️ Applying district filter:", filters.selectedDistrict);
-        query = query.eq("district", filters.selectedDistrict);
+      // Text search — service name + description, plus any category whose name
+      // matches (categories are already loaded in state). Strip characters that
+      // would break PostgREST's or() filter grammar.
+      const term = filters.searchTerm?.trim();
+      if (term) {
+        const safe = term.replace(/[,()]/g, " ").trim();
+        const matchingCatIds = categories
+          .filter((c) => c.name.toLowerCase().includes(safe.toLowerCase()))
+          .map((c) => c.id);
+        const ors = [`name.ilike.%${safe}%`, `description.ilike.%${safe}%`];
+        if (matchingCatIds.length > 0) ors.push(`category_id.in.(${matchingCatIds.join(",")})`);
+        query = query.or(ors.join(","));
       }
 
-      if (filters.onSiteOnly) {
-        console.log("🚗 Applying on-site filter");
-        query = query.eq("on_site_service", true);
+      // Ordering: active VIP first (super_vip → vip → none), then chosen sort.
+      // is_vip_active is maintained by the daily expire_vip_services cron.
+      const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "newest"];
+      query = query
+        .order("is_vip_active", { ascending: false, nullsFirst: false })
+        .order("vip_status", { ascending: true, nullsFirst: false })
+        .order(sortCol, { ascending: sortAsc, nullsFirst: false });
+
+      // Pagination
+      const from = page * PAGE_SIZE;
+      query = query.range(from, from + PAGE_SIZE - 1);
+
+      const { data: servicesData, error: servicesError, count } = await query;
+      if (servicesError) throw servicesError;
+
+      const rows = (servicesData ?? []) as any[];
+
+      // Fetch mechanic profiles for THIS page only (cheap — <= PAGE_SIZE ids).
+      const mechanicIds = [...new Set(rows.map((s) => s.mechanic_id))] as string[];
+      let mechanicsData: any[] = [];
+      if (mechanicIds.length > 0) {
+        const { data: md, error: mechanicsError } = await supabase
+          .from("profiles")
+          .select(`id, first_name, last_name, phone, mechanic_profiles(display_id, rating)`)
+          .in("id", mechanicIds);
+        if (mechanicsError) console.error("Mechanics query failed:", mechanicsError);
+        mechanicsData = md ?? [];
       }
-
-      if (filters.minRating) {
-        console.log("⭐ Applying rating filter:", filters.minRating);
-        query = query.gte("rating", filters.minRating);
-      }
-
-      const { data: servicesData, error: servicesError } = await query.order("created_at", { ascending: false });
-
-      if (servicesError) {
-        console.error("❌ Main query failed:", servicesError);
-        throw servicesError;
-      }
-
-      console.log("✅ Raw services data:", servicesData);
-
-      if (!servicesData) {
-        console.log("⚠️ No services data returned");
-        setServices([]);
-        return;
-      }
-
-      // Now fetch mechanic profiles separately
-      console.log("👨‍🔧 Fetching mechanic profiles...");
-      const mechanicIds = [...new Set(servicesData.map(s => s.mechanic_id))] as string[];
-      
-      const { data: mechanicsData, error: mechanicsError } = await supabase
-        .from("profiles")
-        .select(`
-          id,
-          first_name,
-          last_name,
-          phone,
-          mechanic_profiles(display_id, rating)
-        `)
-        .in("id", mechanicIds);
-
-      if (mechanicsError) {
-        console.error("❌ Mechanics query failed:", mechanicsError);
-      }
-
-      console.log("✅ Mechanics data:", mechanicsData);
 
       // Transform the data
-      let transformedServices: ServiceType[] = servicesData.map(service => {
+      let transformedServices: ServiceType[] = rows.map((service) => {
         const mechanic = mechanicsData?.find(m => m.id === service.mechanic_id);
         const mechanicProfile = Array.isArray(mechanic?.mechanic_profiles) 
           ? mechanic.mechanic_profiles[0] 
@@ -305,84 +330,18 @@ export const useServices = () => {
         return service;
       });
 
-      // Enhanced client-side search filtering
-      if (filters.searchTerm && filters.searchTerm.trim()) {
-        const searchLower = filters.searchTerm.toLowerCase().trim();
-        console.log("🔍 Applying enhanced client-side search for:", searchLower);
-        
-        transformedServices = transformedServices.filter(service => {
-          // Search in service name
-          const nameMatch = service.name?.toLowerCase().includes(searchLower);
-          
-          // Search in service description
-          const descriptionMatch = service.description?.toLowerCase().includes(searchLower);
-          
-          // Search in category name
-          const categoryMatch = service.category?.name?.toLowerCase().includes(searchLower);
-          
-          // Search in mechanic first name
-          const mechanicFirstNameMatch = service.mechanic.first_name?.toLowerCase().includes(searchLower);
-          
-          // Search in mechanic last name
-          const mechanicLastNameMatch = service.mechanic.last_name?.toLowerCase().includes(searchLower);
-          
-          // Search in mechanic phone (remove spaces and special characters for phone search)
-          const phoneMatch = service.mechanic.phone?.replace(/[\s\-\(\)]/g, '').includes(searchLower.replace(/[\s\-\(\)]/g, ''));
-          
-          // Search in car brands
-          const carBrandMatch = service.car_brands?.some(brand => brand.toLowerCase().includes(searchLower));
-          
-          return nameMatch || descriptionMatch || categoryMatch || mechanicFirstNameMatch || mechanicLastNameMatch || phoneMatch || carBrandMatch;
-        });
-        
-        console.log("✅ Enhanced search results:", transformedServices.length);
-      }
-
-      // Filter by car brands (client-side filtering)
-      if (filters.selectedBrands.length > 0) {
-        console.log("🚗 Applying brand filters:", filters.selectedBrands);
-        const popularBrands = ["BMW", "Mercedes-Benz", "Audi", "Toyota", "Honda", "Nissan", "Hyundai", 
-          "Kia", "Volkswagen", "Ford", "Chevrolet", "Mazda", "Subaru", "Lexus",
-          "Infiniti", "Acura", "Jeep", "Land Rover", "Porsche"];
-
-        transformedServices = transformedServices.filter(service => 
-          service.car_brands && 
-          filters.selectedBrands.some(brand => 
-            service.car_brands?.includes(brand) || 
-            (brand === "სხვა" && service.car_brands?.some(b => 
-              !popularBrands.includes(b)
-            ))
-          )
-        );
-      }
-
-      // Sort services with VIP prioritization (only active VIP)
-      transformedServices.sort((a, b) => {
-        // Only consider active VIP
-        const aIsVIP = a.is_vip_active && a.vip_status;
-        const bIsVIP = b.is_vip_active && b.vip_status;
-        
-        // Super VIP services go first
-        if (aIsVIP && a.vip_status === 'super_vip' && (!bIsVIP || b.vip_status !== 'super_vip')) return -1;
-        if (bIsVIP && b.vip_status === 'super_vip' && (!aIsVIP || a.vip_status !== 'super_vip')) return 1;
-        
-        // Regular VIP services go next
-        if (aIsVIP && a.vip_status === 'vip' && !bIsVIP) return -1;
-        if (bIsVIP && b.vip_status === 'vip' && !aIsVIP) return 1;
-        
-        // Within each tier, sort by rating
-        return (b.rating || 0) - (a.rating || 0);
-      });
-
-      console.log("✅ Final transformed and sorted services:", transformedServices);
-      setServices(transformedServices);
-      
+      setTotalCount(count ?? 0);
+      setHasMore(from + rows.length < (count ?? 0));
+      setServices((prev) =>
+        page === 0 ? transformedServices : [...prev, ...transformedServices],
+      );
     } catch (error: any) {
-      console.error("❌ Error fetching services:", error);
+      console.error("Error fetching services:", error);
       toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
-      setServices([]);
+      if (page === 0) setServices([]);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -392,6 +351,9 @@ export const useServices = () => {
     cities,
     districts,
     loading,
+    loadingMore,
+    totalCount,
+    hasMore,
     fetchInitialData,
     fetchDistricts,
     fetchServices,

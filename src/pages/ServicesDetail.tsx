@@ -56,11 +56,22 @@ const tbilisiDistricts = [
 type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | "popular";
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [visibleServicesCount, setVisibleServicesCount] = useState(12);
+  const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(false);
-  const { services, categories, cities, districts, loading, fetchInitialData, fetchDistricts, fetchServices } =
-    useServices();
+  const {
+    services,
+    categories,
+    cities,
+    districts,
+    loading,
+    loadingMore,
+    totalCount,
+    hasMore,
+    fetchInitialData,
+    fetchDistricts,
+    fetchServices,
+  } = useServices();
 
   // Filter states - initialized from URL params
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
@@ -123,16 +134,12 @@ const ServicesDetail = () => {
       minRating,
     });
     if (categories.length > 0) {
-      // Wait for initial data to load
-      console.log("✅ Categories loaded, performing search");
+      // Wait for initial data to load, then fetch page 0 with current sort.
       performSearch();
-    } else {
-      console.log("⏳ Waiting for categories to load...");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, categories]);
+  }, [selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, sortBy, categories]);
   const performSearch = async () => {
-    console.log("🔍 Performing search with current filters");
     const filters = {
       searchTerm: searchTerm.trim(),
       selectedCategory,
@@ -141,9 +148,10 @@ const ServicesDetail = () => {
       selectedBrands,
       onSiteOnly,
       minRating,
+      sortBy,
     };
-    console.log("📋 Search filters:", filters);
-    await fetchServices(filters);
+    setPage(0);
+    await fetchServices(filters, 0);
     updateURL();
   };
   const updateURL = (term: string = searchTerm) => {
@@ -163,6 +171,7 @@ const ServicesDetail = () => {
   const handleClearSearch = async () => {
     console.log("❌ Clearing search term");
     setSearchTerm("");
+    setPage(0);
     await fetchServices({
       searchTerm: "",
       selectedCategory,
@@ -171,7 +180,8 @@ const ServicesDetail = () => {
       selectedBrands,
       onSiteOnly,
       minRating,
-    });
+      sortBy,
+    }, 0);
     updateURL("");
   };
   const handleResetFilters = async () => {
@@ -184,6 +194,7 @@ const ServicesDetail = () => {
     setOnSiteOnly(false);
     setMinRating(null);
     setSearchParams({});
+    setPage(0);
     // Explicitly refetch with empty filters — state updates are async, and the
     // auto-search effect no longer watches searchTerm, so a text-only reset
     // wouldn't otherwise re-trigger a search.
@@ -195,50 +206,32 @@ const ServicesDetail = () => {
       selectedBrands: [],
       onSiteOnly: false,
       minRating: null,
-    });
+      sortBy,
+    }, 0);
   };
   const handleSearch = async () => {
     console.log("🚀 Manual search button clicked");
     if (searchTerm.trim()) trackSearch(searchTerm, "services");
     await performSearch();
   };
-  const sortServices = (services: any[]) => {
-    console.log("📊 Sorting services by:", sortBy);
-    const vipRank = (s: any) => {
-      if (!s?.is_vip_active) return 2;
-      if (s.vip_status === "super_vip") return 0;
-      if (s.vip_status === "vip") return 1;
-      return 2;
-    };
-    return [...services].sort((a, b) => {
-      // Always show super_vip first, then vip, regardless of chosen sort
-      const rankDiff = vipRank(a) - vipRank(b);
-      if (rankDiff !== 0) return rankDiff;
-      switch (sortBy) {
-        case "newest":
-          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-        case "oldest":
-          return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
-        case "price_low":
-          const aPrice = a.price_from || a.price_to || 0;
-          const bPrice = b.price_from || b.price_to || 0;
-          return aPrice - bPrice;
-        case "price_high":
-          const aPriceHigh = a.price_to || a.price_from || 0;
-          const bPriceHigh = b.price_to || b.price_from || 0;
-          return bPriceHigh - aPriceHigh;
-        case "rating":
-          return (b.rating || 0) - (a.rating || 0);
-        case "popular":
-          return (b.review_count || 0) - (a.review_count || 0);
-        default:
-          return 0;
-      }
-    });
-  };
+  // Fetch the next page and append (results come back already ordered from the
+  // server: active VIP first, then the chosen sort).
   const loadMoreServices = () => {
-    console.log("📄 Loading more services");
-    setVisibleServicesCount((prev) => prev + 12);
+    const next = page + 1;
+    setPage(next);
+    fetchServices(
+      {
+        searchTerm: searchTerm.trim(),
+        selectedCategory,
+        selectedCity,
+        selectedDistrict,
+        selectedBrands,
+        onSiteOnly,
+        minRating,
+        sortBy,
+      },
+      next,
+    );
   };
   const hasActiveFilters =
     searchTerm ||
@@ -248,17 +241,8 @@ const ServicesDetail = () => {
     selectedBrands.length > 0 ||
     onSiteOnly ||
     minRating;
-  const sortedServices = sortServices(services);
   const availableCities = cities.length > 0 ? cities : georgianCities;
   const availableDistricts = selectedCity === "თბილისი" ? (districts.length > 0 ? districts : tbilisiDistricts) : [];
-  console.log("📈 Render stats:", {
-    servicesCount: services.length,
-    sortedServicesCount: sortedServices.length,
-    loading,
-    hasActiveFilters,
-    categoriesCount: categories.length,
-    citiesCount: availableCities.length,
-  });
   return (
     <>
     <SEOHead
@@ -271,8 +255,8 @@ const ServicesDetail = () => {
     <CollectionPageSchema
       name="ავტოსერვისები საქართველოში"
       description="დაათვალიერე ავტოსერვისები ფილტრებით: კატეგორია, ქალაქი, ფასი, რეიტინგი."
-      numberOfItems={sortedServices.length}
-      itemList={sortedServices.slice(0, 20).map((s) => ({
+      numberOfItems={totalCount}
+      itemList={services.slice(0, 20).map((s) => ({
         name: s.name,
         url: `https://fixup.ge/service/${s.id}-${createSlug(s.name)}`,
         image: s.photos?.[0],
@@ -349,13 +333,13 @@ const ServicesDetail = () => {
                   <ServiceCardSkeleton key={i} />
                 ))}
               </div>
-            ) : sortedServices.length > 0 ? (
+            ) : services.length > 0 ? (
               <div>
                 {/* Results Header */}
                 <div className="flex items-center justify-between mb-3 md:mb-6">
                   <div className="flex items-center gap-3">
                     <p className="text-muted-foreground">
-                      ნაპოვნია <span className="font-semibold text-primary">{sortedServices.length}</span> სერვისი
+                      ნაპოვნია <span className="font-semibold text-primary">{totalCount}</span> სერვისი
                     </p>
                     {hasActiveFilters && (
                       <Badge variant="outline" className="bg-primary/10 text-primary">
@@ -380,7 +364,7 @@ const ServicesDetail = () => {
 
                 {/* Services Grid */}
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {sortedServices.slice(0, visibleServicesCount).map((service, index) => (
+                  {services.map((service, index) => (
                     <Fragment key={service.id}>
                       <ServiceCard service={service} />
                       {/* Banner after first row (after 4th item for 4-column grid) */}
@@ -390,15 +374,16 @@ const ServicesDetail = () => {
                 </div>
 
                 {/* Load More Button */}
-                {sortedServices.length > visibleServicesCount && (
+                {hasMore && (
                   <div className="mt-12 text-center">
                     <Button
                       onClick={loadMoreServices}
+                      disabled={loadingMore}
                       variant="outline"
                       size="lg"
                       className="px-8 py-3 rounded-xl border-2 border-primary text-primary hover:bg-primary hover:text-white transition-colors bg-white/80 backdrop-blur-sm"
                     >
-                      მეტის ჩვენება ({sortedServices.length - visibleServicesCount} დარჩენილი)
+                      {loadingMore ? "იტვირთება..." : `მეტის ჩვენება (${totalCount - services.length} დარჩენილი)`}
                     </Button>
                   </div>
                 )}
