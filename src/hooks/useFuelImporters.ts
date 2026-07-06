@@ -135,6 +135,27 @@ export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
   return useQuery({
     queryKey: ["fuel-importers", { english }],
     queryFn: async () => {
+      // 1) Platform-wide cache via the `fuel-prices` edge function. It serves a
+      //    single Supabase-cached row (refreshed every 6h by cron), so every
+      //    visitor gets prices in ~200ms and only the cron ever triggers a live
+      //    scrape. This is the normal path; on any failure we fall through to
+      //    scraping the upstream API directly (below).
+      try {
+        const { data: fn, error: fnErr } = await supabase.functions.invoke("fuel-prices");
+        const cachedCompanies = fn?.data?.companies as (Company & { timestamp?: string })[] | undefined;
+        if (!fnErr && cachedCompanies?.length) {
+          const importers = cachedCompanies.map((c, i) =>
+            transformCompanyToImporter(c, i, c.timestamp || fn.data.fetchedAt)
+          );
+          if (importers.length > 0) {
+            writeFuelCache(english, importers);
+            return importers;
+          }
+        }
+      } catch (e) {
+        console.warn("fuel-prices edge function unavailable — falling back to direct API", e);
+      }
+
       try {
         // Fetch data from all companies using individual endpoints for better data
         const companies = getSupportedCompanies();

@@ -6,3 +6,9 @@ schedule = "0 0 * * *"
 
 [functions.serve-og-meta]
 verify_jwt = false
+
+# Public (no JWT) so the client can read cached fuel prices directly.
+# Cron every 6h keeps the platform-wide cache warm → no user waits for a scrape.
+[functions.fuel-prices]
+verify_jwt = false
+schedule = "0 */6 * * *"
