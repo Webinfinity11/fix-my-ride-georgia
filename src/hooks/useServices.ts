@@ -234,10 +234,12 @@ export const useServices = () => {
 
       // Ordering: active VIP first (super_vip → vip → none), then chosen sort.
       // is_vip_active is maintained by the daily expire_vip_services cron.
+      // vip_status DESC puts 'super_vip' before 'vip' (the DB text collation
+      // sorts 'vip' < 'super_vip' ascending, so we invert to get super first).
       const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "newest"];
       query = query
         .order("is_vip_active", { ascending: false, nullsFirst: false })
-        .order("vip_status", { ascending: true, nullsFirst: false })
+        .order("vip_status", { ascending: false, nullsFirst: false })
         .order(sortCol, { ascending: sortAsc, nullsFirst: false });
 
       // Pagination
