@@ -96,6 +96,39 @@ export interface UseFuelImportersOptions {
   enableFallback?: boolean; // Enable Supabase fallback (default: true)
 }
 
+// ── Persistent cache ────────────────────────────────────────────────────────
+// The upstream backend (fuel-prices-backend.onrender.com) runs in "scrape-only"
+// mode: no server-side cache, so every request live-scrapes the source sites
+// (2–11s per company). To avoid re-scraping on every page load / hard refresh,
+// we persist the transformed result to localStorage and treat it as fresh for
+// 6 hours. Fuel prices don't change more than a couple of times a day, so a 6h
+// window is plenty. The manual "განახლება" button and pull-to-refresh call
+// refetch(), which bypasses staleTime and always fetches live data.
+const FUEL_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+const fuelCacheKey = (english: boolean) => `fuel-importers-cache-v1:${english ? "en" : "ka"}`;
+
+type FuelCacheEntry = { data: FuelImporter[]; ts: number };
+
+const readFuelCache = (english: boolean): FuelCacheEntry | null => {
+  try {
+    const raw = localStorage.getItem(fuelCacheKey(english));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as FuelCacheEntry;
+    if (parsed && Array.isArray(parsed.data) && typeof parsed.ts === "number") return parsed;
+  } catch {
+    /* ignore malformed / unavailable storage */
+  }
+  return null;
+};
+
+const writeFuelCache = (english: boolean, data: FuelImporter[]) => {
+  try {
+    localStorage.setItem(fuelCacheKey(english), JSON.stringify({ data, ts: Date.now() }));
+  } catch {
+    /* storage full / unavailable — non-fatal */
+  }
+};
+
 export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
   const { english = true, enableFallback = true } = options;
 
@@ -141,6 +174,7 @@ export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
           throw new Error("No fuel prices available from API");
         }
 
+        writeFuelCache(english, importers);
         return importers;
       } catch (error) {
         console.error("Error fetching fuel prices from API:", error);
@@ -161,14 +195,24 @@ export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
             .order("name", { ascending: true });
 
           if (supabaseError) throw supabaseError;
-          return data as FuelImporter[];
+          const fallback = (data ?? []) as FuelImporter[];
+          if (fallback.length > 0) writeFuelCache(english, fallback);
+          return fallback;
         }
 
         throw error;
       }
     },
-    staleTime: 15 * 60 * 1000, // 15 minutes (matches API cache)
-    gcTime: 30 * 60 * 1000, // 30 minutes (previously cacheTime)
+    // Hydrate instantly from the last persisted result so repeat visits / hard
+    // reloads don't re-scrape. If it's <6h old it counts as fresh (no fetch);
+    // older than that, React Query shows it immediately and refetches in the
+    // background.
+    initialData: () => readFuelCache(english)?.data,
+    initialDataUpdatedAt: () => readFuelCache(english)?.ts,
+    staleTime: FUEL_CACHE_TTL, // 6 hours — prices change at most a couple of times a day
+    gcTime: FUEL_CACHE_TTL,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     retry: (failureCount, error) => {
       // Don't retry on rate limit errors
       if (error instanceof RateLimitError) {
