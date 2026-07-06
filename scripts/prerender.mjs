@@ -37,6 +37,12 @@ const PORT = 4178;
 // Phase A.1 — truly static routes only. No DB-driven content.
 // Adding more later (Phase A.2): /, /services, /mechanic, /category, /blog, /vacancies, etc.
 const ROUTES = [
+  // Homepage — prerendered into the root dist/index.html so the hero H1 +
+  // search UI paint instantly (fixes mobile LCP: was blank until the JS bundle
+  // rendered). Because this file is ALSO the SPA fallback, every prerendered
+  // file is stamped with <html data-ssg="..."> and index.html carries a guard
+  // script that hides mismatched content on non-prerendered routes (no flash).
+  '/',
   '/about',
   '/contact',
   '/privacy-policy',
@@ -124,6 +130,12 @@ const MIME = {
 };
 
 function startStaticServer() {
+  // Snapshot the pristine shell ONCE, before any prerender overwrites
+  // dist/index.html. Prerendering '/' writes the homepage into dist/index.html;
+  // if we re-read that file for the SPA fallback afterwards, other routes would
+  // be served the homepage snapshot (and rendered on top of it). Serving the
+  // cached empty shell keeps every route's prerender clean regardless of order.
+  const shell = readFileSync(join(DIST, 'index.html'));
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       try {
@@ -132,17 +144,20 @@ function startStaticServer() {
         if (pathname.endsWith('/')) pathname += 'index.html';
         let filePath = join(DIST, pathname);
 
-        if (existsSync(filePath) && statSync(filePath).isFile()) {
+        // Root index.html always serves the pristine shell (never a prerendered
+        // overwrite) so the homepage render itself starts from the clean shell.
+        const isRootIndex = pathname === '/index.html' || pathname === 'index.html';
+        if (!isRootIndex && existsSync(filePath) && statSync(filePath).isFile()) {
           const ext = extname(filePath).toLowerCase();
           res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
           createReadStream(filePath).pipe(res);
           return;
         }
 
-        // SPA fallback — serve index.html so React Router can render the route.
-        const indexPath = join(DIST, 'index.html');
+        // SPA fallback (and root) — serve the cached pristine shell so React
+        // Router can render the route from a clean slate.
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        createReadStream(indexPath).pipe(res);
+        res.end(shell);
       } catch (e) {
         res.writeHead(500); res.end('server error');
       }
@@ -279,6 +294,14 @@ async function main() {
       if (!html.includes('<div id="root">') || html.length < 5000) {
         throw new Error(`output looks broken (${html.length} bytes)`);
       }
+
+      // Stamp the served route onto <html data-ssg="..."> so the index.html
+      // guard can hide this snapshot when it's served as the SPA fallback for a
+      // different URL. Strip any stray guard <style> the DOM captured, and any
+      // pre-existing data-ssg (e.g. captured from the homepage fallback shell).
+      html = html.replace(/<style id="__ssg_guard__">[\s\S]*?<\/style>/g, '');
+      html = html.replace(/\sdata-ssg="[^"]*"/gi, '');
+      html = html.replace(/<html(\s|>)/i, `<html data-ssg="${route}"$1`);
 
       const outDir = join(DIST, route.replace(/^\//, ''));
       await mkdir(outDir, { recursive: true });

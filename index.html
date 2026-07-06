@@ -5,6 +5,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
+    <!-- SSG fallback guard.
+         The homepage (/) is prerendered into dist/index.html, which also serves
+         as the SPA fallback for any non-prerendered route (e.g. /login, /chat).
+         Without this, those routes would flash the homepage before React Router
+         swaps in the real page. Each prerendered file is stamped with
+         <html data-ssg="/its/path"> by scripts/prerender.mjs. If the stamped
+         path doesn't match the current URL, we hide the (wrong) prerendered
+         content until React re-renders #root — zero flash, zero regression on
+         correctly-served pages (where the paths match and this is a no-op). -->
+    <script>
+      (function () {
+        try {
+          var pre = document.documentElement.getAttribute('data-ssg');
+          if (!pre) return; // dev shell / unmarked → nothing to guard
+          var norm = function (p) { return p.length > 1 && p.charAt(p.length - 1) === '/' ? p.slice(0, -1) : p; };
+          if (norm(pre) === norm(location.pathname)) return; // correct page → keep prerendered content
+          var st = document.createElement('style');
+          st.id = '__ssg_guard__';
+          st.textContent = '#root>*{display:none!important}';
+          document.head.appendChild(st);
+          var arm = function () {
+            var root = document.getElementById('root');
+            if (!root) { return void setTimeout(arm, 10); }
+            var obs = new MutationObserver(function () {
+              var g = document.getElementById('__ssg_guard__');
+              if (g) g.remove();
+              obs.disconnect();
+            });
+            obs.observe(root, { childList: true });
+          };
+          arm();
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Primary SEO tags (default — overridden per route by react-helmet-async) -->
     <title>ავტოხელოსანი — საქართველოს #1 ავტოსერვისების პლატფორმა | Fixup.ge</title>
     <meta name="description" content="იპოვეთ საუკეთესო ავტოხელოსანი და ავტოსერვისი საქართველოში. 500+ ხელოსანი, ონლაინ დაჯავშნა, შეფასებები, ფასების შედარება — Fixup.ge." />
