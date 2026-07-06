@@ -165,88 +165,97 @@ export const useServices = () => {
     else setLoadingMore(true);
 
     try {
-      let query = (supabase as any)
-        .from("mechanic_services")
-        .select(
-          `
-          id,
-          name,
-          slug,
-          description,
-          price_from,
-          price_to,
-          estimated_hours,
-          city,
-          district,
-          address,
-          latitude,
-          longitude,
-          car_brands,
-          on_site_service,
-          accepts_card_payment,
-          accepts_cash_payment,
-          rating,
-          review_count,
-          photos,
-          category_id,
-          mechanic_id,
-          vip_status,
-          vip_until,
-          is_vip_active,
-          created_at,
-          service_categories(id, name)
-        `,
-          { count: "exact" },
-        )
-        .eq("is_active", true);
-
-      // Structured filters
-      if (filters.selectedCategory && filters.selectedCategory !== "all") {
-        query = query.eq("category_id", filters.selectedCategory);
-      }
-      if (filters.selectedCity) query = query.eq("city", filters.selectedCity);
-      if (filters.selectedDistrict) query = query.eq("district", filters.selectedDistrict);
-      if (filters.onSiteOnly) query = query.eq("on_site_service", true);
-      if (filters.minRating) query = query.gte("rating", filters.minRating);
-
-      // Brand filter — server-side overlap for specific brands. The "სხვა"
-      // (other = any brand not in the popular list) option can't be expressed
-      // as a single PostgREST filter, so when it's the ONLY selection we don't
-      // constrain by brand (rare).
-      const specificBrands = filters.selectedBrands.filter((b) => b !== "სხვა");
-      if (specificBrands.length > 0) {
-        query = query.overlaps("car_brands", specificBrands);
-      }
-
-      // Text search — service name + description, plus any category whose name
-      // matches (categories are already loaded in state). Strip characters that
-      // would break PostgREST's or() filter grammar.
-      const term = filters.searchTerm?.trim();
-      if (term) {
-        const safe = term.replace(/[,()]/g, " ").trim();
-        const matchingCatIds = categories
-          .filter((c) => c.name.toLowerCase().includes(safe.toLowerCase()))
-          .map((c) => c.id);
-        const ors = [`name.ilike.%${safe}%`, `description.ilike.%${safe}%`];
-        if (matchingCatIds.length > 0) ors.push(`category_id.in.(${matchingCatIds.join(",")})`);
-        query = query.or(ors.join(","));
-      }
-
-      // Ordering: active VIP first (super_vip → vip → none), then chosen sort.
-      // is_vip_active is maintained by the daily expire_vip_services cron.
-      // vip_status DESC puts 'super_vip' before 'vip' (the DB text collation
-      // sorts 'vip' < 'super_vip' ascending, so we invert to get super first).
       const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "newest"];
-      query = query
-        .order("is_vip_active", { ascending: false, nullsFirst: false })
-        .order("vip_status", { ascending: false, nullsFirst: false })
-        .order(sortCol, { ascending: sortAsc, nullsFirst: false });
-
-      // Pagination
       const from = page * PAGE_SIZE;
-      query = query.range(from, from + PAGE_SIZE - 1);
 
-      const { data: servicesData, error: servicesError, count } = await query;
+      // Build the filtered/paginated query. `useRank` orders by the vip_rank
+      // generated column (active super_vip → active vip → everyone else, each by
+      // the chosen sort). If that column doesn't exist yet (migration not
+      // applied), we fall back to is_vip_active ordering so the page never
+      // breaks — see the retry below.
+      const build = (useRank: boolean) => {
+        let q = (supabase as any)
+          .from("mechanic_services")
+          .select(
+            `
+            id,
+            name,
+            slug,
+            description,
+            price_from,
+            price_to,
+            estimated_hours,
+            city,
+            district,
+            address,
+            latitude,
+            longitude,
+            car_brands,
+            on_site_service,
+            accepts_card_payment,
+            accepts_cash_payment,
+            rating,
+            review_count,
+            photos,
+            category_id,
+            mechanic_id,
+            vip_status,
+            vip_until,
+            is_vip_active,
+            created_at,
+            service_categories(id, name)
+          `,
+            { count: "exact" },
+          )
+          .eq("is_active", true);
+
+        // Structured filters
+        if (filters.selectedCategory && filters.selectedCategory !== "all") {
+          q = q.eq("category_id", filters.selectedCategory);
+        }
+        if (filters.selectedCity) q = q.eq("city", filters.selectedCity);
+        if (filters.selectedDistrict) q = q.eq("district", filters.selectedDistrict);
+        if (filters.onSiteOnly) q = q.eq("on_site_service", true);
+        if (filters.minRating) q = q.gte("rating", filters.minRating);
+
+        // Brand filter — server-side overlap for specific brands. The "სხვა"
+        // (other = any brand not in the popular list) option can't be expressed
+        // as a single PostgREST filter, so when it's the ONLY selection we don't
+        // constrain by brand (rare).
+        const specificBrands = filters.selectedBrands.filter((b) => b !== "სხვა");
+        if (specificBrands.length > 0) q = q.overlaps("car_brands", specificBrands);
+
+        // Text search — service name + description, plus any category whose name
+        // matches. Strip characters that would break PostgREST's or() grammar.
+        const term = filters.searchTerm?.trim();
+        if (term) {
+          const safe = term.replace(/[,()]/g, " ").trim();
+          const matchingCatIds = categories
+            .filter((c) => c.name.toLowerCase().includes(safe.toLowerCase()))
+            .map((c) => c.id);
+          const ors = [`name.ilike.%${safe}%`, `description.ilike.%${safe}%`];
+          if (matchingCatIds.length > 0) ors.push(`category_id.in.(${matchingCatIds.join(",")})`);
+          q = q.or(ors.join(","));
+        }
+
+        // Ordering
+        if (useRank) {
+          q = q.order("vip_rank", { ascending: true, nullsFirst: false });
+        } else {
+          // Fallback (no vip_rank column): active VIP first. This can't cleanly
+          // separate super_vip from vip, but never leaks expired VIPs upward.
+          q = q.order("is_vip_active", { ascending: false, nullsFirst: false });
+        }
+        q = q.order(sortCol, { ascending: sortAsc, nullsFirst: false });
+
+        return q.range(from, from + PAGE_SIZE - 1);
+      };
+
+      let { data: servicesData, error: servicesError, count } = await build(true);
+      if (servicesError && /vip_rank/i.test(servicesError.message || "")) {
+        console.warn("vip_rank column missing — run migration; using fallback order");
+        ({ data: servicesData, error: servicesError, count } = await build(false));
+      }
       if (servicesError) throw servicesError;
 
       const rows = (servicesData ?? []) as any[];
