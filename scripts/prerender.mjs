@@ -297,6 +297,23 @@ async function main() {
       // again. Reset it so prerendered pages keep the fast path.
       html = html.replace(/media="all"(\s+onload="this\.media='all'")/g, 'media="print"$1');
 
+      // Inline the app stylesheet so prerendered pages can paint immediately.
+      // Measured on mobile (Slow 4G): the 22KB render-blocking /assets/index-*.css
+      // was starved by ~350KB of parallel JS downloads and took ~1.5s to arrive,
+      // delaying FCP/LCP to ~3s. Inlining removes the request + bandwidth
+      // contention entirely — the hero paints as soon as the HTML arrives.
+      html = html.replace(
+        /<link\s+rel="stylesheet"\s+[^>]*href="(\/assets\/index-[^"]+\.css)"[^>]*>/g,
+        (tag, href) => {
+          try {
+            const css = readFileSync(join(DIST, href.replace(/^\//, '')), 'utf8');
+            return `<style>${css}</style>`;
+          } catch {
+            return tag; // keep the link if the file can't be read
+          }
+        }
+      );
+
       // Minimal sanity check — abort if shell is empty (something broke).
       if (!html.includes('<div id="root">') || html.length < 5000) {
         throw new Error(`output looks broken (${html.length} bytes)`);
