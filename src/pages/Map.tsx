@@ -275,6 +275,7 @@ const Map = () => {
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [radius, setRadius] = useState(5);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const {
@@ -852,7 +853,7 @@ const Map = () => {
 
       {/* ═════ Hero (Planflow "map" design) — title + segmented tabs + filters ═════ */}
       <section className="bg-white border-b border-border/70">
-        <div className="max-w-[1280px] mx-auto px-4 lg:px-8 pt-5 pb-3">
+        <div className="w-full px-4 lg:px-6 pt-5 pb-3">
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
               <div className="inline-flex items-center gap-2">
@@ -896,9 +897,52 @@ const Map = () => {
           </div>
         </div>
 
+        {/* filter strip (design) */}
+        <div className="border-t border-border/60">
+          <div className="w-full px-4 lg:px-6 py-2.5 flex items-center gap-2 flex-wrap">
+            {viewMode === "services" && (
+              <div className="relative">
+                <Wrench className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <select value={String(selectedCategory)} onChange={(e) => setSelectedCategory(e.target.value === "all" ? "all" : Number(e.target.value))}
+                  className={`h-10 pl-9 pr-8 rounded-lg text-[12.5px] font-semibold appearance-none focus:outline-none cursor-pointer border transition ${selectedCategory !== "all" ? "bg-primary/5 border-primary/30 text-primary" : "bg-white border-border hover:border-foreground text-foreground"}`}>
+                  <option value="all">ყველა კატეგორია</option>
+                  {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-[10px]">▾</span>
+              </div>
+            )}
+            <div className="relative">
+              <MapPin className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <select value={selectedCity ?? "all"} onChange={(e) => setSelectedCity(e.target.value === "all" ? null : e.target.value)}
+                className={`h-10 pl-9 pr-8 rounded-lg text-[12.5px] font-semibold appearance-none focus:outline-none cursor-pointer border transition ${selectedCity ? "bg-primary/5 border-primary/30 text-primary" : "bg-white border-border hover:border-foreground text-foreground"}`}>
+                <option value="all">ყველა ქალაქი</option>
+                {cities.map((c: string) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-[10px]">▾</span>
+            </div>
+            <div className="hidden md:flex items-center gap-2 h-10 px-3 rounded-lg border border-border bg-white">
+              <Navigation className="h-4 w-4 text-muted-foreground" />
+              <span className="text-[11.5px] font-semibold text-foreground/70">რადიუსი</span>
+              <input type="range" min={1} max={30} value={radius} onChange={(e) => setRadius(Number(e.target.value))} className="w-[110px] accent-primary" />
+              <span className="text-[11.5px] font-mono tabular-nums font-semibold text-primary w-9 text-right">{radius} კმ</span>
+            </div>
+            {viewMode === "chargers" && (
+              <div className="inline-flex items-center gap-1 h-10 p-1 rounded-lg border border-border bg-white">
+                {([{ k: "all", l: "ყველა" }, { k: "fast", l: "სწრაფი" }, { k: "level2", l: "AC" }] as const).map((t) => (
+                  <button key={t.k} type="button" onClick={() => setChargerFilter(t.k)} className={`h-8 px-3 rounded-md text-[11.5px] font-semibold ${chargerFilter === t.k ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"}`}>{t.l}</button>
+                ))}
+              </div>
+            )}
+            {(selectedCategory !== "all" || selectedCity) && (
+              <button type="button" onClick={() => { setSelectedCategory("all"); setSelectedCity(null); }} className="ml-1 text-[12px] text-muted-foreground hover:text-foreground underline underline-offset-2 font-semibold">
+                გასუფთავება
+              </button>
+            )}
+          </div>
+        </div>
       </section>
 
-      <div className="flex h-[calc(100vh-64px-188px)] min-h-[440px] flex-col md:flex-row">
+      <div className="flex h-[calc(100vh-64px-244px)] min-h-[440px] flex-col md:flex-row">
         {/* Left Sidebar - Services/Laundries List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
@@ -1062,52 +1106,7 @@ const Map = () => {
         {/* Right Side - Map (80% width on desktop, full height on mobile) */}
         <div className="w-full md:w-4/5 h-full flex flex-col">
 
-          {/* Top Filters Bar - Category & City (only for services) */}
-          {viewMode === 'services' && <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[50]">
-            <div className="p-2 md:p-3 overflow-x-auto">
-              <div className="flex gap-2 md:gap-3 items-center" style={{
-              minWidth: "fit-content"
-            }}>
-                {/* Category Filter */}
-                <div className="flex-1 min-w-[150px] md:min-w-[200px]">
-                  <Select value={selectedCategory.toString()} onValueChange={value => setSelectedCategory(value === "all" ? "all" : parseInt(value))}>
-                    <SelectTrigger className="h-8">
-                      <SelectValue placeholder="კატეგორია" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[9999]">
-                      <SelectItem value="all">ყველა კატეგორია</SelectItem>
-                      {categories.map(category => <SelectItem key={category.id} value={category.id.toString()}>
-                          {category.name}
-                        </SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* City Filter */}
-                <div className="flex-1 min-w-[120px] md:min-w-[150px]">
-                  <Select value={selectedCity || "all_cities"} onValueChange={value => setSelectedCity(value === "all_cities" ? null : value)}>
-                    <SelectTrigger className="h-8">
-                      <SelectValue placeholder="ქალაქი" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[9999]">
-                      <SelectItem value="all_cities">ყველა ქალაქი</SelectItem>
-                      {cities.map(city => <SelectItem key={city} value={city}>
-                          {city}
-                        </SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-
-
-                {/* Clear Filters */}
-                {activeFiltersCount > 0 && <Button variant="outline" onClick={clearFilters} size="sm" className="h-8 flex-shrink-0 text-xs">
-                    <X className="w-3 h-3 mr-1" />
-                    გასუფთავება
-                  </Button>}
-              </div>
-            </div>
-            </div>}
+          {/* Category & city filters now live in the hero filter strip above. */}
 
           {/* Top Filters Bar - Brand Filter (only for stations) */}
           {viewMode === 'stations' && (
@@ -1205,6 +1204,24 @@ const Map = () => {
           {/* Map Container */}
           <div className="flex-1 relative z-0 pb-16 md:pb-0">
             <div ref={mapRef} className="h-full w-full z-0" />
+
+            {/* Legend (design) */}
+            <div className="hidden md:block absolute bottom-4 left-4 z-[500] bg-white/95 backdrop-blur rounded-xl border border-border shadow-lg px-3.5 py-3">
+              <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-muted-foreground mb-2">კატეგორიები</div>
+              <div className="space-y-1.5">
+                {[
+                  { l: "ავტოსერვისები", n: filteredServices.length, c: "bg-primary" },
+                  { l: "EV დამტენები", n: filteredChargers.length, c: "bg-[#8B5CF6]" },
+                  { l: "საწვავები", n: filteredStations.length, c: "bg-secondary" },
+                ].map((r) => (
+                  <div key={r.l} className="flex items-center gap-2.5 text-[12px]">
+                    <span className={`h-2.5 w-2.5 rounded-full ${r.c}`} />
+                    <span className="text-foreground font-medium flex-1">{r.l}</span>
+                    <span className="font-mono tabular-nums font-semibold text-muted-foreground">{r.n}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
             
             {/* Map Info Overlay - adjusted for mobile bottom sheet */}
             <div className="absolute bottom-20 md:bottom-4 right-4 bg-background p-2 rounded-lg shadow-lg">
