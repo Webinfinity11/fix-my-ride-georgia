@@ -1229,9 +1229,9 @@ const Map = () => {
           <div className="flex-1 relative z-0 pb-16 md:pb-0">
             <div ref={mapRef} className="h-full w-full z-0" />
 
-            {/* My-location FAB (Google-Maps style, icon only) */}
+            {/* My-location FAB (Google-Maps style, icon only, bottom-right) */}
             <button type="button" onClick={detectMyLocation} title="ჩემთან ახლოს" aria-label="ჩემთან ახლოს"
-              className="absolute top-3 right-3 z-[500] h-11 w-11 rounded-full bg-white shadow-lg border border-border grid place-items-center text-foreground hover:text-primary hover:border-primary transition">
+              className="absolute right-4 bottom-32 md:bottom-16 z-[500] h-11 w-11 rounded-full bg-white shadow-lg border border-border grid place-items-center text-foreground hover:text-primary hover:border-primary transition">
               <Navigation className="h-5 w-5" />
             </button>
 
@@ -1337,11 +1337,6 @@ const Map = () => {
           topicName={tabSeo.topicName}
         />
       )}
-
-      {/* Mobile "add listing" floating island — sits above the bottom nav */}
-      <Link to="/add-listing" className="md:hidden fixed bottom-[82px] right-4 z-[9990] h-11 px-4 rounded-full bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[13px] font-bold inline-flex items-center gap-1.5 shadow-xl">
-        <Plus className="h-4 w-4" /> დაამატე უფასოდ
-      </Link>
 
       {/* Category picker (homepage-style) */}
       {catOpen && createPortal(
