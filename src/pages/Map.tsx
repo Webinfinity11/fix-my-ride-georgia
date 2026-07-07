@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet, BatteryCharging, Phone } from "lucide-react";
+import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet, BatteryCharging, Phone, Plus, Navigation } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
@@ -245,6 +245,15 @@ const Map = () => {
     const validTab = newTab as TabType;
     setViewMode(validTab);
     navigate(`/map/${validTab}`, { replace: true });
+  };
+
+  const detectMyLocation = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { if (map) map.setView([pos.coords.latitude, pos.coords.longitude], 13); },
+      () => {},
+      { timeout: 8000 },
+    );
   };
 
   // Sync state when URL changes (browser back/forward navigation)
@@ -841,7 +850,55 @@ const Map = () => {
         </h1>
       )}
 
-      <div className="flex h-[calc(100vh-64px)] flex-col md:flex-row">
+      {/* ═════ Hero (Planflow "map" design) — title + segmented tabs + filters ═════ */}
+      <section className="bg-white border-b border-border/70">
+        <div className="max-w-[1280px] mx-auto px-4 lg:px-8 pt-5 pb-3">
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <div className="inline-flex items-center gap-2">
+                <span className="text-[10.5px] uppercase tracking-[0.2em] font-bold text-muted-foreground">Fixup · რუკა</span>
+                <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-70" /><span className="relative inline-flex rounded-full h-2 w-2 bg-primary" /></span>
+                <span className="text-[10.5px] uppercase tracking-[0.16em] font-semibold text-primary">ცოცხალი მონაცემები</span>
+              </div>
+              <h2 className="mt-2 text-[24px] md:text-[30px] font-bold text-foreground leading-[1.1] tracking-tight">
+                იპოვე ავტოსერვისი, EV დამტენი ან საწვავი <span className="text-primary">რუკაზე</span>
+              </h2>
+              <p className="mt-1 text-[13px] text-muted-foreground max-w-2xl">
+                საქართველოს მასშტაბით <span className="font-mono tabular-nums text-foreground font-semibold">{filteredServices.length + filteredChargers.length + filteredStations.length}</span> დამოწმებული პუნქტი — გაფილტრე ტიპით, ქალაქითა და ბრენდით.
+              </p>
+            </div>
+            <Link to="/add-listing" className="h-10 px-3.5 rounded-lg bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[12.5px] font-bold inline-flex items-center gap-1.5 shrink-0">
+              <Plus className="h-4 w-4" /> დაამატე უფასოდ
+            </Link>
+          </div>
+
+          {/* segmented kind tabs + my location */}
+          <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
+            <div className="inline-flex items-center gap-1 p-1 bg-muted rounded-lg overflow-x-auto scrollbar-hide">
+              {([
+                { k: "services" as const, l: "ავტოსერვისები", Icon: Wrench, n: filteredServices.length },
+                { k: "chargers" as const, l: "EV დამტენები", Icon: BatteryCharging, n: filteredChargers.length },
+                { k: "stations" as const, l: "საწვავები", Icon: Fuel, n: filteredStations.length },
+              ]).map((t) => {
+                const active = viewMode === t.k;
+                return (
+                  <button key={t.k} type="button" onClick={() => handleTabChange(t.k)}
+                    className={`h-9 px-3.5 rounded-md text-[12.5px] font-semibold inline-flex items-center gap-1.5 transition whitespace-nowrap ${active ? "bg-white text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+                    <t.Icon className="h-3.5 w-3.5" /> {t.l}
+                    <span className={`ml-0.5 inline-grid place-items-center h-4 min-w-[26px] px-1 rounded-full text-[10px] font-bold tabular-nums ${active ? "bg-primary text-primary-foreground" : "bg-white text-muted-foreground"}`}>{t.n}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <button type="button" onClick={detectMyLocation} className="h-9 px-3.5 rounded-lg border border-border hover:border-foreground text-foreground text-[12.5px] font-semibold inline-flex items-center gap-1.5 shrink-0">
+              <Navigation className="h-4 w-4" /> ჩემი ლოკაცია
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <div className="flex h-[calc(100vh-64px-188px)] min-h-[440px] flex-col md:flex-row">
         {/* Left Sidebar - Services/Laundries List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
@@ -1004,48 +1061,6 @@ const Map = () => {
 
         {/* Right Side - Map (80% width on desktop, full height on mobile) */}
         <div className="w-full md:w-4/5 h-full flex flex-col">
-          {/* View Mode Toggle */}
-          <div className="bg-background border-b flex-shrink-0 relative z-[49] px-2 md:px-4 py-2 md:py-4">
-            <div className="flex items-center justify-between gap-2 md:gap-3">
-              <Tabs value={viewMode} onValueChange={handleTabChange} className="flex-1 overflow-x-auto scrollbar-hide">
-                <TabsList className="inline-flex h-9 md:h-11 items-center justify-start rounded-lg bg-muted p-1 text-muted-foreground gap-0.5">
-                  <TabsTrigger value="services" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
-                    <Car className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">ავტოსერვისები</span>
-                    <span className="sm:hidden">სერვისი</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="chargers" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-yellow-500 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
-                    <BatteryCharging className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">ელ. დამტენები</span>
-                    <span className="sm:hidden">დამტენი</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="stations" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
-                    <Fuel className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">სადგურები</span>
-                    <span className="sm:hidden">⛽</span>
-                  </TabsTrigger>
-                  {/* TEMP: სამრეცხაოები + დრაივები დამალულია — ჯერ საკმარისი
-                      რაოდენობა არ არის. tab-ები დაბრუნდება, როცა ჩანაწერები გაიზრდება.
-                  <TabsTrigger value="laundries" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-cyan-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
-                    <Droplet className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">სამრეცხაოები</span>
-                    <span className="sm:hidden">რეცხვა</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="drives" className="flex items-center gap-1.5 md:gap-2 data-[state=active]:bg-green-600 data-[state=active]:text-primary-foreground whitespace-nowrap px-2 md:px-3 text-xs md:text-sm rounded-md">
-                    <Car className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">დრაივები</span>
-                    <span className="sm:hidden">დრაივი</span>
-                  </TabsTrigger>
-                  */}
-                </TabsList>
-              </Tabs>
-              
-              {/* Count Badge - hidden on mobile to save space */}
-              <Badge variant="secondary" className="hidden md:inline-flex text-sm whitespace-nowrap font-semibold">
-                {viewMode === 'services' ? filteredServices.length : viewMode === 'laundries' ? laundries?.length || 0 : viewMode === 'chargers' ? filteredChargers.length : viewMode === 'stations' ? filteredStations.length : drives?.length || 0}
-              </Badge>
-            </div>
-          </div>
 
           {/* Top Filters Bar - Category & City (only for services) */}
           {viewMode === 'services' && <div className="bg-white border-b border-gray-200 flex-shrink-0 relative z-[50]">
