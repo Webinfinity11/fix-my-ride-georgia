@@ -871,28 +871,9 @@ const Map = () => {
 
       {/* ═════ Hero (Planflow "map" design) — title + segmented tabs + filters ═════ */}
       <section className="bg-white border-b border-border/70">
-        <div className="w-full px-4 lg:px-6 pt-5 pb-3">
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <div>
-              <div className="inline-flex items-center gap-2">
-                <span className="text-[10.5px] uppercase tracking-[0.2em] font-bold text-muted-foreground">Fixup · რუკა</span>
-                <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-70" /><span className="relative inline-flex rounded-full h-2 w-2 bg-primary" /></span>
-                <span className="text-[10.5px] uppercase tracking-[0.16em] font-semibold text-primary">ცოცხალი მონაცემები</span>
-              </div>
-              <h2 className="mt-2 text-[24px] md:text-[30px] font-bold text-foreground leading-[1.1] tracking-tight">
-                იპოვე ავტოსერვისი, EV დამტენი ან საწვავი <span className="text-primary">რუკაზე</span>
-              </h2>
-              <p className="mt-1 text-[13px] text-muted-foreground max-w-2xl">
-                საქართველოს მასშტაბით <span className="font-mono tabular-nums text-foreground font-semibold">{filteredServices.length + filteredChargers.length + filteredStations.length}</span> დამოწმებული პუნქტი — გაფილტრე ტიპით, ქალაქითა და ბრენდით.
-              </p>
-            </div>
-            <Link to="/add-listing" className="h-10 px-3.5 rounded-lg bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[12.5px] font-bold inline-flex items-center gap-1.5 shrink-0">
-              <Plus className="h-4 w-4" /> დაამატე უფასოდ
-            </Link>
-          </div>
-
-          {/* segmented kind tabs + my location */}
-          <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
+        <div className="w-full px-4 lg:px-6 py-2.5">
+          {/* segmented kind tabs + my location + add */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="inline-flex items-center gap-1 p-1 bg-muted rounded-lg overflow-x-auto scrollbar-hide">
               {([
                 { k: "services" as const, l: "ავტოსერვისები", Icon: Wrench, n: filteredServices.length },
@@ -909,9 +890,14 @@ const Map = () => {
                 );
               })}
             </div>
-            <button type="button" onClick={detectMyLocation} className="h-9 px-3.5 rounded-lg border border-border hover:border-foreground text-foreground text-[12.5px] font-semibold inline-flex items-center gap-1.5 shrink-0">
-              <Navigation className="h-4 w-4" /> ჩემი ლოკაცია
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <button type="button" onClick={detectMyLocation} className="h-9 px-3.5 rounded-lg border border-border hover:border-foreground text-foreground text-[12.5px] font-semibold inline-flex items-center gap-1.5">
+                <Navigation className="h-4 w-4" /> ჩემი ლოკაცია
+              </button>
+              <Link to="/add-listing" className="h-9 px-3.5 rounded-lg bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[12.5px] font-bold inline-flex items-center gap-1.5">
+                <Plus className="h-4 w-4" /> დაამატე უფასოდ
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -946,7 +932,7 @@ const Map = () => {
         </div>
       </section>
 
-      <div className="flex h-[calc(100vh-64px-244px)] min-h-[440px] flex-col md:flex-row">
+      <div className="flex h-[calc(100vh-64px-116px)] min-h-[460px] flex-col md:flex-row">
         {/* Left Sidebar - Services/Laundries List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
