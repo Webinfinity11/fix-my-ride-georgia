@@ -927,32 +927,29 @@ const Map = () => {
                 );
               })}
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <button type="button" onClick={detectMyLocation} className="h-9 px-3.5 rounded-lg border border-border hover:border-foreground text-foreground text-[12.5px] font-semibold inline-flex items-center gap-1.5">
-                <Navigation className="h-4 w-4" /> ჩემი ლოკაცია
-              </button>
-              <Link to="/add-listing" className="h-9 px-3.5 rounded-lg bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[12.5px] font-bold inline-flex items-center gap-1.5">
-                <Plus className="h-4 w-4" /> დაამატე უფასოდ
-              </Link>
-            </div>
+            <Link to="/add-listing" className="hidden md:inline-flex h-9 px-3.5 rounded-lg bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[12.5px] font-bold items-center gap-1.5 shrink-0">
+              <Plus className="h-4 w-4" /> დაამატე უფასოდ
+            </Link>
           </div>
         </div>
 
         {/* filter strip (design) */}
         <div className="border-t border-border/60">
           <div className="w-full px-4 lg:px-6 py-2.5 flex items-center gap-2 flex-wrap">
-            {viewMode === "services" && (
-              <button type="button" onClick={() => setCatOpen(true)}
-                className={`h-10 px-3.5 rounded-lg text-[12.5px] font-semibold inline-flex items-center gap-1.5 border transition ${selectedCategoryName ? "bg-brand-50 border-brand-200 text-brand-800" : "bg-white border-border hover:border-foreground text-foreground"}`}>
-                <LayoutGrid className="h-4 w-4" /> {selectedCategoryName ?? "ყველა კატეგორია"}
-                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            <div className="flex gap-2 w-full md:w-auto">
+              {viewMode === "services" && (
+                <button type="button" onClick={() => setCatOpen(true)}
+                  className={`flex-1 md:flex-none h-10 px-3.5 rounded-lg text-[12.5px] font-semibold inline-flex items-center gap-1.5 border transition ${selectedCategoryName ? "bg-brand-50 border-brand-200 text-brand-800" : "bg-white border-border hover:border-foreground text-foreground"}`}>
+                  <LayoutGrid className="h-4 w-4 shrink-0" /> <span className="truncate">{selectedCategoryName ?? "ყველა კატეგორია"}</span>
+                  <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-auto md:ml-0 shrink-0" />
+                </button>
+              )}
+              <button type="button" onClick={() => setCityOpen(true)}
+                className={`flex-1 md:flex-none h-10 px-3.5 rounded-lg text-[12.5px] font-semibold inline-flex items-center gap-1.5 border transition ${selectedCity ? "bg-brand-50 border-brand-200 text-brand-800" : "bg-white border-border hover:border-foreground text-foreground"}`}>
+                <MapPin className="h-4 w-4 shrink-0" /> <span className="truncate">{selectedCity ?? "ყველა ქალაქი"}</span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-auto md:ml-0 shrink-0" />
               </button>
-            )}
-            <button type="button" onClick={() => setCityOpen(true)}
-              className={`h-10 px-3.5 rounded-lg text-[12.5px] font-semibold inline-flex items-center gap-1.5 border transition ${selectedCity ? "bg-brand-50 border-brand-200 text-brand-800" : "bg-white border-border hover:border-foreground text-foreground"}`}>
-              <MapPin className="h-4 w-4" /> {selectedCity ?? "ყველა ქალაქი"}
-              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
-            </button>
+            </div>
             {viewMode === "chargers" && (
               <div className="inline-flex items-center gap-1 h-10 p-1 rounded-lg border border-border bg-white">
                 {([{ k: "all", l: "ყველა" }, { k: "fast", l: "სწრაფი" }, { k: "level2", l: "AC" }] as const).map((t) => (
@@ -1232,6 +1229,12 @@ const Map = () => {
           <div className="flex-1 relative z-0 pb-16 md:pb-0">
             <div ref={mapRef} className="h-full w-full z-0" />
 
+            {/* My-location FAB (Google-Maps style, icon only) */}
+            <button type="button" onClick={detectMyLocation} title="ჩემთან ახლოს" aria-label="ჩემთან ახლოს"
+              className="absolute top-3 right-3 z-[500] h-11 w-11 rounded-full bg-white shadow-lg border border-border grid place-items-center text-foreground hover:text-primary hover:border-primary transition">
+              <Navigation className="h-5 w-5" />
+            </button>
+
             {/* Legend (design) */}
             <div className="hidden md:block absolute bottom-4 left-4 z-[500] bg-white/95 backdrop-blur rounded-xl border border-border shadow-lg px-3.5 py-3">
               <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-muted-foreground mb-2">კატეგორიები</div>
@@ -1334,6 +1337,11 @@ const Map = () => {
           topicName={tabSeo.topicName}
         />
       )}
+
+      {/* Mobile "add listing" floating island — sits above the bottom nav */}
+      <Link to="/add-listing" className="md:hidden fixed bottom-[82px] right-4 z-[9990] h-11 px-4 rounded-full bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[13px] font-bold inline-flex items-center gap-1.5 shadow-xl">
+        <Plus className="h-4 w-4" /> დაამატე უფასოდ
+      </Link>
 
       {/* Category picker (homepage-style) */}
       {catOpen && createPortal(
