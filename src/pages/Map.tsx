@@ -17,7 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet, BatteryCharging, Phone, Plus, Navigation } from "lucide-react";
+import { Search, Filter, X, Star, Car, CreditCard, MapPin, Wrench, Fuel, Zap, Settings, Paintbrush, Shield, Droplet, BatteryCharging, Phone, Plus, Navigation, LayoutGrid, Sparkles, Check, ChevronDown } from "lucide-react";
+import { createPortal } from "react-dom";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
@@ -33,6 +34,12 @@ import "leaflet/dist/leaflet.css";
 // Valid tab types for URL routing
 const validTabs = ['services', 'laundries', 'drives', 'chargers', 'stations'] as const;
 type TabType = typeof validTabs[number];
+
+// Popular categories (same as the homepage picker)
+const POPULAR_CATS = [
+  "ძრავის შეკეთება", "ზეთის შეცვლა", "დიაგნოსტიკა", "ვულკანიზაცია",
+  "ელექტროობა", "სამღებრო სამუშაოები", "სავალი ნაწილის შეკეთება", "კონდინციონერი (ფრეონი)",
+];
 
 // SEO data per tab
 const seoData: Record<TabType, { title: string; description: string }> = {
@@ -275,6 +282,9 @@ const Map = () => {
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [catOpen, setCatOpen] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
+  const [catFilter, setCatFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const {
@@ -285,6 +295,15 @@ const Map = () => {
     fetchInitialData,
     fetchServices
   } = useServices();
+
+  // Category / city picker (homepage-style modals)
+  const selectedCategoryName = selectedCategory === "all" ? null : categories.find((c) => c.id === selectedCategory)?.name ?? null;
+  const popularExisting = POPULAR_CATS.filter((p) => categories.some((c) => c.name === p));
+  const pickCategoryByName = (name: string) => {
+    const c = categories.find((x) => x.name === name);
+    if (c) setSelectedCategory(c.id);
+  };
+
   const {
     data: laundries = [],
     isLoading: laundriesLoading
@@ -900,25 +919,17 @@ const Map = () => {
         <div className="border-t border-border/60">
           <div className="w-full px-4 lg:px-6 py-2.5 flex items-center gap-2 flex-wrap">
             {viewMode === "services" && (
-              <div className="relative">
-                <Wrench className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                <select value={String(selectedCategory)} onChange={(e) => setSelectedCategory(e.target.value === "all" ? "all" : Number(e.target.value))}
-                  className={`h-10 pl-9 pr-8 rounded-lg text-[12.5px] font-semibold appearance-none focus:outline-none cursor-pointer border transition ${selectedCategory !== "all" ? "bg-primary/5 border-primary/30 text-primary" : "bg-white border-border hover:border-foreground text-foreground"}`}>
-                  <option value="all">ყველა კატეგორია</option>
-                  {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-[10px]">▾</span>
-              </div>
+              <button type="button" onClick={() => setCatOpen(true)}
+                className={`h-10 px-3.5 rounded-lg text-[12.5px] font-semibold inline-flex items-center gap-1.5 border transition ${selectedCategoryName ? "bg-brand-50 border-brand-200 text-brand-800" : "bg-white border-border hover:border-foreground text-foreground"}`}>
+                <LayoutGrid className="h-4 w-4" /> {selectedCategoryName ?? "ყველა კატეგორია"}
+                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+              </button>
             )}
-            <div className="relative">
-              <MapPin className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-              <select value={selectedCity ?? "all"} onChange={(e) => setSelectedCity(e.target.value === "all" ? null : e.target.value)}
-                className={`h-10 pl-9 pr-8 rounded-lg text-[12.5px] font-semibold appearance-none focus:outline-none cursor-pointer border transition ${selectedCity ? "bg-primary/5 border-primary/30 text-primary" : "bg-white border-border hover:border-foreground text-foreground"}`}>
-                <option value="all">ყველა ქალაქი</option>
-                {cities.map((c: string) => <option key={c} value={c}>{c}</option>)}
-              </select>
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-[10px]">▾</span>
-            </div>
+            <button type="button" onClick={() => setCityOpen(true)}
+              className={`h-10 px-3.5 rounded-lg text-[12.5px] font-semibold inline-flex items-center gap-1.5 border transition ${selectedCity ? "bg-brand-50 border-brand-200 text-brand-800" : "bg-white border-border hover:border-foreground text-foreground"}`}>
+              <MapPin className="h-4 w-4" /> {selectedCity ?? "ყველა ქალაქი"}
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            </button>
             {viewMode === "chargers" && (
               <div className="inline-flex items-center gap-1 h-10 p-1 rounded-lg border border-border bg-white">
                 {([{ k: "all", l: "ყველა" }, { k: "fast", l: "სწრაფი" }, { k: "level2", l: "AC" }] as const).map((t) => (
@@ -1300,6 +1311,80 @@ const Map = () => {
           topicName={tabSeo.topicName}
         />
       )}
+
+      {/* Category picker (homepage-style) */}
+      {catOpen && createPortal(
+        <div className="fixed inset-0 z-[100000] flex items-end md:items-center justify-center p-0 md:p-4" onClick={() => { setCatOpen(false); setCatFilter(""); }}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div onClick={(e) => e.stopPropagation()} className="relative w-full md:w-[70vw] md:max-w-[1100px] max-h-[80vh] md:max-h-[680px] rounded-t-2xl md:rounded-2xl bg-white shadow-float border border-ink-200 flex flex-col">
+            <div className="md:hidden flex justify-center pt-2.5 pb-1 shrink-0"><span className="h-1.5 w-10 rounded-full bg-ink-200" /></div>
+            <div className="px-5 pt-3 pb-3 border-b border-ink-100 flex items-center justify-between">
+              <div><div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">აირჩიე</div><h3 className="text-[18px] font-bold text-ink-900">კატეგორია</h3></div>
+              <button type="button" onClick={() => { setCatOpen(false); setCatFilter(""); }} className="h-9 w-9 rounded-full grid place-items-center hover:bg-ink-100 text-ink-500"><X className="h-4.5 w-4.5" /></button>
+            </div>
+            <div className="px-5 pt-3 shrink-0">
+              <div className="relative"><Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" /><input autoFocus value={catFilter} onChange={(e) => setCatFilter(e.target.value)} placeholder="ფილტრი..." className="w-full h-11 pl-10 pr-9 rounded-xl bg-ink-50 border border-ink-200 text-[13.5px] focus:outline-none focus:bg-white focus:ring-2 focus:ring-brand-500/20" /></div>
+              <button type="button" onClick={() => { setSelectedCategory("all"); setCatOpen(false); setCatFilter(""); }} className={`mt-2 w-full flex items-center gap-3 px-3 h-12 rounded-xl border text-left transition ${selectedCategory === "all" ? "bg-brand-50 border-brand-200" : "bg-white border-ink-200 hover:border-ink-300"}`}>
+                <span className={`h-5 w-5 rounded-md grid place-items-center ${selectedCategory === "all" ? "bg-brand-500 text-white" : "border border-ink-300"}`}>{selectedCategory === "all" && <Check className="h-3 w-3" />}</span>
+                <LayoutGrid className="h-4 w-4 text-ink-500" /><span className="text-[13.5px] font-semibold text-ink-900 flex-1">ყველა კატეგორია</span><span className="text-[11px] text-ink-400 font-mono">{categories.length}</span>
+              </button>
+            </div>
+            <div className="px-5 py-3 overflow-y-auto">
+              {!catFilter.trim() && popularExisting.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-1.5 mb-2 text-[11px] uppercase tracking-[0.14em] font-bold text-ink-400"><Sparkles className="h-3.5 w-3.5 text-accent-500" />პოპულარული</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {popularExisting.map((p) => (
+                      <button key={p} type="button" onClick={() => { pickCategoryByName(p); setCatOpen(false); setCatFilter(""); }}
+                        className="h-8 px-3 rounded-pill border border-ink-200 bg-white text-[11.5px] font-semibold text-ink-700 hover:border-brand-400 hover:text-brand-700 transition">{p}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {!catFilter.trim() && (
+                <div className="text-[11px] uppercase tracking-[0.14em] font-bold text-ink-400 mb-2">ყველა კატეგორია <span className="text-ink-300 font-mono">{categories.length}</span></div>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1.5">
+                {categories.filter((c) => !catFilter.trim() || c.name.toLowerCase().includes(catFilter.trim().toLowerCase())).map((c) => {
+                  const active = selectedCategory === c.id;
+                  return (
+                    <button key={c.id} type="button" onClick={() => { setSelectedCategory(c.id); setCatOpen(false); setCatFilter(""); }} className={`w-full flex items-center gap-3 px-3.5 h-11 rounded-xl border text-left transition ${active ? "bg-brand-50 border-brand-200 text-brand-700" : "bg-white border-ink-200 hover:bg-ink-50"}`}>
+                      <span className="text-[13px] font-medium truncate">{c.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>, document.body)}
+
+      {/* City picker (homepage-style) */}
+      {cityOpen && createPortal(
+        <div className="fixed inset-0 z-[100000] flex items-end md:items-center justify-center p-0 md:p-4" onClick={() => setCityOpen(false)}>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div onClick={(e) => e.stopPropagation()} className="relative w-full md:w-[70vw] md:max-w-[720px] rounded-t-2xl md:rounded-2xl bg-white shadow-float border border-ink-200">
+            <div className="md:hidden flex justify-center pt-2.5 pb-1"><span className="h-1.5 w-10 rounded-full bg-ink-200" /></div>
+            <div className="px-5 pt-3 pb-3 border-b border-ink-100 flex items-center justify-between">
+              <div><div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">აირჩიე</div><h3 className="text-[18px] font-bold text-ink-900">ქალაქი</h3></div>
+              <button type="button" onClick={() => setCityOpen(false)} className="h-9 w-9 rounded-full grid place-items-center hover:bg-ink-100 text-ink-500"><X className="h-4.5 w-4.5" /></button>
+            </div>
+            <div className="p-5">
+              <button type="button" onClick={() => { setSelectedCity(null); setCityOpen(false); }} className={`w-full flex items-center gap-3 px-3 h-12 rounded-xl border text-left mb-2 ${!selectedCity ? "bg-brand-50 border-brand-200" : "bg-white border-ink-200 hover:border-ink-300"}`}>
+                <MapPin className="h-4 w-4 text-ink-500" /><span className="text-[13.5px] font-semibold text-ink-900">ყველა ქალაქი</span>
+              </button>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 max-h-[50vh] overflow-y-auto">
+                {cities.map((c: string) => {
+                  const active = selectedCity === c;
+                  return (
+                    <button key={c} type="button" onClick={() => { setSelectedCity(c); setCityOpen(false); }} className={`w-full flex items-center gap-2.5 px-3 h-11 rounded-xl border text-left transition ${active ? "bg-brand-50 border-brand-200 text-brand-700" : "bg-white border-ink-200 hover:bg-ink-50"}`}>
+                      <span className="text-[13px] font-medium truncate">{c}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>, document.body)}
     </Layout>
   );
 };
