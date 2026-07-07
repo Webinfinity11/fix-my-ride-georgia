@@ -4,6 +4,8 @@ import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSearch } from "@/utils/tracking";
 import { useFuelImporters } from "@/hooks/useFuelImporters";
+import { useFuelStations } from "@/hooks/useFuelStations";
+import { useChargers } from "@/hooks/useChargers";
 
 const MiniServiceMap = lazy(() => import("./MiniServiceMap"));
 
@@ -104,8 +106,13 @@ const LandingHero = () => {
   const [fuelKind, setFuelKind] = useState<"premium" | "regular" | "diesel">("premium");
   const [locating, setLocating] = useState(false);
   const [locLabel, setLocLabel] = useState<string | null>(null);
+  const [serviceCount, setServiceCount] = useState(0);
 
   const marqueePaused = useRef(false);
+
+  // Real map-layer counts (mirrors the /map page).
+  const { stations } = useFuelStations();
+  const { chargers } = useChargers();
 
   useEffect(() => {
     (async () => {
@@ -113,6 +120,13 @@ const LandingHero = () => {
       if (cats) setCategories(cats.map((c: { id: number | string; name: string }) => ({ id: String(c.id), name: c.name })));
       const { data: svc } = await supabase.from("mechanic_services").select("city").eq("is_active", true).not("city", "is", null);
       if (svc) setCities([...new Set(svc.map((s: { city: string | null }) => s.city).filter(Boolean))].sort() as string[]);
+      const { count } = await supabase
+        .from("mechanic_services")
+        .select("id", { count: "exact", head: true })
+        .eq("is_active", true)
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
+      if (typeof count === "number") setServiceCount(count);
     })();
   }, []);
 
@@ -165,7 +179,12 @@ const LandingHero = () => {
     return rows.sort((a, b) => parseFloat(a.p) - parseFloat(b.p)).map((r, i) => ({ ...r, best: i === 0 }));
   })();
   const fuelRows: FuelRow[] = realFuelRows.length > 0 ? realFuelRows : FUEL[fuelKind];
-  const mapCount = mapTab === "mechanic" ? "512" : mapTab === "fuel" ? "62" : "18";
+  const layerCounts: Record<"mechanic" | "fuel" | "ev", number> = {
+    mechanic: serviceCount,
+    fuel: stations.length,
+    ev: chargers.length,
+  };
+  const mapCount = String(layerCounts[mapTab] || (mapTab === "mechanic" ? 512 : mapTab === "fuel" ? 62 : 18));
 
   return (
     <section
@@ -311,7 +330,7 @@ const LandingHero = () => {
                       {locLabel && <span className="text-[10.5px] text-accent-600 font-medium tabular-nums">{locLabel}</span>}
                     </div>
                     <div className="flex bg-ink-100 rounded-btn p-0.5">
-                      {([{ k: "mechanic" as const, l: "ხელოსანი", n: "512" }, { k: "fuel" as const, l: "საწვავი", n: "62" }, { k: "ev" as const, l: "EV", n: "18" }]).map((t) => (
+                      {([{ k: "mechanic" as const, l: "ხელოსანი" }, { k: "fuel" as const, l: "საწვავი" }, { k: "ev" as const, l: "EV" }].map((t) => ({ ...t, n: String(layerCounts[t.k] || "") }))).map((t) => (
                         <button key={t.k} type="button" onClick={() => setMapTab(t.k)} className={`h-7 px-2.5 rounded-btn text-[11px] font-semibold inline-flex items-center gap-1.5 transition ${mapTab === t.k ? "bg-white text-ink-900 shadow-xs" : "text-ink-500 hover:text-ink-900"}`}>
                           {t.l} <span className={`font-mono tabular-nums text-[9.5px] ${mapTab === t.k ? "text-accent-600" : "text-ink-400"}`}>{t.n}</span>
                         </button>
@@ -321,7 +340,7 @@ const LandingHero = () => {
 
                   <div className="relative bg-ink-100 overflow-hidden flex-1 z-0">
                     <Suspense fallback={<div className="absolute inset-0 grid place-items-center text-ink-400 text-[11px] animate-pulse">რუკა იტვირთება…</div>}>
-                      <MiniServiceMap />
+                      <MiniServiceMap layer={mapTab} />
                     </Suspense>
                     <button type="button" onClick={detectLocation} title="ჩემი მდებარეობა" className={`absolute top-3 right-3 z-[400] inline-flex items-center justify-center h-10 w-10 rounded-btn border-2 shadow-pop transition ${locating ? "border-accent-300 bg-accent-50 text-accent-500" : locLabel ? "border-accent-400 bg-accent-50 text-accent-700" : "border-ink-200 bg-white text-ink-600 hover:border-accent-400 hover:text-accent-700"}`}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-5 w-5 ${locating ? "animate-spin" : ""}`}>{locating ? <path d="M21 12a9 9 0 1 1-6.219-8.56" /> : <><circle cx="12" cy="12" r="3" /><line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" /><line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" /></>}</svg>
