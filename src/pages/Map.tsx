@@ -949,14 +949,14 @@ const Map = () => {
                 <MapPin className="h-4 w-4 shrink-0" /> <span className="truncate">{selectedCity ?? "ყველა ქალაქი"}</span>
                 <ChevronDown className="h-3.5 w-3.5 opacity-60 ml-auto md:ml-0 shrink-0" />
               </button>
+              {viewMode === "chargers" && (
+                <div className="shrink-0 inline-flex items-center gap-1 h-10 p-1 rounded-lg border border-border bg-white">
+                  {([{ k: "all", l: "ყველა" }, { k: "fast", l: "სწრაფი" }, { k: "level2", l: "AC" }] as const).map((t) => (
+                    <button key={t.k} type="button" onClick={() => setChargerFilter(t.k)} className={`h-8 px-2.5 rounded-md text-[11.5px] font-semibold ${chargerFilter === t.k ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"}`}>{t.l}</button>
+                  ))}
+                </div>
+              )}
             </div>
-            {viewMode === "chargers" && (
-              <div className="inline-flex items-center gap-1 h-10 p-1 rounded-lg border border-border bg-white">
-                {([{ k: "all", l: "ყველა" }, { k: "fast", l: "სწრაფი" }, { k: "level2", l: "AC" }] as const).map((t) => (
-                  <button key={t.k} type="button" onClick={() => setChargerFilter(t.k)} className={`h-8 px-3 rounded-md text-[11.5px] font-semibold ${chargerFilter === t.k ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-muted"}`}>{t.l}</button>
-                ))}
-              </div>
-            )}
             {(selectedCategory !== "all" || selectedCity) && (
               <button type="button" onClick={() => { setSelectedCategory("all"); setSelectedCity(null); }} className="ml-1 text-[12px] text-muted-foreground hover:text-foreground underline underline-offset-2 font-semibold">
                 გასუფთავება
