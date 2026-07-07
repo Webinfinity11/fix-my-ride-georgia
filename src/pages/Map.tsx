@@ -41,6 +41,26 @@ const POPULAR_CATS = [
   "ელექტროობა", "სამღებრო სამუშაოები", "სავალი ნაწილის შეკეთება", "კონდინციონერი (ფრეონი)",
 ];
 
+// City centres — selecting a city flies the map there. Covers every city in the
+// data plus common ones; unknown cities fall back to fitting the city's pins.
+const CITY_CENTERS: Record<string, [number, number]> = {
+  "თბილისი": [41.7151, 44.8271],
+  "რუსთავი": [41.5495, 44.9930],
+  "ქუთაისი": [42.2679, 42.7180],
+  "მცხეთა": [41.8458, 44.7178],
+  "ბათუმი": [41.6459, 41.6386],
+  "ჩოხატაური": [41.8281, 42.2311],
+  "ზუგდიდი": [42.5088, 41.8709],
+  "გორი": [41.9847, 44.1086],
+  "ფოთი": [42.1461, 41.6710],
+  "თელავი": [41.9192, 45.4731],
+  "ზესტაფონი": [42.1099, 43.0510],
+  "სამტრედია": [42.1592, 42.3350],
+  "ოზურგეთი": [41.9247, 42.0060],
+  "ხაშური": [41.9950, 43.5960],
+  "ქობულეთი": [41.8203, 41.7797],
+};
+
 // SEO data per tab
 const seoData: Record<TabType, { title: string; description: string }> = {
   services: {
@@ -466,6 +486,23 @@ const Map = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedCity]);
+
+  // Selecting a city flies the map to it (known centre, else fit its pins).
+  useEffect(() => {
+    if (!map || !selectedCity) return;
+    const center = CITY_CENTERS[selectedCity];
+    if (center) {
+      map.flyTo(center, 12, { duration: 0.9 });
+      return;
+    }
+    const pts = servicesWithLocation
+      .filter((s) => s.latitude && s.longitude)
+      .map((s) => [s.latitude, s.longitude] as [number, number]);
+    if (pts.length) {
+      try { map.flyToBounds(pts, { padding: [50, 50], maxZoom: 13, duration: 0.9 }); } catch { /* noop */ }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity, map]);
 
   // Search with delay (debounce)
   useEffect(() => {
