@@ -407,9 +407,9 @@ export const MECHANICS_CONTENT: StaticPageContent = {
 export const MAP_TABS_CONTENT: Record<string, StaticPageContent> = {
   services: {
     h1: 'ავტოსერვისები რუკაზე',
-    h1Subtitle: 'იპოვე ხელოსანი თქვენი მახლობლად ერთი click-ით',
+    h1Subtitle: 'იპოვე ავტოხელოსანი თქვენთან ახლოს ერთი click-ით',
     topicName: 'ავტოსერვისების რუკა',
-    introHeading: 'ხელოსანი თქვენი მახლობლად — რუკაზე',
+    introHeading: 'ავტოხელოსანი თქვენთან ახლოს — რუკაზე',
     introHtml: `
 <p>FixUp-ის ${a('/map/services', 'რუკის ხედი')} — გვაძლევს მაქსიმუმ მოხერხებულობას ხელოსნის ძებნისთვის: ხედავთ ვინ მუშაობს თქვენი მახლობლად, ვინ მუშაობს ღია, რა შეფასება აქვს და როგორი ფასი მოითხოვს.</p>
 
