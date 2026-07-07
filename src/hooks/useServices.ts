@@ -160,13 +160,21 @@ export const useServices = () => {
   // (~1MB) so text search / brand filter / VIP sort could run client-side;
   // that's now all done in the query and only one page (PAGE_SIZE) is fetched.
   // `page` 0 replaces the list; higher pages append ("load more").
-  const fetchServices = async (filters: ServiceFilters, page = 0) => {
+  // `options.all` fetches every matching row in one go (used by the map, which
+  // needs all geolocated services as pins — not a 24-row page). It also
+  // constrains to rows that actually have coordinates.
+  const fetchServices = async (
+    filters: ServiceFilters,
+    page = 0,
+    options?: { all?: boolean },
+  ) => {
     if (page === 0) setLoading(true);
     else setLoadingMore(true);
 
     try {
       const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "newest"];
       const from = page * PAGE_SIZE;
+      const fetchAll = options?.all === true;
 
       // Build the filtered/paginated query. `useRank` orders by the vip_rank
       // generated column (active super_vip → active vip → everyone else, each by
@@ -209,6 +217,12 @@ export const useServices = () => {
           )
           .eq("is_active", true);
 
+        // Map mode: only rows with coordinates (they're the only ones that can
+        // become a pin), and never paginate them away.
+        if (fetchAll) {
+          q = q.not("latitude", "is", null).not("longitude", "is", null);
+        }
+
         // Structured filters
         if (filters.selectedCategory && filters.selectedCategory !== "all") {
           q = q.eq("category_id", filters.selectedCategory);
@@ -248,7 +262,7 @@ export const useServices = () => {
         }
         q = q.order(sortCol, { ascending: sortAsc, nullsFirst: false });
 
-        return q.range(from, from + PAGE_SIZE - 1);
+        return fetchAll ? q.range(0, 4999) : q.range(from, from + PAGE_SIZE - 1);
       };
 
       let { data: servicesData, error: servicesError, count } = await build(true);

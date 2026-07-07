@@ -403,15 +403,19 @@ const Map = () => {
 
   // Function to apply filters and fetch services
   const applyFilters = async () => {
-    await fetchServices({
-      searchTerm: searchQuery,
-      selectedCategory,
-      selectedCity,
-      selectedDistrict: null,
-      selectedBrands: [],
-      onSiteOnly: false,
-      minRating: null
-    });
+    await fetchServices(
+      {
+        searchTerm: searchQuery,
+        selectedCategory,
+        selectedCity,
+        selectedDistrict: null,
+        selectedBrands: [],
+        onSiteOnly: false,
+        minRating: null,
+      },
+      0,
+      { all: true }, // map needs every geolocated service, not a 24-row page
+    );
   };
 
   // Fetch services on component mount
