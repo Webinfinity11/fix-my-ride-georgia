@@ -75,6 +75,11 @@ export default {
 					400: '#60A5FA', 500: '#3B82F6', 600: '#2563EB', 700: '#1D4ED8',
 					800: '#1E40AF', 900: '#1E3A8A', 950: '#172554'
 				},
+				iris: {
+					50: '#F5F3FF', 100: '#EDE9FE', 200: '#DDD6FE', 300: '#C4B5FD',
+					400: '#A78BFA', 500: '#8B5CF6', 600: '#7C3AED', 700: '#6D28D9',
+					800: '#5B21B6', 900: '#4C1D95', 950: '#2E1065'
+				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
 					foreground: 'hsl(var(--popover-foreground))'
@@ -101,6 +106,7 @@ export default {
 				// Planflow design tokens
 				btn: '0.625rem',
 				field: '0.625rem',
+					card: '1rem',
 				pill: '9999px'
 			},
 			spacing: {

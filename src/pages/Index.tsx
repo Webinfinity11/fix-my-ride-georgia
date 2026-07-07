@@ -1,236 +1,44 @@
-import { useState, lazy, Suspense } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import TopRibbon from "@/components/layout/TopRibbon";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import SEOHead from "@/components/seo/SEOHead";
 import { OrganizationSchema, WebSiteSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { generateSEOTitle, generateSEODescription, generateCanonicalURL } from "@/utils/seoUtils";
-import SimplifiedSearch from "@/components/home/SimplifiedSearch";
-import CategoryCarousel from "@/components/home/CategoryCarousel";
-import VIPServicesCarousel from "@/components/home/VIPServicesCarousel";
-import { Zap, Shield, Users, Star, ArrowRight, Sparkles, UserPlus, Wrench, Car } from "lucide-react";
-import { SITE_STATS } from "@/config/siteStats";
-
-// Lazy load below-fold components
-const StationsPromo = lazy(() => import("@/components/home/StationsPromo"));
-const HomeCenterBanner = lazy(() => import("@/components/banners/HomeCenterBanner"));
-const MobileBanner = lazy(() => import("@/components/banners/MobileBanner"));
-
-// სტატისტიკა — ხელოსანი/სერვისი ერთ წყაროდან (SITE_STATS), რომ არ ეწინააღმდეგებოდეს SEO ტექსტებს
-const stats = [{
-  number: SITE_STATS.mechanicsLabel,
-  label: "ხელოსანი",
-  icon: Users
-}, {
-  number: SITE_STATS.servicesLabel,
-  label: "სერვისი",
-  icon: Zap
-}, {
-  number: "3,000+",
-  label: "მომხმარებელი",
-  icon: Shield
-}, {
-  number: "4.8★",
-  label: "საშუალო რეიტინგი",
-  icon: Star
-}];
+import LandingHero from "@/components/home/LandingHero";
 
 const Index = () => {
-  const navigate = useNavigate();
   const canonicalUrl = generateCanonicalURL("home", {});
 
-  return <div className="min-h-screen flex flex-col bg-gradient-to-br from-muted via-background to-accent/30 pb-[70px] md:pb-0">
-      <SEOHead title={generateSEOTitle("home", {})} description={generateSEODescription("home", {})} keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup" url={canonicalUrl} canonical={canonicalUrl} type="website" />
-
-      <OrganizationSchema name="ავტოხელოსანი" url="https://fixup.ge" description="საქართველოს სანდო ავტოსერვისების პლატფორმა" contactPoint={{
-      contactType: "customer service",
-      email: "info@fixup.ge"
-    }} />
-
+  return (
+    <div className="min-h-screen lg:h-screen flex flex-col bg-ink-50 pb-[70px] md:pb-0 lg:overflow-hidden">
+      <SEOHead
+        title={generateSEOTitle("home", {})}
+        description={generateSEODescription("home", {})}
+        keywords="ავტოხელოსანი, ავტოსერვისი, მექანიკოსი, ავტომობილის რემონტი, საქართველო, თბილისი, fixup"
+        url={canonicalUrl}
+        canonical={canonicalUrl}
+        type="website"
+      />
+      <OrganizationSchema
+        name="ავტოხელოსანი"
+        url="https://fixup.ge"
+        description="საქართველოს სანდო ავტოსერვისების პლატფორმა"
+        contactPoint={{ contactType: "customer service", email: "info@fixup.ge" }}
+      />
       <WebSiteSchema />
+      <BreadcrumbSchema items={[{ name: "მთავარი", url: "https://fixup.ge/" }]} />
 
-      <BreadcrumbSchema items={[{
-      name: "მთავარი",
-      url: "https://fixup.ge/"
-    }]} />
+      <TopRibbon />
       <Header />
 
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative py-12 lg:py-20 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent to-primary/10"></div>
-          <div className="absolute top-0 right-0 w-72 h-72 md:w-96 md:h-96 bg-gradient-to-br from-primary/10 to-accent/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-72 h-72 md:w-96 md:h-96 bg-gradient-to-tr from-accent/20 to-primary/10 rounded-full blur-3xl"></div>
-
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-8 md:mb-10">
-                <Badge className="mb-4 md:mb-6 bg-gradient-to-r from-primary to-primary-light text-primary-foreground px-4 md:px-6 py-1.5 md:py-2 text-xs md:text-sm font-medium">
-                  <Sparkles className="h-3 w-3 md:h-4 md:w-4 mr-1.5 md:mr-2" />
-                  საქართველოს სანდო ავტო-სერვისის პლატფორმა
-                </Badge>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
-                  <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-transparent">
-                    იპოვე საუკეთესო ავტოხელოსანი საქართველოში
-                  </span>
-                </h1>
-                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
-                  დადასტურებული ავტოხელოსნები და ავტოსერვისები თბილისში, ბათუმში და მთელ საქართველოში
-                </p>
-              </div>
-
-              <Card className="shadow-xl border-0 bg-card/95 backdrop-blur-sm overflow-hidden">
-                <CardContent className="p-4 md:p-6 lg:p-8">
-                  <SimplifiedSearch />
-                </CardContent>
-              </Card>
-
-              {/* Trust strip — surfaces credibility right under the search box */}
-              <div className="mt-6 grid grid-cols-4 gap-2 md:gap-4 max-w-2xl mx-auto">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
-                    <div className="text-lg md:text-2xl font-bold text-primary">{stat.number}</div>
-                    <div className="text-[11px] leading-tight md:text-sm text-muted-foreground">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Categories Carousel */}
-        <section className="py-8 md:py-12 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="flex items-center justify-between mb-4 md:mb-6">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-foreground">კატეგორიები</h2>
-                  <p className="text-sm text-muted-foreground mt-1 hidden md:block">
-                    აირჩიეთ სასურველი სერვისის კატეგორია
-                  </p>
-                </div>
-                <Link to="/services">
-                  <Button variant="ghost" className="text-primary hover:text-primary-dark group">
-                    ყველა
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-              </div>
-              <CategoryCarousel />
-            </div>
-          </div>
-        </section>
-
-        {/* VIP Services Carousel */}
-        <VIPServicesCarousel />
-
-        {/* Stations Promo - lazy loaded */}
-        <Suspense fallback={<div className="min-h-[200px]" />}>
-          <StationsPromo />
-        </Suspense>
-
-        {/* Stats Section */}
-        <section className="py-10 md:py-16 bg-card min-h-[200px]">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                {stats.map((stat, index) => <Card key={index} className="border-0 shadow-lg bg-background hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-4 lg:p-6 text-center">
-                      <div className="flex items-center justify-center mb-3">
-                        <div className="p-2 lg:p-3 bg-gradient-to-r from-primary to-primary-light rounded-full">
-                          <stat.icon className="h-5 w-5 lg:h-6 lg:w-6 text-primary-foreground" />
-                        </div>
-                      </div>
-                      <div className="text-xl lg:text-3xl font-bold text-foreground mb-1">{stat.number}</div>
-                      <div className="text-sm lg:text-base text-muted-foreground font-medium">{stat.label}</div>
-                    </CardContent>
-                  </Card>)}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Registration Section */}
-        <section className="py-10 md:py-16 bg-gradient-to-br from-muted to-background min-h-[400px]">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <Badge className="mb-4 bg-gradient-to-r from-primary to-primary-light text-primary-foreground px-4 py-2">
-                <UserPlus className="h-4 w-4 mr-2" />
-                გაწევრიანდი
-              </Badge>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">დაიწყეთ ახლავე</h2>
-              <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                შემოუერთდით ჩვენს პლატფორმას და მიიღეთ ან მიაწოდეთ ხარისხიანი ავტოსერვისი
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-primary/10 to-primary/5 hover:shadow-2xl transition-all duration-300 group">
-                  <CardContent className="p-6 lg:p-8 text-center">
-                    <div className="p-4 lg:p-6 bg-primary rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
-                      <Car className="h-8 w-8 lg:h-12 lg:w-12 text-primary-foreground" />
-                    </div>
-                    <h3 className="text-xl lg:text-2xl font-bold text-foreground mb-3 lg:mb-4">მომხმარებლად</h3>
-                    <p className="text-sm lg:text-base text-muted-foreground mb-4 lg:mb-6">
-                      იპოვეთ საუკეთესო ხელოსნები
-                    </p>
-                    <div className="space-y-3 lg:space-y-4">
-                      <Link to="/register?type=customer">
-                        <Button className="w-full bg-primary hover:bg-primary-dark text-primary-foreground py-2 lg:py-3 text-base lg:text-lg">
-                          რეგისტრაცია მომხმარებლად
-                        </Button>
-                      </Link>
-                      <Link to="/login">
-                        <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary/5 py-2 lg:py-3 text-base lg:text-lg">
-                          შესვლა
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-secondary/10 to-secondary/5 hover:shadow-2xl transition-all duration-300 group">
-                  <CardContent className="p-6 lg:p-8 text-center">
-                    <div className="p-4 lg:p-6 bg-secondary rounded-full w-fit mx-auto mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
-                      <Wrench className="h-8 w-8 lg:h-12 lg:w-12 text-secondary-foreground" />
-                    </div>
-                    <h3 className="text-xl lg:text-2xl font-bold text-foreground mb-3 lg:mb-4">ხელოსნად</h3>
-                    <p className="text-sm lg:text-base text-muted-foreground mb-4 lg:mb-6">
-                      გაზარდე შენი სერვისი და მოიძიე ახალი კლიენტები
-                    </p>
-                    <div className="space-y-3 lg:space-y-4">
-                      <Link to="/register?type=mechanic">
-                        <Button className="w-full bg-secondary hover:bg-secondary-dark text-secondary-foreground py-2 lg:py-3 text-base lg:text-lg">
-                          რეგისტრაცია ხელოსნად
-                        </Button>
-                      </Link>
-                      <Link to="/login">
-                        <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary/10 py-2 lg:py-3 text-base lg:text-lg">
-                          შესვლა
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Banner Section - Desktop (lazy) */}
-        <Suspense fallback={null}>
-          <HomeCenterBanner />
-        </Suspense>
+      <main className="flex-grow flex flex-col lg:min-h-0">
+        {/* The entire homepage is the Planflow "landing" bento hero. */}
+        <LandingHero />
       </main>
 
-      <Footer />
-      <Suspense fallback={null}>
-        <MobileBanner />
-      </Suspense>
       <MobileBottomNav />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

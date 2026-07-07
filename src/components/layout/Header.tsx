@@ -32,9 +32,9 @@ const Header = () => {
 
   return (
     <header className="bg-white border-b h-16 md:h-20 flex items-center sticky top-0 z-50">
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo & add listing */}
-        <div className="flex items-center gap-3">
+      <div className="max-w-[1280px] mx-auto w-full px-4 lg:px-8 flex items-center">
+        {/* Left zone: logo & mobile add listing */}
+        <div className="flex items-center gap-3 flex-1">
           <Link to="/" className="flex items-center">
             <img
               src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
@@ -54,34 +54,27 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-gray-700 hover:text-primary transition-colors font-medium">
-            მთავარი
-          </Link>
-          <Link to="/services" className="text-gray-700 hover:text-primary transition-colors font-medium">
+        {/* Center zone: navigation (Planflow layout — centered, rounded-hover) */}
+        <nav className="hidden md:flex items-center gap-1 text-[13px] font-medium text-gray-700">
+          <Link to="/services" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center">
             სერვისები
           </Link>
-          <Link
-            to="/map"
-            className="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors font-medium"
-          >
-            <Map className="h-4 w-4" />
-            <span>რუკა</span>
+          <Link to="/map" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center gap-1.5">
+            <Map className="h-4 w-4" />რუკა
           </Link>
-          <Link to="/vacancies" className="text-gray-700 hover:text-primary transition-colors font-medium">
+          <Link to="/vacancies" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center">
             ვაკანსიები
           </Link>
-          <Link to="/fuel-importers" className="text-gray-700 hover:text-primary transition-colors font-medium">
+          <Link to="/fuel-importers" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center">
             საწვავის ფასები
           </Link>
-          <Link to="/blog" className="text-gray-700 hover:text-primary transition-colors font-medium">
+          <Link to="/blog" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center">
             ბლოგი
           </Link>
         </nav>
 
-        {/* Right-side actions */}
-        <div className="flex items-center gap-2">
+        {/* Right zone: actions */}
+        <div className="flex items-center gap-2 flex-1 justify-end">
           {/* Saved services (guest-friendly, localStorage) */}
           <Link
             to="/saved"
@@ -149,13 +142,8 @@ const Header = () => {
               >
                 რეგისტრაცია
               </Link>
-              {/* Desktop: login + register */}
+              {/* Desktop: register (login lives in the top ribbon) */}
               <div className="hidden md:flex items-center space-x-4">
-                <Link to="/login">
-                  <Button variant="outline" size="sm">
-                    შესვლა
-                  </Button>
-                </Link>
                 <Link to="/register">
                   <Button size="sm">რეგისტრაცია</Button>
                 </Link>
