@@ -913,7 +913,7 @@ const Map = () => {
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="inline-flex items-center gap-1 p-1 bg-muted rounded-lg overflow-x-auto scrollbar-hide">
               {([
-                { k: "services" as const, l: "ავტოსერვისები", Icon: Wrench, n: filteredServices.length },
+                { k: "services" as const, l: "სერვისები", Icon: Wrench, n: filteredServices.length },
                 { k: "chargers" as const, l: "EV დამტენები", Icon: BatteryCharging, n: filteredChargers.length },
                 { k: "stations" as const, l: "საწვავები", Icon: Fuel, n: filteredStations.length },
               ]).map((t) => {
@@ -1237,7 +1237,7 @@ const Map = () => {
               <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-muted-foreground mb-2">კატეგორიები</div>
               <div className="space-y-1.5">
                 {[
-                  { l: "ავტოსერვისები", n: filteredServices.length, c: "bg-primary" },
+                  { l: "სერვისები", n: filteredServices.length, c: "bg-primary" },
                   { l: "EV დამტენები", n: filteredChargers.length, c: "bg-[#8B5CF6]" },
                   { l: "საწვავები", n: filteredStations.length, c: "bg-secondary" },
                 ].map((r) => (
