@@ -909,8 +909,8 @@ const Map = () => {
       {/* ═════ Hero (Planflow "map" design) — title + segmented tabs + filters ═════ */}
       <section className="bg-white border-b border-border/70">
         <div className="w-full px-4 lg:px-6 py-2.5">
-          {/* segmented kind tabs + my location + add */}
-          <div className="flex items-center justify-between gap-3 flex-wrap">
+          {/* segmented kind tabs (left) + filters (right on desktop / own line on mobile) */}
+          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
             <div className="inline-flex items-center gap-1 p-1 bg-muted rounded-lg overflow-x-auto scrollbar-hide">
               {([
                 { k: "services" as const, l: "სერვისები", Icon: Wrench, n: filteredServices.length },
@@ -927,16 +927,9 @@ const Map = () => {
                 );
               })}
             </div>
-            <Link to="/add-listing" className="hidden md:inline-flex h-9 px-3.5 rounded-lg bg-secondary hover:bg-secondary-dark text-secondary-foreground text-[12.5px] font-bold items-center gap-1.5 shrink-0">
-              <Plus className="h-4 w-4" /> დაამატე უფასოდ
-            </Link>
-          </div>
-        </div>
 
-        {/* filter strip (design) */}
-        <div className="border-t border-border/60">
-          <div className="w-full px-4 lg:px-6 py-2.5 flex items-center gap-2 flex-wrap">
-            <div className="flex gap-2 w-full md:w-auto">
+            {/* filters — pushed to the right on desktop, full-width new line on mobile */}
+            <div className="flex gap-2 w-full md:w-auto md:ml-auto">
               {viewMode === "services" && (
                 <button type="button" onClick={() => setCatOpen(true)}
                   className={`flex-1 md:flex-none h-10 px-3.5 rounded-lg text-[12.5px] font-semibold inline-flex items-center gap-1.5 border transition ${selectedCategoryName ? "bg-brand-50 border-brand-200 text-brand-800" : "bg-white border-border hover:border-foreground text-foreground"}`}>
@@ -957,8 +950,9 @@ const Map = () => {
                 </div>
               )}
             </div>
+
             {(selectedCategory !== "all" || selectedCity) && (
-              <button type="button" onClick={() => { setSelectedCategory("all"); setSelectedCity(null); }} className="ml-1 text-[12px] text-muted-foreground hover:text-foreground underline underline-offset-2 font-semibold">
+              <button type="button" onClick={() => { setSelectedCategory("all"); setSelectedCity(null); }} className="text-[12px] text-muted-foreground hover:text-foreground underline underline-offset-2 font-semibold shrink-0">
                 გასუფთავება
               </button>
             )}
@@ -966,7 +960,7 @@ const Map = () => {
         </div>
       </section>
 
-      <div className="flex h-[calc(100vh-64px-116px)] min-h-[460px] flex-col md:flex-row">
+      <div className="flex h-[calc(100vh-64px-116px)] md:h-[calc(100vh-64px-61px)] min-h-[460px] flex-col md:flex-row">
         {/* Left Sidebar - Services/Laundries List (20% width on desktop, hidden on mobile) */}
         <div className="hidden md:flex md:w-1/5 bg-white border-r border-gray-200 overflow-hidden flex-col h-full">
           <div className="p-2 md:p-4 border-b border-gray-200 space-y-2 md:space-y-4">
