@@ -994,7 +994,7 @@ const Map = () => {
                 </p>
               </div>}
 
-            <div className="p-2 md:p-4">
+            <div key={viewMode} className="p-2 md:p-4">
               {loading || laundriesLoading || drivesLoading || chargersLoading || stationsLoading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
