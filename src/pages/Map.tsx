@@ -275,7 +275,6 @@ const Map = () => {
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [radius, setRadius] = useState(5);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mapBounds, setMapBounds] = useState<any>(null);
   const {
@@ -919,12 +918,6 @@ const Map = () => {
                 {cities.map((c: string) => <option key={c} value={c}>{c}</option>)}
               </select>
               <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none text-[10px]">▾</span>
-            </div>
-            <div className="hidden md:flex items-center gap-2 h-10 px-3 rounded-lg border border-border bg-white">
-              <Navigation className="h-4 w-4 text-muted-foreground" />
-              <span className="text-[11.5px] font-semibold text-foreground/70">რადიუსი</span>
-              <input type="range" min={1} max={30} value={radius} onChange={(e) => setRadius(Number(e.target.value))} className="w-[110px] accent-primary" />
-              <span className="text-[11.5px] font-mono tabular-nums font-semibold text-primary w-9 text-right">{radius} კმ</span>
             </div>
             {viewMode === "chargers" && (
               <div className="inline-flex items-center gap-1 h-10 p-1 rounded-lg border border-border bg-white">
