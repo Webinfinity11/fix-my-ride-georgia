@@ -1231,7 +1231,7 @@ const Map = () => {
 
             {/* My-location FAB (Google-Maps style, icon only, bottom-right) */}
             <button type="button" onClick={detectMyLocation} title="ჩემთან ახლოს" aria-label="ჩემთან ახლოს"
-              className="absolute right-4 bottom-44 md:bottom-16 z-[500] h-11 w-11 rounded-full bg-white shadow-lg border border-border grid place-items-center text-foreground hover:text-primary hover:border-primary transition">
+              className="absolute right-4 bottom-44 md:right-6 md:bottom-28 z-[500] h-11 w-11 rounded-full bg-white shadow-lg border border-border grid place-items-center text-foreground hover:text-primary hover:border-primary transition">
               <Navigation className="h-5 w-5" />
             </button>
 
