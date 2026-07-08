@@ -328,3 +328,19 @@
     transition: transform 0.1s ease;
   }
 }
+
+/* iOS Safari auto-zooms into a form field on focus whenever its font-size is
+   below 16px, which shifts/breaks the layout. `-webkit-touch-callout` is a
+   WebKit-only feature query (matches Safari, not Chrome/Blink); pairing it with
+   `pointer: coarse` narrows it to iOS touch devices, so we bump text controls
+   to 16px there without touching desktop Safari or any other platform.
+   Pinch-zoom stays enabled. */
+@supports (-webkit-touch-callout: none) {
+  @media (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+}
