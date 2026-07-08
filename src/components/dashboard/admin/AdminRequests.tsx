@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Search, Phone, Wrench, Car, Sparkles, Briefcase, Trash2, Download } from "lucide-react";
 import { format } from "date-fns";
@@ -26,6 +27,7 @@ const AdminRequests = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [viewComment, setViewComment] = useState<AutoRequest | null>(null);
   const queryClient = useQueryClient();
 
   const { data: requests, isLoading } = useQuery({
@@ -353,8 +355,19 @@ const AdminRequests = () => {
                           </a>
                         </div>
                       </TableCell>
-                      <TableCell className="max-w-xs truncate">
-                        {request.comment || '-'}
+                      <TableCell className="max-w-xs">
+                        {request.comment ? (
+                          <button
+                            type="button"
+                            onClick={() => setViewComment(request)}
+                            title="სრულად ნახვა"
+                            className="block w-full max-w-xs truncate text-left text-blue-600 hover:underline"
+                          >
+                            {request.comment}
+                          </button>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>{getStatusBadge(request.status)}</TableCell>
                       <TableCell>
@@ -400,6 +413,34 @@ const AdminRequests = () => {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={!!viewComment} onOpenChange={(open) => !open && setViewComment(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>კომენტარი</DialogTitle>
+          </DialogHeader>
+          {viewComment && (
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                {getRequestTypeBadge(viewComment.lead_type)}
+                {getStatusBadge(viewComment.status)}
+                <span className="text-sm text-gray-500">
+                  {format(new Date(viewComment.created_at), 'dd/MM/yyyy HH:mm')}
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                <span className="font-medium">{viewComment.full_name}</span>
+                <a href={`tel:${viewComment.phone}`} className="flex items-center gap-1.5 text-blue-600 hover:underline">
+                  <Phone className="h-4 w-4" /> {viewComment.phone}
+                </a>
+              </div>
+              <div className="max-h-[50vh] overflow-y-auto whitespace-pre-wrap break-words rounded-lg bg-gray-50 p-4 text-sm leading-relaxed text-gray-800">
+                {viewComment.comment || '-'}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
