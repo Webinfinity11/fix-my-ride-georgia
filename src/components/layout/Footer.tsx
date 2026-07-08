@@ -146,15 +146,6 @@ const Footer = () => {
                     საწვავის ფასები
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="/vacancies"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    ვაკანსიები
-                  </Link>
-                </li>
               </ul>
             </div>
 

@@ -62,9 +62,6 @@ const Header = () => {
           <Link to="/map" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center gap-1.5">
             <Map className="h-4 w-4" />რუკა
           </Link>
-          <Link to="/vacancies" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center">
-            ვაკანსიები
-          </Link>
           <Link to="/fuel-importers" className="h-9 px-3 rounded-lg hover:bg-muted transition-colors inline-flex items-center">
             საწვავის ფასები
           </Link>

@@ -36,7 +36,6 @@ import {
   Phone,
   Info,
   Sparkles,
-  Briefcase,
   Users,
   FileText,
 } from "lucide-react";
@@ -60,7 +59,6 @@ export const MobileDrawerMenu = ({ children, open, onOpenChange }: MobileDrawerM
     { icon: Map, label: "რუკა", path: "/map" },
     // TEMP: სამრეცხაო დამალულია — ჯერ საკმარისი რაოდენობა არ არის
     // { icon: Sparkles, label: "სამრეცხაო", path: "/laundries" },
-    { icon: Briefcase, label: "ვაკანსიები", path: "/vacancies" },
     { icon: Fuel, label: "საწვავის ფასები", path: "/fuel-importers" },
     { icon: FileText, label: "ბლოგი", path: "/blog" },
     { icon: Info, label: "ჩვენ შესახებ", path: "/about" },
