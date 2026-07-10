@@ -48,6 +48,24 @@ const DISTRICTS = [
 ];
 const DISTRICT_NAME_TO_SLUG = Object.fromEntries(DISTRICTS.map((d) => [d.name, d.slug]));
 
+// Brand landing pages — mirror src/utils/carBrands.ts. Keep in sync.
+// A brand URL ships only when it has ≥ BRAND_MIN_SPECIALISTS *specialist*
+// services (services tagging ≤ SPECIALIST_MAX brands) — the "all brands" crowd
+// is noise and would make every brand page near-duplicate.
+const SPECIALIST_MAX = 5;
+const BRAND_MIN_SPECIALISTS = 5;
+const BRAND_PAGES = [
+  { name: 'Ford', slug: 'ford' }, { name: 'Toyota', slug: 'toyota' },
+  { name: 'Lincoln', slug: 'lincoln' }, { name: 'Chevrolet', slug: 'chevrolet' },
+  { name: 'Lexus', slug: 'lexus' }, { name: 'Buick', slug: 'buick' },
+  { name: 'Cadillac', slug: 'cadillac' }, { name: 'GMC', slug: 'gmc' },
+  { name: 'Opel', slug: 'opel' }, { name: 'Tesla', slug: 'tesla' },
+  { name: 'Audi', slug: 'audi' }, { name: 'Volkswagen', slug: 'volkswagen' },
+  { name: 'Mercedes-Benz', slug: 'mercedes-benz' }, { name: 'Skoda', slug: 'skoda' },
+  { name: 'Kia', slug: 'kia' }, { name: 'Hyundai', slug: 'hyundai' },
+];
+const BRAND_NAME_TO_SLUG = Object.fromEntries(BRAND_PAGES.map((b) => [b.name, b.slug]));
+
 // Keep in sync with src/utils/slugUtils.ts AND supabase/functions/_shared/slug.ts.
 const georgianToLatin = {
   'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z', 'თ': 't',
@@ -266,7 +284,7 @@ async function main() {
     { data: vacancies, error: vacanciesErr },
   ] = await Promise.all([
     supabase.from('mechanic_services')
-      .select('id, name, slug, description, updated_at, created_at, photos, videos, category_id, district, mechanic_id')
+      .select('id, name, slug, description, updated_at, created_at, photos, videos, category_id, district, mechanic_id, car_brands')
       .eq('is_active', true)
       .order('id'),
     supabase.from('service_categories')
@@ -415,6 +433,30 @@ async function main() {
   }
   await writePaginated('category', categoryEntries, now);
 
+  // ---- Brand landing pages ---- (/brand/:slug)
+  // Count specialist services per brand (services tagging ≤ SPECIALIST_MAX
+  // brands). A brand ships only when it clears BRAND_MIN_SPECIALISTS, so brand
+  // pages carry genuinely distinct listings instead of the "all brands" set.
+  const brandSpecialistCounts = new Map();
+  for (const s of services || []) {
+    const brands = Array.isArray(s.car_brands) ? s.car_brands : [];
+    if (brands.length === 0 || brands.length > SPECIALIST_MAX) continue;
+    for (const raw of brands) {
+      const slug = BRAND_NAME_TO_SLUG[(raw || '').trim()];
+      if (!slug) continue;
+      brandSpecialistCounts.set(slug, (brandSpecialistCounts.get(slug) || 0) + 1);
+    }
+  }
+  const brandEntries = [];
+  // Hub page first, then each qualifying brand.
+  brandEntries.push(urlEntry({ loc: `${SITE_URL}/brand`, lastmod: now }));
+  for (const b of BRAND_PAGES) {
+    if ((brandSpecialistCounts.get(b.slug) || 0) >= BRAND_MIN_SPECIALISTS) {
+      brandEntries.push(urlEntry({ loc: `${SITE_URL}/brand/${b.slug}`, lastmod: now }));
+    }
+  }
+  await writePaginated('brand', brandEntries, now);
+
   // ---- Blog posts ----
   const blogEntries = (blogPosts || []).map((p) =>
     urlEntry({
@@ -511,6 +553,7 @@ async function main() {
     services: serviceEntries.length,
     mechanics: mechanicEntries.length,
     categories: categoryEntries.length,
+    brands: brandEntries.length,
     blog: blogEntries.length,
     vacancies: vacancyEntries.length,
     videos: videoEntries.length,

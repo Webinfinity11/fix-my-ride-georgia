@@ -71,6 +71,23 @@ function getCategoryRoutes() {
   }
 }
 
+// Brand landing pages — read the qualifying /brand and /brand/:slug URLs from
+// the already-generated brand-sitemap.xml (same gate the sitemap applied).
+function getBrandRoutes() {
+  try {
+    const xmlPath = join(DIST, 'brand-sitemap.xml');
+    if (!existsSync(xmlPath)) return [];
+    const xml = readFileSync(xmlPath, 'utf8');
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    const routes = locs
+      .map((u) => { try { return new URL(u).pathname; } catch { return null; } })
+      .filter((p) => p && /^\/brand(\/[^/]+)?$/.test(p));
+    return [...new Set(routes)];
+  } catch {
+    return [];
+  }
+}
+
 // Georgian→Latin slug — kept in sync with src/utils/slugUtils.ts.
 const georgianToLatin = {
   'ა':'a','ბ':'b','გ':'g','დ':'d','ე':'e','ვ':'v','ზ':'z','თ':'t','ი':'i','კ':'k','ლ':'l','მ':'m','ნ':'n','ო':'o','პ':'p','ჟ':'zh','რ':'r','ს':'s','ტ':'t','უ':'u','ფ':'p','ქ':'q','ღ':'gh','ყ':'q','შ':'sh','ჩ':'ch','ც':'ts','ძ':'dz','წ':'ts','ჭ':'ch','ხ':'kh','ჯ':'j','ჰ':'h'
@@ -208,9 +225,10 @@ async function main() {
 
   let ok = 0, fail = 0;
   const categoryRoutes = getCategoryRoutes();
+  const brandRoutes = getBrandRoutes();
   const serviceRoutes = await getTopServiceRoutes(100);
-  const allRoutes = [...ROUTES, ...categoryRoutes, ...serviceRoutes];
-  console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories + ${serviceRoutes.length} services = ${allRoutes.length}`);
+  const allRoutes = [...ROUTES, ...categoryRoutes, ...brandRoutes, ...serviceRoutes];
+  console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories + ${brandRoutes.length} brands + ${serviceRoutes.length} services = ${allRoutes.length}`);
 
   // Render a single route (own page). Extracted so we can run a concurrency
   // pool — sequential prerender of 140+ routes would take ~15 min.

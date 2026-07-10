@@ -39,6 +39,8 @@ const Community = lazy(() => import("./pages/Community"));
 const Mechanics = lazy(() => import("./pages/Mechanics"));
 const ServiceCategory = lazy(() => import("./pages/ServiceCategory"));
 const CategoryList = lazy(() => import("./pages/CategoryList"));
+const BrandLanding = lazy(() => import("./pages/BrandLanding"));
+const BrandIndex = lazy(() => import("./pages/BrandIndex"));
 const Map = lazy(() => import("./pages/Map"));
 const Vacancies = lazy(() => import("./pages/Vacancies"));
 const VacancyDetail = lazy(() => import("./pages/VacancyDetail"));
@@ -107,6 +109,8 @@ function App() {
                   <Route path="/category" element={<CategoryList />} />
                   <Route path="/category/:categorySlug" element={<ServiceCategory />} />
                   <Route path="/category/:categorySlug/:district" element={<ServiceCategory />} />
+                  <Route path="/brand" element={<BrandIndex />} />
+                  <Route path="/brand/:brandSlug" element={<BrandLanding />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>
