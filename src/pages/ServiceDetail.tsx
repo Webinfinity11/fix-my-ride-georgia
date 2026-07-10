@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { performRedirect, needsCanonicalRedirect } from "@/utils/redirectUtils";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,6 +54,8 @@ import { ServiceShareButtons } from "@/components/services/ServiceShareButtons";
 import { SaveServiceButton } from "@/components/services/SaveServiceButton";
 import ServiceDetailBanner from "@/components/banners/ServiceDetailBanner";
 import { RelatedBlogPosts, MechanicOtherServices } from "@/components/seo/InternalLinkWidgets";
+import { brandsForService } from "@/utils/carBrands";
+import { CAR_BRAND_LOGOS } from "@/data/carBrandLogos";
 import { PhoneRevealDialog } from "@/components/services/PhoneRevealDialog";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
 
@@ -1067,6 +1069,25 @@ const ServiceDetail = () => {
             <div className="max-w-[1280px] mx-auto px-4 lg:px-8 py-8 space-y-10">
               {service.mechanic?.id && (
                 <MechanicOtherServices mechanicId={service.mechanic.id} excludeServiceId={service.id} />
+              )}
+              {brandsForService(service.car_brands).length > 0 && (
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold mb-4">იპოვე ხელოსანი მარკის მიხედვით</h2>
+                  <div className="flex flex-wrap gap-2.5">
+                    {brandsForService(service.car_brands).map((b) => (
+                      <Link
+                        key={b.slug}
+                        to={`/brand/${b.slug}`}
+                        className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-4 py-2 text-sm font-medium hover:border-primary hover:text-primary transition-colors"
+                      >
+                        {CAR_BRAND_LOGOS[b.name] && (
+                          <img src={CAR_BRAND_LOGOS[b.name]} alt={`${b.nameKa} ლოგო`} loading="lazy" className="h-5 w-5 object-contain" />
+                        )}
+                        {b.nameKa}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               )}
               <RelatedBlogPosts limit={3} />
             </div>

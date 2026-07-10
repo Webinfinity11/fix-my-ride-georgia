@@ -8,6 +8,7 @@ import { ArrowRight, Calendar, Star, Wrench } from 'lucide-react';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { createSlug } from '@/utils/slugUtils';
+import { BRAND_PAGES } from '@/utils/carBrands';
 import { formatDate } from '@/utils/blogHelpers';
 import type { BlogPost } from '@/hooks/useBlogPosts';
 
@@ -246,6 +247,41 @@ export function FooterTopCategories({ limit = 10 }: { limit?: number }) {
             >
               <ArrowRight className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className="line-clamp-1">{c.name}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * Footer column linking the car-brand landing pages. Static list (the qualifying
+ * brands from src/utils/carBrands.ts) so it needs no query — pure internal-link
+ * equity toward the /brand cluster on every page that renders the footer.
+ */
+export function FooterTopBrands() {
+  return (
+    <div className="col-span-1">
+      <h3 className="text-lg font-semibold mb-6 flex items-center">
+        <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
+        მარკის მიხედვით
+      </h3>
+      <ul className={footerScrollListClass}>
+        <li>
+          <Link to="/brand" className="text-blue-100 hover:text-secondary transition-colors flex items-center font-semibold">
+            <ArrowRight className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="line-clamp-1">ყველა მარკა</span>
+          </Link>
+        </li>
+        {BRAND_PAGES.slice(0, 9).map((b) => (
+          <li key={b.slug}>
+            <Link
+              to={`/brand/${b.slug}`}
+              className="text-blue-100 hover:text-secondary transition-colors flex items-center"
+            >
+              <ArrowRight className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span className="line-clamp-1">{b.nameKa}</span>
             </Link>
           </li>
         ))}

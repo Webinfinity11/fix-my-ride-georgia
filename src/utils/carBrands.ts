@@ -64,3 +64,19 @@ export function getBrandBySlug(slug: string | undefined | null): BrandInfo | nul
 export function isSpecialist(carBrands: string[] | null | undefined): boolean {
   return Array.isArray(carBrands) && carBrands.length > 0 && carBrands.length <= SPECIALIST_MAX;
 }
+
+const NAME_INDEX: Record<string, BrandInfo> = Object.fromEntries(
+  BRAND_PAGES.map((b) => [b.name, b]),
+);
+
+/**
+ * Brand pages to link from a specialist service. Empty for "all brands" (select
+ * all) services — linking those to every brand page would be spammy, so only
+ * genuinely focused services get contextual brand links.
+ */
+export function brandsForService(carBrands: string[] | null | undefined): BrandInfo[] {
+  if (!isSpecialist(carBrands)) return [];
+  return (carBrands as string[])
+    .map((b) => NAME_INDEX[(b || '').trim()])
+    .filter((b): b is BrandInfo => Boolean(b));
+}

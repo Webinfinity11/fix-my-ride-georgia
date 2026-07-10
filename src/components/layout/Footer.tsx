@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Wrench, ArrowRight, Heart } from "lucide-react";
-import { FooterTopCategories, footerScrollListClass } from "@/components/seo/InternalLinkWidgets";
+import { FooterTopCategories, FooterTopBrands, footerScrollListClass } from "@/components/seo/InternalLinkWidgets";
 
 const Footer = () => {
   return (
@@ -151,6 +151,9 @@ const Footer = () => {
 
             {/* Top Categories — sitewide internal link equity for SEO. */}
             <FooterTopCategories limit={10} />
+
+            {/* Car brands — internal links to the /brand cluster. */}
+            <FooterTopBrands />
 
             {/* User Links */}
             <div className="col-span-1">
