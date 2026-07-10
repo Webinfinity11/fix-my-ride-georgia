@@ -8,8 +8,10 @@ import { Card } from "@/components/ui/card";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { BreadcrumbSchema, CollectionPageSchema } from "@/components/seo/StructuredData";
 import { BrandsNav } from "@/components/seo/BrandsNav";
+import { CategoryFAQSection } from "@/components/seo/CategorySeoSections";
 import { CAR_BRAND_LOGOS } from "@/data/carBrandLogos";
 import { getBrandBySlug, isSpecialist, BRAND_MIN_SPECIALISTS } from "@/utils/carBrands";
+import { getBrandIntro, getBrandFAQ } from "@/utils/brandContent";
 import { useServices } from "@/hooks/useServices";
 import NotFound from "@/pages/NotFound";
 
@@ -180,6 +182,17 @@ const BrandLanding = () => {
             </div>
           </div>
         )}
+
+        {/* Brand-specific SEO copy — unique per brand so the cluster reads as
+            distinct pages, not a name-swapped template. */}
+        <section className="container mx-auto px-4 py-8 md:py-12">
+          <div
+            className="max-w-4xl mx-auto prose prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: getBrandIntro(brand, specialists.length) }}
+          />
+        </section>
+
+        <CategoryFAQSection items={getBrandFAQ(brand)} categoryName={brand.nameKa} />
 
         {/* Brand switcher — internal links to the other brand pages. */}
         <BrandsNav currentSlug={brand.slug} heading="სხვა მარკები" />
