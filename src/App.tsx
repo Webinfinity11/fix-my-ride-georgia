@@ -111,6 +111,7 @@ function App() {
                   <Route path="/category/:categorySlug/:district" element={<ServiceCategory />} />
                   <Route path="/brand" element={<BrandIndex />} />
                   <Route path="/brand/:brandSlug" element={<BrandLanding />} />
+                  <Route path="/brand/:brandSlug/:district" element={<BrandLanding />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>

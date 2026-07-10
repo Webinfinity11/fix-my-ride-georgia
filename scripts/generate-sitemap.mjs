@@ -438,21 +438,36 @@ async function main() {
   // brands). A brand ships only when it clears BRAND_MIN_SPECIALISTS, so brand
   // pages carry genuinely distinct listings instead of the "all brands" set.
   const brandSpecialistCounts = new Map();
+  // brandSlug -> districtSlug -> specialist count (for /brand/:slug/:district).
+  const brandDistrictCounts = new Map();
   for (const s of services || []) {
     const brands = Array.isArray(s.car_brands) ? s.car_brands : [];
     if (brands.length === 0 || brands.length > SPECIALIST_MAX) continue;
+    const districtSlug = s.district ? DISTRICT_NAME_TO_SLUG[s.district] : null;
     for (const raw of brands) {
       const slug = BRAND_NAME_TO_SLUG[(raw || '').trim()];
       if (!slug) continue;
       brandSpecialistCounts.set(slug, (brandSpecialistCounts.get(slug) || 0) + 1);
+      if (districtSlug) {
+        if (!brandDistrictCounts.has(slug)) brandDistrictCounts.set(slug, new Map());
+        const dm = brandDistrictCounts.get(slug);
+        dm.set(districtSlug, (dm.get(districtSlug) || 0) + 1);
+      }
     }
   }
   const brandEntries = [];
-  // Hub page first, then each qualifying brand.
+  // Hub page first, then each qualifying brand + its qualifying districts.
   brandEntries.push(urlEntry({ loc: `${SITE_URL}/brand`, lastmod: now }));
   for (const b of BRAND_PAGES) {
-    if ((brandSpecialistCounts.get(b.slug) || 0) >= BRAND_MIN_SPECIALISTS) {
-      brandEntries.push(urlEntry({ loc: `${SITE_URL}/brand/${b.slug}`, lastmod: now }));
+    if ((brandSpecialistCounts.get(b.slug) || 0) < BRAND_MIN_SPECIALISTS) continue;
+    brandEntries.push(urlEntry({ loc: `${SITE_URL}/brand/${b.slug}`, lastmod: now }));
+    const dm = brandDistrictCounts.get(b.slug);
+    if (dm) {
+      for (const [districtSlug, count] of dm) {
+        if (count >= BRAND_MIN_SPECIALISTS) {
+          brandEntries.push(urlEntry({ loc: `${SITE_URL}/brand/${b.slug}/${districtSlug}`, lastmod: now }));
+        }
+      }
     }
   }
   await writePaginated('brand', brandEntries, now);

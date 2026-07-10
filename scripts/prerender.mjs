@@ -81,7 +81,7 @@ function getBrandRoutes() {
     const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
     const routes = locs
       .map((u) => { try { return new URL(u).pathname; } catch { return null; } })
-      .filter((p) => p && /^\/brand(\/[^/]+)?$/.test(p));
+      .filter((p) => p && /^\/brand(\/[^/]+){0,2}$/.test(p));
     return [...new Set(routes)];
   } catch {
     return [];
