@@ -1,0 +1,72 @@
+name: Refresh sitemaps
+
+# Fully automated sitemap regeneration.
+#
+# Lovable serves the committed public/*sitemap*.xml as static files and does NOT
+# regenerate them at build (no service-role key in its build env). So this
+# workflow regenerates them with the service-role key, commits the result back
+# to main, and Lovable auto-deploys the fresh sitemaps. It also pings IndexNow
+# so Bing/Yandex pick up new URLs immediately.
+#
+# Requires two repository secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL                 https://kwozniwtygkdoagjegom.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY    (Supabase → Project Settings → API → service_role)
+
+on:
+  schedule:
+    - cron: '17 3 * * *'        # daily 03:17 UTC — catches DB-only changes
+  push:
+    branches: [main]
+    paths:                       # code changes that alter the URL set
+      - 'scripts/generate-sitemap.mjs'
+      - 'src/utils/districts.ts'
+      - 'src/utils/carBrands.ts'
+  workflow_dispatch: {}          # manual "Run workflow" button
+
+# GITHUB_TOKEN pushes don't retrigger workflows, but be explicit anyway.
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-sitemaps
+  cancel-in-progress: false
+
+jobs:
+  sitemaps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # The generator's only external import is @supabase/supabase-js — install
+      # just that (fast, avoids the repo's peer-dep quirks).
+      - name: Install supabase-js
+        run: npm install @supabase/supabase-js --no-save --no-audit --no-fund --legacy-peer-deps
+
+      - name: Generate sitemaps + ping IndexNow
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SITEMAP_PING_INDEXNOW: '1'
+        run: node scripts/generate-sitemap.mjs
+
+      - name: Commit only when the URL set actually changed
+        run: |
+          if git diff --quiet -- public/; then
+            echo "No sitemap changes."
+            exit 0
+          fi
+          # Ignore lastmod-only churn: commit only if <loc> entries were added/removed.
+          if [ -z "$(git diff -- public/ | grep -E '^[+-] *<loc>' || true)" ]; then
+            echo "Only lastmod changed — reverting to avoid noise."
+            git checkout -- public/
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/*sitemap*.xml
+          git commit -m "chore(seo): refresh sitemaps [skip ci]"
+          git push
