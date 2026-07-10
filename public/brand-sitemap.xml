@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="//fixup.ge/main-sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <url>
+    <loc>https://fixup.ge/brand</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/ford</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/ford" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/ford" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/ford/chughureti</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/ford/chughureti" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/ford/chughureti" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/ford/saburtalo</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/ford/saburtalo" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/ford/saburtalo" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/ford/nadzaladevi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/ford/nadzaladevi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/ford/nadzaladevi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/ford/digomi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/ford/digomi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/ford/digomi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/ford/samgori</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/ford/samgori" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/ford/samgori" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/toyota</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/toyota" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/toyota" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/toyota/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/toyota/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/toyota/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/toyota/isani</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/toyota/isani" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/toyota/isani" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/toyota/gldani</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/toyota/gldani" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/toyota/gldani" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/lincoln</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/lincoln" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/lincoln" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/lincoln/chughureti</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/lincoln/chughureti" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/lincoln/chughureti" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/lincoln/saburtalo</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/lincoln/saburtalo" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/lincoln/saburtalo" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/lincoln/nadzaladevi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/lincoln/nadzaladevi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/lincoln/nadzaladevi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/chevrolet</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/chevrolet" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/chevrolet" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/chevrolet/digomi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/chevrolet/digomi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/chevrolet/digomi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/chevrolet/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/chevrolet/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/chevrolet/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/lexus</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/lexus" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/lexus" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/lexus/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/lexus/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/lexus/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/lexus/isani</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/lexus/isani" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/lexus/isani" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/buick</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/buick" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/buick" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/buick/digomi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/buick/digomi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/buick/digomi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/buick/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/buick/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/buick/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/cadillac</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/cadillac" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/cadillac" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/cadillac/digomi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/cadillac/digomi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/cadillac/digomi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/cadillac/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/cadillac/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/cadillac/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/gmc</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/gmc" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/gmc" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/gmc/digomi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/gmc/digomi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/gmc/digomi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/gmc/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/gmc/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/gmc/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/opel</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/opel" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/opel" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/opel/digomi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/opel/digomi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/opel/digomi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/opel/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/opel/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/opel/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/tesla</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/tesla" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/tesla" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/audi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/audi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/audi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/audi/nadzaladevi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/audi/nadzaladevi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/audi/nadzaladevi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/volkswagen</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/volkswagen" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/volkswagen" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/volkswagen/nadzaladevi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/volkswagen/nadzaladevi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/volkswagen/nadzaladevi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/mercedes-benz</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/mercedes-benz" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/mercedes-benz" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/mercedes-benz/varketili</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/mercedes-benz/varketili" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/mercedes-benz/varketili" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/skoda</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/skoda" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/skoda" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/skoda/nadzaladevi</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/skoda/nadzaladevi" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/skoda/nadzaladevi" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/kia</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/kia" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/kia" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/kia/saburtalo</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/kia/saburtalo" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/kia/saburtalo" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/hyundai</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/hyundai" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/hyundai" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/brand/hyundai/saburtalo</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/brand/hyundai/saburtalo" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/brand/hyundai/saburtalo" />
+    <lastmod>2026-07-10T09:21:05.935+00:00</lastmod>
+  </url>
+</urlset>
