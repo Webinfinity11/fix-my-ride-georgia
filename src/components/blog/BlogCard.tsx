@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from '@/utils/imageCompression';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -8,9 +9,10 @@ import type { BlogPost } from '@/hooks/useBlogPosts';
 
 interface BlogCardProps {
   post: BlogPost;
+  priorityImage?: boolean;
 }
 
-export const BlogCard = ({ post }: BlogCardProps) => {
+export const BlogCard = ({ post, priorityImage = false }: BlogCardProps) => {
   const readTime = calculateReadTime(post.content);
   const excerpt = post.excerpt || truncateText(extractTextFromHtml(post.content), 150);
 
@@ -20,7 +22,11 @@ export const BlogCard = ({ post }: BlogCardProps) => {
         {post.featured_image && (
           <div className="relative aspect-[16/9] overflow-hidden">
             <LazyImage
-              src={post.featured_image}
+              src={getOptimizedImageUrl(post.featured_image, 600, 338, 70, { cropToFit: true })}
+              fallbackSrc={post.featured_image}
+              priority={priorityImage}
+              width={600}
+              height={338}
               alt={post.title}
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
             />

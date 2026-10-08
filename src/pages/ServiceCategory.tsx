@@ -55,6 +55,12 @@ const ServiceCategory = () => {
   }>();
   const districtInfo = getDistrictBySlug(districtSlug);
   const [category, setCategory] = useState<CategoryType | null>(null);
+  const [resolvedCategoryParam, setResolvedCategoryParam] = useState<string | null>(null);
+  const categoryParam = categoryId || categorySlug;
+  // Numeric routes already contain the filter ID; slug routes must resolve it first.
+  const serviceCategoryId = categoryParam && /^\d+$/.test(categoryParam)
+    ? Number(categoryParam)
+    : resolvedCategoryParam === categoryParam ? category?.id : undefined;
   // Reuse the shared services pipeline (same as /services) so the cards render
   // identically (VIP badges/sorting included) and the fetch/transform logic
   // isn't duplicated here.
@@ -73,17 +79,36 @@ const ServiceCategory = () => {
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    const param = categoryId || categorySlug;
-    if (param) {
-      fetchCategoryAndServices();
+    let active = true;
+    setCategoryLoading(true);
+    setCategory(null);
+    if (!categoryParam) {
+      setCategoryLoading(false);
+      return;
     }
-  }, [categoryId, categorySlug]);
+    void (async () => {
+      try {
+        const data = await getCategoryFromSlug(categoryParam);
+        if (!active) return;
+        if (!data) throw new Error("Category not found");
+        setCategory(data);
+        setResolvedCategoryParam(categoryParam);
+      } catch (error) {
+        if (!active) return;
+        console.error("Error fetching category:", error);
+        toast.error("კატეგორიის ჩატვირთვისას შეცდომა დაფიქსირდა");
+      } finally {
+        if (active) setCategoryLoading(false);
+      }
+    })();
+    return () => { active = false; };
+  }, [categoryParam]);
 
   useEffect(() => {
-    if (category) {
-      fetchServices({
+    if (serviceCategoryId !== undefined) {
+      void fetchServices({
         searchTerm: filters.searchTerm,
-        selectedCategory: category.id,
+        selectedCategory: serviceCategoryId,
         selectedCity: filters.selectedCity,
         selectedDistrict: filters.selectedDistrict,
         selectedBrands: filters.selectedBrands,
@@ -91,34 +116,9 @@ const ServiceCategory = () => {
         minRating: filters.minRating,
       });
     }
-  }, [filters, category]);
-
-  const fetchCategoryAndServices = async () => {
-    const param = categoryId || categorySlug;
-    if (!param) return;
-
-    try {
-      setCategoryLoading(true);
-      console.log("🔍 Looking for category with param:", param);
-      
-      // Use slug utility to get category (supports both ID and slug)
-      const categoryData = await getCategoryFromSlug(param);
-      
-      if (!categoryData) {
-        console.error("❌ Category not found for param:", param);
-        throw new Error('Category not found');
-      }
-      
-      console.log("✅ Category found:", categoryData);
-      setCategory(categoryData);
-
-    } catch (error: any) {
-      console.error("Error fetching category:", error);
-      toast.error("კატეგორიის ჩატვირთვისას შეცდომა დაფიქსირდა");
-    } finally {
-      setCategoryLoading(false);
-    }
-  };
+    // fetchServices is recreated on render; depend on the actual filter inputs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, serviceCategoryId]);
 
   if (categoryLoading) {
     if (window.__fixupCategoryBoot?.path === window.location.pathname.replace(/\/$/, "")) {

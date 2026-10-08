@@ -1,9 +1,10 @@
+import { queryClient } from "@/lib/queryClient";
 
 import { CategoryBootShell } from "@/components/layout/CategoryBootShell";
 import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/context/AuthContext";
@@ -52,7 +53,7 @@ const AddListing = lazy(() => import("./pages/AddListing"));
 const OrderParts = lazy(() => import("./pages/OrderParts"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
-const queryClient = new QueryClient();
+
 
 function App() {
   return (

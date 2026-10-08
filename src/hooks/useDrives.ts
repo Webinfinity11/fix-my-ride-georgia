@@ -7,8 +7,10 @@ type Drive = Database["public"]["Tables"]["drives"]["Row"];
 type DriveInsert = Database["public"]["Tables"]["drives"]["Insert"];
 type DriveUpdate = Database["public"]["Tables"]["drives"]["Update"];
 
-export const useDrives = () => {
+export const useDrives = (enabled = true) => {
   return useQuery({
+    enabled,
+    staleTime: 60_000,
     queryKey: ["drives"],
     queryFn: async () => {
       const { data, error } = await supabase

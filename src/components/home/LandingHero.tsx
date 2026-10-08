@@ -1,11 +1,12 @@
+import { NearViewport } from "@/components/ui/near-viewport";
+import mapLayerCounts from "virtual:map-layer-counts";
+import { getPublicServiceCategories, getPublicServiceCities } from "@/lib/serviceMetadata";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSearch } from "@/utils/tracking";
 import { useFuelImporters } from "@/hooks/useFuelImporters";
-import { useFuelStations } from "@/hooks/useFuelStations";
-import { useChargers } from "@/hooks/useChargers";
 
 const MiniServiceMap = lazy(() => import("./MiniServiceMap"));
 
@@ -110,24 +111,30 @@ const LandingHero = () => {
 
   const marqueePaused = useRef(false);
 
-  // Real map-layer counts (mirrors the /map page).
-  const { stations } = useFuelStations();
-  const { chargers } = useChargers();
 
   useEffect(() => {
-    (async () => {
-      const { data: cats } = await supabase.from("service_categories").select("id, name").order("name");
-      if (cats) setCategories(cats.map((c: { id: number | string; name: string }) => ({ id: String(c.id), name: c.name })));
-      const { data: svc } = await supabase.from("mechanic_services").select("city").eq("is_active", true).not("city", "is", null);
-      if (svc) setCities([...new Set(svc.map((s: { city: string | null }) => s.city).filter(Boolean))].sort() as string[]);
-      const { count } = await supabase
-        .from("mechanic_services")
-        .select("id", { count: "exact", head: true })
-        .eq("is_active", true)
-        .not("latitude", "is", null)
-        .not("longitude", "is", null);
-      if (typeof count === "number") setServiceCount(count);
-    })();
+    let active = true;
+    // Each result renders as soon as it arrives; slow metadata does not hold up the rest.
+    void Promise.all([
+      (async () => {
+        const data = await getPublicServiceCategories();
+        if (active && data) setCategories(data.map(c => ({ id: String(c.id), name: c.name })));
+      })(),
+      (async () => {
+        const data = await getPublicServiceCities();
+        if (active) setCities(data);
+      })(),
+      (async () => {
+        const { count } = await supabase
+          .from("mechanic_services")
+          .select("id", { count: "exact", head: true })
+          .eq("is_active", true)
+          .not("latitude", "is", null)
+          .not("longitude", "is", null);
+        if (active && typeof count === "number") setServiceCount(count);
+      })(),
+    ]).catch(error => console.error("Homepage metadata failed:", error));
+    return () => { active = false; };
   }, []);
 
   const categoryName = selectedCategory === "all" ? null : categories.find((c) => c.id === selectedCategory)?.name ?? null;
@@ -181,10 +188,10 @@ const LandingHero = () => {
   const fuelRows: FuelRow[] = realFuelRows.length > 0 ? realFuelRows : FUEL[fuelKind];
   const layerCounts: Record<"mechanic" | "fuel" | "ev", number> = {
     mechanic: serviceCount,
-    fuel: stations.length,
-    ev: chargers.length,
+    fuel: mapLayerCounts.stations,
+    ev: mapLayerCounts.chargers,
   };
-  const mapCount = String(layerCounts[mapTab] || (mapTab === "mechanic" ? 512 : mapTab === "fuel" ? 62 : 18));
+  const mapCount = String(layerCounts[mapTab]);
 
   return (
     <section
@@ -339,9 +346,11 @@ const LandingHero = () => {
                   </div>
 
                   <div className="relative bg-ink-100 overflow-hidden flex-1 z-0">
+                    <NearViewport rootMargin="0px" className="absolute inset-0" fallback={<div className="absolute inset-0 grid place-items-center text-ink-400 text-[11px]">რუკა იტვირთება…</div>}>
                     <Suspense fallback={<div className="absolute inset-0 grid place-items-center text-ink-400 text-[11px] animate-pulse">რუკა იტვირთება…</div>}>
                       <MiniServiceMap layer={mapTab} />
                     </Suspense>
+                    </NearViewport>
                     <button type="button" onClick={detectLocation} title="ჩემი მდებარეობა" className={`absolute top-3 right-3 z-[400] inline-flex items-center justify-center h-10 w-10 rounded-btn border-2 shadow-pop transition ${locating ? "border-accent-300 bg-accent-50 text-accent-500" : locLabel ? "border-accent-400 bg-accent-50 text-accent-700" : "border-ink-200 bg-white text-ink-600 hover:border-accent-400 hover:text-accent-700"}`}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`h-5 w-5 ${locating ? "animate-spin" : ""}`}>{locating ? <path d="M21 12a9 9 0 1 1-6.219-8.56" /> : <><circle cx="12" cy="12" r="3" /><line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" /><line x1="2" y1="12" x2="6" y2="12" /><line x1="18" y1="12" x2="22" y2="12" /></>}</svg>
                     </button>

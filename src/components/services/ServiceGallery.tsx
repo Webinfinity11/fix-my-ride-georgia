@@ -38,6 +38,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
         <div className="aspect-[16/10] bg-gray-100 rounded-xl overflow-hidden shadow-sm">
           <LazyImage
             src={getOptimizedImageUrl(photos[currentImageIndex], 800, 500, 75)}
+            fallbackSrc={photos[currentImageIndex]}
             alt={`${serviceName} - ფოტო ${currentImageIndex + 1}`}
             className="w-full h-full object-cover transition-all duration-300 hover:scale-105"
             priority
@@ -99,6 +100,7 @@ const ServiceGallery = ({ photos, serviceName }: ServiceGalleryProps) => {
               <div className="w-24 h-16 bg-gray-100 rounded-lg overflow-hidden group">
                 <LazyImage
                   src={getOptimizedImageUrl(photo, 96, 64, 60)}
+                  fallbackSrc={photo}
                   alt={`${serviceName} - ფოტო ${index + 1}`}
                   className={`w-full h-full object-cover transition-all duration-200 group-hover:scale-110 ${
                     index === currentImageIndex

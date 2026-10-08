@@ -1,3 +1,4 @@
+import { getPublicServiceCategories } from "@/lib/serviceMetadata";
 import { supabase } from '@/integrations/supabase/client';
 
 // Georgian to Latin transliteration mapping
@@ -121,38 +122,11 @@ export function createCategorySlug(categoryName: string): string {
  */
 export async function getCategoryFromSlug(slug: string) {
   try {
-    // First try to get by ID (for backward compatibility)
-    const numericId = parseInt(slug);
-    if (!isNaN(numericId)) {
-      const { data, error } = await supabase
-        .from('service_categories')
-        .select('*')
-        .eq('id', numericId)
-        .single();
-      
-      if (!error && data) {
-        return data;
-      }
-    }
-    
-    // If not found by ID, try to find by matching slug
-    const { data: categories, error } = await supabase
-      .from('service_categories')
-      .select('*');
-    
-    if (error) {
-      console.error("Error fetching categories for slug match:", error);
-      return null;
-    }
-    
-    if (categories) {
-      const category = categories.find(cat => 
-        createCategorySlug(cat.name) === slug
-      );
-      return category || null;
-    }
-    
-    return null;
+    const categories = await getPublicServiceCategories();
+    const numericId = /^\d+$/.test(slug) ? Number(slug) : null;
+    return categories.find(category =>
+      category.id === numericId || createCategorySlug(category.name) === slug
+    ) || null;
   } catch (error) {
     console.error("Error in getCategoryFromSlug:", error);
     return null;

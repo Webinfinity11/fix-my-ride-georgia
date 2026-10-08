@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { readFileSync } from "node:fs";
+import { mapLayerCountsPlugin } from "./scripts/map-layer-counts.mjs";
 import { injectCategoryBootShells } from "./scripts/category-boot-shell.mjs";
 
 // Public category headings cached from the last verified build. React refreshes metadata and
@@ -68,6 +69,7 @@ export default defineConfig(({ mode }) => ({
   // Prevents leaking PII (user IDs, JWTs, session data) into browser console.
   esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : undefined,
   plugins: [
+    mapLayerCountsPlugin(__dirname),
     {
       name: 'category-boot-shell',
       apply: 'build',
@@ -111,6 +113,10 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
+        // External registration has no virtual-module helper to activate a waiting SW.
+        // Claim clients after installation; the next navigation uses the new shell.
+        skipWaiting: true,
+        clientsClaim: true,
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
         // Precache ONLY the tiny app shell (html/css/manifest). Previously this
         // globbed **/*.js + all images, so the service worker downloaded the

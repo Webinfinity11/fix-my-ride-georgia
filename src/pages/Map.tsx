@@ -1,3 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import { publicServiceCitiesOptions } from "@/lib/serviceMetadata";
+import mapLayerCounts from "virtual:map-layer-counts";
 import { useState, useEffect, useRef } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useLaundries } from "@/hooks/useLaundries";
@@ -310,11 +313,13 @@ const Map = () => {
   const {
     services,
     categories,
-    cities,
     loading,
     fetchInitialData,
     fetchServices
   } = useServices();
+
+  // City camera navigation is available on every layer; share its small metadata query.
+  const { data: cities = [] } = useQuery(publicServiceCitiesOptions);
 
   // Category / city picker (homepage-style modals)
   const selectedCategoryName = selectedCategory === "all" ? null : categories.find((c) => c.id === selectedCategory)?.name ?? null;
@@ -327,19 +332,26 @@ const Map = () => {
   const {
     data: laundries = [],
     isLoading: laundriesLoading
-  } = useLaundries();
+  } = useLaundries(viewMode === "laundries");
   const {
     data: drives = [],
     isLoading: drivesLoading
-  } = useDrives();
+  } = useDrives(viewMode === "drives");
   const {
     chargers,
-    isLoading: chargersLoading
-  } = useChargers();
+    isLoading: chargersLoading,
+    hasData: chargersReady
+  } = useChargers(viewMode === "chargers");
   const {
     stations: fuelStations,
-    isLoading: stationsLoading
-  } = useFuelStations();
+    isLoading: stationsLoading,
+    hasData: stationsReady
+  } = useFuelStations(viewMode === "stations");
+
+  const layerLoading = viewMode === "services" ? loading
+    : viewMode === "laundries" ? laundriesLoading
+    : viewMode === "drives" ? drivesLoading
+    : viewMode === "chargers" ? chargersLoading : stationsLoading;
 
   // Filter fuel stations by search and brand filter
   const filteredStations = fuelStations.filter(station => {
@@ -421,6 +433,12 @@ const Map = () => {
     setSearchQuery("");
   };
 
+  const serviceTabCount = loading ? "—" : filteredServices.length;
+  const chargerTabCount = chargersReady ? filteredChargers.length
+    : searchQuery || chargerFilter !== "all" ? "—" : mapLayerCounts.chargers;
+  const stationTabCount = stationsReady ? filteredStations.length
+    : searchQuery || stationBrandFilter !== "all" ? "—" : mapLayerCounts.stations;
+
   // Count active filters
   const activeFiltersCount = [selectedCategory !== "all", selectedCity !== null, searchQuery !== ""].filter(Boolean).length;
 
@@ -466,26 +484,22 @@ const Map = () => {
     );
   };
 
-  // Fetch services on component mount
+  // Filter metadata is needed only for the services layer.
   useEffect(() => {
-    const loadServices = async () => {
-      console.log("🗺️ Map component loading services...");
-      await fetchInitialData();
-      // Fetch all services with current filters
-      await applyFilters();
-    };
-    loadServices();
+    if (viewMode === "services") void fetchInitialData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array to run only once on mount
+  }, [viewMode]);
 
-  // Apply filters when they change
+  const previousSearch = useRef(searchQuery);
+  // The active services layer loads independently of filter metadata.
   useEffect(() => {
-    if (categories.length > 0) {
-      // Only apply if data is loaded
-      applyFilters();
-    }
+    const delay = previousSearch.current === searchQuery ? 0 : 500;
+    previousSearch.current = searchQuery;
+    if (viewMode !== "services") return;
+    const timer = setTimeout(() => { void applyFilters(); }, delay);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedCity]);
+  }, [viewMode, selectedCategory, selectedCity, searchQuery]);
 
   // Selecting a city flies the map to it (known centre, else fit its pins).
   useEffect(() => {
@@ -504,17 +518,6 @@ const Map = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCity, map]);
 
-  // Search with delay (debounce)
-  useEffect(() => {
-    if (categories.length === 0) return; // Don't apply if data not loaded yet
-
-    const timeoutId = setTimeout(() => {
-      applyFilters();
-    }, 500); // Apply search after 500ms delay
-
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
   useEffect(() => {
     if (!mapRef.current || map) return;
 
@@ -913,9 +916,9 @@ const Map = () => {
           <div className="flex items-center gap-2 md:gap-3 flex-wrap">
             <div className="inline-flex items-center gap-1 p-1 bg-muted rounded-lg overflow-x-auto scrollbar-hide">
               {([
-                { k: "services" as const, l: "სერვისები", Icon: Wrench, n: filteredServices.length },
-                { k: "chargers" as const, l: "EV დამტენები", Icon: BatteryCharging, n: filteredChargers.length },
-                { k: "stations" as const, l: "საწვავები", Icon: Fuel, n: filteredStations.length },
+                { k: "services" as const, l: "სერვისები", Icon: Wrench, n: serviceTabCount },
+                { k: "chargers" as const, l: "EV დამტენები", Icon: BatteryCharging, n: chargerTabCount },
+                { k: "stations" as const, l: "საწვავები", Icon: Fuel, n: stationTabCount },
               ]).map((t) => {
                 const active = viewMode === t.k;
                 return (
@@ -973,7 +976,7 @@ const Map = () => {
           
           <div className="flex-1 overflow-y-auto sidebar-scroll-container">
             {/* Results Header */}
-            {!loading && !laundriesLoading && !drivesLoading && !chargersLoading && !stationsLoading && <div className="px-4 py-2 border-b border-border bg-muted/50">
+            {!layerLoading && <div className="px-4 py-2 border-b border-border bg-muted/50">
                 <p className="text-sm text-muted-foreground">
                   <strong>
                     {viewMode === 'services' ? sortedFilteredServices.length : viewMode === 'laundries' ? laundries?.length || 0 : viewMode === 'chargers' ? filteredChargers.length : viewMode === 'stations' ? filteredStations.length : drives?.length || 0}
@@ -986,7 +989,7 @@ const Map = () => {
               </div>}
 
             <div key={viewMode} className="p-2 md:p-4">
-              {loading || laundriesLoading || drivesLoading || chargersLoading || stationsLoading ? (
+              {layerLoading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                   <p className="mt-2 text-muted-foreground">
@@ -1155,7 +1158,7 @@ const Map = () => {
                     <img src="/fuel-company-logos/socar-logo.svg" alt="SOCAR" className="w-4 h-4 mr-1.5" />
                     SOCAR
                     <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
-                      {stationBrandCounts.SOCAR}
+                      {stationsReady ? stationBrandCounts.SOCAR : "…"}
                     </Badge>
                   </Button>
 
@@ -1169,7 +1172,7 @@ const Map = () => {
                     <img src="/fuel-company-logos/wissol-logo.png" alt="WISSOL" className="w-4 h-4 mr-1.5" />
                     WISSOL
                     <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
-                      {stationBrandCounts.WISSOL}
+                      {stationsReady ? stationBrandCounts.WISSOL : "…"}
                     </Badge>
                   </Button>
 
@@ -1183,7 +1186,7 @@ const Map = () => {
                     <img src="/fuel-company-logos/rompetrol-logo.png" alt="ROMPETROL" className="w-4 h-4 mr-1.5" />
                     ROMPETROL
                     <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
-                      {stationBrandCounts.ROMPETROL}
+                      {stationsReady ? stationBrandCounts.ROMPETROL : "…"}
                     </Badge>
                   </Button>
 
@@ -1197,7 +1200,7 @@ const Map = () => {
                     <img src="/fuel-company-logos/gulf-logo.png" alt="GULF" className="w-4 h-4 mr-1.5" />
                     GULF
                     <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
-                      {stationBrandCounts.GULF}
+                      {stationsReady ? stationBrandCounts.GULF : "…"}
                     </Badge>
                   </Button>
 
@@ -1211,7 +1214,7 @@ const Map = () => {
                     <img src="/fuel-company-logos/portal-logo.svg" alt="PORTAL" className="w-4 h-4 mr-1.5" />
                     PORTAL
                     <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 py-0">
-                      {stationBrandCounts.PORTAL}
+                      {stationsReady ? stationBrandCounts.PORTAL : "…"}
                     </Badge>
                   </Button>
                 </div>
@@ -1234,9 +1237,9 @@ const Map = () => {
               <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-muted-foreground mb-2">კატეგორიები</div>
               <div className="space-y-1.5">
                 {[
-                  { l: "სერვისები", n: filteredServices.length, c: "bg-primary" },
-                  { l: "EV დამტენები", n: filteredChargers.length, c: "bg-[#8B5CF6]" },
-                  { l: "საწვავები", n: filteredStations.length, c: "bg-secondary" },
+                  { l: "სერვისები", n: serviceTabCount, c: "bg-primary" },
+                  { l: "EV დამტენები", n: chargerTabCount, c: "bg-[#8B5CF6]" },
+                  { l: "საწვავები", n: stationTabCount, c: "bg-secondary" },
                 ].map((r) => (
                   <div key={r.l} className="flex items-center gap-2.5 text-[12px]">
                     <span className={`h-2.5 w-2.5 rounded-full ${r.c}`} />
@@ -1251,7 +1254,7 @@ const Map = () => {
             <div className="absolute bottom-20 md:bottom-4 right-4 bg-background p-2 rounded-lg shadow-lg">
               <div className="text-xs text-muted-foreground">
                 <strong>
-                  {viewMode === 'services' ? servicesWithLocation.length : 
+                  {layerLoading ? '…' : viewMode === 'services' ? servicesWithLocation.length :
                    viewMode === 'laundries' ? laundries?.length || 0 : 
                    viewMode === 'chargers' ? filteredChargers.length : 
                    viewMode === 'stations' ? filteredStations.length :

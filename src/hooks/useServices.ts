@@ -1,5 +1,6 @@
+import { getPublicServiceCategories, getPublicServiceCities } from "@/lib/serviceMetadata";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -88,42 +89,25 @@ export const useServices = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(false);
 
+  const serviceRequest = useRef(0);
+
   const fetchInitialData = async () => {
     console.log("🔄 Fetching initial data...");
     try {
-      // Fetch categories
-      console.log("📂 Fetching categories...");
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from("service_categories")
-        .select("id, name")
-        .order("name", { ascending: true });
-
-      if (categoriesError) {
-        console.error("❌ Categories error:", categoriesError);
-        throw categoriesError;
-      }
-      
-      console.log("✅ Categories fetched:", categoriesData);
-      setCategories(categoriesData || []);
-
-      // Fetch unique cities
-      console.log("🏙️ Fetching cities...");
-      const { data: servicesData, error: servicesError } = await supabase
-        .from("mechanic_services")
-        .select("city")
-        .not("city", "is", null)
-        .eq("is_active", true);
-
-      if (servicesError) {
-        console.error("❌ Cities error:", servicesError);
-        // Don't throw here, just log and continue
-      } else {
-        const uniqueCities = Array.from(
-          new Set(servicesData?.map(s => s.city).filter(Boolean) as string[])
-        ).sort();
-        console.log("✅ Cities fetched:", uniqueCities);
-        setCities(uniqueCities);
-      }
+      // Filter metadata is independent: neither query waits for the other.
+      await Promise.all([
+        (async () => {
+          const data = await getPublicServiceCategories();
+          setCategories(data.map(({ id, name }) => ({ id, name })));
+        })(),
+        (async () => {
+          try {
+            setCities(await getPublicServiceCities());
+          } catch (error) {
+            console.error("Cities error:", error);
+          }
+        })(),
+      ]);
 
     } catch (error: any) {
       console.error("❌ Error fetching initial data:", error);
@@ -168,8 +152,11 @@ export const useServices = () => {
     page = 0,
     options?: { all?: boolean },
   ) => {
-    if (page === 0) setLoading(true);
-    else setLoadingMore(true);
+    const request = ++serviceRequest.current;
+    if (page === 0) {
+      setLoading(true);
+      setLoadingMore(false);
+    } else setLoadingMore(true);
 
     try {
       const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "newest"];
@@ -273,6 +260,7 @@ export const useServices = () => {
         console.warn("vip_rank column missing — run migration; using fallback order");
         ({ data: servicesData, error: servicesError, count } = await build(false));
       }
+      if (request !== serviceRequest.current) return;
       if (servicesError) throw servicesError;
 
       const rows = (servicesData ?? []) as any[];
@@ -355,12 +343,15 @@ export const useServices = () => {
         page === 0 ? transformedServices : [...prev, ...transformedServices],
       );
     } catch (error: any) {
+      if (request !== serviceRequest.current) return;
       console.error("Error fetching services:", error);
       toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
       if (page === 0) setServices([]);
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      if (request === serviceRequest.current) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
   };
 

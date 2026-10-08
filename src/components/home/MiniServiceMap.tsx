@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import { useFuelStations } from "@/hooks/useFuelStations";
 import { useChargers } from "@/hooks/useChargers";
 
@@ -29,32 +30,29 @@ const MiniServiceMap = ({ layer }: { layer: MapLayer }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const LRef = useRef<any>(null);
   const [ready, setReady] = useState(false);
-  const [services, setServices] = useState<Pt[]>([]);
 
-  const { stations } = useFuelStations();
-  const { chargers } = useChargers();
 
-  // Mechanic pins — geolocated services.
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      const { data } = await supabase
+  const { stations } = useFuelStations(layer === "fuel");
+  const { chargers } = useChargers(layer === "ev");
+
+  const { data: services = [] } = useQuery({
+    queryKey: ["public-mini-map-services"],
+    enabled: layer === "mechanic",
+    staleTime: 60_000,
+    queryFn: async (): Promise<Pt[]> => {
+      const { data, error } = await supabase
         .from("mechanic_services")
         .select("latitude, longitude")
         .eq("is_active", true)
         .not("latitude", "is", null)
         .not("longitude", "is", null)
         .limit(200);
-      if (alive && data) {
-        setServices(
-          (data as { latitude: number; longitude: number }[])
-            .filter((s) => s.latitude && s.longitude)
-            .map((s) => [s.latitude, s.longitude] as Pt),
-        );
-      }
-    })();
-    return () => { alive = false; };
-  }, []);
+      if (error) throw error;
+      return (data || [])
+        .filter(s => s.latitude && s.longitude)
+        .map(s => [s.latitude!, s.longitude!] as Pt);
+    },
+  });
 
   // Create the map once.
   useEffect(() => {

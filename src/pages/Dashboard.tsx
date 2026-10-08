@@ -1,45 +1,46 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
-import CustomerDashboard from "@/components/dashboard/customer/CustomerDashboard";
-import MechanicDashboard from "@/components/dashboard/mechanic/MechanicDashboard";
-import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
-import AdminAnalytics from "@/components/dashboard/admin/AdminAnalytics";
-import CustomerProfile from "@/components/dashboard/customer/CustomerProfile";
-import MechanicProfile from "@/components/dashboard/mechanic/MechanicProfile";
-import CustomerCars from "@/components/dashboard/customer/CustomerCars";
-import MechanicServices from "@/components/dashboard/mechanic/MechanicServices";
-import MechanicVacancies from "@/components/dashboard/mechanic/MechanicVacancies";
-import CustomerBookings from "@/components/dashboard/customer/CustomerBookings";
-import MechanicBookings from "@/components/dashboard/mechanic/MechanicBookings";
-import AdminUsers from "@/components/dashboard/admin/AdminUsers";
-import ServiceManagement from "@/components/dashboard/admin/ServiceManagement";
-import ChatManagement from "@/components/dashboard/admin/ChatManagement";
-import LaundryManagement from "@/components/dashboard/admin/LaundryManagement";
-import { DriveManagement } from "@/components/dashboard/admin/DriveManagement";
-import BookingManagement from "@/components/dashboard/admin/BookingManagement";
-import SavedServicesManagement from "@/components/dashboard/admin/SavedServicesManagement";
-import { AdminVIPManagement } from "@/components/dashboard/admin/AdminVIPManagement";
-import { AdminCommunity } from "@/components/dashboard/admin/AdminCommunity";
-import FuelImporterManagement from "@/components/dashboard/admin/FuelImporterManagement";
-import { AdminFuelBrands } from "@/components/dashboard/admin/AdminFuelBrands";
-import SEOManagement from "@/components/dashboard/admin/SEOManagement";
-import BannerManagement from "@/components/dashboard/admin/BannerManagement";
-import AdminLeads from "@/components/dashboard/admin/AdminLeads";
-import AdminRequests from "@/components/dashboard/admin/AdminRequests";
-import { AdminPartsOrders } from "@/components/dashboard/admin/AdminPartsOrders";
-import { AdminEvacuatorRequests } from "@/components/dashboard/admin/AdminEvacuatorRequests";
-import { BlogManagement } from "@/components/dashboard/admin/BlogManagement";
-import { CustomerSavedServices } from "@/components/dashboard/customer/CustomerSavedServices";
-import { MechanicSavedServices } from "@/components/dashboard/mechanic/MechanicSavedServices";
-import { CustomerSavedPosts } from "@/components/dashboard/customer/CustomerSavedPosts";
 import { Header } from "@/components/layout/Header";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import MechanicMobileHeader from "@/components/dashboard/mechanic/MechanicMobileHeader";
 import { toast } from "sonner";
+
+const CustomerDashboard = lazy(() => import("@/components/dashboard/customer/CustomerDashboard"));
+const MechanicDashboard = lazy(() => import("@/components/dashboard/mechanic/MechanicDashboard"));
+const AdminDashboard = lazy(() => import("@/components/dashboard/admin/AdminDashboard"));
+const AdminAnalytics = lazy(() => import("@/components/dashboard/admin/AdminAnalytics"));
+const CustomerProfile = lazy(() => import("@/components/dashboard/customer/CustomerProfile"));
+const MechanicProfile = lazy(() => import("@/components/dashboard/mechanic/MechanicProfile"));
+const CustomerCars = lazy(() => import("@/components/dashboard/customer/CustomerCars"));
+const MechanicServices = lazy(() => import("@/components/dashboard/mechanic/MechanicServices"));
+const MechanicVacancies = lazy(() => import("@/components/dashboard/mechanic/MechanicVacancies"));
+const CustomerBookings = lazy(() => import("@/components/dashboard/customer/CustomerBookings"));
+const MechanicBookings = lazy(() => import("@/components/dashboard/mechanic/MechanicBookings"));
+const AdminUsers = lazy(() => import("@/components/dashboard/admin/AdminUsers"));
+const ServiceManagement = lazy(() => import("@/components/dashboard/admin/ServiceManagement"));
+const ChatManagement = lazy(() => import("@/components/dashboard/admin/ChatManagement"));
+const LaundryManagement = lazy(() => import("@/components/dashboard/admin/LaundryManagement"));
+const DriveManagement = lazy(() => import("@/components/dashboard/admin/DriveManagement").then(module => ({ default: module.DriveManagement })));
+const BookingManagement = lazy(() => import("@/components/dashboard/admin/BookingManagement"));
+const SavedServicesManagement = lazy(() => import("@/components/dashboard/admin/SavedServicesManagement"));
+const AdminVIPManagement = lazy(() => import("@/components/dashboard/admin/AdminVIPManagement").then(module => ({ default: module.AdminVIPManagement })));
+const AdminCommunity = lazy(() => import("@/components/dashboard/admin/AdminCommunity").then(module => ({ default: module.AdminCommunity })));
+const FuelImporterManagement = lazy(() => import("@/components/dashboard/admin/FuelImporterManagement"));
+const AdminFuelBrands = lazy(() => import("@/components/dashboard/admin/AdminFuelBrands").then(module => ({ default: module.AdminFuelBrands })));
+const SEOManagement = lazy(() => import("@/components/dashboard/admin/SEOManagement"));
+const BannerManagement = lazy(() => import("@/components/dashboard/admin/BannerManagement"));
+const AdminLeads = lazy(() => import("@/components/dashboard/admin/AdminLeads"));
+const AdminRequests = lazy(() => import("@/components/dashboard/admin/AdminRequests"));
+const AdminPartsOrders = lazy(() => import("@/components/dashboard/admin/AdminPartsOrders").then(module => ({ default: module.AdminPartsOrders })));
+const AdminEvacuatorRequests = lazy(() => import("@/components/dashboard/admin/AdminEvacuatorRequests").then(module => ({ default: module.AdminEvacuatorRequests })));
+const BlogManagement = lazy(() => import("@/components/dashboard/admin/BlogManagement").then(module => ({ default: module.BlogManagement })));
+const CustomerSavedServices = lazy(() => import("@/components/dashboard/customer/CustomerSavedServices").then(module => ({ default: module.CustomerSavedServices })));
+const MechanicSavedServices = lazy(() => import("@/components/dashboard/mechanic/MechanicSavedServices").then(module => ({ default: module.MechanicSavedServices })));
+const CustomerSavedPosts = lazy(() => import("@/components/dashboard/customer/CustomerSavedPosts").then(module => ({ default: module.CustomerSavedPosts })));
 
 const Dashboard = () => {
   console.log("🏠 Dashboard component rendering");
@@ -135,6 +136,12 @@ const Dashboard = () => {
             </div>
             
             <div className="flex-grow bg-background rounded-lg shadow-sm p-3 md:p-6 overflow-hidden">
+              <Suspense fallback={
+                <div role="status" className="flex min-h-48 items-center justify-center gap-3 text-muted-foreground">
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" aria-hidden="true" />
+                  <span>განყოფილება იტვირთება...</span>
+                </div>
+              }>
               <Routes>
                 <Route
                   path="/"
@@ -416,6 +423,7 @@ const Dashboard = () => {
 
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
+              </Suspense>
             </div>
           </div>
         </main>

@@ -7,8 +7,10 @@ type Laundry = Database["public"]["Tables"]["laundries"]["Row"];
 type LaundryInsert = Database["public"]["Tables"]["laundries"]["Insert"];
 type LaundryUpdate = Database["public"]["Tables"]["laundries"]["Update"];
 
-export const useLaundries = () => {
+export const useLaundries = (enabled = true) => {
   return useQuery({
+    enabled,
+    staleTime: 60_000,
     queryKey: ["laundries"],
     queryFn: async () => {
       const { data, error } = await supabase

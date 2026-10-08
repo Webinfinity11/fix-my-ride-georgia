@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,8 @@ const LaundryCard = ({ laundry, onViewDetails }: LaundryCardProps) => {
       {laundry.photos && laundry.photos.length > 0 ? (
         <div className="relative h-32 sm:h-40 md:h-48 overflow-hidden rounded-t-lg">
           <LazyImage
-            src={laundry.photos[0]}
+            src={getOptimizedImageUrl(laundry.photos[0], 400, 192, 70)}
+            fallbackSrc={laundry.photos[0]}
             alt={`${laundry.name} - ავტოსამრეცხაო | Fixup.ge`}
             width={400}
             height={192}

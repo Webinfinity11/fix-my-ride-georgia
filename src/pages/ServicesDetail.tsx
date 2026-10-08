@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,7 @@ type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | 
 const ServicesDetail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(0);
+  const searchRequest = useRef(0);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [showFilters, setShowFilters] = useState(false);
   const {
@@ -133,13 +134,12 @@ const ServicesDetail = () => {
       onSiteOnly,
       minRating,
     });
-    if (categories.length > 0) {
-      // Wait for initial data to load, then fetch page 0 with current sort.
-      performSearch();
-    }
+    // URL/filter state is sufficient to fetch services; filter metadata loads independently.
+    performSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, sortBy, categories]);
+  }, [selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, sortBy]);
   const performSearch = async () => {
+    const request = ++searchRequest.current;
     const filters = {
       searchTerm: searchTerm.trim(),
       selectedCategory,
@@ -152,7 +152,8 @@ const ServicesDetail = () => {
     };
     setPage(0);
     await fetchServices(filters, 0);
-    updateURL();
+    // Only the latest search may update the URL after the network response.
+    if (request === searchRequest.current) updateURL();
   };
   const updateURL = (term: string = searchTerm) => {
     console.log("🔗 Updating URL with current filters");
@@ -170,6 +171,7 @@ const ServicesDetail = () => {
   // Clear only the text search and re-show results (other filters kept).
   const handleClearSearch = async () => {
     console.log("❌ Clearing search term");
+    const request = ++searchRequest.current;
     setSearchTerm("");
     setPage(0);
     await fetchServices({
@@ -182,10 +184,11 @@ const ServicesDetail = () => {
       minRating,
       sortBy,
     }, 0);
-    updateURL("");
+    if (request === searchRequest.current) updateURL("");
   };
   const handleResetFilters = async () => {
     console.log("🧹 Resetting all filters");
+    ++searchRequest.current;
     setSearchTerm("");
     setSelectedCategory("all");
     setSelectedCity(null);
@@ -366,7 +369,7 @@ const ServicesDetail = () => {
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {services.map((service, index) => (
                     <Fragment key={service.id}>
-                      <ServiceCard service={service} />
+                      <ServiceCard service={service} priorityImage={index === 0} />
                       {/* Banner after first row (after 4th item for 4-column grid) */}
                       {index === 3 && <ServicesGridBanner />}
                     </Fragment>

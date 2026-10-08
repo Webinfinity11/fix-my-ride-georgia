@@ -112,8 +112,8 @@ export default function Blog() {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {paginatedPosts.map((post) => (
-                <BlogCard key={post.id} post={post} />
+              {paginatedPosts.map((post, index) => (
+                <BlogCard key={post.id} post={post} priorityImage={index === 0} />
               ))}
             </div>
 

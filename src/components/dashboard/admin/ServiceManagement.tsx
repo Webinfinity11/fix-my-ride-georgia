@@ -1,3 +1,4 @@
+import { invalidatePublicServiceCategories } from "@/lib/serviceMetadata";
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -218,6 +219,7 @@ const ServiceManagement = () => {
         }
       }
 
+      if (activeTab === "categories") await invalidatePublicServiceCategories();
       resetForm();
       fetchData();
     } catch (error: any) {
@@ -245,6 +247,7 @@ const ServiceManagement = () => {
       }
       
       if (error) throw error;
+      if (type === "category") await invalidatePublicServiceCategories();
       fetchData();
     } catch (error: any) {
       console.error("Error deleting:", error);

@@ -48,8 +48,9 @@ const fetchChargers = async (): Promise<ChargerLocation[]> => {
     .map(transformFeature);
 };
 
-export const useChargers = () => {
+export const useChargers = (enabled = true) => {
   const query = useQuery({
+    enabled,
     queryKey: ['chargers'],
     queryFn: fetchChargers,
     staleTime: 1000 * 60 * 60, // 1 hour - static data
@@ -60,5 +61,6 @@ export const useChargers = () => {
     chargers: query.data || [],
     isLoading: query.isLoading,
     error: query.error,
+    hasData: query.data !== undefined,
   };
 };

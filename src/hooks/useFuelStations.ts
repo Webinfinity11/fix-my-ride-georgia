@@ -94,8 +94,9 @@ const fetchFuelStations = async (): Promise<FuelStation[]> => {
     }));
 };
 
-export const useFuelStations = () => {
+export const useFuelStations = (enabled = true) => {
   const query = useQuery({
+    enabled,
     queryKey: ['fuel-stations'],
     queryFn: fetchFuelStations,
     staleTime: 1000 * 60 * 60, // 1 hour
@@ -106,5 +107,6 @@ export const useFuelStations = () => {
     stations: query.data || [],
     isLoading: query.isLoading,
     error: query.error,
+    hasData: query.data !== undefined,
   };
 };
