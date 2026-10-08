@@ -45,7 +45,7 @@ const PhotoUpload = ({
       const { data, error } = await supabase.storage
         .from(bucketName)
         .upload(fileName, compressedFile, {
-          cacheControl: '3600',
+          cacheControl: '31536000',
           upsert: false,
           contentType: compressedFile.type,
         });

@@ -393,7 +393,7 @@ async function main() {
         const firstImage = await page.evaluate(() =>
           document.querySelector('.image-container img[loading="eager"]')?.getAttribute('src') ?? null
         );
-        if (firstImage?.startsWith('/images/service-thumbnails/') || firstImage?.includes('/storage/v1/render/image/public/')) {
+        if (firstImage?.startsWith('/assets/service-thumbnail-') || firstImage?.includes('/storage/v1/render/image/public/')) {
           html = injectLcpImagePreload(html, firstImage);
         }
         const initialData = await page.evaluate(() => window.__fixupCategorySnapshotCapture ?? null);

@@ -28,11 +28,11 @@ function workboxOptions() {
 test('parent category navigations keep their own HTML with an offline shell fallback', () => {
   const config = workboxOptions();
   const rule = config.runtimeCaching.find(item => item.options?.cacheName === 'public-category-documents');
-  for (const pathname of ['/category/lights', '/category/lights/']) {
+  for (const pathname of ['/', '/category/lights', '/category/lights/']) {
     assert.equal(config.navigateFallbackDenylist.some(regex => regex.test(pathname)), true);
     assert.equal(rule.urlPattern({ url: { pathname }, request: { mode: 'navigate' }, sameOrigin: true }), true);
   }
-  for (const pathname of ['/dashboard/admin', '/category/lights/gldani', '/', '/rest/v1/profiles']) {
+  for (const pathname of ['/dashboard/admin', '/category/lights/gldani', '/rest/v1/profiles']) {
     assert.equal(config.navigateFallbackDenylist.some(regex => regex.test(pathname)), false);
     assert.equal(rule.urlPattern({ url: { pathname }, request: { mode: 'navigate' }, sameOrigin: true }), false);
   }

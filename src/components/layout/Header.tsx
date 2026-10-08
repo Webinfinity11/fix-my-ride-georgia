@@ -37,7 +37,7 @@ const Header = () => {
         <div className="flex items-center gap-3 flex-1">
           <Link to="/" className="flex items-center">
             <img
-              src="/lovable-uploads/5f51074d-5448-460f-9f3b-565872e756f9.png"
+              src="/assets/fixup-logo-f44f8b958f9c6619.png"
               alt="FixUp Auto Service"
               width="164"
               height="80"
