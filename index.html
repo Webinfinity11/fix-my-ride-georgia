@@ -23,7 +23,9 @@
           if (norm(pre) === norm(location.pathname)) return; // correct page → keep prerendered content
           var st = document.createElement('style');
           st.id = '__ssg_guard__';
-          st.textContent = '#root>*{display:none!important}';
+          st.textContent = /^\/service\/[^/]+\/?$/.test(location.pathname)
+            ? '#root main{visibility:hidden!important}'
+            : '#root>*{display:none!important}';
           document.head.appendChild(st);
           var arm = function () {
             var root = document.getElementById('root');

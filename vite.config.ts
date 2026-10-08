@@ -120,7 +120,7 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         // Parent categories have their own public prerendered HTML and data.
         // Serving index.html here discarded that snapshot on repeat visits.
-        navigateFallbackDenylist: [/^\/$/, /^\/category\/[^/]+\/?$/],
+        navigateFallbackDenylist: [/^\/$/, /^\/category\/[^/]+\/?$/, /^\/service\/[^/]+\/?$/],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
         // Precache ONLY the tiny app shell (html/css/manifest). Previously this
         // globbed **/*.js + all images, so the service worker downloaded the
@@ -130,13 +130,13 @@ export default defineConfig(({ mode }) => ({
         runtimeCaching: [
           {
             urlPattern: ({ url, request, sameOrigin }) => sameOrigin
-              && request.mode === 'navigate' && (url.pathname === '/' || /^\/category\/[^/]+\/?$/.test(url.pathname)),
+              && request.mode === 'navigate' && (url.pathname === '/' || /^\/category\/[^/]+\/?$/.test(url.pathname) || /^\/service\/[^/]+\/?$/.test(url.pathname)),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'public-category-documents',
               networkTimeoutSeconds: 1,
               cacheableResponse: { statuses: [200] },
-              expiration: { maxEntries: 45, maxAgeSeconds: 60 * 60 },
+              expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 },
               precacheFallback: { fallbackURL: '/index.html' },
             },
           },
