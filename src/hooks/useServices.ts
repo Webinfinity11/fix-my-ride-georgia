@@ -211,7 +211,10 @@ export const useServices = () => {
             vip_until,
             is_vip_active,
             created_at,
-            service_categories(id, name)
+            service_categories(id, name),
+            mechanic:profiles!fk_mechanic_services_profiles(
+              id, first_name, last_name, phone, mechanic_profiles(display_id, rating)
+            )
           `,
             { count: "exact" },
           )
@@ -274,21 +277,12 @@ export const useServices = () => {
 
       const rows = (servicesData ?? []) as any[];
 
-      // Fetch mechanic profiles for THIS page only (cheap — <= PAGE_SIZE ids).
-      const mechanicIds = [...new Set(rows.map((s) => s.mechanic_id))] as string[];
-      let mechanicsData: any[] = [];
-      if (mechanicIds.length > 0) {
-        const { data: md, error: mechanicsError } = await supabase
-          .from("profiles")
-          .select(`id, first_name, last_name, phone, mechanic_profiles(display_id, rating)`)
-          .in("id", mechanicIds);
-        if (mechanicsError) console.error("Mechanics query failed:", mechanicsError);
-        mechanicsData = md ?? [];
-      }
-
       // Transform the data
       let transformedServices: ServiceType[] = rows.map((service) => {
-        const mechanic = mechanicsData?.find(m => m.id === service.mechanic_id);
+        // A left embedded relation preserves services even when a profile is hidden by RLS.
+        const mechanic = Array.isArray(service.mechanic)
+          ? service.mechanic[0]
+          : service.mechanic;
         const mechanicProfile = Array.isArray(mechanic?.mechanic_profiles) 
           ? mechanic.mechanic_profiles[0] 
           : mechanic?.mechanic_profiles;
