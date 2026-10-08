@@ -11,6 +11,13 @@ interface LazyImageProps extends ImgHTMLAttributes<HTMLImageElement> {
 const LoadedImage = ({ src, fallbackSrc, priority, className, placeholderClassName, onLoad, onError, srcSet, ...props }: LazyImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [useFallback, setUseFallback] = useState(false);
+  const [hasFailed, setHasFailed] = useState(false);
+  if (hasFailed) {
+    return <div role="img" aria-label="ფოტო დროებით მიუწვდომელია"
+      className={cn("absolute inset-0 rounded-md bg-muted flex items-center justify-center text-muted-foreground text-sm", placeholderClassName)}>
+      ფოტო დროებით მიუწვდომელია
+    </div>;
+  }
   return (
     <>
       {!isLoaded && <div className={cn("absolute inset-0 animate-pulse rounded-md bg-muted", placeholderClassName)} />}
@@ -28,7 +35,7 @@ const LoadedImage = ({ src, fallbackSrc, priority, className, placeholderClassNa
             setUseFallback(true);
             setIsLoaded(false);
           } else {
-            setIsLoaded(true);
+            setHasFailed(true);
             onError?.(event);
           }
         }}
