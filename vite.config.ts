@@ -1,6 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { readFileSync } from "node:fs";
+import { injectCategoryBootShells } from "./scripts/category-boot-shell.mjs";
+
+// Public category headings cached from the last verified build. React refreshes metadata and
+// listings from the database; this cache only avoids a blank first screen.
+// Refresh after a full build with node scripts/update-category-boot-data.mjs.
+const categoryBootData = JSON.parse(readFileSync(path.resolve(__dirname, "scripts/category-boot-data.json"), "utf8"));
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -61,6 +68,13 @@ export default defineConfig(({ mode }) => ({
   // Prevents leaking PII (user IDs, JWTs, session data) into browser console.
   esbuild: mode === 'production' ? { drop: ['console', 'debugger'] } : undefined,
   plugins: [
+    {
+      name: 'category-boot-shell',
+      apply: 'build',
+      transformIndexHtml(html: string) {
+        return injectCategoryBootShells(html, categoryBootData.header, categoryBootData.categories);
+      },
+    },
     react(),
     mode === 'development' &&
     componentTagger(),

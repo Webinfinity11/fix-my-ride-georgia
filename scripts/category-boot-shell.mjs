@@ -1,6 +1,7 @@
 // Inject only build-captured public category headings, not cached listings.
 export function injectCategoryBootShells(html, header, categories) {
   if (!header || !Object.keys(categories).length) return html;
+  html = html.replace(/<script id="category-boot-shell">[\s\S]*?<\/script>/g, '');
   const payload = JSON.stringify({ header, categories }).replace(/</g, '\\u003c');
   const script = `<script id="category-boot-shell">(function(){
     var path=location.pathname.replace(/\\/$/,'');

@@ -37,3 +37,11 @@ test('payload cannot break out of its script, and empty captures keep the existi
   assert.equal((html.match(/<\/script>/g) || []).length, 1);
   assert.ok(html.includes('\\u003c/script>'));
 });
+
+test('refreshing a captured document replaces the boot payload instead of duplicating it', () => {
+  const first = injectCategoryBootShells('<body></body>', 'header', { '/category/a': 'A' });
+  assert.equal(injectCategoryBootShells(first, 'header', { '/category/a': 'A' }), first);
+  const refreshed = injectCategoryBootShells(first, 'header', { '/category/a': 'Updated' });
+  assert.equal((refreshed.match(/id="category-boot-shell"/g) || []).length, 1);
+  assert.ok(refreshed.includes('Updated'));
+});
