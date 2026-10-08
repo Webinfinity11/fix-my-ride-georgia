@@ -9,10 +9,10 @@ import { AuthProvider } from "@/context/AuthContext";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import { InstallPWA } from "@/components/mobile/InstallPWA";
 import { IOSAppPromo } from "@/components/mobile/IOSAppPromo";
-import Index from "./pages/Index";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
-// Lazy load routes for better performance
+// Lazy load routes so each page downloads only the code it needs.
+const Index = lazy(() => import("./pages/Index"));
 const ServicesDetail = lazy(() => import("./pages/ServicesDetail"));
 const ServiceSearch = lazy(() => import("./pages/ServiceSearch"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));

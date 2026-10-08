@@ -359,7 +359,7 @@ const ServiceCategory = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {services.map((service, index) => (
                 <Fragment key={service.id}>
-                  <ServiceCard service={service} />
+                  <ServiceCard service={service} priorityImage={index === 0} />
                   {/* Banner after the first row (after 4th card, matches 4-col grid) */}
                   {index === 3 && <ServicesGridBanner />}
                 </Fragment>
