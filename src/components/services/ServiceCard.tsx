@@ -139,7 +139,7 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
           {mainPhoto ? (
             <div className="aspect-[4/3] overflow-hidden">
               <LazyImage
-                src={getOptimizedImageUrl(mainPhoto, 400, 300, 70)}
+                src={getOptimizedImageUrl(mainPhoto, 400, 300, 70, { cropToFit: true })}
                 alt={`${service.name} - ${service.category?.name || 'ავტოსერვისი'} | Fixup.ge`}
                 width={400}
                 height={300}

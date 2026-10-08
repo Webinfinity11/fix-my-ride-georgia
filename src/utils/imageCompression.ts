@@ -101,8 +101,9 @@ export const compressImage = (
 export const getOptimizedImageUrl = (
   url: string,
   width = 400,
-  _height = 300,
-  quality = 70
+  height = 300,
+  quality = 70,
+  options: { cropToFit?: boolean } = {}
 ): string => {
   // Supabase image transformation (render/image endpoint) — enabled on this
   // project. Converts stored images to right-sized WebP on the fly, cutting
@@ -113,5 +114,8 @@ export const getOptimizedImageUrl = (
   if (!url.includes("/storage/v1/object/public/")) return url;
   if (url.includes("?")) return url;
   const rendered = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
-  return `${rendered}?width=${Math.round(width)}&quality=${quality}&resize=cover`;
+  // Cards already use centered object-cover in a fixed aspect-ratio box.
+  // Crop only those thumbnails; galleries keep the complete image.
+  const crop = options.cropToFit ? `&height=${Math.round(height)}` : "";
+  return `${rendered}?width=${Math.round(width)}${crop}&quality=${quality}&resize=cover`;
 };
