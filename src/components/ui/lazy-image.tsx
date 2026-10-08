@@ -43,7 +43,7 @@ const LazyImage = ({
   return (
     <div ref={containerRef} className="relative w-full h-full">
       {/* Skeleton placeholder */}
-      {!isLoaded && (
+      {!isLoaded && !priority && (
         <div
           className={cn(
             "absolute inset-0 animate-pulse rounded-md bg-muted",
@@ -53,7 +53,7 @@ const LazyImage = ({
       )}
 
       {/* Actual image */}
-      {isInView && src && (
+      {(priority || isInView) && src && (
         <img
           src={src}
           alt={alt}
@@ -61,12 +61,12 @@ const LazyImage = ({
           height={height}
           className={cn(
             "transition-opacity duration-300",
-            isLoaded ? "opacity-100" : "opacity-0",
+            priority || isLoaded ? "opacity-100" : "opacity-0",
             className
           )}
           style={style}
           loading={priority ? "eager" : "lazy"}
-          decoding={priority ? "sync" : "async"}
+          decoding="async"
           // lowercase `fetchpriority`: this React runtime drops the camelCase
           // `fetchPriority` prop (and warns). The lowercase HTML attribute is
           // what actually reaches the DOM and is read by the browser.

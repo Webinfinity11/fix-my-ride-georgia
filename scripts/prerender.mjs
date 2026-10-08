@@ -29,6 +29,7 @@ import { createReadStream, existsSync, statSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
+import { cleanPrerenderResources } from './prerender-resources.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
@@ -208,6 +209,7 @@ async function main() {
     return;
   }
 
+  const pristineShell = readFileSync(join(DIST, 'index.html'), 'utf8');
   const server = await startStaticServer();
   console.log(`[prerender] static server up on :${PORT}`);
 
@@ -267,7 +269,7 @@ async function main() {
       // Extra settle time so any final Helmet meta updates land.
       await new Promise((r) => setTimeout(r, 300));
 
-      let html = await page.content();
+      let html = cleanPrerenderResources(await page.content(), pristineShell);
 
       // Strip the gptengineer.js dev tagger — it's dev-only and adds noise.
       html = html.replace(/<script[^>]+src="https:\/\/cdn\.gpteng\.co\/[^"]*"[^>]*><\/script>/g, '');
@@ -359,7 +361,10 @@ async function main() {
   };
 
   // Concurrency pool — process routes in parallel (bounded).
-  const CONCURRENCY = 5;
+  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 2);
+  const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
+    ? Math.min(requestedConcurrency, 5)
+    : 2;
   const queue = [...allRoutes];
   await Promise.all(
     Array.from({ length: CONCURRENCY }, async () => {

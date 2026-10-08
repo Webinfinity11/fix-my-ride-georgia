@@ -72,6 +72,7 @@
 
     <!-- Performance: Preconnect to critical origins -->
     <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://kwozniwtygkdoagjegom.supabase.co">
     <link rel="dns-prefetch" href="https://tile.openstreetmap.org">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
@@ -169,8 +170,11 @@
       gtag('config', 'G-SHBK1B237B');
       window.addEventListener('load', function () {
         setTimeout(function () {
+          var src = 'https://www.googletagmanager.com/gtag/js?id=G-SHBK1B237B';
+          if (window.__fixupAnalyticsLoaded || document.querySelector('script[src="' + src + '"]')) return;
+          window.__fixupAnalyticsLoaded = true;
           var s = document.createElement('script');
-          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-SHBK1B237B';
+          s.src = src;
           s.async = true;
           document.head.appendChild(s);
         }, 1500);
