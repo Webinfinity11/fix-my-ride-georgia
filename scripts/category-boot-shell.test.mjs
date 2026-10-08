@@ -11,7 +11,6 @@ test('only mismatched known parent category routes receive an early heading', ()
   const code = html.match(/<script id="category-boot-shell">([\s\S]*?)<\/script>/)[1];
   for (const [path, stamped, expected] of [
     ['/category/lights', '/', true], ['/category/lights/', '/', true],
-    ['/category/lights', '/category/lights', false],
     ['/', '/', false], ['/login', '/', false],
     ['/category/unknown', '/', false], ['/category/lights/gldani', '/', false],
     ['/category/toString', '/', false],
@@ -44,4 +43,17 @@ test('refreshing a captured document replaces the boot payload instead of duplic
   const refreshed = injectCategoryBootShells(first, 'header', { '/category/a': 'Updated' });
   assert.equal((refreshed.match(/id="category-boot-shell"/g) || []).length, 1);
   assert.ok(refreshed.includes('Updated'));
+});
+
+test('matching snapshots keep their full HTML and initialize the React loading fallback', () => {
+  const html = injectCategoryBootShells('<body></body>', '<header>FixUp</header>', { '/category/lights': '<h1>Lights</h1>' });
+  const code = html.match(/<script id="category-boot-shell">([\s\S]*?)<\/script>/)[1];
+  const root = { innerHTML: '<h1>Lights</h1><article>Current service</article>' };
+  const context = { location: { pathname: '/category/lights' }, window: {}, document: {
+    documentElement: { getAttribute: () => '/category/lights' },
+    getElementById: id => id === 'root' ? root : { remove: () => assert.fail('Matching snapshots have no guard to remove') },
+  } };
+  vm.runInNewContext(code, context);
+  assert.equal(root.innerHTML, '<h1>Lights</h1><article>Current service</article>');
+  assert.ok(context.window.__fixupCategoryBoot.html.includes('<h1>Lights</h1>'));
 });
