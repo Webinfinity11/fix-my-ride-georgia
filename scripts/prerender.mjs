@@ -29,6 +29,7 @@ import { createReadStream, existsSync, statSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
+import { injectCategoryBootShells } from './category-boot-shell.mjs';
 import { cleanPrerenderResources } from './prerender-resources.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -234,9 +235,25 @@ async function main() {
 
   // Render a single route (own page). Extracted so we can run a concurrency
   // pool — sequential prerender of 140+ routes would take ~15 min.
+  const categoryBootShells = {};
+  let categoryHeader = "";
   const renderRoute = async (route) => {
-    const page = await browser.newPage();
+    let page;
     try {
+      try {
+        page = await browser.newPage();
+      } catch (error) {
+        // Chromium can lose its default-context session between captures. In
+        // sequential mode it is safe to restart and retry this route once.
+        if (CONCURRENCY !== 1) throw error;
+        console.warn(`[prerender] restarting Chromium before ${route}: ${error.message}`);
+        await browser.close().catch(() => {});
+        browser = await puppeteer.launch({
+          headless: 'new',
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        });
+        page = await browser.newPage();
+      }
       // Block analytics / external trackers — they may hang networkidle.
       await page.setRequestInterception(true);
       page.on('request', (req) => {
@@ -268,6 +285,26 @@ async function main() {
 
       // Extra settle time so any final Helmet meta updates land.
       await new Promise((r) => setTimeout(r, 300));
+
+      // Only public, successfully rendered parent category headings are cached.
+      // No service cards, counts, prices, or account state enter the boot shell.
+      if (/^\/category\/[^/]+$/.test(route)) {
+        const shell = await page.evaluate(() => {
+          const hero = document.querySelector('[data-category-shell="hero"]');
+          const breadcrumb = document.querySelector('[data-category-shell="breadcrumb"]');
+          if (!hero || !breadcrumb) return null;
+          const copy = hero.cloneNode(true);
+          copy.querySelectorAll('[data-service-count]').forEach(node => { node.textContent = '\u00a0'; });
+          return {
+            header: document.querySelector('header')?.outerHTML ?? '',
+            body: breadcrumb.outerHTML + copy.outerHTML,
+          };
+        });
+        if (shell) {
+          categoryHeader ||= shell.header;
+          categoryBootShells[route] = shell.body;
+        }
+      }
 
       let html = cleanPrerenderResources(await page.content(), pristineShell);
 
@@ -356,15 +393,15 @@ async function main() {
       console.error(`[prerender] ✗ ${route}: ${e.message}`);
       fail++;
     } finally {
-      await page.close();
+      await page?.close().catch(() => {});
     }
   };
 
   // Concurrency pool — process routes in parallel (bounded).
-  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 2);
+  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 1);
   const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
     ? Math.min(requestedConcurrency, 5)
-    : 2;
+    : 1;
   const queue = [...allRoutes];
   await Promise.all(
     Array.from({ length: CONCURRENCY }, async () => {
@@ -375,6 +412,12 @@ async function main() {
       }
     })
   );
+
+  // Lovable may serve index.html as the fallback for category URLs. Include
+  // their small top sections so those URLs paint before the React downloads.
+  const rootHTML = readFileSync(join(DIST, 'index.html'), 'utf8');
+  await writeFile(join(DIST, 'index.html'), injectCategoryBootShells(rootHTML, categoryHeader, categoryBootShells));
+  console.log(`[prerender] category boot shells: ${Object.keys(categoryBootShells).length}`);
 
   await browser.close();
   server.close();

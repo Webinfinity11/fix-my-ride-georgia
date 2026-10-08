@@ -1,4 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
+import { CategoryBootShell } from "@/components/layout/CategoryBootShell";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -120,6 +121,9 @@ const ServiceCategory = () => {
   };
 
   if (categoryLoading) {
+    if (window.__fixupCategoryBoot?.path === window.location.pathname.replace(/\/$/, "")) {
+      return <CategoryBootShell />;
+    }
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -239,7 +243,7 @@ const ServiceCategory = () => {
       
       <main className="flex-grow">
         {/* Breadcrumb */}
-        <div className="bg-muted py-4">
+        <div data-category-shell="breadcrumb" className="bg-muted py-4">
           <div className="container mx-auto px-4">
             <Breadcrumb>
               <BreadcrumbList>
@@ -260,24 +264,22 @@ const ServiceCategory = () => {
         </div>
 
         {/* Header Section — keyword-rich H1 with city + count, plus subtitle */}
-        <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
+        <div data-category-shell="hero" className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                 {category.name} {districtInfo ? districtInfo.nameLocative : 'თბილისში'}
-                {services.length > 0 && (
-                  <span className="block text-2xl md:text-3xl font-semibold text-primary mt-2">
-                    {services.length} ვერიფიცირებული ხელოსანი
-                  </span>
-                )}
+                <span data-service-count className="block min-h-[4rem] md:min-h-9 text-2xl md:text-3xl font-semibold text-primary mt-2">
+                  {!servicesLoading && services.length > 0 ? `${services.length} ვერიფიცირებული ხელოსანი` : "\u00a0"}
+                </span>
               </h1>
               <p className="text-lg text-muted-foreground mb-6">
                 {districtInfo
                   ? `${category.name} ${districtInfo.nameLocative} — იპოვეთ უახლოესი ხელოსანი თქვენი მახლობლად, წინასწარი ჯავშნით და გამჭვირვალე ფასებით.`
                   : category.description || `იპოვეთ საუკეთესო ${category.name}-ის ხელოსანი თბილისში, ბათუმში, ქუთაისში და მთელ საქართველოში — გამჭვირვალე ფასებით და რეალური შეფასებებით.`}
               </p>
-              <div className="text-sm text-muted-foreground">
-                {services.length} სერვისი ამ კატეგორიაში
+              <div data-service-count className="text-sm text-muted-foreground">
+                {servicesLoading ? "\u00a0" : `${services.length} სერვისი ამ კატეგორიაში`}
               </div>
             </div>
           </div>

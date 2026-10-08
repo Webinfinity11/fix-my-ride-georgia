@@ -1,0 +1,19 @@
+declare global {
+  interface Window {
+    __fixupCategoryBoot?: { path: string; html: string };
+  }
+}
+
+// Build-generated public markup only. Keep the initial category heading visible
+// while the route module and current database metadata arrive.
+export function CategoryBootShell() {
+  const boot = window.__fixupCategoryBoot;
+  if (boot?.path === window.location.pathname.replace(/\/$/, "")) {
+    return <div dangerouslySetInnerHTML={{ __html: boot.html }} />;
+  }
+  return (
+    <div className="min-h-screen flex items-center justify-center" role="status" aria-label="იტვირთება">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+    </div>
+  );
+}
