@@ -31,6 +31,7 @@ import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
 import { injectCategoryBootShells } from './category-boot-shell.mjs';
 import { cleanPrerenderResources } from './prerender-resources.mjs';
+import { getSnapshotCSS } from './snapshot-css.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
@@ -306,6 +307,9 @@ async function main() {
         }
       }
 
+      const snapshotClasses = await page.evaluate(() =>
+        [...new Set([...document.querySelectorAll('[class]')].flatMap(node => [...node.classList]))]
+      );
       let html = cleanPrerenderResources(await page.content(), pristineShell);
 
       // Strip the gptengineer.js dev tagger — it's dev-only and adds noise.
@@ -354,17 +358,17 @@ async function main() {
       // again. Reset it so prerendered pages keep the fast path.
       html = html.replace(/media="all"(\s+onload="this\.media='all'")/g, 'media="print"$1');
 
-      // Inline the app stylesheet so prerendered pages can paint immediately.
-      // Measured on mobile (Slow 4G): the 22KB render-blocking /assets/index-*.css
-      // was starved by ~350KB of parallel JS downloads and took ~1.5s to arrive,
-      // delaying FCP/LCP to ~3s. Inlining removes the request + bandwidth
-      // contention entirely — the hero paints as soon as the HTML arrives.
+      // Inline only styles needed by the captured DOM. The full stylesheet
+      // loads without blocking first paint and covers later menus/filter states.
       html = html.replace(
         /<link\s+rel="stylesheet"\s+[^>]*href="(\/assets\/index-[^"]+\.css)"[^>]*>/g,
         (tag, href) => {
           try {
             const css = readFileSync(join(DIST, href.replace(/^\//, '')), 'utf8');
-            return `<style>${css}</style>`;
+            const critical = getSnapshotCSS(css, snapshotClasses);
+            return `<style data-snapshot-css>${critical}</style>`
+              + `<link rel="stylesheet" crossorigin href="${href}" media="print" onload="this.media='all'">`
+              + `<noscript>${tag}</noscript>`;
           } catch {
             return tag; // keep the link if the file can't be read
           }
@@ -383,6 +387,12 @@ async function main() {
       html = html.replace(/<style id="__ssg_guard__">[\s\S]*?<\/style>/g, '');
       html = html.replace(/\sdata-ssg="[^"]*"/gi, '');
       html = html.replace(/<html(\s|>)/i, `<html data-ssg="${route}"$1`);
+
+      if (categoryBootShells[route]) {
+        html = injectCategoryBootShells(html, categoryHeader, { [route]: categoryBootShells[route] });
+      } else if (route !== '/') {
+        html = html.replace(/<script id="category-boot-shell">[\s\S]*?<\/script>/g, '');
+      }
 
       const outDir = join(DIST, route.replace(/^\//, ''));
       await mkdir(outDir, { recursive: true });

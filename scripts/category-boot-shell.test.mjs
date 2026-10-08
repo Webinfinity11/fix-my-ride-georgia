@@ -55,5 +55,6 @@ test('matching snapshots keep their full HTML and initialize the React loading f
   } };
   vm.runInNewContext(code, context);
   assert.equal(root.innerHTML, '<h1>Lights</h1><article>Current service</article>');
-  assert.ok(context.window.__fixupCategoryBoot.html.includes('<h1>Lights</h1>'));
+  assert.equal(context.window.__fixupCategoryBoot.html, root.innerHTML);
+  assert.equal(context.window.__fixupCategoryBoot.snapshot, true);
 });

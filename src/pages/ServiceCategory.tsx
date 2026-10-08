@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
 import { CategoryBootShell } from "@/components/layout/CategoryBootShell";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
 import { useParams, Link } from "react-router-dom";
@@ -66,6 +66,20 @@ const ServiceCategory = () => {
   // isn't duplicated here.
   const { services, loading: servicesLoading, fetchServices } = useServices();
   const [categoryLoading, setCategoryLoading] = useState(true);
+  // The snapshot belongs only to the initial route. Once live data has arrived,
+  // subsequent filtering/navigation must use the interactive loading states.
+  const initialSnapshotPath = useRef(window.__fixupCategoryBoot?.snapshot
+    ? window.__fixupCategoryBoot.path : null);
+  const snapshotReleased = useRef(false);
+  if (!categoryLoading && !servicesLoading) snapshotReleased.current = true;
+  useEffect(() => {
+    if (categoryLoading || servicesLoading) return;
+    const boot = window.__fixupCategoryBoot;
+    if (boot?.path === initialSnapshotPath.current && boot.fallbackHtml) {
+      boot.html = boot.fallbackHtml;
+      boot.snapshot = false;
+    }
+  }, [categoryLoading, servicesLoading]);
   const [filters, setFilters] = useState({
     searchTerm: "",
     selectedCity: null as string | null,
@@ -119,6 +133,11 @@ const ServiceCategory = () => {
     // fetchServices is recreated on render; depend on the actual filter inputs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, serviceCategoryId]);
+
+  if (!snapshotReleased.current && initialSnapshotPath.current === window.location.pathname.replace(/\/$/, "")
+    && (categoryLoading || (category && servicesLoading))) {
+    return <CategoryBootShell />;
+  }
 
   if (categoryLoading) {
     if (window.__fixupCategoryBoot?.path === window.location.pathname.replace(/\/$/, "")) {

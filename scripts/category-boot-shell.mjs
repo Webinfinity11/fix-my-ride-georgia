@@ -1,4 +1,5 @@
-// Inject only build-captured public category headings, not cached listings.
+// Fallback documents carry headings only. Matching route documents preserve
+// the public snapshot already present in their root until fresh data arrives.
 export function injectCategoryBootShells(html, header, categories) {
   if (!header || !Object.keys(categories).length) return html;
   html = html.replace(/<script id="category-boot-shell">[\s\S]*?<\/script>/g, '');
@@ -11,8 +12,9 @@ export function injectCategoryBootShells(html, header, categories) {
     if(!root)return;
     var skeleton='<div class="container mx-auto px-4 py-6" role="status" aria-label="სერვისები იტვირთება"><div class="h-24 bg-muted rounded mb-6"></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"><div class="h-64 bg-muted rounded"></div><div class="h-64 bg-muted rounded"></div><div class="h-64 bg-muted rounded"></div><div class="h-64 bg-muted rounded"></div></div></div>';
     var markup=data.header+'<main>'+data.categories[path]+skeleton+'</main>';
-    window.__fixupCategoryBoot={path:path,html:markup};
-    if(document.documentElement.getAttribute('data-ssg')===path)return;
+    var matching=document.documentElement.getAttribute('data-ssg')===path;
+    window.__fixupCategoryBoot={path:path,html:matching?root.innerHTML:markup,fallbackHtml:markup,snapshot:matching};
+    if(matching)return;
     root.innerHTML=markup;
     var guard=document.getElementById('__ssg_guard__');
     if(guard)guard.remove();

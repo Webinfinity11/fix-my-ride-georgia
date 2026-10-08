@@ -1,11 +1,11 @@
 declare global {
   interface Window {
-    __fixupCategoryBoot?: { path: string; html: string };
+    __fixupCategoryBoot?: { path: string; html: string; fallbackHtml?: string; snapshot?: boolean };
   }
 }
 
-// Build-generated public markup only. Keep the initial category heading visible
-// while the route module and current database metadata arrive.
+// Build-generated public markup only. Preserve the matching snapshot while
+// the route module and fresh public listings arrive.
 export function CategoryBootShell() {
   const boot = window.__fixupCategoryBoot;
   if (boot?.path === window.location.pathname.replace(/\/$/, "")) {
