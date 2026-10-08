@@ -7,13 +7,16 @@ import { cleanPrerenderResources } from './prerender-resources.mjs';
 const appCSS = '<link rel="stylesheet" crossorigin href="/assets/index.css">';
 const mapCSS = '<link rel="stylesheet" crossorigin="" href="/assets/leaflet.css">';
 const analytics = '<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SHBK1B237B"></script>';
-const shell = appCSS + '<script type="module" src="/assets/index.js"></script>'
+const appModule = '<link rel="modulepreload" crossorigin href="/assets/react.js">';
+const lazyModules = '<link rel="modulepreload" as="script" crossorigin="" href="/assets/Index.js">'
+  + '<link rel="modulepreload" as="script" crossorigin="" href="/assets/map-vendor.js">';
+const shell = appModule + appCSS + '<script type="module" src="/assets/index.js"></script>'
   + '<script>window.addEventListener("load", loadAnalytics)</script>'
   + '<link rel="preload" href="/fonts/georgian.woff2" as="font">'
   + '<script type="application/ld+json">{"@type":"CollectionPage"}</script>';
 
-test('snapshots exclude downloaded analytics and lazy map CSS while keeping the app and SEO', () => {
-  const clean = cleanPrerenderResources(shell + analytics + mapCSS + analytics, shell);
+test('snapshots exclude analytics and lazy route downloads while keeping the app and SEO', () => {
+  const clean = cleanPrerenderResources(shell + analytics + mapCSS + lazyModules + analytics, shell);
   assert.equal(clean, shell);
   assert.equal(cleanPrerenderResources(clean, shell), shell);
 });
