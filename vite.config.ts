@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { readFileSync } from "node:fs";
 import { mapLayerCountsPlugin } from "./scripts/map-layer-counts.mjs";
+import { injectServiceImagePreload } from "./scripts/service-image-preload.mjs";
 import { injectCategoryBootShells } from "./scripts/category-boot-shell.mjs";
 
 // Public category headings cached from the last verified build. React refreshes metadata and
@@ -74,7 +75,7 @@ export default defineConfig(({ mode }) => ({
       name: 'category-boot-shell',
       apply: 'build',
       transformIndexHtml(html: string) {
-        return injectCategoryBootShells(html, categoryBootData.header, categoryBootData.categories);
+        return injectServiceImagePreload(injectCategoryBootShells(html, categoryBootData.header, categoryBootData.categories), JSON.parse(readFileSync(path.resolve(__dirname, "scripts/service-boot-data.json"), "utf8")), categoryBootData.header);
       },
     },
     react(),

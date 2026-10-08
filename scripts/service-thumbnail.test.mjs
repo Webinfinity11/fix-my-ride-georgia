@@ -5,9 +5,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import ts from 'typescript';
 
 const manifest = JSON.parse(readFileSync(new URL('../src/data/service-thumbnails.json', import.meta.url), 'utf8'));
+const display = JSON.parse(readFileSync(new URL("../src/data/service-display-images.json", import.meta.url), "utf8"));
 const exports = {};
 vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/utils/imageCompression.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true } }).outputText, {
-  exports, require: () => manifest,
+  exports, require: (name) => name.includes("display-images") ? display : manifest,
 });
 
 test('known small card photos use valid local WebP files', () => {
@@ -21,8 +22,8 @@ test('known small card photos use valid local WebP files', () => {
 
 test('gallery images and unknown photos never invoke metered transformations', () => {
   const source = Object.keys(manifest)[0];
-  assert.equal(exports.getOptimizedImageUrl(source, 800, 600), source);
-  assert.equal(exports.getOptimizedImageUrl(source), source);
+  assert.equal(exports.getOptimizedImageUrl(source, 800, 600), display[source]);
+  assert.equal(exports.getOptimizedImageUrl(source), display[source]);
   assert.ok(exports.getOptimizedImageUrl('https://example.com/image.jpg').startsWith('https://example.com/'));
 });
 
@@ -38,6 +39,13 @@ test('new uploads use their prepared card sibling while old and gallery URLs sta
 test('legacy transformation URLs are converted back to plain public files', () => {
   const source=Object.keys(manifest)[0];
   const rendered=source.replace('/object/public/','/render/image/public/')+'?width=400&quality=70';
-  assert.equal(exports.getOptimizedImageUrl(rendered,800,600),source);
+  assert.equal(exports.getOptimizedImageUrl(rendered,800,600),display[source]);
   assert.equal(exports.getOptimizedImageUrl(rendered,400,300,70,{cropToFit:true}),manifest[source]);
+});
+
+test("full size lightbox keeps originals while prepared display assets exist", () => {
+ for (const [source, file] of Object.entries(display)) {
+ assert.equal(exports.getOptimizedImageUrl(source,1400,1000),source);
+ assert.ok(existsSync(new URL("../public"+file,import.meta.url)));
+ }
 });

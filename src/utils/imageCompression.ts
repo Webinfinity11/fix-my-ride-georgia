@@ -5,6 +5,7 @@
  */
 
 import serviceThumbnails from '@/data/service-thumbnails.json';
+import serviceDisplayImages from '@/data/service-display-images.json';
 
 interface CompressOptions {
   maxWidth?: number;
@@ -124,6 +125,10 @@ export const getOptimizedImageUrl = (
     if (url.includes('/storage/v1/object/public/') && /\/fixup-v2-[0-9]+-[a-z0-9]+\.webp$/.test(url)) {
       return url.replace(/\.webp$/, '-card.webp');
     }
+  }
+  if (!options.cropToFit && width <= 1000 && height <= 1000) {
+    const local = (serviceDisplayImages as Record<string, string>)[url];
+    if (local) return local;
   }
   // Unprepared originals stay usable. Never turn these into render/image
   // requests: that service has exceeded this project's capped quota.

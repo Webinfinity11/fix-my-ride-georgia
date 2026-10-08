@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { performRedirect, needsCanonicalRedirect } from "@/utils/redirectUtils";
 import { Helmet } from "react-helmet-async";
@@ -39,10 +39,11 @@ import {
   Wrench
 } from "lucide-react";
 import { toast } from "sonner";
-import LocationMapPicker from "@/components/forms/LocationMapPicker";
-import ServiceReviews from "@/components/reviews/ServiceReviews";
+const LocationMapPicker = lazy(() => import("@/components/forms/LocationMapPicker"));
+const ServiceReviews = lazy(() => import("@/components/reviews/ServiceReviews"));
 import ServiceGallery from "@/components/services/ServiceGallery";
 import ServiceVideoGallery from "@/components/services/ServiceVideoGallery";
+import { CategoryBootShell } from "@/components/layout/CategoryBootShell";
 import Layout from "@/components/layout/Layout";
 import { useSEOData } from "@/hooks/useSEOData";
 import SEOHead from "@/components/seo/SEOHead";
@@ -57,6 +58,8 @@ import { RelatedBlogPosts, MechanicOtherServices } from "@/components/seo/Intern
 import { brandsForService } from "@/utils/carBrands";
 import { CAR_BRAND_LOGOS } from "@/data/carBrandLogos";
 import { PhoneRevealDialog } from "@/components/services/PhoneRevealDialog";
+import { NearViewport } from "@/components/ui/near-viewport";
+import { LazyImage } from "@/components/ui/lazy-image";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
 
 interface ServiceType {
@@ -420,6 +423,7 @@ const ServiceDetail = () => {
 
   // Loading State
   if (loading) {
+    if (window.__fixupServiceBoot?.path === window.location.pathname.replace(/\/$/, "")) return <CategoryBootShell />;
     return (
       <Layout>
         <Helmet>
@@ -885,7 +889,7 @@ const ServiceDetail = () => {
                 <div className="col-span-12 lg:col-span-8">
                   <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-ink-200/60 bg-ink-100 shadow-card group">
                     {hasPhotos ? (
-                      <img src={getOptimizedImageUrl(photos[idx], 900, 560, 75)} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
+                      <LazyImage priority src={getOptimizedImageUrl(photos[idx], 900, 560, 75)} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
                     ) : (
                       <div className="absolute inset-0 grid place-items-center text-ink-300"><Image className="h-14 w-14" /></div>
                     )}
@@ -903,8 +907,8 @@ const ServiceDetail = () => {
                       <button type="button" onClick={() => setActiveImg(i => (i + 1) % photos.length)} className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 hover:bg-white backdrop-blur border border-white/60 grid place-items-center text-ink-900 opacity-0 group-hover:opacity-100 transition shadow-pop"><ChevronRight className="h-4 w-4" /></button>
                       <div className="absolute left-3 right-3 bottom-3 flex gap-1.5">
                         {photos.slice(0, 6).map((g, i) => (
-                          <button key={i} type="button" onClick={() => setActiveImg(i)} className={`relative flex-1 h-12 rounded-lg overflow-hidden ring-2 transition ${i === idx ? "ring-accent-500" : "ring-white/70 hover:ring-white"}`}>
-                            <img src={getOptimizedImageUrl(g, 160, 120, 60)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                          <button key={i} type="button" aria-label={`ფოტო ${i + 1}`} onClick={() => setActiveImg(i)} className={`relative flex-1 h-12 rounded-lg overflow-hidden ring-2 transition ${i === idx ? "ring-accent-500" : "ring-white/70 hover:ring-white"}`}>
+                            <LazyImage src={getOptimizedImageUrl(g, 160, 120, 60, { cropToFit: true }) !== g ? getOptimizedImageUrl(g, 160, 120, 60, { cropToFit: true }) : undefined} alt="" className="absolute inset-0 h-full w-full object-cover" />
                             {i !== idx && <span className="absolute inset-0 bg-ink-950/35" />}
                           </button>
                         ))}
@@ -1017,6 +1021,7 @@ const ServiceDetail = () => {
                       </div>
                       <button type="button" onClick={handleGetDirections} className="h-9 px-3.5 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[12px] font-semibold inline-flex items-center gap-1.5">მარშრუტი<ArrowRight className="h-3.5 w-3.5" /></button>
                     </div>
+                    <NearViewport className="h-[300px] md:h-[380px]" fallback={<div className="h-full bg-muted" />}><Suspense fallback={<div className="h-full bg-muted" />}>
                     <LocationMapPicker
                       latitude={service.latitude}
                       longitude={service.longitude}
@@ -1024,11 +1029,12 @@ const ServiceDetail = () => {
                       interactive={false}
                       className="h-[300px] md:h-[380px] w-full"
                     />
+                    </Suspense></NearViewport>
                   </div>
                 )}
 
                 {/* Reviews */}
-                <ServiceReviews serviceId={service.id} onReviewAdded={handleReviewAdded} />
+                <NearViewport fallback={<div className="h-48 bg-muted rounded-2xl" />}><Suspense fallback={<div className="h-48 bg-muted rounded-2xl" />}><ServiceReviews serviceId={service.id} onReviewAdded={handleReviewAdded} /></Suspense></NearViewport>
               </div>
 
               {/* Aside — provider */}
