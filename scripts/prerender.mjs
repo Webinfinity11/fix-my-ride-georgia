@@ -29,7 +29,7 @@ import { createReadStream, existsSync, statSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
-import { injectCategoryBootShells } from './category-boot-shell.mjs';
+import { injectCategoryBootShells, injectCategoryInitialData } from './category-boot-shell.mjs';
 import { cleanPrerenderResources } from './prerender-resources.mjs';
 import { getSnapshotCSS } from './snapshot-css.mjs';
 
@@ -271,6 +271,7 @@ async function main() {
       });
 
       const url = `http://localhost:${PORT}${route}`;
+      await page.evaluateOnNewDocument(() => { window.__fixupPrerenderCapture = true; });
       await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
 
       // Wait until react-helmet has flushed the REAL <head> — i.e. the title is
@@ -389,6 +390,10 @@ async function main() {
       html = html.replace(/<html(\s|>)/i, `<html data-ssg="${route}"$1`);
 
       if (categoryBootShells[route]) {
+        const initialData = await page.evaluate(() => window.__fixupCategorySnapshotCapture ?? null);
+        if (initialData?.path === route) {
+          html = injectCategoryInitialData(html, initialData);
+        }
         html = injectCategoryBootShells(html, categoryHeader, { [route]: categoryBootShells[route] });
       } else if (route !== '/') {
         html = html.replace(/<script id="category-boot-shell">[\s\S]*?<\/script>/g, '');

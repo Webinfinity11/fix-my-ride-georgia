@@ -79,15 +79,15 @@ const SORT_MAP: Record<ServiceSortOption, [string, boolean]> = {
   popular: ["review_count", false],
 };
 
-export const useServices = () => {
-  const [services, setServices] = useState<ServiceType[]>([]);
+export const useServices = (initial?: { services: ServiceType[]; totalCount: number; hasMore: boolean } | null) => {
+  const [services, setServices] = useState<ServiceType[]>(initial?.services ?? []);
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initial);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(initial?.totalCount ?? 0);
+  const [hasMore, setHasMore] = useState(initial?.hasMore ?? false);
 
   const serviceRequest = useRef(0);
 
@@ -150,11 +150,11 @@ export const useServices = () => {
   const fetchServices = async (
     filters: ServiceFilters,
     page = 0,
-    options?: { all?: boolean },
+    options?: { all?: boolean; background?: boolean },
   ) => {
     const request = ++serviceRequest.current;
     if (page === 0) {
-      setLoading(true);
+      if (!options?.background) setLoading(true);
       setLoadingMore(false);
     } else setLoadingMore(true);
 
@@ -346,7 +346,7 @@ export const useServices = () => {
       if (request !== serviceRequest.current) return;
       console.error("Error fetching services:", error);
       toast.error("სერვისების ჩატვირთვისას შეცდომა დაფიქსირდა");
-      if (page === 0) setServices([]);
+      if (page === 0 && !options?.background) setServices([]);
     } finally {
       if (request === serviceRequest.current) {
         setLoading(false);

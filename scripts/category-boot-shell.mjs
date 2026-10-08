@@ -1,5 +1,11 @@
 // Fallback documents carry headings only. Matching route documents preserve
 // the public snapshot already present in their root until fresh data arrives.
+export function injectCategoryInitialData(html, data) {
+  html = html.replace(/<script\b[^>]*\bid="category-initial-data"[^>]*>[\s\S]*?<\/script>/g, '');
+  const payload = JSON.stringify(data).replace(/</g, '\\u003c');
+  return html.replace('</body>', `<script type="application/json" id="category-initial-data">${payload}</script></body>`);
+}
+
 export function injectCategoryBootShells(html, header, categories) {
   if (!header || !Object.keys(categories).length) return html;
   html = html.replace(/<script id="category-boot-shell">[\s\S]*?<\/script>/g, '');

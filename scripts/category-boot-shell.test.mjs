@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import vm from 'node:vm';
-import { injectCategoryBootShells } from './category-boot-shell.mjs';
+import { injectCategoryBootShells, injectCategoryInitialData } from './category-boot-shell.mjs';
 
 test('only mismatched known parent category routes receive an early heading', () => {
   const source = '<html data-ssg="/"><body><div id="root"></div></body></html>';
@@ -57,4 +57,14 @@ test('matching snapshots keep their full HTML and initialize the React loading f
   assert.equal(root.innerHTML, '<h1>Lights</h1><article>Current service</article>');
   assert.equal(context.window.__fixupCategoryBoot.html, root.innerHTML);
   assert.equal(context.window.__fixupCategoryBoot.snapshot, true);
+});
+
+test('initial public data is script-safe and replaced on subsequent captures', () => {
+  const first = injectCategoryInitialData('<body></body>', { description: '</script><script>bad()</script>' });
+  assert.equal((first.match(/<\/script>/g) || []).length, 1);
+  const refreshed = injectCategoryInitialData(first, { description: 'Fresh' });
+  assert.equal((refreshed.match(/id="category-initial-data"/g) || []).length, 1);
+  assert.ok(!refreshed.includes('bad()'));
+  const parsed = JSON.parse(first.match(/id="category-initial-data">([\s\S]*?)<\/script>/)[1]);
+  assert.equal(parsed.description, '</script><script>bad()</script>');
 });

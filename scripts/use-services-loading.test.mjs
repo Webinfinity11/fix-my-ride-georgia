@@ -10,7 +10,7 @@ const clients = [];
 afterEach(() => { for (const client of clients.splice(0)) client.clear(); });
 
 // Exercise the real hook against controllable, out-of-order network responses.
-function harness() {
+function harness(initial) {
   const states = [];
   const requests = [];
   const notices = [];
@@ -63,7 +63,7 @@ function harness() {
     },
     console: { log() {}, warn() {}, error() {} },
   });
-  return { hook: exports.useServices(), metadata, queryClient, states, requests, notices };
+  return { hook: exports.useServices(initial), metadata, queryClient, states, requests, notices };
 }
 const filters = { searchTerm: '', selectedCategory: 'all', selectedCity: null, selectedDistrict: null, selectedBrands: [], onSiteOnly: false, minRating: null };
 const tick = () => new Promise(resolve => setImmediate(resolve));
@@ -161,4 +161,30 @@ test('map tab counts use the same Point filtering as the datasets', () => {
   const dataRoot = new URL('../public/data/', import.meta.url);
   assert.equal(countMapPoints(JSON.parse(readFileSync(new URL('fuel-stations.geojson', dataRoot)))), 559);
   assert.equal(countMapPoints(JSON.parse(readFileSync(new URL('chargers.geojson', dataRoot)))), 262);
+});
+
+
+test('seeded public listings refresh in the background without becoming skeletons', async () => {
+  const h = harness({ services: [{ id: 5, name: 'Snapshot' }], totalCount: 1, hasMore: false });
+  const pending = h.hook.fetchServices(filters, 0, { background: true });
+  assert.equal(h.states[4], false);
+  assert.equal(h.states[0][0].name, 'Snapshot');
+  h.requests[0].resolve({ data: [{ id: 5, name: 'Fresh' }], count: 1, error: null });
+  await pending;
+  assert.equal(h.states[0][0].name, 'Fresh');
+  assert.equal(h.states[4], false);
+});
+
+test('an offline background refresh retains the snapshot but explicit failed filters do not', async () => {
+  const h = harness({ services: [{ id: 5 }], totalCount: 1, hasMore: false });
+  const refresh = h.hook.fetchServices(filters, 0, { background: true });
+  h.requests[0].resolve({ error: { message: 'Offline' } });
+  await refresh;
+  assert.equal(h.states[0][0].id, 5);
+  const search = h.hook.fetchServices({ ...filters, searchTerm: 'Other' });
+  assert.equal(h.states[4], true);
+  h.requests[1].resolve({ error: { message: 'Offline' } });
+  await search;
+  assert.equal(h.states[0].length, 0);
+  assert.equal(h.states[4], false);
 });

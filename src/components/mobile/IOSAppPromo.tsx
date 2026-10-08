@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { usePastFirstScreen } from "@/hooks/usePastFirstScreen";
 
 const APP_STORE_URL =
   "https://apps.apple.com/ge/app/fixup-auto-services/id6757795136";
@@ -10,6 +11,7 @@ const SNOOZE_KEY = "ios-app-promo-snoozed-until";
 const SNOOZE_DAYS = 7;
 
 export function IOSAppPromo() {
+  const pastFirstScreen = usePastFirstScreen();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export function IOSAppPromo() {
     handleSnooze();
   };
 
-  if (!show) return null;
+  if (!show || !pastFirstScreen) return null;
 
   return (
     <>

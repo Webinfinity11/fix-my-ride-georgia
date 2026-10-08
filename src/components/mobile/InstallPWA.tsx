@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { usePastFirstScreen } from '@/hooks/usePastFirstScreen';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -9,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallPWA() {
+  const pastFirstScreen = usePastFirstScreen();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -62,7 +64,7 @@ export function InstallPWA() {
     localStorage.setItem('pwa-install-dismissed', 'true');
   };
 
-  if (isInstalled || !showInstallBanner) return null;
+  if (isInstalled || !showInstallBanner || !pastFirstScreen) return null;
 
   return (
     <div

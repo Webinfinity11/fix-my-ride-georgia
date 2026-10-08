@@ -20,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { getCategoryFromSlug, createCategorySlug, createSlug } from "@/utils/slugUtils";
 import { useServices, ServiceType } from "@/hooks/useServices";
+import { readCategorySnapshot } from "@/lib/categorySnapshot";
 import {
   getCategoryMetaTitle,
   getCategoryMetaDescription,
@@ -54,9 +55,10 @@ const ServiceCategory = () => {
     district?: string;
   }>();
   const districtInfo = getDistrictBySlug(districtSlug);
-  const [category, setCategory] = useState<CategoryType | null>(null);
-  const [resolvedCategoryParam, setResolvedCategoryParam] = useState<string | null>(null);
   const categoryParam = categoryId || categorySlug;
+  const [initialData] = useState(readCategorySnapshot);
+  const [category, setCategory] = useState<CategoryType | null>(initialData?.category ?? null);
+  const [resolvedCategoryParam, setResolvedCategoryParam] = useState<string | null>(initialData ? categoryParam ?? null : null);
   // Numeric routes already contain the filter ID; slug routes must resolve it first.
   const serviceCategoryId = categoryParam && /^\d+$/.test(categoryParam)
     ? Number(categoryParam)
@@ -64,8 +66,10 @@ const ServiceCategory = () => {
   // Reuse the shared services pipeline (same as /services) so the cards render
   // identically (VIP badges/sorting included) and the fetch/transform logic
   // isn't duplicated here.
-  const { services, loading: servicesLoading, fetchServices } = useServices();
-  const [categoryLoading, setCategoryLoading] = useState(true);
+  const { services, loading: servicesLoading, fetchServices, totalCount, hasMore } = useServices(initialData);
+  const [categoryLoading, setCategoryLoading] = useState(!initialData);
+  const initialMetadataRefresh = useRef(!!initialData);
+  const initialServicesRefresh = useRef(!!initialData);
   // The snapshot belongs only to the initial route. Once live data has arrived,
   // subsequent filtering/navigation must use the interactive loading states.
   const initialSnapshotPath = useRef(window.__fixupCategoryBoot?.snapshot
@@ -94,8 +98,12 @@ const ServiceCategory = () => {
 
   useEffect(() => {
     let active = true;
-    setCategoryLoading(true);
-    setCategory(null);
+    const background = initialMetadataRefresh.current;
+    initialMetadataRefresh.current = false;
+    if (!background) {
+      setCategoryLoading(true);
+      setCategory(null);
+    }
     if (!categoryParam) {
       setCategoryLoading(false);
       return;
@@ -104,7 +112,10 @@ const ServiceCategory = () => {
       try {
         const data = await getCategoryFromSlug(categoryParam);
         if (!active) return;
-        if (!data) throw new Error("Category not found");
+        if (!data) {
+          setCategory(null);
+          throw new Error("Category not found");
+        }
         setCategory(data);
         setResolvedCategoryParam(categoryParam);
       } catch (error) {
@@ -120,6 +131,8 @@ const ServiceCategory = () => {
 
   useEffect(() => {
     if (serviceCategoryId !== undefined) {
+      const background = initialServicesRefresh.current;
+      initialServicesRefresh.current = false;
       void fetchServices({
         searchTerm: filters.searchTerm,
         selectedCategory: serviceCategoryId,
@@ -128,11 +141,19 @@ const ServiceCategory = () => {
         selectedBrands: filters.selectedBrands,
         onSiteOnly: filters.onSiteOnly,
         minRating: filters.minRating,
-      });
+      }, 0, { background });
     }
     // fetchServices is recreated on render; depend on the actual filter inputs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, serviceCategoryId]);
+
+  useEffect(() => {
+    if (window.__fixupPrerenderCapture && category && !categoryLoading && !servicesLoading) {
+      window.__fixupCategorySnapshotCapture = {
+        path: window.location.pathname.replace(/\/$/, ""), category, services, totalCount, hasMore,
+      };
+    }
+  }, [category, categoryLoading, servicesLoading, services, totalCount, hasMore]);
 
   if (!snapshotReleased.current && initialSnapshotPath.current === window.location.pathname.replace(/\/$/, "")
     && (categoryLoading || (category && servicesLoading))) {
