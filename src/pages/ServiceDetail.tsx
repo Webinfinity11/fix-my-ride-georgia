@@ -889,7 +889,7 @@ const ServiceDetail = () => {
                 <div className="col-span-12 lg:col-span-8">
                   <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-ink-200/60 bg-ink-100 shadow-card group">
                     {hasPhotos ? (
-                      <LazyImage priority src={getOptimizedImageUrl(photos[idx], 900, 560, 75)} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
+                      <LazyImage priority deferUntilPaint src={getOptimizedImageUrl(photos[idx], 900, 560, 75)} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
                     ) : (
                       <div className="absolute inset-0 grid place-items-center text-ink-300"><Image className="h-14 w-14" /></div>
                     )}
@@ -908,7 +908,7 @@ const ServiceDetail = () => {
                       <div className="absolute left-3 right-3 bottom-3 flex gap-1.5">
                         {photos.slice(0, 6).map((g, i) => (
                           <button key={i} type="button" aria-label={`ფოტო ${i + 1}`} onClick={() => setActiveImg(i)} className={`relative flex-1 h-12 rounded-lg overflow-hidden ring-2 transition ${i === idx ? "ring-accent-500" : "ring-white/70 hover:ring-white"}`}>
-                            <LazyImage src={getOptimizedImageUrl(g, 160, 120, 60, { cropToFit: true }) !== g ? getOptimizedImageUrl(g, 160, 120, 60, { cropToFit: true }) : undefined} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                            <LazyImage deferUntilPaint src={getOptimizedImageUrl(g, 160, 120, 60, { cropToFit: true }) !== g ? getOptimizedImageUrl(g, 160, 120, 60, { cropToFit: true }) : undefined} alt="" className="absolute inset-0 h-full w-full object-cover" />
                             {i !== idx && <span className="absolute inset-0 bg-ink-950/35" />}
                           </button>
                         ))}

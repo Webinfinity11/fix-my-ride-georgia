@@ -93,7 +93,7 @@ export function IOSAppPromo() {
         <div className="flex justify-center mb-4">
           <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-lg bg-background flex items-center justify-center p-3 border border-border">
             <img
-              src="/assets/fixup-logo-f44f8b958f9c6619.png"
+              src="/assets/fixup-logo-6c6398d629fe8a15.webp"
               alt="FixUp"
               className="w-full h-full object-contain"
             />

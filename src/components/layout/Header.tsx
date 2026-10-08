@@ -37,11 +37,11 @@ const Header = () => {
         <div className="flex items-center gap-3 flex-1">
           <Link to="/" className="flex items-center">
             <img
-              src="/assets/fixup-logo-f44f8b958f9c6619.png"
+              src="/assets/fixup-logo-6c6398d629fe8a15.webp"
               alt="FixUp Auto Service"
-              width="164"
+              width="163"
               height="80"
-              {...({ fetchpriority: "high" } as Record<string, string>)}
+              {...({ fetchpriority: "auto" } as Record<string, string>)}
               className="h-8 md:h-10 w-auto object-contain"
             />
           </Link>

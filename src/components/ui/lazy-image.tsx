@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface LazyImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   priority?: boolean;
+  deferUntilPaint?: boolean;
   fallbackSrc?: string;
   placeholderClassName?: string;
   onError?: (e: React.SyntheticEvent<HTMLImageElement>) => void;
@@ -44,8 +45,18 @@ const LoadedImage = ({ src, fallbackSrc, priority, className, placeholderClassNa
   );
 };
 
-const LazyImage = ({ priority = false, ...props }: LazyImageProps) => {
+const LazyImage = ({ priority = false, deferUntilPaint = false, ...props }: LazyImageProps) => {
   const [isInView, setIsInView] = useState(priority);
+  const [painted, setPainted] = useState(!deferUntilPaint);
+
+  useEffect(() => {
+    if (!deferUntilPaint) { setPainted(true); return; }
+    let second = 0;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(() => setPainted(true));
+    });
+    return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); };
+  }, [deferUntilPaint]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,7 +77,7 @@ const LazyImage = ({ priority = false, ...props }: LazyImageProps) => {
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
-      {(priority || isInView) && props.src ? (
+      {painted && (priority || isInView) && props.src ? (
         // A new source must start a fresh loading/fallback lifecycle.
         <LoadedImage key={`${props.src}|${props.srcSet || ""}`} {...props} priority={priority} />
       ) : (
