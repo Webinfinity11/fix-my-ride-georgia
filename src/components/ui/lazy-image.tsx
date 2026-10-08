@@ -13,7 +13,7 @@ const LoadedImage = ({ src, fallbackSrc, priority, className, placeholderClassNa
   const [useFallback, setUseFallback] = useState(false);
   return (
     <>
-      {!isLoaded && !priority && <div className={cn("absolute inset-0 animate-pulse rounded-md bg-muted", placeholderClassName)} />}
+      {!isLoaded && <div className={cn("absolute inset-0 animate-pulse rounded-md bg-muted", placeholderClassName)} />}
       <img
         {...props}
         src={useFallback ? fallbackSrc : src}

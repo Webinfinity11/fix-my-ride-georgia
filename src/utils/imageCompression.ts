@@ -10,12 +10,14 @@ interface CompressOptions {
   maxWidth?: number;
   maxHeight?: number;
   quality?: number;
+  cropToFit?: boolean;
 }
 
 const DEFAULT_OPTIONS: Required<CompressOptions> = {
   maxWidth: 1200,
   maxHeight: 1200,
   quality: 0.8,
+  cropToFit: false,
 };
 
 /**
@@ -26,7 +28,7 @@ export const compressImage = (
   file: File,
   options: CompressOptions = {}
 ): Promise<File> => {
-  const { maxWidth, maxHeight, quality } = { ...DEFAULT_OPTIONS, ...options };
+  const { maxWidth, maxHeight, quality, cropToFit } = { ...DEFAULT_OPTIONS, ...options };
 
   return new Promise((resolve, reject) => {
     // Skip non-image files
@@ -51,8 +53,8 @@ export const compressImage = (
       }
 
       const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = cropToFit ? maxWidth : width;
+      canvas.height = cropToFit ? maxHeight : height;
 
       const ctx = canvas.getContext('2d');
       if (!ctx) {
@@ -60,7 +62,15 @@ export const compressImage = (
         return;
       }
 
-      ctx.drawImage(img, 0, 0, width, height);
+      if (cropToFit) {
+        const ratio = maxWidth / maxHeight;
+        const sourceWidth = Math.min(img.width, img.height * ratio);
+        const sourceHeight = sourceWidth / ratio;
+        ctx.drawImage(img, (img.width - sourceWidth) / 2, (img.height - sourceHeight) / 2,
+          sourceWidth, sourceHeight, 0, 0, maxWidth, maxHeight);
+      } else {
+        ctx.drawImage(img, 0, 0, width, height);
+      }
 
       canvas.toBlob(
         (blob) => {
@@ -96,10 +106,7 @@ export const compressImage = (
   });
 };
 
-/**
- * Helper to build optimized Supabase image URL using the render/image endpoint.
- * Converts existing stored images to WebP on the fly.
- */
+/** Use prepared card assets without invoking a metered image service. */
 export const getOptimizedImageUrl = (
   url: string,
   width = 400,
@@ -107,21 +114,18 @@ export const getOptimizedImageUrl = (
   quality = 70,
   options: { cropToFit?: boolean } = {}
 ): string => {
-  // Supabase image transformation (render/image endpoint) — enabled on this
-  // project. Converts stored images to right-sized WebP on the fly, cutting
-  // mobile image weight ~75%. Only rewrites Supabase public storage URLs;
-  // any other/external URL (or a URL that already has query params) is left
-  // untouched so nothing breaks.
   if (!url || typeof url !== "string") return url;
+  if (url.includes('/storage/v1/render/image/public/')) {
+    url = url.replace('/storage/v1/render/image/public/', '/storage/v1/object/public/').split('?')[0];
+  }
   if (options.cropToFit && width <= 400 && height <= 300) {
     const local = (serviceThumbnails as Record<string, string>)[url];
-    if (local) return local;
+    if (typeof local === "string") return local;
+    if (url.includes('/storage/v1/object/public/') && /\/fixup-v2-[0-9]+-[a-z0-9]+\.webp$/.test(url)) {
+      return url.replace(/\.webp$/, '-card.webp');
+    }
   }
-  if (!url.includes("/storage/v1/object/public/")) return url;
-  if (url.includes("?")) return url;
-  const rendered = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
-  // Cards already use centered object-cover in a fixed aspect-ratio box.
-  // Crop only those thumbnails; galleries keep the complete image.
-  const crop = options.cropToFit ? `&height=${Math.round(height)}` : "";
-  return `${rendered}?width=${Math.round(width)}${crop}&quality=${quality}&resize=cover`;
+  // Unprepared originals stay usable. Never turn these into render/image
+  // requests: that service has exceeded this project's capped quota.
+  return url;
 };

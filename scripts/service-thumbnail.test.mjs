@@ -19,8 +19,25 @@ test('known small card photos use valid local WebP files', () => {
   }
 });
 
-test('gallery images and unknown photos keep the original transformation pipeline', () => {
+test('gallery images and unknown photos never invoke metered transformations', () => {
   const source = Object.keys(manifest)[0];
-  assert.ok(exports.getOptimizedImageUrl(source, 800, 600).includes('/render/image/public/'));
+  assert.equal(exports.getOptimizedImageUrl(source, 800, 600), source);
+  assert.equal(exports.getOptimizedImageUrl(source), source);
   assert.ok(exports.getOptimizedImageUrl('https://example.com/image.jpg').startsWith('https://example.com/'));
+});
+
+
+test('new uploads use their prepared card sibling while old and gallery URLs stay unchanged', () => {
+  const source = 'https://kwozniwtygkdoagjegom.supabase.co/storage/v1/object/public/service-photos/owner/fixup-v2-123456-abcdef.webp';
+  assert.equal(exports.getOptimizedImageUrl(source,400,300,70,{cropToFit:true}), source.replace('.webp','-card.webp'));
+  assert.equal(exports.getOptimizedImageUrl(source,800,600),source);
+  assert.equal(exports.getOptimizedImageUrl(source+'?x=1',400,300,70,{cropToFit:true}),source+'?x=1');
+});
+
+
+test('legacy transformation URLs are converted back to plain public files', () => {
+  const source=Object.keys(manifest)[0];
+  const rendered=source.replace('/object/public/','/render/image/public/')+'?width=400&quality=70';
+  assert.equal(exports.getOptimizedImageUrl(rendered,800,600),source);
+  assert.equal(exports.getOptimizedImageUrl(rendered,400,300,70,{cropToFit:true}),manifest[source]);
 });

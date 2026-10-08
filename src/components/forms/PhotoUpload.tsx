@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, Image } from "lucide-react";
+import { photoStoragePaths, uploadPreparedServicePhoto } from '@/lib/servicePhotoUpload';
 import { compressImage } from "@/utils/imageCompression";
 
 interface PhotoUploadProps {
@@ -36,24 +37,14 @@ const PhotoUpload = ({
         quality: 0.8,
       });
       
-      // Create a unique filename with .webp extension
-      const fileExt = compressedFile.name.split('.').pop() || 'webp';
-      const fileName = `${mechanicId}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      
-      console.log('Uploading to bucket:', bucketName, 'file:', fileName, 'size:', (compressedFile.size / 1024).toFixed(0) + 'KB');
-      
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(fileName, compressedFile, {
-          cacheControl: '31536000',
-          upsert: false,
-          contentType: compressedFile.type,
-        });
-
-      if (error) {
-        console.error('Upload error:', error);
-        throw error;
+      const thumbnailFile = await compressImage(file, {
+        maxWidth: 400, maxHeight: 300, quality: 0.7, cropToFit: true,
+      });
+      if (compressedFile.type !== 'image/webp' || thumbnailFile.type !== 'image/webp') {
+        throw new Error('ფოტოს დამუშავება ვერ მოხერხდა. სცადეთ JPG ან PNG ფოტო.');
       }
+      const fileName = `${mechanicId}/fixup-v2-${Date.now()}-${Math.random().toString(36).substring(2)}.webp`;
+      await uploadPreparedServicePhoto(supabase.storage.from(bucketName), fileName, compressedFile, thumbnailFile);
 
       // Get the public URL
       const { data: urlData } = supabase.storage
@@ -118,7 +109,7 @@ const PhotoUpload = ({
       
       const { error } = await supabase.storage
         .from(bucketName)
-        .remove([fileName]);
+        .remove(photoStoragePaths(fileName));
 
       if (error) {
         console.error('Delete error:', error);
