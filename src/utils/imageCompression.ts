@@ -4,6 +4,8 @@
  * before uploading to Supabase Storage.
  */
 
+import serviceThumbnails from '@/data/service-thumbnails.json';
+
 interface CompressOptions {
   maxWidth?: number;
   maxHeight?: number;
@@ -111,6 +113,10 @@ export const getOptimizedImageUrl = (
   // any other/external URL (or a URL that already has query params) is left
   // untouched so nothing breaks.
   if (!url || typeof url !== "string") return url;
+  if (options.cropToFit && width <= 400 && height <= 300) {
+    const local = (serviceThumbnails as Record<string, string>)[url];
+    if (local) return local;
+  }
   if (!url.includes("/storage/v1/object/public/")) return url;
   if (url.includes("?")) return url;
   const rendered = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");

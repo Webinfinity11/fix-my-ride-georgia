@@ -30,7 +30,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
 import { injectCategoryBootShells, injectCategoryInitialData } from './category-boot-shell.mjs';
-import { cleanPrerenderResources } from './prerender-resources.mjs';
+import { cleanPrerenderResources, injectLcpImagePreload } from './prerender-resources.mjs';
 import { getSnapshotCSS } from './snapshot-css.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -390,6 +390,12 @@ async function main() {
       html = html.replace(/<html(\s|>)/i, `<html data-ssg="${route}"$1`);
 
       if (categoryBootShells[route]) {
+        const firstImage = await page.evaluate(() =>
+          document.querySelector('.image-container img[loading="eager"]')?.getAttribute('src') ?? null
+        );
+        if (firstImage?.startsWith('/images/service-thumbnails/') || firstImage?.includes('/storage/v1/render/image/public/')) {
+          html = injectLcpImagePreload(html, firstImage);
+        }
         const initialData = await page.evaluate(() => window.__fixupCategorySnapshotCapture ?? null);
         if (initialData?.path === route) {
           html = injectCategoryInitialData(html, initialData);

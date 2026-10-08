@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { cleanPrerenderResources } from './prerender-resources.mjs';
+import { cleanPrerenderResources, injectLcpImagePreload } from './prerender-resources.mjs';
 
 const appCSS = '<link rel="stylesheet" crossorigin href="/assets/index.css">';
 const mapCSS = '<link rel="stylesheet" crossorigin="" href="/assets/leaflet.css">';
@@ -19,6 +19,21 @@ test('snapshots exclude analytics and lazy route downloads while keeping the app
   const clean = cleanPrerenderResources(shell + analytics + mapCSS + lazyModules + analytics, shell);
   assert.equal(clean, shell);
   assert.equal(cleanPrerenderResources(clean, shell), shell);
+});
+
+test('runtime toast CSS is omitted while app and critical styles stay available', () => {
+  const source = '<style>body{margin:0}</style><style type="text/css">[data-sonner-toaster]{position:fixed}</style>';
+  assert.equal(cleanPrerenderResources(source, shell), '<style>body{margin:0}</style>');
+});
+
+test('the LCP preload appears before CSS and is escaped and replaced on recapture', () => {
+  const source = '<head><meta name="viewport" content="width=device-width"><style>body{margin:0}</style></head>';
+  const first = injectLcpImagePreload(source, '/image.webp?width=400&quality=70');
+  assert.ok(first.indexOf('data-category-lcp') < first.indexOf('<style>'));
+  assert.ok(first.includes('width=400&amp;quality=70'));
+  const refreshed = injectLcpImagePreload(first, '/new.webp');
+  assert.equal((refreshed.match(/data-category-lcp/g) || []).length, 1);
+  assert.ok(!refreshed.includes('/image.webp'));
 });
 
 test('analytics loader schedules one script even when replayed by a snapshot', () => {

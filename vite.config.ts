@@ -117,6 +117,9 @@ export default defineConfig(({ mode }) => ({
         // Claim clients after installation; the next navigation uses the new shell.
         skipWaiting: true,
         clientsClaim: true,
+        // Parent categories have their own public prerendered HTML and data.
+        // Serving index.html here discarded that snapshot on repeat visits.
+        navigateFallbackDenylist: [/^\/category\/[^/]+\/?$/],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
         // Precache ONLY the tiny app shell (html/css/manifest). Previously this
         // globbed **/*.js + all images, so the service worker downloaded the
@@ -124,6 +127,18 @@ export default defineConfig(({ mode }) => ({
         // JS chunks + images now load on demand and are cached via runtimeCaching.
         globPatterns: ['**/*.{css,html,webmanifest}'],
         runtimeCaching: [
+          {
+            urlPattern: ({ url, request, sameOrigin }) => sameOrigin
+              && request.mode === 'navigate' && /^\/category\/[^/]+\/?$/.test(url.pathname),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'public-category-documents',
+              networkTimeoutSeconds: 1,
+              cacheableResponse: { statuses: [200] },
+              expiration: { maxEntries: 45, maxAgeSeconds: 60 * 60 },
+              precacheFallback: { fallbackURL: '/index.html' },
+            },
+          },
           {
             // App JS/CSS chunks — cache after first use (fast repeat visits),
             // but don't preload everything up front.
