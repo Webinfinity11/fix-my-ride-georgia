@@ -14,14 +14,14 @@ const LoadedImage = ({ src, fallbackSrc, priority, className, placeholderClassNa
   const [useFallback, setUseFallback] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
   if (hasFailed) {
-    return <div role="img" aria-label="ფოტო დროებით მიუწვდომელია"
+    return <span role="img" aria-label="ფოტო დროებით მიუწვდომელია"
       className={cn("absolute inset-0 rounded-md bg-muted flex items-center justify-center text-muted-foreground text-sm", placeholderClassName)}>
       ფოტო დროებით მიუწვდომელია
-    </div>;
+    </span>;
   }
   return (
     <>
-      {!isLoaded && <div className={cn("absolute inset-0 animate-pulse rounded-md bg-muted", placeholderClassName)} />}
+      {!isLoaded && <span className={cn("absolute inset-0 animate-pulse rounded-md bg-muted", placeholderClassName)} />}
       <img
         {...props}
         src={useFallback ? fallbackSrc : src}
@@ -45,6 +45,8 @@ const LoadedImage = ({ src, fallbackSrc, priority, className, placeholderClassNa
   );
 };
 
+// Images are also used inside buttons. Keep every wrapper and placeholder
+// phrasing content so the server HTML is valid in those controls.
 const LazyImage = ({ priority = false, deferUntilPaint = false, ...props }: LazyImageProps) => {
   const [isInView, setIsInView] = useState(priority);
   const [painted, setPainted] = useState(!deferUntilPaint);
@@ -57,7 +59,7 @@ const LazyImage = ({ priority = false, deferUntilPaint = false, ...props }: Lazy
     });
     return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); };
   }, [deferUntilPaint]);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (priority || !containerRef.current) return;
@@ -76,14 +78,14 @@ const LazyImage = ({ priority = false, deferUntilPaint = false, ...props }: Lazy
   }, [priority]);
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
+    <span ref={containerRef} className="relative block w-full h-full">
       {painted && (priority || isInView) && props.src ? (
         // A new source must start a fresh loading/fallback lifecycle.
         <LoadedImage key={`${props.src}|${props.srcSet || ""}`} {...props} priority={priority} />
       ) : (
-        <div className={cn("absolute inset-0 animate-pulse rounded-md bg-muted", props.placeholderClassName)} />
+        <span className={cn("absolute inset-0 animate-pulse rounded-md bg-muted", props.placeholderClassName)} />
       )}
-    </div>
+    </span>
   );
 };
 
