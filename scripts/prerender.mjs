@@ -26,7 +26,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
 import { injectCategoryBootShells, injectCategoryInitialData } from './category-boot-shell.mjs';
-import { cleanPrerenderResources, injectLcpImagePreload } from './prerender-resources.mjs';
+import { cleanPrerenderResources, injectLcpImagePreload, assertPageDocument } from './prerender-resources.mjs';
 import { getSnapshotCSS } from './snapshot-css.mjs';
 import { getServiceRoutes, prepareServiceSnapshot, assertServiceDocument } from './service-prerender.mjs';
 
@@ -368,9 +368,7 @@ async function main() {
 
       // Minimal sanity check — abort if shell is empty (something broke).
       // The root may carry attributes (e.g. data-render-origin="client").
-      if (!/<div\b[^>]*\bid="root"[^>]*>/.test(html) || html.length < 5000) {
-        throw new Error(`output looks broken (${html.length} bytes)`);
-      }
+      assertPageDocument(html);
 
       // Stamp the served route onto <html data-ssg="..."> so the index.html
       // guard can hide this snapshot when it's served as the SPA fallback for a

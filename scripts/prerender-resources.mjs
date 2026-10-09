@@ -32,3 +32,11 @@ export function injectLcpImagePreload(html, url) {
     ? /(<meta\b[^>]*charset[^>]*>)/i : /(<meta\b[^>]*name="viewport"[^>]*>)/i;
   return html.replace(anchor, '$1' + hint);
 }
+
+// The bootstrap records render origin on the root. Attributes do not make a
+// captured page invalid; require the root element rather than an exact tag.
+export function assertPageDocument(html) {
+  if (!/<div\b[^>]*\sid=["']root["'][^>]*>/i.test(html) || html.length < 5000) {
+    throw new Error(`output looks broken (${html.length} bytes)`);
+  }
+}
