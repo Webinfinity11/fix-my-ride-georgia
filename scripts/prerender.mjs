@@ -367,7 +367,8 @@ async function main() {
       );
 
       // Minimal sanity check — abort if shell is empty (something broke).
-      if (!html.includes('<div id="root">') || html.length < 5000) {
+      // The root may carry attributes (e.g. data-render-origin="client").
+      if (!/<div\b[^>]*\bid="root"[^>]*>/.test(html) || html.length < 5000) {
         throw new Error(`output looks broken (${html.length} bytes)`);
       }
 
