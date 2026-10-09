@@ -12,7 +12,11 @@ if (readServiceSnapshot() && document.documentElement.dataset.ssg === location.p
       onRecoverableError(error, info) {
         // Keep hydration failures visible, including the component that differs
         // from the static document (the minified error alone loses that context).
-        console.error('Service hydration failed', error, info.componentStack);
+        const diagnostic = new Error(`Service hydration failed: ${error instanceof Error ? error.message : String(error)}\n${info.componentStack}`);
+        // Production deliberately strips console calls. Use the same browser
+        // error channel as React's default reporter so audits retain failures.
+        if (typeof window.reportError === 'function') window.reportError(diagnostic);
+        else setTimeout(() => { throw diagnostic; }, 0);
       },
     });
   }).catch(() => createRoot(root).render(<App />));
