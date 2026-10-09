@@ -8,7 +8,13 @@ if (readServiceSnapshot() && document.documentElement.dataset.ssg === location.p
   // Keep the server-rendered nodes (especially the LCP image) in place while
   // route code arrives, then attach React behavior through real hydration.
   import('./pages/ServiceDetail').then(({ default: ServicePage }) => {
-    hydrateRoot(root, <App initialServiceComponent={ServicePage} />);
+    hydrateRoot(root, <App initialServiceComponent={ServicePage} />, {
+      onRecoverableError(error, info) {
+        // Keep hydration failures visible, including the component that differs
+        // from the static document (the minified error alone loses that context).
+        console.error('Service hydration failed', error, info.componentStack);
+      },
+    });
   }).catch(() => createRoot(root).render(<App />));
 } else {
   createRoot(root).render(<App />);
