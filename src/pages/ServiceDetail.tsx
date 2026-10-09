@@ -852,9 +852,9 @@ const ServiceDetail = () => {
                     className="flex items-center gap-x-4 text-[12.5px] text-ink-600 overflow-x-auto whitespace-nowrap lg:justify-end max-w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                     style={{ maskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)", WebkitMaskImage: "linear-gradient(to right, black 0%, black 90%, transparent 100%)" }}
                   >
-                    <span className="inline-flex items-center gap-1.5 shrink-0"><MapPin className="h-3.5 w-3.5 text-ink-400" />{locationText}{service.address ? ` · ${service.address}` : ""}</span>
+                    <span className="inline-flex items-center gap-1.5 shrink-0"><MapPin className="h-3.5 w-3.5 text-ink-500" />{locationText}{service.address ? ` · ${service.address}` : ""}</span>
                     <span className="text-ink-300 shrink-0">·</span>
-                    <span className="inline-flex items-center gap-1.5 font-mono tabular-nums text-ink-400 shrink-0">განცხადება #{service.id}</span>
+                    <span className="inline-flex items-center gap-1.5 font-mono tabular-nums text-ink-500 shrink-0">განცხადება #{service.id}</span>
                   </div>
                 </div>
               </div>
@@ -879,8 +879,8 @@ const ServiceDetail = () => {
                       <button type="button" onClick={() => setLightbox(true)} className="absolute top-3 right-3 h-8 px-3 rounded-pill bg-white/85 hover:bg-white backdrop-blur border border-white/60 text-ink-900 text-[11.5px] font-semibold inline-flex items-center gap-1.5"><Maximize2 className="h-3.5 w-3.5" />გადიდება</button>
                     )}
                     {photos.length > 1 && (<>
-                      <button type="button" onClick={() => setActiveImg(i => (i - 1 + photos.length) % photos.length)} className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 hover:bg-white backdrop-blur border border-white/60 grid place-items-center text-ink-900 opacity-0 group-hover:opacity-100 transition shadow-pop"><ChevronLeft className="h-4 w-4" /></button>
-                      <button type="button" onClick={() => setActiveImg(i => (i + 1) % photos.length)} className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 hover:bg-white backdrop-blur border border-white/60 grid place-items-center text-ink-900 opacity-0 group-hover:opacity-100 transition shadow-pop"><ChevronRight className="h-4 w-4" /></button>
+                      <button type="button" aria-label="წინა ფოტო" onClick={() => setActiveImg(i => (i - 1 + photos.length) % photos.length)} className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 hover:bg-white backdrop-blur border border-white/60 grid place-items-center text-ink-900 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition shadow-pop"><ChevronLeft className="h-4 w-4" /></button>
+                      <button type="button" aria-label="შემდეგი ფოტო" onClick={() => setActiveImg(i => (i + 1) % photos.length)} className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/85 hover:bg-white backdrop-blur border border-white/60 grid place-items-center text-ink-900 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 transition shadow-pop"><ChevronRight className="h-4 w-4" /></button>
                       <div className="absolute left-3 right-3 bottom-3 flex gap-1.5">
                         {photos.slice(0, 6).map((g, i) => (
                           <button key={i} type="button" aria-label={`ფოტო ${i + 1}`} onClick={() => setActiveImg(i)} className={`relative flex-1 h-12 rounded-lg overflow-hidden ring-2 transition ${i === idx ? "ring-accent-500" : "ring-white/70 hover:ring-white"}`}>
@@ -898,13 +898,13 @@ const ServiceDetail = () => {
                   {/* Price + provider */}
                   <div className="col-span-2 lg:col-span-1 rounded-2xl bg-white/85 backdrop-blur-xl border border-ink-200/60 shadow-card p-4">
                     <div className="flex items-baseline justify-between gap-3">
-                      <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400">ფასი</div>
+                      <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-500">ფასი</div>
                       <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-success-700"><span className="h-1.5 w-1.5 rounded-full bg-success-500" />აქტიური</span>
                     </div>
                     <div className="mt-1 text-[22px] font-bold tracking-tight text-ink-900 leading-tight">{priceDisplay || "შეთანხმებით"}</div>
 
                     <div className="mt-4 pt-4 border-t border-ink-100">
-                      <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-2">გამოაქვეყნა</div>
+                      <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-500 mb-2">გამოაქვეყნა</div>
                       <div className="flex items-center gap-2.5">
                         <div className="h-10 w-10 rounded-xl bg-brand-500 text-white grid place-items-center text-[13px] font-bold tracking-wider shrink-0">{initials || "?"}</div>
                         <div className="min-w-0 flex-1">
@@ -912,7 +912,7 @@ const ServiceDetail = () => {
                           {service.mechanic.phone && (
                             <button type="button" onClick={openPhone} className="mt-1.5 w-full group flex items-center justify-between gap-2 rounded-xl border border-accent-200 bg-accent-50/50 hover:bg-accent-50 px-3 py-2 transition">
                               <span className="text-[16px] font-bold font-mono tabular-nums tracking-tight text-ink-900">{formatMaskedPhone(service.mechanic.phone)}</span>
-                              <span className="inline-flex items-center gap-1 px-2.5 h-7 rounded-pill bg-accent-500 text-white text-[11px] font-bold animate-phone-glow shrink-0">
+                              <span className="inline-flex items-center gap-1 px-2.5 h-7 rounded-pill bg-accent-700 text-white text-[11px] font-bold animate-phone-glow shrink-0">
                                 <Eye className="h-3.5 w-3.5" />ჩვენება
                               </span>
                             </button>
@@ -922,7 +922,7 @@ const ServiceDetail = () => {
                       {service.mechanic.phone ? (
                         <button type="button" onClick={openPhone} className="mt-3 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დაურეკე ხელოსანს</button>
                       ) : (
-                        <div className="mt-3 w-full h-11 rounded-btn bg-ink-100 text-ink-400 text-[12.5px] font-semibold inline-flex items-center justify-center">ნომერი მიუწვდომელია</div>
+                        <div className="mt-3 w-full h-11 rounded-btn bg-ink-100 text-ink-500 text-[12.5px] font-semibold inline-flex items-center justify-center">ნომერი მიუწვდომელია</div>
                       )}
                       {hasProfile ? (
                         <button type="button" onClick={goProfile} className="mt-2 w-full text-[11.5px] text-ink-600 hover:text-ink-900 underline underline-offset-2 decoration-ink-200">სრული პროფილი</button>
@@ -932,27 +932,27 @@ const ServiceDetail = () => {
 
                   {/* Details chips */}
                   <div className="col-span-2 lg:col-span-1 rounded-2xl bg-white/85 backdrop-blur-xl border border-ink-200/60 shadow-card p-4">
-                    <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">სამუშაო დეტალები</div>
+                    <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-ink-500 mb-3">სამუშაო დეტალები</div>
                     <dl className="space-y-2.5 text-[12.5px]">
                       <div className="flex items-start justify-between gap-3">
-                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><Clock className="h-3.5 w-3.5 text-ink-400" />დრო</dt>
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><Clock className="h-3.5 w-3.5 text-ink-500" />დრო</dt>
                         <dd className="text-ink-900 font-semibold text-right">{service.estimated_hours ? `${service.estimated_hours} საათი` : "შეთანხმებით"}</dd>
                       </div>
                       <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
-                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><MapPin className="h-3.5 w-3.5 text-ink-400" />ლოკაცია</dt>
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><MapPin className="h-3.5 w-3.5 text-ink-500" />ლოკაცია</dt>
                         <dd className="text-ink-900 font-semibold text-right">{locationText}</dd>
                       </div>
                       <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
-                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><CreditCard className="h-3.5 w-3.5 text-ink-400" />გადახდა</dt>
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><CreditCard className="h-3.5 w-3.5 text-ink-500" />გადახდა</dt>
                         <dd className="text-ink-900 font-semibold text-right">{paymentText}</dd>
                       </div>
                       <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
-                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><Car className="h-3.5 w-3.5 text-ink-400" />მანქანა</dt>
+                        <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><Car className="h-3.5 w-3.5 text-ink-500" />მანქანა</dt>
                         <dd className="text-ink-900 font-semibold text-right">{carText}</dd>
                       </div>
                       {service.on_site_service && (
                         <div className="flex items-start justify-between gap-3 border-t border-ink-100 pt-2.5">
-                          <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><CheckCircle className="h-3.5 w-3.5 text-ink-400" />ადგილზე</dt>
+                          <dt className="inline-flex items-center gap-1.5 text-ink-500 shrink-0"><CheckCircle className="h-3.5 w-3.5 text-ink-500" />ადგილზე</dt>
                           <dd className="text-success-700 font-semibold text-right">კი</dd>
                         </div>
                       )}
@@ -969,7 +969,7 @@ const ServiceDetail = () => {
               <div className="col-span-12 lg:col-span-8 space-y-5">
                 {/* Description */}
                 <div className="rounded-2xl bg-white border border-ink-200/60 p-6">
-                  <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">აღწერა</div>
+                  <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-500">აღწერა</div>
                   <h2 className="mt-1 text-[20px] font-bold tracking-tight text-ink-900 mb-3">{service.name}</h2>
                   <p className="text-[14px] leading-[1.75] text-ink-700 whitespace-pre-wrap">
                     {service.description || "დეტალური აღწერა არ არის მითითებული."}
@@ -982,7 +982,7 @@ const ServiceDetail = () => {
                 {/* Videos */}
                 {service.videos && service.videos.length > 0 && (
                   <div className="rounded-2xl bg-white border border-ink-200/60 p-6">
-                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3 inline-flex items-center gap-1.5"><Video className="h-3.5 w-3.5" />ვიდეოები ({service.videos.length})</div>
+                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-500 mb-3 inline-flex items-center gap-1.5"><Video className="h-3.5 w-3.5" />ვიდეოები ({service.videos.length})</div>
                     <ServiceVideoGallery videos={service.videos} serviceName={service.name} />
                   </div>
                 )}
@@ -992,7 +992,7 @@ const ServiceDetail = () => {
                   <div className="rounded-2xl bg-white border border-ink-200/60 overflow-hidden">
                     <div className="px-6 pt-5 pb-3 flex items-end justify-between gap-3 border-b border-ink-100">
                       <div>
-                        <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">ლოკაცია</div>
+                        <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-500">ლოკაცია</div>
                         <h3 className="mt-1 text-[18px] font-bold tracking-tight text-ink-900">{locationText}{service.address ? `, ${service.address}` : ""}</h3>
                       </div>
                       <button type="button" onClick={handleGetDirections} className="h-9 px-3.5 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[12px] font-semibold inline-flex items-center gap-1.5">მარშრუტი<ArrowRight className="h-3.5 w-3.5" /></button>
@@ -1017,7 +1017,7 @@ const ServiceDetail = () => {
               <aside className="col-span-12 lg:col-span-4">
                 <div className="lg:sticky lg:top-[88px] space-y-3">
                   <div className="rounded-2xl bg-white border border-ink-200/60 p-5">
-                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400 mb-3">გამოაქვეყნა</div>
+                    <div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-500 mb-3">გამოაქვეყნა</div>
                     <div className="flex items-center gap-3">
                       <div className="h-12 w-12 rounded-xl bg-brand-500 text-white grid place-items-center text-[15px] font-bold tracking-wider shrink-0">{initials || "?"}</div>
                       <div className="min-w-0 flex-1">
@@ -1029,13 +1029,13 @@ const ServiceDetail = () => {
                       <div className="mt-3 inline-flex items-center gap-1.5 text-[12.5px]">
                         <Star className="h-4 w-4 fill-accent-500 text-accent-500" />
                         <span className="font-bold text-ink-900">{service.mechanic.rating}</span>
-                        <span className="text-ink-400">შეფასება</span>
+                        <span className="text-ink-500">შეფასება</span>
                       </div>
                     ) : null}
                     {hasProfile ? (
                       <button type="button" onClick={goProfile} className="mt-4 w-full h-10 rounded-btn border border-ink-300 hover:border-ink-900 text-ink-900 text-[12.5px] font-semibold inline-flex items-center justify-center gap-1.5">სრული პროფილი<ArrowRight className="h-3.5 w-3.5" /></button>
                     ) : (
-                      <div className="mt-4 w-full text-center text-[11.5px] text-ink-400 py-2">პროფილი მიუწვდომელია</div>
+                      <div className="mt-4 w-full text-center text-[11.5px] text-ink-500 py-2">პროფილი მიუწვდომელია</div>
                     )}
                     {service.mechanic.phone && (
                       <button type="button" onClick={openPhone} className="mt-2 w-full h-11 rounded-btn bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დაურეკე ხელოსანს</button>

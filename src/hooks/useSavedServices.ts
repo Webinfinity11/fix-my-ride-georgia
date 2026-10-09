@@ -27,10 +27,13 @@ const writeIds = (ids: number[]) => {
 };
 
 export const useSavedServices = () => {
-  const [savedServiceIds, setSavedServiceIds] = useState<Set<number>>(() => new Set(readIds()));
+  // The first client render must match public static HTML. Personal saved items
+  // are applied after hydration, then kept in sync across buttons and tabs.
+  const [savedServiceIds, setSavedServiceIds] = useState<Set<number>>(() => new Set());
 
   useEffect(() => {
     const sync = () => setSavedServiceIds(new Set(readIds()));
+    sync();
     window.addEventListener(CHANGE_EVENT, sync);
     window.addEventListener('storage', sync); // cross-tab
     return () => {
