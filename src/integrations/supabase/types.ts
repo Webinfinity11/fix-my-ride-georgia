@@ -14,92 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      service_views: {
-        Row: {
-          id: string
-          service_id: number
-          viewer_id: string | null
-          ip_address: unknown | null
-          user_agent: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          service_id: number
-          viewer_id?: string | null
-          ip_address?: unknown | null
-          user_agent?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          service_id?: number
-          viewer_id?: string | null
-          ip_address?: unknown | null
-          user_agent?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          { foreignKeyName: "service_views_service_id_fkey"; columns: ["service_id"]; isOneToOne: false; referencedRelation: "mechanic_services"; referencedColumns: ["id"] },
-          { foreignKeyName: "service_views_viewer_id_fkey"; columns: ["viewer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
-        ]
-      }
-      mechanic_phone_views: {
-        Row: {
-          id: string
-          mechanic_id: string
-          viewer_id: string | null
-          ip_address: unknown | null
-          user_agent: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          mechanic_id: string
-          viewer_id?: string | null
-          ip_address?: unknown | null
-          user_agent?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          mechanic_id?: string
-          viewer_id?: string | null
-          ip_address?: unknown | null
-          user_agent?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          { foreignKeyName: "mechanic_phone_views_mechanic_id_fkey"; columns: ["mechanic_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
-          { foreignKeyName: "mechanic_phone_views_viewer_id_fkey"; columns: ["viewer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
-        ]
-      }
-      search_logs: {
-        Row: {
-          id: string
-          query: string
-          source: string | null
-          viewer_id: string | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          query: string
-          source?: string | null
-          viewer_id?: string | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          query?: string
-          source?: string | null
-          viewer_id?: string | null
-          created_at?: string | null
-        }
-        Relationships: [
-          { foreignKeyName: "search_logs_viewer_id_fkey"; columns: ["viewer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
-        ]
-      }
       admin_logs: {
         Row: {
           action: string
@@ -893,6 +807,24 @@ export type Database = {
         }
         Relationships: []
       }
+      fuel_prices_cache: {
+        Row: {
+          data: Json
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          data: Json
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fuel_votes: {
         Row: {
           brand_id: string
@@ -981,6 +913,48 @@ export type Database = {
           wax_price?: number | null
         }
         Relationships: []
+      }
+      mechanic_phone_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_address: unknown
+          mechanic_id: string
+          user_agent: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          mechanic_id: string
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          mechanic_id?: string
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mechanic_phone_views_mechanic_id_fkey"
+            columns: ["mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mechanic_phone_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mechanic_profile_views: {
         Row: {
@@ -1095,6 +1069,7 @@ export type Database = {
           slug_is_manual: boolean | null
           updated_at: string
           videos: string[] | null
+          vip_rank: number | null
           vip_status: Database["public"]["Enums"]["vip_plan_type"] | null
           vip_until: string | null
           working_days: string[] | null
@@ -1130,6 +1105,7 @@ export type Database = {
           slug_is_manual?: boolean | null
           updated_at?: string
           videos?: string[] | null
+          vip_rank?: number | null
           vip_status?: Database["public"]["Enums"]["vip_plan_type"] | null
           vip_until?: string | null
           working_days?: string[] | null
@@ -1165,6 +1141,7 @@ export type Database = {
           slug_is_manual?: boolean | null
           updated_at?: string
           videos?: string[] | null
+          vip_rank?: number | null
           vip_status?: Database["public"]["Enums"]["vip_plan_type"] | null
           vip_until?: string | null
           working_days?: string[] | null
@@ -1779,6 +1756,38 @@ export type Database = {
           },
         ]
       }
+      search_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          query: string
+          source: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          query: string
+          source?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          query?: string
+          source?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_logs_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       search_queries: {
         Row: {
           created_at: string | null
@@ -1958,6 +1967,48 @@ export type Database = {
             columns: ["service_id"]
             isOneToOne: false
             referencedRelation: "mechanic_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          ip_address: unknown
+          service_id: number
+          user_agent: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          service_id: number
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          service_id?: number
+          user_agent?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_views_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2156,23 +2207,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_admin_analytics_range: {
-        Args: { p_from: string; p_to: string }
-        Returns: { day: string; service_views: number; service_calls: number; mechanic_calls: number; profile_views: number }[]
-      }
-      get_admin_events: {
-        Args: { p_from: string; p_to: string; p_limit: number }
-        Returns: { ts: string; kind: string; target: string; viewer: string; link: string | null }[]
-      }
-      get_service_activity: {
-        Args: { p_service_id: number; p_from: string; p_to: string; p_limit: number }
-        Returns: { ts: string; kind: string; viewer: string }[]
-      }
-      get_top_services: {
-        Args: { p_metric: string; p_from: string; p_to: string; p_limit: number }
-        Returns: { service_id: number; name: string; n: number }[]
-      }
-
       current_user_is_admin: { Args: never; Returns: boolean }
       expire_vip_services: { Args: never; Returns: number }
       generate_unique_blog_slug: {
@@ -2207,6 +2241,36 @@ export type Database = {
           name: string
           slug: string
           use_count: number
+        }[]
+      }
+      get_admin_analytics: {
+        Args: { p_days: number }
+        Returns: {
+          day: string
+          mechanic_calls: number
+          profile_views: number
+          service_calls: number
+          service_views: number
+        }[]
+      }
+      get_admin_analytics_range: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          day: string
+          mechanic_calls: number
+          profile_views: number
+          service_calls: number
+          service_views: number
+        }[]
+      }
+      get_admin_events: {
+        Args: { p_from: string; p_limit: number; p_to: string }
+        Returns: {
+          kind: string
+          link: string
+          target: string
+          ts: string
+          viewer: string
         }[]
       }
       get_admin_stats: {
@@ -2314,6 +2378,40 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"]
         }[]
       }
+      get_service_activity: {
+        Args: {
+          p_from: string
+          p_limit: number
+          p_service_id: number
+          p_to: string
+        }
+        Returns: {
+          kind: string
+          ts: string
+          viewer: string
+        }[]
+      }
+      get_top_called_services: {
+        Args: { p_days: number; p_limit: number }
+        Returns: {
+          calls: number
+          name: string
+          service_id: number
+        }[]
+      }
+      get_top_services: {
+        Args: {
+          p_from: string
+          p_limit: number
+          p_metric: string
+          p_to: string
+        }
+        Returns: {
+          n: number
+          name: string
+          service_id: number
+        }[]
+      }
       get_user_vote: {
         Args: { p_user_id: string }
         Returns: {
@@ -2392,12 +2490,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2421,11 +2519,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2446,11 +2544,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2471,11 +2569,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2488,11 +2586,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
