@@ -18,6 +18,7 @@ function workboxOptions() {
     if (name === 'lovable-tagger') return {};
     if (name === './scripts/map-layer-counts.mjs') return { mapLayerCountsPlugin: () => ({}) };
     if (name === './scripts/category-boot-shell.mjs') return {};
+    if (name === './scripts/service-image-preload.mjs') return {};
     if (name === 'vite-plugin-pwa') return { VitePWA: value => { options = value.workbox; return {}; } };
     throw new Error(name);
   } });
@@ -28,7 +29,7 @@ function workboxOptions() {
 test('parent category navigations keep their own HTML with an offline shell fallback', () => {
   const config = workboxOptions();
   const rule = config.runtimeCaching.find(item => item.options?.cacheName === 'public-category-documents');
-  for (const pathname of ['/', '/category/lights', '/category/lights/']) {
+  for (const pathname of ['/', '/category/lights', '/category/lights/', '/service/538-example', '/service/538-example/']) {
     assert.equal(config.navigateFallbackDenylist.some(regex => regex.test(pathname)), true);
     assert.equal(rule.urlPattern({ url: { pathname }, request: { mode: 'navigate' }, sameOrigin: true }), true);
   }

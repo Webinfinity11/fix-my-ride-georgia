@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 // Post-build static prerendering for SEO.
 //
-// Phase A.1 scope: only TRULY STATIC routes (no DB-driven content).
-// This is the cautious first pass — once verified in production, we expand
-// to list/landing pages (Phase A.2) and detail pages (Phase B).
+// Public route HTML, including every active service from the prebuild inventory.
 //
 // What it does:
 //   1. After `vite build`, spawn a tiny static server over dist/
@@ -17,10 +15,8 @@
 //
 // Safety:
 //   - SKIP_PRERENDER=1 env → skip entirely (build keeps working).
-//   - Missing puppeteer → skip, log, exit 0.
-//   - Missing dist/ → skip, exit 0.
-//   - Per-route failure → skip that route, continue others, exit 0.
-//   - We NEVER fail the build. Existing SPA fallback still works.
+//   - Incomplete output fails the build, rather than silently publishing SPA
+//     fallback pages in place of the promised service HTML.
 //
 // Rollback: remove `"postbuild"` line from package.json.
 
@@ -32,6 +28,7 @@ import http from 'node:http';
 import { injectCategoryBootShells, injectCategoryInitialData } from './category-boot-shell.mjs';
 import { cleanPrerenderResources, injectLcpImagePreload } from './prerender-resources.mjs';
 import { getSnapshotCSS } from './snapshot-css.mjs';
+import { getServiceRoutes, prepareServiceSnapshot, assertServiceDocument } from './service-prerender.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
@@ -87,44 +84,6 @@ function getBrandRoutes() {
       .filter((p) => p && /^\/brand(\/[^/]+){0,2}$/.test(p));
     return [...new Set(routes)];
   } catch {
-    return [];
-  }
-}
-
-// Georgian→Latin slug — kept in sync with src/utils/slugUtils.ts.
-const georgianToLatin = {
-  'ა':'a','ბ':'b','გ':'g','დ':'d','ე':'e','ვ':'v','ზ':'z','თ':'t','ი':'i','კ':'k','ლ':'l','მ':'m','ნ':'n','ო':'o','პ':'p','ჟ':'zh','რ':'r','ს':'s','ტ':'t','უ':'u','ფ':'p','ქ':'q','ღ':'gh','ყ':'q','შ':'sh','ჩ':'ch','ც':'ts','ძ':'dz','წ':'ts','ჭ':'ch','ხ':'kh','ჯ':'j','ჰ':'h'
-};
-function createSlug(text) {
-  if (!text) return '';
-  return text.toLowerCase().split('').map(c => georgianToLatin[c] || c).join('')
-    .replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
-}
-
-// Top-N service detail routes: VIP first, then most recent. Uses the public
-// (anon) Supabase key from env. Build-time only — new services added later get
-// full JS-rendered SEO immediately and are prerendered on the next deploy.
-async function getTopServiceRoutes(limit = 100) {
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) {
-    console.warn('[prerender] Supabase env missing — skipping service prerender.');
-    return [];
-  }
-  try {
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(url, key);
-    const { data, error } = await supabase
-      .from('mechanic_services')
-      .select('id, name, slug, is_vip_active, created_at')
-      .eq('is_active', true)
-      .order('is_vip_active', { ascending: false, nullsFirst: false })
-      .order('created_at', { ascending: false })
-      .limit(limit);
-    if (error) { console.warn('[prerender] service query failed:', error.message); return []; }
-    return (data || []).map((s) => `/service/${s.id}-${s.slug || createSlug(s.name)}`);
-  } catch (e) {
-    console.warn('[prerender] service prerender skipped:', e.message);
     return [];
   }
 }
@@ -198,8 +157,7 @@ async function main() {
     const s = await stat(DIST);
     if (!s.isDirectory()) throw new Error('not a directory');
   } catch {
-    console.warn('[prerender] dist/ not found — skipping (did vite build run?).');
-    return;
+    throw new Error('dist/ not found (did vite build run?)');
   }
 
   // Lazy import: don't crash if puppeteer isn't installed (dev convenience).
@@ -207,8 +165,7 @@ async function main() {
   try {
     puppeteer = (await import('puppeteer')).default;
   } catch {
-    console.warn('[prerender] puppeteer not installed — skipping. Run `npm install` to enable.');
-    return;
+    throw new Error('puppeteer not installed; public HTML cannot be generated');
   }
 
   const pristineShell = readFileSync(join(DIST, 'index.html'), 'utf8');
@@ -222,16 +179,19 @@ async function main() {
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     });
   } catch (e) {
-    console.warn(`[prerender] puppeteer failed to launch: ${e.message} — skipping.`);
     server.close();
-    return;
+    throw e;
   }
 
   let ok = 0, fail = 0;
+  const failedRoutes = [];
   const categoryRoutes = getCategoryRoutes();
   const brandRoutes = getBrandRoutes();
-  const serviceRoutes = await getTopServiceRoutes(100);
-  const allRoutes = [...ROUTES, ...categoryRoutes, ...brandRoutes, ...serviceRoutes];
+  const serviceRoutes = getServiceRoutes(join(__dirname, '..'));
+  if (!serviceRoutes.length) throw new Error('No public service routes generated');
+  const requestedRoutes = process.env.PRERENDER_ROUTES?.split(',');
+  const allRoutes = [...ROUTES, ...categoryRoutes, ...brandRoutes, ...serviceRoutes]
+    .filter(route => !requestedRoutes || requestedRoutes.includes(route));
   console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories + ${brandRoutes.length} brands + ${serviceRoutes.length} services = ${allRoutes.length}`);
 
   // Render a single route (own page). Extracted so we can run a concurrency
@@ -240,6 +200,7 @@ async function main() {
   let categoryHeader = "";
   const renderRoute = async (route) => {
     let page;
+    const runtimeErrors = [];
     try {
       try {
         page = await browser.newPage();
@@ -255,10 +216,19 @@ async function main() {
         });
         page = await browser.newPage();
       }
+      page.on('pageerror', error => runtimeErrors.push(error.message));
       // Block analytics / external trackers — they may hang networkidle.
       await page.setRequestInterception(true);
       page.on('request', (req) => {
         const url = req.url();
+        // Capturing markup does not require downloading every gallery photo.
+        if (req.resourceType() === 'image') return req.respond({
+          status: 200, contentType: 'image/png',
+          body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jGz0AAAAASUVORK5CYII=', 'base64'),
+        });
+        if (['media', 'font'].includes(req.resourceType())) return req.abort();
+        // A build must never inflate visits or send other application writes.
+        if (url.includes('.supabase.co/') && req.method() !== 'GET' && req.method() !== 'OPTIONS') return req.abort();
         if (
           url.includes('googletagmanager.com') ||
           url.includes('google-analytics.com') ||
@@ -272,7 +242,13 @@ async function main() {
 
       const url = `http://localhost:${PORT}${route}`;
       await page.evaluateOnNewDocument(() => { window.__fixupPrerenderCapture = true; });
-      await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      if (route.startsWith('/service/')) {
+        const expectedId = route.match(/^\/service\/(\d+)/)[1];
+        await page.waitForSelector(`[data-service-page-id="${expectedId}"]`, { timeout: 20000 });
+      } else {
+        await page.waitForNetworkIdle({ idleTime: 500, timeout: 30000 });
+      }
 
       // Wait until react-helmet has flushed the REAL <head> — i.e. the title is
       // no longer the loading placeholder AND a canonical link exists. Data-heavy
@@ -312,6 +288,20 @@ async function main() {
         [...new Set([...document.querySelectorAll('[class]')].flatMap(node => [...node.classList]))]
       );
       let html = cleanPrerenderResources(await page.content(), pristineShell);
+      let serviceSnapshot;
+      if (route.startsWith('/service/')) {
+        const rendered = await page.evaluate(async () => {
+          const output = await window.__fixupRenderServiceSnapshot();
+          // Read the document and its root in the same synchronous turn.
+          // Optional widget queries may finish while the renderer is imported.
+          return { ...output, document: document.documentElement.outerHTML, oldRoot: document.getElementById('root').outerHTML };
+        });
+        if (!rendered.document.includes(rendered.oldRoot) || !rendered.html.includes('<!--$-->')) {
+          throw new Error('Service snapshot is not safe to hydrate');
+        }
+        html = cleanPrerenderResources('<!DOCTYPE html>' + rendered.document.replace(rendered.oldRoot, `<div id="root">${rendered.html}</div>`), pristineShell);
+        serviceSnapshot = rendered.snapshot;
+      }
 
       // Strip the gptengineer.js dev tagger — it's dev-only and adds noise.
       html = html.replace(/<script[^>]+src="https:\/\/cdn\.gpteng\.co\/[^"]*"[^>]*><\/script>/g, '');
@@ -405,6 +395,12 @@ async function main() {
         html = html.replace(/<script id="category-boot-shell">[\s\S]*?<\/script>/g, '');
       }
 
+      if (route.startsWith('/service/')) {
+        const firstImage = await page.evaluate(() => document.querySelector('[data-service-page-id] img[loading="eager"]')?.getAttribute('src') ?? null);
+        html = prepareServiceSnapshot(html, firstImage, serviceSnapshot);
+        assertServiceDocument(html, route);
+      }
+
       const outDir = join(DIST, route.replace(/^\//, ''));
       await mkdir(outDir, { recursive: true });
       await writeFile(join(outDir, 'index.html'), html, 'utf8');
@@ -412,6 +408,8 @@ async function main() {
       ok++;
     } catch (e) {
       console.error(`[prerender] ✗ ${route}: ${e.message}`);
+      if (runtimeErrors.length) console.error(`[prerender] runtime: ${runtimeErrors.slice(-3).join('; ')}`);
+      failedRoutes.push(route);
       fail++;
     } finally {
       await page?.close().catch(() => {});
@@ -419,11 +417,14 @@ async function main() {
   };
 
   // Concurrency pool — process routes in parallel (bounded).
-  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 1);
+  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 3);
   const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
     ? Math.min(requestedConcurrency, 5)
     : 1;
-  const queue = [...allRoutes];
+  // Large listing pages are expensive; keep them sequential. Service detail
+  // pages use a bounded pool after those captures have finished.
+  for (const route of allRoutes.filter(route => !route.startsWith('/service/'))) await renderRoute(route);
+  const queue = allRoutes.filter(route => route.startsWith('/service/'));
   await Promise.all(
     Array.from({ length: CONCURRENCY }, async () => {
       while (queue.length) {
@@ -434,21 +435,31 @@ async function main() {
     })
   );
 
+  if (failedRoutes.length) {
+    const retry = [...failedRoutes];
+    await browser.close().catch(() => {});
+    browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
+    console.log(`[prerender] retrying ${retry.length} failed routes sequentially`);
+    for (const route of retry) { fail--; await renderRoute(route); }
+  }
+
   // Lovable may serve index.html as the fallback for category URLs. Include
   // their small top sections so those URLs paint before the React downloads.
-  const rootHTML = readFileSync(join(DIST, 'index.html'), 'utf8');
-  await writeFile(join(DIST, 'index.html'), injectCategoryBootShells(rootHTML, categoryHeader, categoryBootShells));
+  if (!requestedRoutes || requestedRoutes.includes('/')) {
+    const rootHTML = readFileSync(join(DIST, 'index.html'), 'utf8');
+    await writeFile(join(DIST, 'index.html'), injectCategoryBootShells(rootHTML, categoryHeader, categoryBootShells));
+  }
   console.log(`[prerender] category boot shells: ${Object.keys(categoryBootShells).length}`);
 
   await browser.close();
   server.close();
 
   console.log(`[prerender] done — ${ok} succeeded, ${fail} failed.`);
-  // Never fail the build.
-  process.exit(0);
+  // A successful bundle with missing route HTML is not a successful publish.
+  process.exit(fail ? 1 : 0);
 }
 
 main().catch((err) => {
   console.error('[prerender] unexpected error:', err);
-  process.exit(0);
+  process.exit(1);
 });

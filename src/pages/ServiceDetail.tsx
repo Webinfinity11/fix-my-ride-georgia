@@ -62,45 +62,15 @@ import { NearViewport } from "@/components/ui/near-viewport";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
 
-interface ServiceType {
-  id: number;
-  name: string;
-  description: string | null;
-  price_from: number | null;
-  price_to: number | null;
-  estimated_hours: number | null;
-  city: string | null;
-  district: string | null;
-  address: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  car_brands: string[] | null;
-  on_site_service: boolean;
-  accepts_card_payment: boolean;
-  accepts_cash_payment: boolean;
-  rating: number | null;
-  review_count: number | null;
-  photos: string[] | null;
-  videos: string[] | null;
-  category: {
-    id: number;
-    name: string;
-  } | null;
-  mechanic: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    rating: number | null;
-    phone: string | null;
-    display_id?: number;
-  };
-}
+import type { ServiceType } from "@/types/service";
+import { readServiceSnapshot } from "@/lib/serviceSnapshot";
 
 const ServiceDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [service, setService] = useState<ServiceType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [service, setService] = useState<ServiceType | null>(() => readServiceSnapshot());
+  const [loading, setLoading] = useState(() => !readServiceSnapshot());
+  const serviceRequest = useRef(0);
   const [showFullPhone, setShowFullPhone] = useState(false);
   // New design (Planflow) interactive state
   const [activeImg, setActiveImg] = useState(0);
@@ -136,11 +106,12 @@ const ServiceDetail = () => {
       window.scrollTo(0, 0);
     });
     if (id) fetchServiceBySlugOrId(id);
+    return () => { serviceRequest.current++; };
   }, [id]);
 
   // Track a service-page view (once per session per service) for analytics
   useEffect(() => {
-    if (!service?.id) return;
+    if (!service?.id || window.__fixupPrerenderCapture) return;
     const key = `sv_${service.id}`;
     if (sessionStorage.getItem(key)) return;
     sessionStorage.setItem(key, "1");
@@ -160,7 +131,8 @@ const ServiceDetail = () => {
   };
 
   const fetchServiceBySlugOrId = async (slugOrId: string) => {
-    setLoading(true);
+    const request = ++serviceRequest.current;
+    if (!service || !slugOrId.startsWith(`${service.id}-`)) setLoading(true);
     
     try {
       let serviceData, serviceError;
@@ -189,6 +161,7 @@ const ServiceDetail = () => {
           .eq("is_active", true)
           .single();
         
+        if (request !== serviceRequest.current) return;
         serviceData = result.data;
         serviceError = result.error;
         
@@ -218,6 +191,7 @@ const ServiceDetail = () => {
           `)
           .eq("is_active", true);
         
+        if (request !== serviceRequest.current) return;
         if (result.data) {
           const foundService = result.data.find(service => 
             createSlug(service.name) === slugOrId
@@ -246,11 +220,12 @@ const ServiceDetail = () => {
       await processServiceData(serviceData);
       
     } catch (error) {
+      if (request !== serviceRequest.current) return;
       console.error("Error fetching service:", error);
       toast.error("სერვისის ჩატვირთვისას შეცდომა დაფიქსირდა");
       navigate("/services");
     } finally {
-      setLoading(false);
+      if (request === serviceRequest.current) setLoading(false);
     }
   };
 
@@ -314,6 +289,7 @@ const ServiceDetail = () => {
       mechanic: mechanicData
     };
 
+    if (window.__fixupPrerenderCapture) window.__fixupServiceSnapshotCapture = { path: window.location.pathname, service: transformedService };
     setService(transformedService);
   };
 
@@ -826,7 +802,7 @@ const ServiceDetail = () => {
         const doCall = () => { window.location.href = `tel:${service.mechanic.phone}`; };
 
         return (
-        <div className="font-sans bg-ink-50 text-ink-900 antialiased pb-[88px] lg:pb-0">
+        <div data-service-page-id={service.id} className="font-sans bg-ink-50 text-ink-900 antialiased pb-[88px] lg:pb-0">
 
           {/* ═════════ HERO ═════════ */}
           <section className="relative bg-white overflow-hidden">
@@ -889,7 +865,7 @@ const ServiceDetail = () => {
                 <div className="col-span-12 lg:col-span-8">
                   <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-ink-200/60 bg-ink-100 shadow-card group">
                     {hasPhotos ? (
-                      <LazyImage priority deferUntilPaint src={getOptimizedImageUrl(photos[idx], 900, 560, 75)} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
+                      <LazyImage priority src={getOptimizedImageUrl(photos[idx], 900, 560, 75)} alt={service.name} className="absolute inset-0 h-full w-full object-cover" />
                     ) : (
                       <div className="absolute inset-0 grid place-items-center text-ink-300"><Image className="h-14 w-14" /></div>
                     )}

@@ -14,6 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
+      service_views: {
+        Row: {
+          id: string
+          service_id: number
+          viewer_id: string | null
+          ip_address: unknown | null
+          user_agent: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          service_id: number
+          viewer_id?: string | null
+          ip_address?: unknown | null
+          user_agent?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          service_id?: number
+          viewer_id?: string | null
+          ip_address?: unknown | null
+          user_agent?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "service_views_service_id_fkey"; columns: ["service_id"]; isOneToOne: false; referencedRelation: "mechanic_services"; referencedColumns: ["id"] },
+          { foreignKeyName: "service_views_viewer_id_fkey"; columns: ["viewer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      mechanic_phone_views: {
+        Row: {
+          id: string
+          mechanic_id: string
+          viewer_id: string | null
+          ip_address: unknown | null
+          user_agent: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          mechanic_id: string
+          viewer_id?: string | null
+          ip_address?: unknown | null
+          user_agent?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          mechanic_id?: string
+          viewer_id?: string | null
+          ip_address?: unknown | null
+          user_agent?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "mechanic_phone_views_mechanic_id_fkey"; columns: ["mechanic_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+          { foreignKeyName: "mechanic_phone_views_viewer_id_fkey"; columns: ["viewer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
+      search_logs: {
+        Row: {
+          id: string
+          query: string
+          source: string | null
+          viewer_id: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          query: string
+          source?: string | null
+          viewer_id?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          query?: string
+          source?: string | null
+          viewer_id?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "search_logs_viewer_id_fkey"; columns: ["viewer_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
+        ]
+      }
       admin_logs: {
         Row: {
           action: string
@@ -2070,6 +2156,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_admin_analytics_range: {
+        Args: { p_from: string; p_to: string }
+        Returns: { day: string; service_views: number; service_calls: number; mechanic_calls: number; profile_views: number }[]
+      }
+      get_admin_events: {
+        Args: { p_from: string; p_to: string; p_limit: number }
+        Returns: { ts: string; kind: string; target: string; viewer: string; link: string | null }[]
+      }
+      get_service_activity: {
+        Args: { p_service_id: number; p_from: string; p_to: string; p_limit: number }
+        Returns: { ts: string; kind: string; viewer: string }[]
+      }
+      get_top_services: {
+        Args: { p_metric: string; p_from: string; p_to: string; p_limit: number }
+        Returns: { service_id: number; name: string; n: number }[]
+      }
+
       current_user_is_admin: { Args: never; Returns: boolean }
       expire_vip_services: { Args: never; Returns: number }
       generate_unique_blog_slug: {

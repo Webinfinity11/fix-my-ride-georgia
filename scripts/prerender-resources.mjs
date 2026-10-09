@@ -26,5 +26,9 @@ export function injectLcpImagePreload(html, url) {
   if (!url) return html;
   const escaped = url.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
   const hint = `<link data-category-lcp rel="preload" as="image" href="${escaped}" fetchpriority="high">`;
-  return html.replace(/(<meta\b[^>]*name="viewport"[^>]*>)/i, '$1' + hint);
+  // Helmet may move viewport to the end of <head>. Discover the image before
+  // large inline styles and module preloads, immediately after the encoding.
+  const anchor = /(<meta\b[^>]*charset[^>]*>)/i.test(html)
+    ? /(<meta\b[^>]*charset[^>]*>)/i : /(<meta\b[^>]*name="viewport"[^>]*>)/i;
+  return html.replace(anchor, '$1' + hint);
 }

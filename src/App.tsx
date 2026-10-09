@@ -1,10 +1,10 @@
 import { queryClient } from "@/lib/queryClient";
 
 import { CategoryBootShell } from "@/components/layout/CategoryBootShell";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, type ComponentType } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/context/AuthContext";
@@ -55,9 +55,10 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 
 
-function App() {
+function App({ initialServiceComponent, queryClientOverride }: { initialServiceComponent?: ComponentType; queryClientOverride?: QueryClient } = {}) {
+  const ServicePage = initialServiceComponent || ServiceDetail;
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClientOverride || queryClient}>
       <HelmetProvider>
         <TooltipProvider>
             <Toaster />
@@ -73,7 +74,7 @@ function App() {
                   <Route path="/services" element={<ServicesDetail />} />
                   <Route path="/mechanic" element={<Mechanics />} />
                   <Route path="/service-search" element={<ServiceSearch />} />
-                  <Route path="/service/:id" element={<ServiceDetail />} />
+                  <Route path="/service/:id" element={<ServicePage />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/saved" element={<Saved />} />
                   <Route path="/about" element={<About />} />
