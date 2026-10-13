@@ -93,7 +93,7 @@ const FuelImporters = () => {
           isRefetching={isRefetching}
           onRefresh={handleRefresh}
         />
-        <FuelCompanyPrices key={`${pathname}-companies`} importers={visibleImporters} initialSelfService={Boolean(topic?.selfService)} />
+        <FuelCompanyPrices key={`${pathname}-companies`} importers={importers} />
         <details className="group mt-5 rounded-xl border bg-card">
           <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold flex justify-between gap-3">
             <span>ყველა პროდუქტის ფასები</span><span className="text-primary group-open:hidden">მეტის ნახვა +</span><span className="text-primary hidden group-open:inline">დამალვა −</span>
