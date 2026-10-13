@@ -145,12 +145,12 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
   // that's now all done in the query and only one page (PAGE_SIZE) is fetched.
   // `page` 0 replaces the list; higher pages append ("load more").
   // `options.all` fetches every matching row in one go (used by the map, which
-  // needs all geolocated services as pins — not a 24-row page). It also
-  // constrains to rows that actually have coordinates.
+  // needs all services as pins — not a 24-row page). `withCoordinates` is
+  // a separate map-only filter; catalogue pages also need ungeolocated rows.
   const fetchServices = async (
     filters: ServiceFilters,
     page = 0,
-    options?: { all?: boolean; background?: boolean },
+    options?: { all?: boolean; withCoordinates?: boolean; background?: boolean },
   ) => {
     const request = ++serviceRequest.current;
     if (page === 0) {
@@ -209,7 +209,7 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
 
         // Map mode: only rows with coordinates (they're the only ones that can
         // become a pin), and never paginate them away.
-        if (fetchAll) {
+        if (options?.withCoordinates) {
           q = q.not("latitude", "is", null).not("longitude", "is", null);
         }
 

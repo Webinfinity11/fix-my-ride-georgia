@@ -1,0 +1,314 @@
+[
+  {
+    "name": "Ford",
+    "nameKa": "ფორდი",
+    "nameKaGen": "ფორდის",
+    "slug": "ford"
+  },
+  {
+    "name": "Toyota",
+    "nameKa": "ტოიოტა",
+    "nameKaGen": "ტოიოტას",
+    "slug": "toyota"
+  },
+  {
+    "name": "Lincoln",
+    "nameKa": "ლინკოლნი",
+    "nameKaGen": "ლინკოლნის",
+    "slug": "lincoln"
+  },
+  {
+    "name": "Chevrolet",
+    "nameKa": "შევროლეტი",
+    "nameKaGen": "შევროლეტის",
+    "slug": "chevrolet"
+  },
+  {
+    "name": "Lexus",
+    "nameKa": "ლექსუსი",
+    "nameKaGen": "ლექსუსის",
+    "slug": "lexus"
+  },
+  {
+    "name": "Buick",
+    "nameKa": "ბიუიკი",
+    "nameKaGen": "ბიუიკის",
+    "slug": "buick"
+  },
+  {
+    "name": "Cadillac",
+    "nameKa": "კადილაკი",
+    "nameKaGen": "კადილაკის",
+    "slug": "cadillac"
+  },
+  {
+    "name": "GMC",
+    "nameKa": "GMC",
+    "nameKaGen": "GMC-ის",
+    "slug": "gmc"
+  },
+  {
+    "name": "Opel",
+    "nameKa": "ოპელი",
+    "nameKaGen": "ოპელის",
+    "slug": "opel"
+  },
+  {
+    "name": "Tesla",
+    "nameKa": "ტესლა",
+    "nameKaGen": "ტესლას",
+    "slug": "tesla"
+  },
+  {
+    "name": "Audi",
+    "nameKa": "აუდი",
+    "nameKaGen": "აუდის",
+    "slug": "audi"
+  },
+  {
+    "name": "Volkswagen",
+    "nameKa": "ფოლკსვაგენი",
+    "nameKaGen": "ფოლკსვაგენის",
+    "slug": "volkswagen"
+  },
+  {
+    "name": "Mercedes-Benz",
+    "nameKa": "მერსედეს-ბენცი",
+    "nameKaGen": "მერსედეს-ბენცის",
+    "slug": "mercedes-benz"
+  },
+  {
+    "name": "Skoda",
+    "nameKa": "შკოდა",
+    "nameKaGen": "შკოდას",
+    "slug": "skoda"
+  },
+  {
+    "name": "Kia",
+    "nameKa": "კია",
+    "nameKaGen": "კიას",
+    "slug": "kia"
+  },
+  {
+    "name": "Hyundai",
+    "nameKa": "ჰიუნდაი",
+    "nameKaGen": "ჰიუნდაის",
+    "slug": "hyundai"
+  },
+  {
+    "name": "Subaru",
+    "nameKa": "სუბარუ",
+    "nameKaGen": "სუბარუს",
+    "slug": "subaru"
+  },
+  {
+    "name": "Honda",
+    "nameKa": "ჰონდა",
+    "nameKaGen": "ჰონდას",
+    "slug": "honda"
+  },
+  {
+    "name": "Infiniti",
+    "nameKa": "ინფინიტი",
+    "nameKaGen": "ინფინიტის",
+    "slug": "infiniti"
+  },
+  {
+    "name": "Jeep",
+    "nameKa": "ჯიპი",
+    "nameKaGen": "ჯიპის",
+    "slug": "jeep"
+  },
+  {
+    "name": "Mini",
+    "nameKa": "მინი",
+    "nameKaGen": "მინის",
+    "slug": "mini"
+  },
+  {
+    "name": "Mitsubishi",
+    "nameKa": "მიცუბიში",
+    "nameKaGen": "მიცუბიშის",
+    "slug": "mitsubishi"
+  },
+  {
+    "name": "Nissan",
+    "nameKa": "ნისანი",
+    "nameKaGen": "ნისანის",
+    "slug": "nissan"
+  },
+  {
+    "name": "Acura",
+    "nameKa": "აკურა",
+    "nameKaGen": "აკურას",
+    "slug": "acura"
+  },
+  {
+    "name": "BMW",
+    "nameKa": "BMW",
+    "nameKaGen": "BMW-ის",
+    "slug": "bmw"
+  },
+  {
+    "name": "Fiat",
+    "nameKa": "ფიატი",
+    "nameKaGen": "ფიატის",
+    "slug": "fiat"
+  },
+  {
+    "name": "Land Rover",
+    "nameKa": "ლენდ როვერი",
+    "nameKaGen": "ლენდ როვერის",
+    "slug": "land-rover"
+  },
+  {
+    "name": "Mazda",
+    "nameKa": "მაზდა",
+    "nameKaGen": "მაზდას",
+    "slug": "mazda"
+  },
+  {
+    "name": "Alfa Romeo",
+    "nameKa": "ალფა რომეო",
+    "nameKaGen": "ალფა რომეოს",
+    "slug": "alfa-romeo"
+  },
+  {
+    "name": "Citroen",
+    "nameKa": "სიტროენი",
+    "nameKaGen": "სიტროენის",
+    "slug": "citroen"
+  },
+  {
+    "name": "Peugeot",
+    "nameKa": "პეჟო",
+    "nameKaGen": "პეჟოს",
+    "slug": "peugeot"
+  },
+  {
+    "name": "Renault",
+    "nameKa": "რენო",
+    "nameKaGen": "რენოს",
+    "slug": "renault"
+  },
+  {
+    "name": "Saab",
+    "nameKa": "Saab",
+    "nameKaGen": "Saab-ის",
+    "slug": "saab"
+  },
+  {
+    "name": "Volvo",
+    "nameKa": "ვოლვო",
+    "nameKaGen": "ვოლვოს",
+    "slug": "volvo"
+  },
+  {
+    "name": "Seat",
+    "nameKa": "Seat",
+    "nameKaGen": "Seat-ის",
+    "slug": "seat"
+  },
+  {
+    "name": "Genesis",
+    "nameKa": "Genesis",
+    "nameKaGen": "Genesis-ის",
+    "slug": "genesis"
+  },
+  {
+    "name": "Jaguar",
+    "nameKa": "იაგუარი",
+    "nameKaGen": "იაგუარის",
+    "slug": "jaguar"
+  },
+  {
+    "name": "Smart",
+    "nameKa": "Smart",
+    "nameKaGen": "Smart-ის",
+    "slug": "smart"
+  },
+  {
+    "name": "Bentley",
+    "nameKa": "Bentley",
+    "nameKaGen": "Bentley-ის",
+    "slug": "bentley"
+  },
+  {
+    "name": "Bugatti",
+    "nameKa": "Bugatti",
+    "nameKaGen": "Bugatti-ის",
+    "slug": "bugatti"
+  },
+  {
+    "name": "Ferrari",
+    "nameKa": "Ferrari",
+    "nameKaGen": "Ferrari-ის",
+    "slug": "ferrari"
+  },
+  {
+    "name": "Lancia",
+    "nameKa": "Lancia",
+    "nameKaGen": "Lancia-ის",
+    "slug": "lancia"
+  },
+  {
+    "name": "Maserati",
+    "nameKa": "Maserati",
+    "nameKaGen": "Maserati-ის",
+    "slug": "maserati"
+  },
+  {
+    "name": "McLaren",
+    "nameKa": "McLaren",
+    "nameKaGen": "McLaren-ის",
+    "slug": "mclaren"
+  },
+  {
+    "name": "Porsche",
+    "nameKa": "პორშე",
+    "nameKaGen": "პორშეს",
+    "slug": "porsche"
+  },
+  {
+    "name": "Ram",
+    "nameKa": "Ram",
+    "nameKaGen": "Ram-ის",
+    "slug": "ram"
+  },
+  {
+    "name": "Aston Martin",
+    "nameKa": "Aston Martin",
+    "nameKaGen": "Aston Martin-ის",
+    "slug": "aston-martin"
+  },
+  {
+    "name": "Lamborghini",
+    "nameKa": "Lamborghini",
+    "nameKaGen": "Lamborghini-ის",
+    "slug": "lamborghini"
+  },
+  {
+    "name": "Lotus",
+    "nameKa": "Lotus",
+    "nameKaGen": "Lotus-ის",
+    "slug": "lotus"
+  },
+  {
+    "name": "Lucid",
+    "nameKa": "Lucid",
+    "nameKaGen": "Lucid-ის",
+    "slug": "lucid"
+  },
+  {
+    "name": "Rivian",
+    "nameKa": "Rivian",
+    "nameKaGen": "Rivian-ის",
+    "slug": "rivian"
+  },
+  {
+    "name": "Rolls-Royce",
+    "nameKa": "Rolls-Royce",
+    "nameKaGen": "Rolls-Royce-ის",
+    "slug": "rolls-royce"
+  }
+]

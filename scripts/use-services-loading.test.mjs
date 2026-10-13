@@ -27,11 +27,12 @@ function harness(initial) {
     from(table) {
       let resolve;
       const response = new Promise(done => { resolve = done; });
-      requests.push({ table, resolve });
+      const calls = [];
+      requests.push({ table, resolve, calls });
       const query = new Proxy({}, {
         get(_, key) {
           if (key === 'then') return response.then.bind(response);
-          return () => query;
+          return (...args) => { calls.push([key, ...args]); return query; };
         },
       });
       return query;
@@ -187,4 +188,31 @@ test('an offline background refresh retains the snapshot but explicit failed fil
   await search;
   assert.equal(h.states[0].length, 0);
   assert.equal(h.states[4], false);
+});
+
+
+test('complete brand lists keep services without coordinates; maps opt into coordinate filtering', async () => {
+  const brand = harness();
+  const brandRequest = brand.hook.fetchServices({ ...filters, selectedBrands: ['Toyota'] }, 0, { all: true });
+  const request = brand.requests.find(r => r.table === 'mechanic_services');
+  assert.equal(request.calls.some(([method, column]) => method === 'not' && ['latitude', 'longitude'].includes(column)), false);
+  request.resolve({ data: [], count: 0, error: null });
+  await brandRequest;
+  const map = harness();
+  const mapRequest = map.hook.fetchServices(filters, 0, { all: true, withCoordinates: true });
+  const mapQuery = map.requests.find(r => r.table === 'mechanic_services');
+  assert.equal(mapQuery.calls.filter(([method, column]) => method === 'not' && ['latitude', 'longitude'].includes(column)).length, 2);
+  mapQuery.resolve({ data: [], count: 0, error: null });
+  await mapRequest;
+});
+
+test('changing a complete brand list replaces the previous brand results', async () => {
+  const h = harness();
+  let pending = h.hook.fetchServices({ ...filters, selectedBrands: ['Ford'] }, 0, { all: true });
+  h.requests.find(r => r.table === 'mechanic_services').resolve({ data: [{ id: 1, name: 'Ford service' }], count: 1, error: null });
+  await pending;
+  pending = h.hook.fetchServices({ ...filters, selectedBrands: ['Toyota'] }, 0, { all: true });
+  h.requests.filter(r => r.table === 'mechanic_services').at(-1).resolve({ data: [{ id: 2, name: 'Toyota service' }], count: 1, error: null });
+  await pending;
+  assert.deepEqual(Array.from(h.states[0], s => s.id), [2]);
 });

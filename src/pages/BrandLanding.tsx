@@ -39,7 +39,7 @@ const BrandLanding = () => {
     if (!brand) return;
     fetchServices(
       { ...emptyFilters, selectedBrands: [brand.name], selectedDistrict: districtInfo?.name ?? null },
-      1,
+      0,
       { all: true },
     );
   }, [brand?.name, districtInfo?.slug]);
@@ -62,7 +62,8 @@ const BrandLanding = () => {
   const canonical = `https://fixup.ge/brand/${brand.slug}${districtInfo ? `/${districtInfo.slug}` : ""}`;
   // Index only when there is enough specialist signal — otherwise the page is
   // near-duplicate of every other brand page (all showing the "all brands" set).
-  const indexable = !loading && specialists.length >= BRAND_MIN_SPECIALISTS;
+  const indexable = loading || specialists.length >= BRAND_MIN_SPECIALISTS;
+  const providerCount = new Set(specialists.map(s => s.mechanic.id).filter(Boolean)).size;
 
   const breadcrumbItems = [
     { name: "მთავარი", url: "https://fixup.ge/" },
@@ -72,7 +73,7 @@ const BrandLanding = () => {
   ];
 
   const title = `${brand.nameKaGen} ავტოსერვისი${locative} — ხელოსნები${districtInfo ? "" : " საქართველოში"} | FixUp`;
-  const description = `${brand.nameKaGen} (${brand.name}) მანქანის შეკეთება${locative} — ${specialists.length} სპეციალისტი ხელოსანი. ფასები, შეფასებები და ონლაინ ჯავშანი FixUp-ის პლატფორმაზე.`;
+  const description = `${brand.nameKaGen} (${brand.name}) მანქანის შეკეთება${locative} — ${specialists.length} შესაბამისი მომსახურება, ${providerCount} მიმწოდებელი. ფასები, შეფასებები და ონლაინ ჯავშანი FixUp-ის პლატფორმაზე.`;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -111,7 +112,7 @@ const BrandLanding = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/services">სერვისები</BreadcrumbLink>
+                  <BreadcrumbLink href="/brand">მარკები</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -148,14 +149,14 @@ const BrandLanding = () => {
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                 {brand.nameKaGen} ავტოსერვისი{locative}
                 {specialists.length > 0 && (
-                  <span className="block text-2xl md:text-3xl font-semibold text-primary mt-2">
-                    {specialists.length} სპეციალისტი ხელოსანი
+                  <span className="block text-lg md:text-xl font-semibold text-primary mt-2">
+                    {specialists.length} მომსახურება · {providerCount} მიმწოდებელი
                   </span>
                 )}
               </h1>
               <p className="text-lg text-muted-foreground">
-                იპოვე ვერიფიცირებული ხელოსანი{districtInfo ? ` ${districtInfo.nameLocative}` : ""}, რომელიც {brand.nameKa} ({brand.name}) მანქანებზე
-                სპეციალიზდება — გამჭვირვალე ფასებით, შეფასებებით და ონლაინ ჯავშნით.
+                იპოვე ხელოსანი{districtInfo ? ` ${districtInfo.nameLocative}` : ""}, რომელიც {brand.nameKa} ({brand.name}) მანქანებზე
+                ემსახურება — შეადარე მომსახურებები, მითითებული ფასები და მისამართები.
               </p>
             </div>
           </div>
@@ -212,16 +213,21 @@ const BrandLanding = () => {
             distinct pages, not a name-swapped template. On a district page a
             district-specific lead keeps it distinct from the brand hub too. */}
         <section className="container mx-auto px-4 py-8 md:py-12">
-          <div className="max-w-4xl mx-auto prose prose-lg max-w-none">
+          <details className="max-w-4xl mx-auto rounded-lg border bg-background p-5">
+            <summary className="cursor-pointer text-lg font-semibold text-primary">
+              {brand.nameKaGen} მომსახურების შესახებ · მეტის ნახვა
+            </summary>
+            <div className="prose prose-lg max-w-none mt-4">
             {districtInfo && (
               <p>
                 <strong>{brand.nameKaGen} ხელოსანი {districtInfo.nameLocative}.</strong>{" "}
-                იპოვე {brand.nameKa} მარკის სპეციალისტი {districtInfo.nameLocative} — უახლოესი ვერიფიცირებული
+                იპოვე {brand.nameKa} მარკის სპეციალისტი {districtInfo.nameLocative} — შესაბამისი
                 ავტოხელოსანი შენს მახლობლად, ფასებითა და ონლაინ ჯავშნით.
               </p>
             )}
             <div dangerouslySetInnerHTML={{ __html: getBrandIntro(brand, specialists.length) }} />
-          </div>
+            </div>
+          </details>
         </section>
 
         <CategoryFAQSection items={getBrandFAQ(brand)} categoryName={brand.nameKa} />

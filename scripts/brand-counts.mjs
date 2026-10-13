@@ -5,13 +5,15 @@
 //
 //   Run:  node scripts/brand-counts.mjs
 
+import { readFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://kwozniwtygkdoagjegom.supabase.co';
 const ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b3puaXd0eWdrZG9hZ2plZ29tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc4Mzk3MjIsImV4cCI6MjA2MzQxNTcyMn0.hc51a_SvwYNUWfPmm2D3rriqGmE8LecInNmu5fa3tGk';
 
-const GATE = 5; // ≥ this many active services → brand page qualifies
+const rules = JSON.parse(await readFile(new URL('../src/data/brand-indexing.json', import.meta.url), 'utf8'));
+const GATE = rules.minimumServices; // ≥ this many active services → brand page qualifies
 
 const supabase = createClient(SUPABASE_URL, ANON_KEY);
 
@@ -35,7 +37,7 @@ async function fetchAll() {
 const rows = await fetchAll();
 console.log(`\nActive services fetched: ${rows.length}`);
 
-const withBrands = rows.filter((r) => Array.isArray(r.car_brands) && r.car_brands.length > 0);
+const withBrands = rows.filter((r) => Array.isArray(r.car_brands) && r.car_brands.length > 0 && r.car_brands.length <= rules.specialistMaxBrands);
 console.log(`Services tagging ≥1 brand: ${withBrands.length} (${Math.round((withBrands.length / rows.length) * 100)}%)\n`);
 
 // Per-brand service count.
