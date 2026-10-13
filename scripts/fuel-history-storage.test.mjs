@@ -10,7 +10,11 @@ test('daily migration records local dates, updates once per day, rolls back inva
       create schema cron; create table cron.jobs(name text, schedule text, command text);
       create function cron.schedule(text,text,text) returns bigint language sql as 'insert into cron.jobs values ($1,$2,$3); select 1::bigint;';`);
     await db.exec(readFileSync(new URL('../supabase/migrations/20260706120000_fuel_prices_cache.sql', import.meta.url), 'utf8'));
-    await db.exec(readFileSync(new URL('../supabase/migrations/20261013090000_priceshub_daily_history.sql', import.meta.url), 'utf8'));
+    // PGlite does not ship scheduling/network extensions; cron.schedule is stubbed above.
+    const migration = readFileSync(new URL('../supabase/migrations/20261013090000_priceshub_daily_history.sql', import.meta.url), 'utf8');
+    assert.match(migration, /create extension if not exists pg_cron/);
+    assert.match(migration, /create extension if not exists pg_net/);
+    await db.exec(migration.replace(/^create extension.*;$/gm, ''));
     const payload = { fetchedAt: '2026-10-13T22:00:00Z', source: 'priceshub', companies: [{ name: 'Socar', timestamp: '2026-10-13T22:00:00Z', sourceUrl: 'https://priceshub.ge/company/socar', fuelPrices: [{ fuelType: 'რეგულარი', price: 4.02, selfServicePrice: 3.95 }] }] };
     await db.query('select public.store_fuel_prices_snapshot($1::jsonb)', [JSON.stringify(payload)]);
     const row = (await db.query('select observed_on::text, price, self_service_price from public.fuel_price_daily_history')).rows[0];

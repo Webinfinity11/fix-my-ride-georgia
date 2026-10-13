@@ -1,3 +1,6 @@
+create extension if not exists pg_cron;
+create extension if not exists pg_net with schema extensions;
+
 -- Public price facts only. Price observation time does not assert when a
 -- supplier changed a price. Keep one latest observation per product/local day.
 create table if not exists public.fuel_price_daily_history (
@@ -11,6 +14,7 @@ create table if not exists public.fuel_price_daily_history (
   primary key (observed_on, company, product)
 );
 alter table public.fuel_price_daily_history enable row level security;
+drop policy if exists "public fuel history read" on public.fuel_price_daily_history;
 create policy "public fuel history read" on public.fuel_price_daily_history for select to anon, authenticated using (true);
 grant select on public.fuel_price_daily_history to anon, authenticated;
 
