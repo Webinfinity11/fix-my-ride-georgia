@@ -2,7 +2,7 @@ import { NearViewport } from "@/components/ui/near-viewport";
 import mapLayerCounts from "virtual:map-layer-counts";
 import { getPublicServiceCategories, getPublicServiceCities } from "@/lib/serviceMetadata";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSearch } from "@/utils/tracking";
@@ -399,9 +399,9 @@ const LandingHero = () => {
                     </div>
                   </div>
 
-                  <button type="button" onClick={() => navigate("/fuel-importers")} className="w-full h-10 border-t border-ink-100 hover:bg-ink-50 text-ink-900 text-[12px] font-semibold inline-flex items-center justify-center gap-1.5 transition shrink-0">
+                  <Link to="/fuel-importers" className="w-full h-10 border-t border-ink-100 hover:bg-ink-50 text-ink-900 text-[12px] font-semibold inline-flex items-center justify-center gap-1.5 transition shrink-0">
                     სრული შედარება <IArrow className="h-3 w-3" />
-                  </button>
+                  </Link>
                 </>
               )}
             </div>
@@ -435,7 +435,7 @@ const LandingHero = () => {
               ))}
             </div>
           </div>
-          <button type="button" onClick={() => navigate("/fuel-importers")} className="ml-auto shrink-0 inline-flex items-center gap-1 h-6 px-2 rounded-btn bg-white/[0.07] hover:bg-white/[0.13] text-ink-400 hover:text-white text-[10.5px] transition"><IRefresh className="h-3 w-3" /><span className="hidden md:inline">სრული</span></button>
+          <Link to="/fuel-importers" className="ml-auto shrink-0 inline-flex items-center gap-1 h-6 px-2 rounded-btn bg-white/[0.07] hover:bg-white/[0.13] text-ink-400 hover:text-white text-[10.5px] transition"><IRefresh className="h-3 w-3" /><span className="hidden md:inline">სრული</span></Link>
         </div>
       </div>
 

@@ -224,6 +224,8 @@ function videoUrlEntry({ loc, lastmod, videos, thumbnail, title, description, pu
 //   • /laundries            — feature currently hidden in the UI
 // Keep in sync with validTabs in src/pages/Map.tsx.
 const fuelLandingPages = JSON.parse(await readFile(new URL('../src/data/fuel-landings.json', import.meta.url), 'utf8'));
+const fuelCompanies = JSON.parse(await readFile(new URL('../src/data/fuel-companies.json', import.meta.url), 'utf8'));
+fuelLandingPages.push(...fuelCompanies.map(company => ({ slug: `company/${company.slug}` })));
 const STATIC_PAGES = [
   '/',
   '/services',

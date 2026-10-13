@@ -32,7 +32,12 @@ export const useFuelHistory = (
           return typeof price === 'number' && price > 0 ? [{ date: row.observed_on, price }] : [];
         });
         return { success: true, timestamp: new Date().toISOString(), source: 'FixUp daily observations',
-          data: { fuelType, historicalPrices, totalRecords: historicalPrices.length },
+          data: { fuelType, historicalPrices, totalRecords: historicalPrices.length,
+            ...(historicalPrices.length > 1 ? { priceChange: {
+              amount: historicalPrices[historicalPrices.length - 1].price - historicalPrices[0].price,
+              percentage: (historicalPrices[historicalPrices.length - 1].price / historicalPrices[0].price - 1) * 100,
+            } } : {}),
+          },
         };
       }
       // Existing history remains available during migration. The old API does

@@ -1,0 +1,10 @@
+[
+  {"slug":"socar","name":"Socar","label":"სოკარი"},
+  {"slug":"gulf","name":"Gulf","label":"გალფი"},
+  {"slug":"wissol","name":"Wissol","label":"ვისოლი"},
+  {"slug":"rompetrol","name":"Rompetrol","label":"რომპეტროლი"},
+  {"slug":"portal","name":"Portal","label":"პორტალი"},
+  {"slug":"connect","name":"Connect","label":"ქონექთი"},
+  {"slug":"lukoil","name":"Lukoil","label":"ლუკოილი"},
+  {"slug":"neogas","name":"Neogas","label":"ნეოგაზი"}
+]

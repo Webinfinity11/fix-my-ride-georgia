@@ -7,18 +7,18 @@ import { useFuelImporters } from "@/hooks/useFuelImporters";
 import { useFuelHistory, supportsHistoricalData, getDateRangeOptions } from "@/hooks/useFuelHistory";
 import type { CompanyName } from "@/services/fuelPricesApi";
 
-const FuelPriceHistory = ({ selfService = false }: { selfService?: boolean }) => {
-  const [selectedCompany, setSelectedCompany] = useState<CompanyName>("wissol");
+const FuelPriceHistory = ({ selfService = false, initialCompany = "wissol", companyOnly = false }: { selfService?: boolean; initialCompany?: CompanyName; companyOnly?: boolean }) => {
+  const [selectedCompany, setSelectedCompany] = useState<CompanyName>(initialCompany);
   const [selectedFuelType, setSelectedFuelType] = useState<string>("");
-  const [dateRange, setDateRange] = useState<number>(30);
+  const [dateRange, setDateRange] = useState<number>(() => getDateRangeOptions(initialCompany).find(option => option.value === 30)?.value ?? getDateRangeOptions(initialCompany)[0].value);
 
   // Fetch available companies
   const { data: importers = [] } = useFuelImporters({ english: true });
 
   // Filter companies that support historical data
   const companiesWithHistory = useMemo(() => {
-    return importers.filter((importer) => supportsHistoricalData(importer.name));
-  }, [importers]);
+    return importers.filter((importer) => supportsHistoricalData(importer.name) && (!companyOnly || importer.name.toLowerCase() === initialCompany));
+  }, [importers, companyOnly, initialCompany]);
 
   // Get fuel types for selected company
   const selectedImporter = useMemo(() => {
@@ -93,6 +93,8 @@ const FuelPriceHistory = ({ selfService = false }: { selfService?: boolean }) =>
               value={selectedCompany}
               onValueChange={(value) => {
                 setSelectedCompany(value as CompanyName);
+                const options = getDateRangeOptions(value as CompanyName);
+                setDateRange(options.find(option => option.value === 30)?.value ?? options[0].value);
                 setSelectedFuelType(""); // Reset fuel type
               }}
             >

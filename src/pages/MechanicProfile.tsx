@@ -652,13 +652,9 @@ const MechanicProfile = ({ booking = false }: MechanicProfileProps) => {
             ratingValue: mechanic.mechanic_profile.rating,
             reviewCount: mechanic.mechanic_profile.review_count
           } : undefined}
-          openingHours={
-            mechanic.mechanic_profile.working_hours 
-              ? [typeof mechanic.mechanic_profile.working_hours === 'string' 
-                  ? mechanic.mechanic_profile.working_hours 
-                  : "Mo-Fr 09:00-18:00"]
-              : ["Mo-Fr 09:00-18:00"]
-          }
+          openingHours={typeof mechanic.mechanic_profile.working_hours === 'string'
+            && /^(Mo|Tu|We|Th|Fr|Sa|Su)(-(Mo|Tu|We|Th|Fr|Sa|Su))? \d{2}:\d{2}-\d{2}:\d{2}$/.test(mechanic.mechanic_profile.working_hours.trim())
+            ? [mechanic.mechanic_profile.working_hours.trim()] : undefined}
         />
       )}
 

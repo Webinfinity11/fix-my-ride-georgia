@@ -34,4 +34,8 @@ test('ratings use supported entities without inventing another item type', () =>
   assert.equal(product.aggregateRating.reviewCount, 3);
   const business = document(schemas.LocalBusinessSchema({ name: 'Workshop', address: { addressLocality: 'თბილისი' }, rating }));
   assert.equal(business.aggregateRating.reviewCount, 3);
+  assert.equal(business['@type'], 'AutoRepair');
+  assert.equal(business.openingHours, undefined);
+  const unrated = document(schemas.LocalBusinessSchema({ name: 'Workshop', address: { addressLocality: 'თბილისი' }, rating: { ratingValue: 4, reviewCount: 0 } }));
+  assert.equal(unrated.aggregateRating, undefined);
 });

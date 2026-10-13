@@ -212,4 +212,53 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/self-service/regular" />
     <lastmod>2026-10-13T10:08:55.839Z</lastmod>
   </url>
+
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/socar</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/socar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/socar" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/gulf</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/gulf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/gulf" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/wissol</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/wissol" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/wissol" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/rompetrol</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/rompetrol" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/rompetrol" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/portal</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/portal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/portal" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/connect</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/connect" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/connect" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/lukoil</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/lukoil" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/lukoil" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/company/neogas</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/company/neogas" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/company/neogas" />
+    <lastmod>2026-10-13T11:27:40.303Z</lastmod>
+  </url>
 </urlset>

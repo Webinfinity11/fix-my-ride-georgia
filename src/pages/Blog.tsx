@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Search } from 'lucide-react';
@@ -152,6 +153,11 @@ export default function Blog() {
           </>
         )}
       </div>
+      <aside className="container mx-auto px-4 pb-6" aria-label="საწვავის ფასების გზამკვლევი">
+        <h2 className="text-lg font-semibold mb-2">საწვავის მიმდინარე ფასები</h2>
+        <p className="text-sm text-muted-foreground mb-3">ავტომობილის ხარჯების დაგეგმვისას შეადარეთ საწვავის ტიპები და კომპანიების ტარიფები.</p>
+        <div className="flex flex-wrap gap-3 text-sm text-primary"><Link to="/fuel-importers" className="underline">ყველა საწვავის ფასი</Link><Link to="/fuel-prices/petrol" className="underline">ბენზინის ფასები დღეს</Link><Link to="/fuel-prices/diesel" className="underline">დიზელის ფასები დღეს</Link><Link to="/fuel-prices/self-service" className="underline">თვითმომსახურების ფასები</Link></div>
+      </aside>
     </Layout>
   );
 }
