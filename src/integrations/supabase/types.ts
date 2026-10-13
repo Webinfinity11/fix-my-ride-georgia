@@ -10,16 +10,10 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.3"
   }
   public: {
     Tables: {
-      fuel_price_daily_history: {
-        Row: { observed_at: string; observed_on: string; company: string; product: string; price: number; self_service_price: number | null; source_url: string }
-        Insert: { observed_at: string; observed_on?: never; company: string; product: string; price: number; self_service_price?: number | null; source_url: string }
-        Update: { observed_at?: string; observed_on?: never; company?: string; product?: string; price?: number; self_service_price?: number | null; source_url?: string }
-        Relationships: []
-      }
       admin_logs: {
         Row: {
           action: string
@@ -810,6 +804,36 @@ export type Database = {
           created_at?: string | null
           id?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      fuel_price_daily_history: {
+        Row: {
+          company: string
+          observed_at: string
+          observed_on: string
+          price: number
+          product: string
+          self_service_price: number | null
+          source_url: string
+        }
+        Insert: {
+          company: string
+          observed_at: string
+          observed_on?: string
+          price: number
+          product: string
+          self_service_price?: number | null
+          source_url: string
+        }
+        Update: {
+          company?: string
+          observed_at?: string
+          observed_on?: string
+          price?: number
+          product?: string
+          self_service_price?: number | null
+          source_url?: string
         }
         Relationships: []
       }
@@ -2440,6 +2464,10 @@ export type Database = {
       }
       is_current_user_admin: { Args: never; Returns: boolean }
       is_moderator_or_admin: { Args: { _user_id: string }; Returns: boolean }
+      store_fuel_prices_snapshot: {
+        Args: { payload: Json }
+        Returns: undefined
+      }
       submit_contact_message: {
         Args: {
           p_email: string

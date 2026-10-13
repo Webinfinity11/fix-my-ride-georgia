@@ -137,7 +137,7 @@ export default defineConfig(({ mode }) => ({
             handler: 'NetworkFirst',
             options: {
               cacheName: 'public-documents-v2',
-              fetchOptions: { cache: 'no-cache' },
+              fetchOptions: { cache: 'no-cache' } as RequestInit,
               cacheableResponse: { statuses: [200] },
               expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 },
               precacheFallback: { fallbackURL: '/index.html' },
