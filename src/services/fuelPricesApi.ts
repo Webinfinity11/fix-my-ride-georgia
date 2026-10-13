@@ -11,13 +11,14 @@ const API_BASE_URL = import.meta.env.DEV
 // ============================================================================
 
 // Supported company names
-export type CompanyName = "wissol" | "portal" | "connect" | "socar" | "gulf" | "rompetrol";
+export type CompanyName = "wissol" | "portal" | "connect" | "socar" | "gulf" | "rompetrol" | "lukoil" | "neogas";
 
 // Basic fuel price structure
 export interface FuelPrice {
   fuelType: string;
   fuelTypeEnglish?: string;
   price: number;
+  selfServicePrice?: number;
   currency: string;
   abbreviation?: string; // Gulf & Rompetrol
   specifications?: string; // Portal
@@ -26,6 +27,8 @@ export interface FuelPrice {
 // Company data structure
 export interface Company {
   name: string;
+  sourceUrl?: string;
+  source?: string;
   fuelPrices: FuelPrice[];
   totalFuelTypes?: number;
   priceRange?: {

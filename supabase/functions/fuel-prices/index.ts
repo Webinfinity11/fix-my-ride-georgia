@@ -1,20 +1,11 @@
-// Platform-wide fuel-price cache.
-//
-// The upstream backend (fuel-prices-backend.onrender.com) runs in scrape-only
-// mode: every request live-scrapes the source sites (2–11s per company, no
-// server cache). Instead of making every browser pay that cost on its first
-// visit, this function scrapes ALL companies once, stores the result in
-// public.fuel_prices_cache, and serves that cached row to everyone.
-//
-// Behaviour:
-//   • fresh cache (< 6h)            → return it immediately (~200ms)
-//   • stale cache (>= 6h)           → return the stale copy immediately AND
-//                                      refresh in the background (no user waits)
-//   • no cache yet (first ever)     → scrape synchronously, store, return
-//   • ?refresh=true                 → force a synchronous scrape (manual/debug)
-//
-// A cron (see config.toml, every 6h) hits this function to keep the cache warm,
-// so in practice no end user ever waits for a live scrape.
+import { loadFuelCatalogue } from "../_shared/fuel-catalogue.ts";
+import { fetchPricesHub } from "../_shared/priceshub.ts";
+// PricesHub company tables are the primary source. The legacy per-company
+// scraper is only a cold-start fallback. A complete PricesHub cache is retained
+// when that source fails, rather than replaced by a partial catalogue.
+// The database migration installs the daily job and atomic cache/history RPC.
+// Existing 6h stale-while-refresh behavior also lets visitors refresh old data.
+// ?refresh=true requests a synchronous refresh; failed refreshes keep the cache.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
@@ -59,14 +50,18 @@ async function fetchCompany(company: string) {
 }
 
 // Scrape every company (best-effort) and build the payload we cache.
-async function scrapeAll() {
+async function scrapeFallback() {
   const results = await Promise.allSettled(COMPANIES.map((c) => fetchCompany(c)));
   const companies = results
     .filter((r): r is PromiseFulfilledResult<Awaited<ReturnType<typeof fetchCompany>>> =>
       r.status === "fulfilled" && !!r.value
     )
     .map((r) => r.value);
-  return { companies, fetchedAt: new Date().toISOString() };
+  return { companies, fetchedAt: new Date().toISOString(), source: "upstream-fallback" };
+}
+
+async function scrapeAll(previous?: { source?: string }) {
+  return await loadFuelCatalogue(previous, fetchPricesHub, scrapeFallback);
 }
 
 serve(async (req) => {
@@ -80,9 +75,8 @@ serve(async (req) => {
   const force = new URL(req.url).searchParams.get("refresh") === "true";
 
   const store = async (payload: unknown) => {
-    await supabase
-      .from("fuel_prices_cache")
-      .upsert({ id: 1, data: payload, updated_at: new Date().toISOString() });
+    const { error } = await supabase.rpc('store_fuel_prices_snapshot', { payload });
+    if (error) throw new Error(`Fuel cache/history write failed: ${error.message}`);
   };
 
   try {
@@ -102,7 +96,12 @@ serve(async (req) => {
 
     // Forced refresh, or no cache at all → scrape synchronously.
     if (force || !row) {
-      const payload = await scrapeAll();
+      let payload;
+      try { payload = await scrapeAll(row?.data); }
+      catch (error) {
+        if (row) return json({ success: true, cached: true, stale: true, refreshFailed: true, updated_at: row.updated_at, data: row.data });
+        throw error;
+      }
       if (payload.companies.length === 0) {
         // Scrape failed — fall back to whatever we had (even if stale).
         if (row) {
@@ -117,7 +116,7 @@ serve(async (req) => {
     // Stale cache exists → return it NOW, refresh in the background so no one waits.
     const bg = (async () => {
       try {
-        const payload = await scrapeAll();
+        const payload = await scrapeAll(row.data);
         if (payload.companies.length > 0) await store(payload);
       } catch (e) {
         console.error("[fuel-prices] background refresh failed:", e);

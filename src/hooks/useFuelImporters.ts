@@ -23,6 +23,8 @@ export type FuelImporter = FuelImporterBase & {
   fuelPrices?: FuelPrice[];
   totalFuelTypes?: number;
   lastUpdated?: string;
+  sourceUrl?: string;
+  source?: string;
   priceRange?: {
     min: number;
     max: number;
@@ -87,6 +89,8 @@ const transformCompanyToImporter = (company: Company, index: number, timestamp: 
     fuelPrices: company.fuelPrices,
     totalFuelTypes: company.totalFuelTypes || company.fuelPrices.length,
     lastUpdated: timestamp,
+    sourceUrl: company.sourceUrl,
+    source: company.source,
     priceRange: company.priceRange,
   };
 };
@@ -106,7 +110,7 @@ export interface UseFuelImportersOptions {
 // window is plenty. The manual "განახლება" button and pull-to-refresh call
 // refetch(), which bypasses staleTime and always fetches live data.
 const FUEL_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
-const fuelCacheKey = (english: boolean) => `fuel-importers-cache-v1:${english ? "en" : "ka"}`;
+const fuelCacheKey = (english: boolean) => `fuel-importers-cache-v2:${english ? "en" : "ka"}`;
 
 type FuelCacheEntry = { data: FuelImporter[]; ts: number };
 

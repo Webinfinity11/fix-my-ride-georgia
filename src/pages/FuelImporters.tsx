@@ -94,14 +94,16 @@ const FuelImporters = () => {
         />
         <section className="mt-8" aria-label="საწვავის ფასების ცხრილი">
           <h2 className="text-xl font-bold mb-3">{topic?.name ?? 'საწვავის ფასები'} — ბრენდების მიხედვით</h2>
-          <p className="text-sm text-muted-foreground mb-3">მონაცემები კომპანიების საჯარო ფასებიდან. განახლების დრო მითითებულია თითოეულ პროდუქტთან; სადგურზე ფასი და ფასდაკლების პირობები გადაამოწმეთ.</p>
+          <p className="text-sm text-muted-foreground mb-3">მოცემულია სტანდარტული და, სადაც წყაროში არის მითითებული, თვითმომსახურების ფასები. მიღების დრო ასახავს მონაცემის ჩამოტვირთვას და არა კომპანიის მიერ ფასის შეცვლის დროს. სადგურის პირობები გადაამოწმეთ.</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead><tr><th className="p-2">კომპანია</th><th className="p-2">პროდუქტი</th><th className="p-2">ფასი, ₾/ლ</th><th className="p-2">მონაცემის დრო</th></tr></thead>
+              <thead><tr><th className="p-2">კომპანია</th><th className="p-2">პროდუქტი</th><th className="p-2">ფასი, ₾/ლ</th><th className="p-2">თვითმომსახურება, ₾/ლ</th><th className="p-2">მიღების დრო</th><th className="p-2">წყარო</th></tr></thead>
               <tbody>{visibleImporters.flatMap(company => (company.fuelPrices ?? []).filter(fuel => Number.isFinite(fuel.price) && fuel.price > 0).map((fuel, index) => (
                 <tr key={`${company.name}-${index}`} className="border-t">
                   <td className="p-2">{company.name}</td><td className="p-2">{fuel.fuelType}</td><td className="p-2 tabular-nums">{fuel.price.toFixed(2)}</td>
+                  <td className="p-2 tabular-nums">{typeof fuel.selfServicePrice === "number" ? fuel.selfServicePrice.toFixed(2) : "—"}</td>
                   <td className="p-2">{company.lastUpdated && Number.isFinite(Date.parse(company.lastUpdated)) ? <time dateTime={company.lastUpdated}>{new Date(company.lastUpdated).toLocaleString('ka-GE', { timeZone: 'Asia/Tbilisi' })}</time> : 'დრო არ არის მითითებული'}</td>
+                  <td className="p-2">{company.sourceUrl?.startsWith('https://priceshub.ge/') ? <a className="text-primary underline" href={company.sourceUrl} target="_blank" rel="noopener noreferrer">PricesHub.ge</a> : 'პირდაპირი წყარო'}</td>
                 </tr>
               )))}</tbody>
             </table>

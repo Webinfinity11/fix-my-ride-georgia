@@ -52,9 +52,22 @@
   "verification": {
     "typescript": "passed",
     "productionBundle": "passed",
-    "automatedTests": 72,
+    "automatedTests": 77,
     "prerenderedPages": 655,
     "browserCheckedRoutes": 10,
     "fieldCoreWebVitals": "pending after release"
+  },
+  "fuelSource": {
+    "primary": "https://priceshub.ge/ company tables",
+    "schedule": "Daily 07:00 Asia/Tbilisi (03:00 UTC), plus existing stale-cache refreshes",
+    "status": "prepared_pending_database_and_function_deployment",
+    "deploymentOrder": [
+      "Apply 20261013090000_priceshub_daily_history.sql",
+      "Deploy fuel-prices edge function with its deno.json and shared modules",
+      "Prime refresh=true and verify the PricesHub source, company coverage and daily history rows",
+      "Deploy frontend and verify source attribution plus standard/self-service tariffs",
+      "Check cron job execution history"
+    ],
+    "history": "New daily observations accumulate from activation. Older upstream history remains a fallback for its supported companies."
   }
 }

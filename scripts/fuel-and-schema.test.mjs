@@ -20,7 +20,7 @@ test('premium diesel cannot appear in the petrol comparison', () => {
   assert.equal(fuelTier('Premium Diesel'), 'diesel');
   assert.equal(fuelTier('ნანო ევრო 5 დიზელი Premium'), 'diesel');
   assert.equal(fuelTier('პრემიუმი Premium 95'), 'premium');
-  assert.equal(fuelTier('ბუნებრივი აირი CNG'), 'gas');
+  assert.equal(fuelTier('ბუნებრივი აირი CNG'), 'cng');
 });
 test('ratings use supported entities without inventing another item type', () => {
   const rating = { ratingValue: 4.8, reviewCount: 3 };

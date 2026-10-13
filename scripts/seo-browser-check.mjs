@@ -48,11 +48,11 @@ try {
   await page.waitForSelector('tbody tr');
   await page.waitForNetworkIdle({ idleTime: 800, timeout: 20000 });
   await new Promise(resolve => setTimeout(resolve, 500));
-  assert.ok(!await page.$eval('body', node => [...node.querySelectorAll('h3')].some(heading => heading.textContent.trim() === 'ფასების ისტორია')), 'History must remain closed initially');
+  assert.ok(!await page.$eval('body', node => [...node.querySelectorAll('h3')].some(heading => heading.textContent.trim().startsWith('ფასების ისტორია'))), 'History must remain closed initially');
   const lab = await page.evaluate(() => window.__lab);
   const history = (await page.$$('button'));
   for (const button of history) if ((await button.evaluate(node => node.textContent.trim())) === 'ისტორია') { await button.click(); break; }
-  await page.waitForFunction(() => [...document.querySelectorAll('h3')].some(node => node.textContent.trim() === 'ფასების ისტორია'));
+  await page.waitForFunction(() => [...document.querySelectorAll('h3')].some(node => node.textContent.trim().startsWith('ფასების ისტორია')));
   assert.deepEqual(errors, []);
   results.push({ route: '/fuel-importers', runtime: { errors, historyInteraction: 'passed', lab, viewport: '390x844', cpuSlowdown: 4, note: 'Local diagnostic, not CrUX or a production Core Web Vitals pass.' } });
   await writeFile(new URL('../seo/local-verification.json', import.meta.url), JSON.stringify({ testedAt: new Date().toISOString(), results }, null, 2) + '\n');
