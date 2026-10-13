@@ -55,7 +55,9 @@ export const ChatFileUpload: React.FC<ChatFileUploadProps> = ({ onFileUploaded }
       const { file, type } = uploadingFile;
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const filePath = `${user.id}/${fileName}`;
 
       console.log('Uploading file:', file.name, 'to path:', filePath);
 
