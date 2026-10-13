@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { fuelTier } from "@/lib/fuelTypes";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { FuelImporter } from "@/hooks/useFuelImporters";
-import FuelPriceHistory from "@/components/fuel/FuelPriceHistory";
+const FuelPriceHistory = lazy(() => import("@/components/fuel/FuelPriceHistory"));
 import FuelCalculator from "@/components/fuel/FuelCalculator";
 import {
   Fuel,
@@ -49,11 +50,11 @@ interface TierRow {
 }
 
 /** For one tier, one representative (cheapest) product per company, sorted asc. */
-function buildTierRows(importers: FuelImporter[], match: RegExp): TierRow[] {
+function buildTierRows(importers: FuelImporter[], tier: TierKey): TierRow[] {
   const rows: TierRow[] = [];
   for (const imp of importers) {
     const matches = (imp.fuelPrices ?? []).filter(
-      (f) => typeof f.price === "number" && match.test(`${f.fuelType} ${f.fuelTypeEnglish ?? ""}`),
+      (f) => Number.isFinite(f.price) && f.price > 0 && fuelTier(`${f.fuelType} ${f.fuelTypeEnglish ?? ""}`) === tier,
     );
     if (matches.length === 0) continue;
     const cheapest = matches.reduce((a, b) => (b.price < a.price ? b : a));
@@ -71,16 +72,17 @@ interface Props {
   isLoading?: boolean;
   isRefetching?: boolean;
   onRefresh?: () => void;
+  initialTier?: TierKey;
 }
 
-const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh }: Props) => {
-  const [tier, setTier] = useState<TierKey>("super");
+const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, initialTier = "super" }: Props) => {
+  const [tier, setTier] = useState<TierKey>(initialTier);
   const [subTab, setSubTab] = useState<SubTab>("compare");
 
   // Which tiers actually have data (hide empty pills).
   const tierRowsAll = useMemo(() => {
     const map = {} as Record<TierKey, TierRow[]>;
-    for (const t of TIERS) map[t.key] = buildTierRows(importers, t.match);
+    for (const t of TIERS) map[t.key] = buildTierRows(importers, t.key);
     return map;
   }, [importers]);
 
@@ -99,6 +101,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh }: Pr
   return (
     <div className="space-y-5">
       {/* ── KPI ribbon ── */}
+      {!showData && <div className="h-[210px] md:h-[100px] rounded-xl bg-muted animate-pulse" role="status">ფასები იტვირთება…</div>}
       {showData && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
@@ -340,7 +343,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh }: Pr
       {/* ── HISTORY / CALC (existing components) ── */}
       {subTab === "history" && (
         <div className="rounded-2xl bg-card border border-border/60 p-1">
-          <FuelPriceHistory />
+          <Suspense fallback={<div className="min-h-[320px] animate-pulse bg-muted rounded-xl" role="status">ისტორია იტვირთება…</div>}><FuelPriceHistory /></Suspense>
         </div>
       )}
       {subTab === "calc" && (

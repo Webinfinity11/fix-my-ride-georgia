@@ -55,8 +55,10 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 
 
-function App({ initialServiceComponent, queryClientOverride }: { initialServiceComponent?: ComponentType; queryClientOverride?: QueryClient } = {}) {
+function App({ initialServiceComponent, queryClientOverride, initialFuelComponent, initialMapComponent }: { initialServiceComponent?: ComponentType; queryClientOverride?: QueryClient; initialFuelComponent?: ComponentType; initialMapComponent?: ComponentType } = {}) {
   const ServicePage = initialServiceComponent || ServiceDetail;
+  const FuelPage = initialFuelComponent || FuelImporters;
+  const MapPage = initialMapComponent || Map;
   return (
     <QueryClientProvider client={queryClientOverride || queryClient}>
       <HelmetProvider>
@@ -79,10 +81,11 @@ function App({ initialServiceComponent, queryClientOverride }: { initialServiceC
                   <Route path="/saved" element={<Saved />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
-                  <Route path="/map" element={<Map />} />
-                  <Route path="/map/:tab" element={<Map />} />
+                  <Route path="/map" element={<MapPage />} />
+                  <Route path="/map/:tab" element={<MapPage />} />
                   <Route path="/laundries" element={<Laundries />} />
-                  <Route path="/fuel-importers" element={<FuelImporters />} />
+                  <Route path="/fuel-importers" element={<FuelPage />} />
+                  <Route path="/fuel-prices/:fuelType" element={<FuelPage />} />
                   <Route path="/fuel-brands" element={<FuelBrands />} />
                   <Route path="/community" element={<Community />} />
                   <Route path="/vacancies" element={<Vacancies />} />

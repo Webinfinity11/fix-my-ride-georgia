@@ -241,15 +241,7 @@ export const ServiceSchema = ({
         availability: `https://schema.org/${offers.availability || "InStock"}`
       }
     }),
-    ...(aggregateRating && aggregateRating.reviewCount > 0 && {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: aggregateRating.ratingValue,
-        reviewCount: aggregateRating.reviewCount,
-        bestRating: 5,
-        worstRating: 1
-      }
-    })
+    // Ratings belong to the supported Product/LocalBusiness entity, not Service or Person.
   };
 
   return (
@@ -478,15 +470,7 @@ export const PersonSchema = ({
       "@type": "Organization",
       ...worksFor
     },
-    ...(aggregateRating && {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: aggregateRating.ratingValue,
-        reviewCount: aggregateRating.reviewCount,
-        bestRating: 5,
-        worstRating: 1
-      }
-    })
+
   };
 
   return (

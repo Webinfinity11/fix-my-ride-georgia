@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { readFuelSnapshot } from '@/lib/fuelSnapshot';
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 import {
@@ -141,7 +142,7 @@ export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
       //    scrape. This is the normal path; on any failure we fall through to
       //    scraping the upstream API directly (below).
       try {
-        const { data: fn, error: fnErr } = await supabase.functions.invoke("fuel-prices");
+        const { data: fn, error: fnErr } = await supabase.functions.invoke("fuel-prices", { method: "GET" });
         const cachedCompanies = fn?.data?.companies as (Company & { timestamp?: string })[] | undefined;
         if (!fnErr && cachedCompanies?.length) {
           const importers = cachedCompanies.map((c, i) =>
@@ -228,8 +229,16 @@ export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
     // reloads don't re-scrape. If it's <6h old it counts as fresh (no fetch);
     // older than that, React Query shows it immediately and refetches in the
     // background.
-    initialData: () => readFuelCache(english)?.data,
-    initialDataUpdatedAt: () => readFuelCache(english)?.ts,
+    initialData: () => {
+      const local = readFuelCache(english);
+      const snapshot = english ? readFuelSnapshot() : null;
+      return (local && (!snapshot || local.ts > snapshot.ts) ? local : snapshot ?? local)?.data;
+    },
+    initialDataUpdatedAt: () => {
+      const local = readFuelCache(english);
+      const snapshot = english ? readFuelSnapshot() : null;
+      return Math.max(local?.ts ?? 0, snapshot?.ts ?? 0);
+    },
     staleTime: FUEL_CACHE_TTL, // 6 hours — prices change at most a couple of times a day
     gcTime: FUEL_CACHE_TTL,
     refetchOnWindowFocus: false,
