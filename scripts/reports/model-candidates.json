@@ -1,0 +1,605 @@
+{
+  "generated_at": "2026-10-13T14:06:20.729Z",
+  "requires_review": true,
+  "rows": [
+    {
+      "service_id": 199,
+      "title": "გადაცემათა კოლოფის ზეთის შეცვლა ",
+      "category_id": 14,
+      "district": "საბურთალო",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 586,
+      "title": "ძრავის შეცვლა ფორდ ფიუჟენზე",
+      "category_id": 11,
+      "district": "სამგორი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ]
+    },
+    {
+      "service_id": 587,
+      "title": "ფორდ ფიუჟენის გადაცემათა კოლოფის შეცვლა",
+      "category_id": 12,
+      "district": "სამგორი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ]
+    },
+    {
+      "service_id": 588,
+      "title": "ფორდ ფიუჟენის სრული ელექტროობა",
+      "category_id": 16,
+      "district": "სამგორი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ]
+    },
+    {
+      "service_id": 590,
+      "title": "პროგრამირება",
+      "category_id": 16,
+      "district": "სამგორი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 591,
+      "title": "ფორდ ფიუჟენის დაშლილები",
+      "category_id": 34,
+      "district": "სამგორი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ]
+    },
+    {
+      "service_id": 227,
+      "title": "ტოიოტა პრიუსის დაშლილები",
+      "category_id": 34,
+      "district": "დიღომი",
+      "candidates": [
+        {
+          "brand": "Toyota",
+          "model": "Prius",
+          "slug": "prius"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Toyota",
+          "model": "Prius",
+          "slug": "prius"
+        }
+      ]
+    },
+    {
+      "service_id": 601,
+      "title": "ტესლას პროგრამირება",
+      "category_id": 16,
+      "district": null,
+      "candidates": [
+        {
+          "brand": "Tesla",
+          "model": "Model 3",
+          "slug": "model3"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 475,
+      "title": "გადაცემათა კოლოფები!!! ტოიოტა ქემრი, ჰონდა ცეერვე, ფიტი, მიცუბიში კოლტი, აუთლენდერი, ნისან ტიდა, ქვესტი იქსტრაილი",
+      "category_id": 34,
+      "district": null,
+      "candidates": [
+        {
+          "brand": "Honda",
+          "model": "Fit",
+          "slug": "fit"
+        },
+        {
+          "brand": "Honda",
+          "model": "CR-V",
+          "slug": "crv"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Honda",
+          "model": "Fit",
+          "slug": "fit"
+        },
+        {
+          "brand": "Honda",
+          "model": "CR-V",
+          "slug": "crv"
+        }
+      ]
+    },
+    {
+      "service_id": 205,
+      "title": "სხვადასხვა სახის ნაწილები",
+      "category_id": 37,
+      "district": "საბურთალო",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 215,
+      "title": "გადაცემათა კოლოფის რემონტი და შეცვლა",
+      "category_id": 12,
+      "district": "დიღომი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 198,
+      "title": "ძრავის ზეთის შეცვლა ",
+      "category_id": 14,
+      "district": "საბურთალო",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 200,
+      "title": "ავტომობილის ნათურების შეცვლა და ადგილზე შეძენა",
+      "category_id": 23,
+      "district": "საბურთალო",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 23,
+      "title": "სრული სახის ელექტროობა",
+      "category_id": 16,
+      "district": "დიდუბე",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 24,
+      "title": "ჰონდა ფიტ სერვისი",
+      "category_id": 11,
+      "district": "სამგორი",
+      "candidates": [
+        {
+          "brand": "Honda",
+          "model": "Fit",
+          "slug": "fit"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 211,
+      "title": "გადაცემათა კოლოფის ზეთის შეცვლა",
+      "category_id": 14,
+      "district": "ნაძალადევი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 381,
+      "title": "FORD FUSION-ის კარობკის შეკეთება",
+      "category_id": 12,
+      "district": "დიღომი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ]
+    },
+    {
+      "service_id": 21,
+      "title": "ყველა სახის სერვისი ჰონდა ფიტზე",
+      "category_id": 11,
+      "district": "სამგორი",
+      "candidates": [
+        {
+          "brand": "Honda",
+          "model": "Fit",
+          "slug": "fit"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Honda",
+          "model": "Fit",
+          "slug": "fit"
+        }
+      ]
+    },
+    {
+      "service_id": 192,
+      "title": "გადაცემათა კოლოფის ზეთის შეცვლა Hybrid way ",
+      "category_id": 14,
+      "district": "ჩუღურეთი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 207,
+      "title": "სავალი ნაწილების შეცვლა შეკეთება (დიაგნოსტირება უფასოდ)",
+      "category_id": 13,
+      "district": "ნაძალადევი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 194,
+      "title": "სავალი ნაწილების შეკეთება ადგილზე შეძენა Hybrid way",
+      "category_id": 13,
+      "district": "ჩუღურეთი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 203,
+      "title": "სრული დიაგნოსტიკა ",
+      "category_id": 17,
+      "district": "საბურთალო",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 228,
+      "title": "ძრავის შეკეთება",
+      "category_id": 11,
+      "district": "ვარკეთილი",
+      "candidates": [
+        {
+          "brand": "Toyota",
+          "model": "Prius",
+          "slug": "prius"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 165,
+      "title": "2.0 ჰიბრიდებზე ფიუჟენის კოლოფის შეკეთება",
+      "category_id": 12,
+      "district": "ვარკეთილი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 204,
+      "title": "აალების სანთლების, სვეჩების, შეცვლა და შეძენა",
+      "category_id": 53,
+      "district": "საბურთალო",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 209,
+      "title": "გადაცემათა კოლოფის შეცვლა",
+      "category_id": 12,
+      "district": "ნაძალადევი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 666,
+      "title": "ტოიოტა CHR კარობკის შეკეთება",
+      "category_id": 12,
+      "district": "დიღომი",
+      "candidates": [
+        {
+          "brand": "Toyota",
+          "model": "C-HR",
+          "slug": "chr"
+        }
+      ],
+      "titleModels": [
+        {
+          "brand": "Toyota",
+          "model": "C-HR",
+          "slug": "chr"
+        }
+      ]
+    },
+    {
+      "service_id": 197,
+      "title": "ფორდისა და ლინკონის დაშლილები ",
+      "category_id": 34,
+      "district": "ჩუღურეთი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 206,
+      "title": "აკუმულატორის მდგომარეობის შემოწმება",
+      "category_id": 52,
+      "district": "საბურთალო",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    },
+    {
+      "service_id": 210,
+      "title": "ფორდისა და ლინკონის მარკის ავტომობილებზე ძრავის ზეთის შეცვლა",
+      "category_id": 14,
+      "district": "ნაძალადევი",
+      "candidates": [
+        {
+          "brand": "Ford",
+          "model": "Fusion",
+          "slug": "fusion"
+        },
+        {
+          "brand": "Ford",
+          "model": "C-Max",
+          "slug": "cmax"
+        },
+        {
+          "brand": "Lincoln",
+          "model": "MKZ",
+          "slug": "mkz"
+        }
+      ],
+      "titleModels": []
+    }
+  ]
+}

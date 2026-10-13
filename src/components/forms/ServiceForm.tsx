@@ -1,3 +1,5 @@
+import { ModelSelector } from '@/components/forms/ModelSelector';
+import { normalizeModels, type ServiceModel } from '@/utils/serviceModels';
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -97,6 +99,20 @@ const commonCarBrands = [
 const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormProps) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [vehicleModels, setVehicleModels] = useState<ServiceModel[]>([]);
+  const [modelsReady, setModelsReady] = useState(!service);
+  useEffect(() => {
+    if (!service) return;
+    let active = true;
+    setModelsReady(false);
+    supabase.from('mechanic_services').select('vehicle_models').eq('id', service.id).single().then(({data,error}) => {
+      if (!active) return;
+      if (error) { toast.error('მოდელების ჩატვირთვა ვერ მოხერხდა. სცადეთ ხელახლა.'); return; }
+      setVehicleModels(normalizeModels(data?.vehicle_models));
+      setModelsReady(true);
+    });
+    return () => { active = false; };
+  }, [service?.id]);
   const [formData, setFormData] = useState({
     name: service?.name || "",
     description: service?.description || "",
@@ -144,6 +160,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
       return;
     }
 
+    if (!modelsReady) { toast.error("დაელოდეთ მოდელების ჩატვირთვას"); return; }
     setLoading(true);
     try {
       // ახალი სერვისისთვის - ჯერ ვამოწმებთ mechanic_profiles არსებობას
@@ -185,6 +202,7 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
         working_hours_start: formData.working_hours_start,
         working_hours_end: formData.working_hours_end,
         car_brands: formData.car_brands,
+        vehicle_models: vehicleModels.filter(m => formData.car_brands.includes(m.brand)),
         on_site_service: formData.on_site_service,
         photos: formData.photos,
         videos: formData.videos || [], // Ensure videos is always an array
@@ -655,6 +673,14 @@ const ServiceForm = ({ service, categories, onSubmit, onCancel }: ServiceFormPro
               </div>
             )}
           </div>
+
+          <ModelSelector
+            brands={formData.car_brands}
+            value={vehicleModels}
+            onChange={setVehicleModels}
+            name={formData.name}
+            description={formData.description}
+          />
 
           <PhotoUpload
             photos={formData.photos}

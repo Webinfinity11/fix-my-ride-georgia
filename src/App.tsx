@@ -41,6 +41,7 @@ const Community = lazy(() => import("./pages/Community"));
 const Mechanics = lazy(() => import("./pages/Mechanics"));
 const ServiceCategory = lazy(() => import("./pages/ServiceCategory"));
 const CategoryList = lazy(() => import("./pages/CategoryList"));
+const ModelLanding = lazy(() => import("./pages/ModelLanding"));
 const BrandLanding = lazy(() => import("./pages/BrandLanding"));
 const BrandIndex = lazy(() => import("./pages/BrandIndex"));
 const Map = lazy(() => import("./pages/Map"));
@@ -115,6 +116,9 @@ function App({ initialServiceComponent, queryClientOverride, initialFuelComponen
                   <Route path="/category/:categorySlug/:district" element={<ServiceCategory />} />
                   <Route path="/brand" element={<BrandIndex />} />
                   <Route path="/brand/:brandSlug" element={<BrandLanding />} />
+                  <Route path="/brand/:brandSlug/model/:modelSlug" element={<ModelLanding />} />
+                  <Route path="/brand/:brandSlug/model/:modelSlug/service/:categorySlug" element={<ModelLanding />} />
+                  <Route path="/brand/:brandSlug/model/:modelSlug/service/:categorySlug/district/:district" element={<ModelLanding />} />
                   <Route path="/brand/:brandSlug/:district" element={<BrandLanding />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

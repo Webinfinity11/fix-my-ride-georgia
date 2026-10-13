@@ -1,3 +1,5 @@
+import { normalizeModels, modelPath } from '@/utils/serviceModels';
+import { BRAND_PAGES } from '@/utils/carBrands';
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { performRedirect, needsCanonicalRedirect } from "@/utils/redirectUtils";
@@ -148,7 +150,7 @@ const ServiceDetail = () => {
           .from("mechanic_services")
           .select(`
             id, name, description, price_from, price_to, estimated_hours,
-            city, district, address, latitude, longitude, car_brands,
+            city, district, address, latitude, longitude, car_brands, vehicle_models,
             on_site_service, accepts_card_payment, accepts_cash_payment,
             rating, review_count, photos, videos, category_id, mechanic_id,
             service_categories(id, name),
@@ -180,7 +182,7 @@ const ServiceDetail = () => {
           .from("mechanic_services")
           .select(`
             id, name, description, price_from, price_to, estimated_hours,
-            city, district, address, latitude, longitude, car_brands,
+            city, district, address, latitude, longitude, car_brands, vehicle_models,
             on_site_service, accepts_card_payment, accepts_cash_payment,
             rating, review_count, photos, videos, category_id, mechanic_id,
             service_categories(id, name),
@@ -274,6 +276,7 @@ const ServiceDetail = () => {
       address: serviceData.address,
       latitude: serviceData.latitude,
       longitude: serviceData.longitude,
+      vehicle_models: normalizeModels(serviceData.vehicle_models),
       car_brands: serviceData.car_brands,
       on_site_service: serviceData.on_site_service || false,
       accepts_card_payment: serviceData.accepts_card_payment || false,
@@ -1071,6 +1074,14 @@ const ServiceDetail = () => {
                   </div>
                 </div>
               )}
+              {normalizeModels(service.vehicle_models).length > 0 && <section>
+                <h2 className="text-xl font-bold mb-3">ამ მომსახურების ავტომობილის მოდელები</h2>
+                <div className="flex flex-wrap gap-2">{normalizeModels(service.vehicle_models).map(m => {
+                  const brand = BRAND_PAGES.find(b => b.name === m.brand);
+                  if (!brand) return null;
+                  return <Link key={`${m.brand}:${m.slug}`} className="rounded-lg border px-3 py-2 text-primary" to={modelPath(brand.slug,m.slug,service.category ? createCategorySlug(service.category.name) : undefined)}>{brand.nameKa} {m.model}</Link>;
+                })}</div>
+              </section>}
               <RelatedBlogPosts limit={3} />
             </div>
           </section>
