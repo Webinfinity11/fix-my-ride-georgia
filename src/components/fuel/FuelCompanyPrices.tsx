@@ -1,21 +1,16 @@
 import { useState } from 'react';
 import type { FuelImporter } from '@/hooks/useFuelImporters';
 
-const logos: Record<string, string> = {
-  socar: 'socar-logo.svg', gulf: 'gulf-logo.png', wissol: 'wissol-logo.png',
-  rompetrol: 'rompetrol-logo.png', portal: 'portal-logo.svg',
-  connect: 'connect-main-logo.svg', lukoil: 'lukoil-logo.png',
-};
+import FuelCompanyLogo from "./FuelCompanyLogo";
 
 function CompanyCard({ company, initialSelfService }: { company: FuelImporter; initialSelfService: boolean }) {
   const [selfService, setSelfService] = useState(initialSelfService);
   const products = (company.fuelPrices ?? []).filter(fuel => Number.isFinite(fuel.price) && fuel.price > 0);
   const hasSelfService = products.some(fuel => typeof fuel.selfServicePrice === 'number' && fuel.selfServicePrice > 0);
   const shown = selfService ? products.filter(fuel => typeof fuel.selfServicePrice === 'number' && fuel.selfServicePrice > 0) : products;
-  const logo = logos[company.name.toLowerCase()];
   return <article className="rounded-2xl border bg-card min-w-0 w-full overflow-hidden" aria-label={`${company.name} — პროდუქტების ფასები`}>
     <div className="flex items-center gap-3 px-4 py-4 border-b">
-      {logo ? <img src={`/fuel-company-logos/${logo}`} alt="" className="w-10 h-10 object-contain" loading="lazy" /> : <span className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold" aria-hidden="true">{company.name.slice(0, 1)}</span>}
+      <FuelCompanyLogo name={company.name} />
       <h3 className="font-semibold text-primary flex-1">{company.name}</h3>
       {company.sourceUrl?.startsWith('https://priceshub.ge/') && <a href={company.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground underline">წყარო</a>}
     </div>

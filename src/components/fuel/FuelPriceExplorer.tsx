@@ -1,3 +1,4 @@
+import FuelCompanyLogo from "./FuelCompanyLogo";
 import HorizontalScroll from "./HorizontalScroll";
 import { Link } from "react-router-dom";
 import { fuelLandingPath, fuelLandingPages } from "@/lib/fuelLandingPages";
@@ -228,14 +229,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
               return (
                 <div key={r.name} className={cn("grid grid-cols-12 items-center gap-2.5 md:gap-3 rounded-xl border px-3 py-2", isCheapest ? "border-orange-200 bg-orange-50/60 dark:border-orange-800 dark:bg-orange-950/25" : "border-border/60")}>
                   <div className="col-span-8 md:col-span-3 flex items-center gap-2 min-w-0">
-                    <span
-                      className={cn(
-                        "h-8 w-8 rounded-lg grid place-items-center text-[10.5px] font-bold shrink-0",
-                        isCheapest ? "bg-orange-500 text-white" : "bg-foreground text-background",
-                      )}
-                    >
-                      {i + 1}
-                    </span>
+                    <FuelCompanyLogo name={r.name} className="h-8 w-8" />
                     <div className="min-w-0">
                       <span className="text-[13px] font-bold text-foreground">{r.name}</span>
                       <div className="text-[10px] text-muted-foreground truncate" title={r.product}>{r.product}</div>
@@ -292,9 +286,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
                       </span>
                     </div>
                     <div className="col-span-6 md:col-span-5 flex items-center gap-3 min-w-0">
-                      <div className="h-10 w-10 rounded-xl bg-foreground text-background grid place-items-center text-[11px] font-bold tracking-wider shrink-0">
-                        {r.name.slice(0, 2).toUpperCase()}
-                      </div>
+                      <FuelCompanyLogo name={r.name} />
                       <div className="min-w-0">
                         <div className="text-[14px] font-bold text-foreground truncate flex items-center gap-1.5">
                           {r.name}
