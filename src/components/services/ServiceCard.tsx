@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, MapPin, Clock, Car, CreditCard, Banknote, ExternalLink, Phone, ImageOff } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
 import { trackServicePhone } from "@/utils/tracking";
 import { PhoneRevealDialog } from "@/components/services/PhoneRevealDialog";
@@ -241,8 +241,8 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
             )}
 
             {/* Details Button */}
-            <Button onClick={handleViewDetails} className="flex-1 bg-primary hover:bg-primary-light transition-colors">
-              ვრცლად
+            <Button asChild className="flex-1 bg-primary hover:bg-primary-light transition-colors">
+              <Link to={`/service/${createServiceSlug(service.id, service.name)}`}>ვრცლად</Link>
             </Button>
           </div>
         </div>

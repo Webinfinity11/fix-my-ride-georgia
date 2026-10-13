@@ -1,3 +1,4 @@
+import { ModelAssignments } from './ModelAssignments';
 import { invalidatePublicServiceCategories } from "@/lib/serviceMetadata";
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -470,8 +471,10 @@ const ServiceManagement = () => {
             <span className="hidden sm:inline">მარკები</span>
             <span className="sm:hidden">მარკ.</span>
           </TabsTrigger>
+          <TabsTrigger value="models">მოდელები</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="models"><ModelAssignments /></TabsContent>
         <TabsContent value="categories" className="space-y-4">
           <Card>
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">

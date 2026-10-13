@@ -1,3 +1,4 @@
+import { ModelLinks } from '@/components/seo/ModelLinks';
 import { useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -234,6 +235,7 @@ const BrandLanding = () => {
 
         {/* Brand × district internal links — deeper landing pages from the hub,
             siblings from a district page. */}
+        <ModelLinks brand={brand} />
         <BrandDistrictsNav brand={brand} currentDistrictSlug={districtInfo?.slug} />
 
         {/* Brand switcher — internal links to the other brand pages. */}

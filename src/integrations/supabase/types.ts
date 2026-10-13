@@ -1074,6 +1074,7 @@ export type Database = {
           accepts_card_payment: boolean | null
           accepts_cash_payment: boolean | null
           address: string | null
+          vehicle_models: Json
           car_brands: string[] | null
           category_id: number | null
           city: string | null
@@ -1110,6 +1111,7 @@ export type Database = {
           accepts_card_payment?: boolean | null
           accepts_cash_payment?: boolean | null
           address?: string | null
+          vehicle_models?: Json
           car_brands?: string[] | null
           category_id?: number | null
           city?: string | null
@@ -1146,6 +1148,7 @@ export type Database = {
           accepts_card_payment?: boolean | null
           accepts_cash_payment?: boolean | null
           address?: string | null
+          vehicle_models?: Json
           car_brands?: string[] | null
           category_id?: number | null
           city?: string | null

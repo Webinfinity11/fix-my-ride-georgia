@@ -1,3 +1,4 @@
+import { normalizeModels, type ServiceModel } from '@/utils/serviceModels';
 import { getPublicServiceCategories, getPublicServiceCities } from "@/lib/serviceMetadata";
 
 import { useState, useEffect, useRef } from "react";
@@ -17,6 +18,7 @@ export type ServiceType = {
   address: string | null;
   latitude: number | null;
   longitude: number | null;
+  vehicle_models?: ServiceModel[];
   car_brands: string[] | null;
   on_site_service: boolean;
   accepts_card_payment: boolean;
@@ -62,6 +64,7 @@ export type ServiceFilters = {
   selectedCity: string | null;
   selectedDistrict: string | null;
   selectedBrands: string[];
+  selectedModel?: { brand: string; slug: string };
   onSiteOnly: boolean;
   minRating: number | null;
   sortBy?: ServiceSortOption;
@@ -186,6 +189,7 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
             latitude,
             longitude,
             car_brands,
+            vehicle_models,
             on_site_service,
             accepts_card_payment,
             accepts_cash_payment,
@@ -228,6 +232,8 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
         // constrain by brand (rare).
         const specificBrands = filters.selectedBrands.filter((b) => b !== "სხვა");
         if (specificBrands.length > 0) q = q.overlaps("car_brands", specificBrands);
+
+        if (filters.selectedModel) q = q.contains("vehicle_models", JSON.stringify([filters.selectedModel]));
 
         // Text search — service name + description, plus any category whose name
         // matches. Strip characters that would break PostgREST's or() grammar.
@@ -292,6 +298,7 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
           address: service.address,
           latitude: service.latitude,
           longitude: service.longitude,
+          vehicle_models: normalizeModels(service.vehicle_models),
           car_brands: service.car_brands,
           on_site_service: service.on_site_service || false,
           accepts_card_payment: service.accepts_card_payment || false,

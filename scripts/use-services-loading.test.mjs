@@ -1,3 +1,4 @@
+import { loadModelHelpers } from './model-test-utils.mjs';
 import test, { afterEach } from 'node:test';
 import { QueryClient } from '@tanstack/react-query';
 import { countMapPoints } from './map-layer-counts.mjs';
@@ -56,6 +57,7 @@ function harness(initial) {
   vm.runInNewContext(output, {
     exports,
     require(name) {
+      if (name === '@/utils/serviceModels') return loadModelHelpers();
       if (name === 'react') return react;
       if (name === '@/lib/serviceMetadata') return metadata;
       if (name === '@/integrations/supabase/client') return { supabase };
@@ -215,4 +217,14 @@ test('changing a complete brand list replaces the previous brand results', async
   h.requests.filter(r => r.table === 'mechanic_services').at(-1).resolve({ data: [{ id: 2, name: 'Toyota service' }], count: 1, error: null });
   await pending;
   assert.deepEqual(Array.from(h.states[0], s => s.id), [2]);
+});
+
+test('model searches require the matching brand-model pair and category before returning listings',async()=>{
+ const h=harness();
+ const pending=h.hook.fetchServices({...filters,selectedBrands:['Honda'],selectedModel:{brand:'Honda',slug:'fit'},selectedCategory:7,selectedDistrict:'გლდანი'},0,{all:true});
+ const request=h.requests.find(r=>r.table==='mechanic_services');
+ assert.ok(request.calls.some(([op,column,value])=>op==='contains'&&column==='vehicle_models'&&typeof value==='string'&&JSON.parse(value)[0].brand==='Honda'&&JSON.parse(value)[0].slug==='fit'));
+ assert.ok(request.calls.some(([op,column,value])=>op==='eq'&&column==='category_id'&&value===7));
+ assert.ok(request.calls.some(([op,column,value])=>op==='eq'&&column==='district'&&value==='გლდანი'));
+ request.resolve({data:[],count:0,error:null}); await pending;
 });

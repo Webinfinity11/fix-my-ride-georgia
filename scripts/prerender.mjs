@@ -89,7 +89,10 @@ function getBrandRoutes() {
       .map((u) => { try { return new URL(u).pathname; } catch { return null; } })
       .filter((p) => p && /^\/brand(\/[^/]+){0,2}$/.test(p));
     const brands = JSON.parse(readFileSync(new URL('../src/data/brand-pages.json', import.meta.url), 'utf8'));
-    return [...new Set([...routes, ...brands.map(b => `/brand/${b.slug}`)])];
+    const modelsFile = join(DIST, 'model-sitemap.xml');
+    const models = existsSync(modelsFile) ? [...readFileSync(modelsFile,'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => new URL(m[1]).pathname) : [];
+    const diagnosticModels = process.env.PRERENDER_ROUTES?.split(',').filter(p => /^\/brand\/[^/]+\/model\//.test(p)) || [];
+    return [...new Set([...routes, ...brands.map(b => `/brand/${b.slug}`), ...models, ...diagnosticModels])];
   } catch {
     return [];
   }

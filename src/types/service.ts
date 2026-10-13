@@ -1,3 +1,4 @@
+import type { ServiceModel } from '@/utils/serviceModels';
 export interface ServiceType {
   id: number;
   name: string;
@@ -10,6 +11,7 @@ export interface ServiceType {
   address: string | null;
   latitude: number | null;
   longitude: number | null;
+  vehicle_models?: ServiceModel[];
   car_brands: string[] | null;
   on_site_service: boolean;
   accepts_card_payment: boolean;

@@ -1,0 +1,13 @@
+-- Model assertions copied only from reviewed, explicit listing titles.
+-- Exact titles and empty existing assignments protect concurrent owner edits.
+begin;
+update public.mechanic_services set vehicle_models='[{"brand": "Ford", "model": "Fusion", "slug": "fusion"}]'::jsonb where id=586 and name='ძრავის შეცვლა ფორდ ფიუჟენზე' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Ford']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Ford", "model": "Fusion", "slug": "fusion"}]'::jsonb where id=587 and name='ფორდ ფიუჟენის გადაცემათა კოლოფის შეცვლა' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Ford']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Ford", "model": "Fusion", "slug": "fusion"}]'::jsonb where id=588 and name='ფორდ ფიუჟენის სრული ელექტროობა' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Ford']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Ford", "model": "Fusion", "slug": "fusion"}]'::jsonb where id=591 and name='ფორდ ფიუჟენის დაშლილები' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Ford']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Toyota", "model": "Prius", "slug": "prius"}]'::jsonb where id=227 and name='ტოიოტა პრიუსის დაშლილები' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Toyota']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Honda", "model": "Fit", "slug": "fit"}, {"brand": "Honda", "model": "CR-V", "slug": "crv"}]'::jsonb where id=475 and name='გადაცემათა კოლოფები!!! ტოიოტა ქემრი, ჰონდა ცეერვე, ფიტი, მიცუბიში კოლტი, აუთლენდერი, ნისან ტიდა, ქვესტი იქსტრაილი' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Honda']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Ford", "model": "Fusion", "slug": "fusion"}]'::jsonb where id=381 and name='FORD FUSION-ის კარობკის შეკეთება' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Ford']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Honda", "model": "Fit", "slug": "fit"}]'::jsonb where id=21 and name='ყველა სახის სერვისი ჰონდა ფიტზე' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Honda']::text[];
+update public.mechanic_services set vehicle_models='[{"brand": "Toyota", "model": "C-HR", "slug": "chr"}]'::jsonb where id=666 and name='ტოიოტა CHR კარობკის შეკეთება' and is_active=true and vehicle_models='[]'::jsonb and car_brands @> array['Toyota']::text[];
+commit;

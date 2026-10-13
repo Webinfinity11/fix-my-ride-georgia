@@ -1,0 +1,490 @@
+[
+  {
+    "brand": "Ford",
+    "model": "Fusion",
+    "aliases": [
+      "fusion",
+      "ფიუჟენი",
+      "ფიუჟენზე",
+      "ფიუჟენის"
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Focus",
+    "aliases": [
+      "focus"
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Escape",
+    "aliases": [
+      "escape"
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Transit",
+    "aliases": [
+      "transit"
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Fiesta",
+    "aliases": [
+      "fiesta"
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Mustang",
+    "aliases": [
+      "mustang"
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "C-Max",
+    "aliases": [
+      "c-max",
+      "c max",
+      "cmax"
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "F-150",
+    "aliases": [
+      "f-150"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Prius",
+    "aliases": [
+      "prius",
+      "პრიუსი",
+      "პრიუსის",
+      "პრიუსზე"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Camry",
+    "aliases": [
+      "camry"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Corolla",
+    "aliases": [
+      "corolla"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "RAV4",
+    "aliases": [
+      "rav4"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "C-HR",
+    "aliases": [
+      "c-hr",
+      "chr"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Aqua",
+    "aliases": [
+      "aqua"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Land Cruiser",
+    "aliases": [
+      "land cruiser"
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Yaris",
+    "aliases": [
+      "yaris"
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Fit",
+    "aliases": [
+      "fit",
+      "ფიტი",
+      "ფიტის",
+      "ფიტზე"
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "CR-V",
+    "aliases": [
+      "cr-v",
+      "ცეერვე",
+      "crv"
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Civic",
+    "aliases": [
+      "civic"
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Accord",
+    "aliases": [
+      "accord"
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "Insight",
+    "aliases": [
+      "insight"
+    ]
+  },
+  {
+    "brand": "Honda",
+    "model": "HR-V",
+    "aliases": [
+      "hr-v"
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model 3",
+    "aliases": [
+      "model 3",
+      "model3",
+      "მოდელ 3"
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model S",
+    "aliases": [
+      "model s",
+      "მოდელ s"
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model X",
+    "aliases": [
+      "model x",
+      "მოდელ x"
+    ]
+  },
+  {
+    "brand": "Tesla",
+    "model": "Model Y",
+    "aliases": [
+      "model y",
+      "მოდელ y"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "3 Series",
+    "aliases": [
+      "3 series"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "5 Series",
+    "aliases": [
+      "5 series"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X3",
+    "aliases": [
+      "x3"
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "X5",
+    "aliases": [
+      "x5"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "C-Class",
+    "aliases": [
+      "c-class"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "E-Class",
+    "aliases": [
+      "e-class"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "S-Class",
+    "aliases": [
+      "s-class"
+    ]
+  },
+  {
+    "brand": "Mercedes-Benz",
+    "model": "GLC",
+    "aliases": [
+      "glc"
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Leaf",
+    "aliases": [
+      "leaf"
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Tiida",
+    "aliases": [
+      "tiida"
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "X-Trail",
+    "aliases": [
+      "x-trail"
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Qashqai",
+    "aliases": [
+      "qashqai"
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "CT",
+    "aliases": [
+      "ct"
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "RX",
+    "aliases": [
+      "rx"
+    ]
+  },
+  {
+    "brand": "Lexus",
+    "model": "NX",
+    "aliases": [
+      "nx"
+    ]
+  },
+  {
+    "brand": "Subaru",
+    "model": "Forester",
+    "aliases": [
+      "forester"
+    ]
+  },
+  {
+    "brand": "Subaru",
+    "model": "Outback",
+    "aliases": [
+      "outback"
+    ]
+  },
+  {
+    "brand": "Subaru",
+    "model": "Impreza",
+    "aliases": [
+      "impreza"
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Colt",
+    "aliases": [
+      "colt"
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Outlander",
+    "aliases": [
+      "outlander"
+    ]
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "Pajero",
+    "aliases": [
+      "pajero"
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "Mazda 3",
+    "aliases": [
+      "mazda 3"
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "Mazda 6",
+    "aliases": [
+      "mazda 6"
+    ]
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-5",
+    "aliases": [
+      "cx-5"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Elantra",
+    "aliases": [
+      "elantra"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Sonata",
+    "aliases": [
+      "sonata"
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Tucson",
+    "aliases": [
+      "tucson"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Sportage",
+    "aliases": [
+      "sportage"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Optima",
+    "aliases": [
+      "optima"
+    ]
+  },
+  {
+    "brand": "Kia",
+    "model": "Rio",
+    "aliases": [
+      "rio"
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Golf",
+    "aliases": [
+      "golf"
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Passat",
+    "aliases": [
+      "passat"
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Jetta",
+    "aliases": [
+      "jetta"
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Cruze",
+    "aliases": [
+      "cruze"
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Malibu",
+    "aliases": [
+      "malibu"
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Volt",
+    "aliases": [
+      "volt"
+    ]
+  },
+  {
+    "brand": "Lincoln",
+    "model": "MKZ",
+    "aliases": [
+      "mkz"
+    ]
+  },
+  {
+    "brand": "Lincoln",
+    "model": "MKC",
+    "aliases": [
+      "mkc"
+    ]
+  },
+  {
+    "brand": "Jeep",
+    "model": "Cherokee",
+    "aliases": [
+      "cherokee"
+    ]
+  },
+  {
+    "brand": "Jeep",
+    "model": "Grand Cherokee",
+    "aliases": [
+      "grand cherokee"
+    ]
+  },
+  {
+    "brand": "Jeep",
+    "model": "Wrangler",
+    "aliases": [
+      "wrangler"
+    ]
+  }
+]
