@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { PGlite } from '@electric-sql/pglite';
+const migration=await readFile(new URL('../supabase/migrations/20261013163000_private_role_presence_access.sql',import.meta.url),'utf8');
+const a='11111111-1111-4111-8111-111111111111', b='22222222-2222-4222-8222-222222222222', c='33333333-3333-4333-8333-333333333333';
+test('role and presence privacy preserves shared-chat indicators and own writes',async()=>{
+ const db=new PGlite();
+ try {
+ await db.exec(`create role anon; create role authenticated; create schema auth;
+ create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+ create function public.is_admin(uuid) returns boolean language sql stable as $$select $1='${c}'::uuid$$;
+ grant usage on schema public,auth to anon,authenticated;
+ create table user_roles(user_id uuid,role text); create table user_presence(user_id uuid,is_online boolean);
+ create table chat_rooms(id uuid,created_by uuid,type text,is_public boolean);
+ create table chat_participants(room_id uuid,user_id uuid);
+ alter table user_roles enable row level security; alter table user_presence enable row level security;
+ grant select on user_roles,user_presence to anon,authenticated; grant insert,update on user_presence to authenticated;
+ create policy roles_read on user_roles for select using(true);
+ create policy presence_read on user_presence for select to authenticated using(true);
+ create policy own_presence_insert on user_presence for insert to authenticated with check(user_id=auth.uid());
+ create policy own_presence_update on user_presence for update to authenticated using(user_id=auth.uid()) with check(user_id=auth.uid());
+ insert into user_roles values('${a}','customer'),('${b}','mechanic'),('${c}','admin');
+ insert into user_presence values('${a}',true),('${b}',true),('${c}',true);
+ insert into chat_rooms values('${a}','${a}','direct',false);
+ insert into chat_participants values('${a}','${a}'),('${a}','${b}');`);
+ await db.exec(migration);
+ await db.exec('set role anon');
+ assert.equal((await db.query('select * from user_roles')).rows.length,0);
+ assert.equal((await db.query('select * from user_presence')).rows.length,0);
+ await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${a}',false)`);
+ assert.equal((await db.query('select * from user_roles')).rows.length,1);
+ assert.equal((await db.query('select * from user_presence')).rows.length,2);
+ assert.equal((await db.query('update user_presence set is_online=false where user_id=$1 returning user_id',[a])).rows.length,1);
+ assert.equal((await db.query('update user_presence set is_online=false where user_id=$1 returning user_id',[b])).rows.length,0);
+ await db.exec(`reset role; delete from chat_participants where user_id='${a}'; update chat_rooms set created_by='${b}'; set role authenticated;`);
+ assert.equal((await db.query('select * from user_presence')).rows.length,1);
+ await db.exec(`reset role; update chat_rooms set type='channel',is_public=true; set role authenticated;`);
+ assert.equal((await db.query('select * from user_presence')).rows.length,2);
+ await db.exec(`select set_config('request.jwt.claim.sub','${c}',false)`);
+ assert.equal((await db.query('select * from user_roles')).rows.length,3);
+ assert.equal((await db.query('select * from user_presence')).rows.length,3);
+ } finally {await db.close();}
+});
