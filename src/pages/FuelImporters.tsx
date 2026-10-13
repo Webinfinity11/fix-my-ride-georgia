@@ -1,3 +1,6 @@
+import companies from "@/data/fuel-companies.json";
+import FuelCompanyLanding from "@/components/fuel/FuelCompanyLanding";
+import FuelCompanyLinks from "@/components/fuel/FuelCompanyLinks";
 import HorizontalScroll from "@/components/fuel/HorizontalScroll";
 import { fuelLandingPages, matchesFuelLanding, initialFuelTier } from "@/lib/fuelLandingPages";
 import { useEffect } from "react";
@@ -43,6 +46,8 @@ const FuelImporters = () => {
     threshold: 80,
   });
 
+  const company = slug.startsWith('company/') ? companies.find(item => `company/${item.slug}` === slug) : undefined;
+  if (company) return <FuelCompanyLanding key={company.slug} company={company} importer={importers.find(item => item.name.toLowerCase() === company.slug)} isLoading={isLoading} />;
   if (slug && !topic) return <NotFound />;
 
   return (
@@ -93,6 +98,7 @@ const FuelImporters = () => {
           isRefetching={isRefetching}
           onRefresh={handleRefresh}
         />
+        <FuelCompanyLinks />
         <FuelCompanyPrices key={`${pathname}-companies`} importers={importers} />
         <details className="group mt-5 rounded-xl border bg-card">
           <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold flex justify-between gap-3">

@@ -32,6 +32,8 @@ import { getServiceRoutes, prepareServiceSnapshot, assertServiceDocument } from 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fuelLandingPages = JSON.parse(readFileSync(join(__dirname, '../src/data/fuel-landings.json'), 'utf8'));
+const fuelCompanies = JSON.parse(readFileSync(join(__dirname, '../src/data/fuel-companies.json'), 'utf8'));
+fuelLandingPages.push(...fuelCompanies.map(company => ({ slug: `company/${company.slug}` })));
 const DIST = join(__dirname, '..', 'dist');
 const PORT = 4178;
 

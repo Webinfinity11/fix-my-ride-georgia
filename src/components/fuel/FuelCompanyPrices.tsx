@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from 'react';
 import type { FuelImporter } from '@/hooks/useFuelImporters';
 
@@ -11,7 +12,7 @@ function CompanyCard({ company, initialSelfService }: { company: FuelImporter; i
   return <article className="rounded-2xl border bg-card min-w-0 w-full overflow-hidden" aria-label={`${company.name} — პროდუქტების ფასები`}>
     <div className="flex items-center gap-3 px-4 py-4 border-b">
       <FuelCompanyLogo name={company.name} />
-      <h3 className="font-semibold text-primary flex-1">{company.name}</h3>
+      <h3 className="font-semibold text-primary flex-1"><Link to={`/fuel-prices/company/${company.name.toLowerCase()}`}>{company.name}</Link></h3>
       {company.sourceUrl?.startsWith('https://priceshub.ge/') && <a href={company.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground underline">წყარო</a>}
     </div>
     {hasSelfService && <div className="flex gap-1 p-2 bg-muted/40" role="group" aria-label={`${company.name} — ტარიფი`}>

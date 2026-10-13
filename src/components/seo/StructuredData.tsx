@@ -146,7 +146,7 @@ export const LocalBusinessSchema = ({
 }: LocalBusinessSchemaProps) => {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "AutomotiveRepairShop",
+    "@type": "AutoRepair",
     "@id": url,
     name,
     address: {
@@ -165,7 +165,7 @@ export const LocalBusinessSchema = ({
       }
     }),
     ...(openingHours && { openingHours }),
-    ...(rating && {
+    ...(rating && rating.reviewCount > 0 && rating.ratingValue > 0 && rating.ratingValue <= 5 && {
       aggregateRating: {
         "@type": "AggregateRating",
         ratingValue: rating.ratingValue,
