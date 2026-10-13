@@ -26,7 +26,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, extname } from 'node:path';
 import http from 'node:http';
 import { injectCategoryBootShells, injectCategoryInitialData } from './category-boot-shell.mjs';
-import { cleanPrerenderResources, injectLcpImagePreload, assertPageDocument } from './prerender-resources.mjs';
+import { cleanPrerenderResources, injectLcpImagePreload, assertPageDocument, assertRouteDocument, restoreCapturedHead } from './prerender-resources.mjs';
 import { getSnapshotCSS } from './snapshot-css.mjs';
 import { getServiceRoutes, prepareServiceSnapshot, assertServiceDocument } from './service-prerender.mjs';
 
@@ -50,6 +50,10 @@ const ROUTES = [
   // root SPA-fallback index.html). Bakes the H1 + services + canonical into
   // raw HTML for fast LCP + reliable SEO.
   '/services',
+  '/fuel-importers',
+  '/fuel-prices/petrol',
+  '/fuel-prices/diesel',
+  '/map/chargers',
 ];
 
 // Read PARENT category routes (/category/<slug>, no district segment) from the
@@ -256,10 +260,10 @@ async function main() {
       // networkidle alone can capture a stale "იტვირთება…" title.
       await page
         .waitForFunction(
-          () => !/იტვირთება/.test(document.title) && !!document.querySelector('link[rel="canonical"]'),
-          { timeout: 8000 }
-        )
-        .catch(() => {});
+          expected => !/იტვირთება/.test(document.title) && document.querySelector('link[rel="canonical"]')?.getAttribute('href')?.replace(/\/$/, '') === expected,
+          { timeout: 8000 },
+          `https://fixup.ge${route === '/' ? '' : route}`,
+        );
 
       // Extra settle time so any final Helmet meta updates land.
       await new Promise((r) => setTimeout(r, 300));
@@ -291,15 +295,16 @@ async function main() {
       let serviceSnapshot;
       if (route.startsWith('/service/')) {
         const rendered = await page.evaluate(async () => {
+          const head = document.head.outerHTML;
           const output = await window.__fixupRenderServiceSnapshot();
           // Read the document and its root in the same synchronous turn.
           // Optional widget queries may finish while the renderer is imported.
-          return { ...output, document: document.documentElement.outerHTML, oldRoot: document.getElementById('root').outerHTML };
+          return { ...output, head, document: document.documentElement.outerHTML, oldRoot: document.getElementById('root').outerHTML };
         });
         if (!rendered.document.includes(rendered.oldRoot) || !rendered.html.includes('<!--$-->')) {
           throw new Error('Service snapshot is not safe to hydrate');
         }
-        html = cleanPrerenderResources('<!DOCTYPE html>' + rendered.document.replace(rendered.oldRoot, `<div id="root">${rendered.html}</div>`), pristineShell);
+        html = cleanPrerenderResources('<!DOCTYPE html>' + restoreCapturedHead(rendered.document, rendered.head).replace(rendered.oldRoot, `<div id="root">${rendered.html}</div>`), pristineShell);
         serviceSnapshot = rendered.snapshot;
       }
 
@@ -369,6 +374,19 @@ async function main() {
       // Minimal sanity check — abort if shell is empty (something broke).
       // The root may carry attributes (e.g. data-render-origin="client").
       assertPageDocument(html);
+      assertRouteDocument(html, route);
+      if (route === '/map/chargers') {
+        const data = await page.evaluate(() => window.__fixupChargerSnapshotCapture ?? null);
+        if (!data?.length) throw new Error('Charger snapshot has no locations');
+        const payload = JSON.stringify(data).replace(/</g, '\\u003c');
+        html = html.replace('</body>', `<script type="application/json" id="chargers-initial-data">${payload}</script></body>`);
+      }
+      if (route === '/fuel-importers' || route.startsWith('/fuel-prices/')) {
+        const data = await page.evaluate(() => window.__fixupFuelSnapshotCapture ?? null);
+        if (!data?.data?.some(company => company.fuelPrices?.length)) throw new Error('Fuel snapshot has no prices');
+        const payload = JSON.stringify(data).replace(/</g, '\\u003c');
+        html = html.replace('</body>', `<script type="application/json" id="fuel-initial-data">${payload}</script></body>`);
+      }
 
       // Stamp the served route onto <html data-ssg="..."> so the index.html
       // guard can hide this snapshot when it's served as the SPA fallback for a

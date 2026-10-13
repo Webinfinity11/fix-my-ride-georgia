@@ -1,0 +1,73 @@
+{
+  "createdAt": "2026-10-13",
+  "stages": [
+    {
+      "id": 1,
+      "name": "Correct public HTML and canonical",
+      "status": "implemented_pending_release"
+    },
+    {
+      "id": 2,
+      "name": "Evidence-based category buying guidance",
+      "status": "implemented_pending_release"
+    },
+    {
+      "id": 3,
+      "name": "Reduce first-load code and snapshot shifts",
+      "status": "implemented_field_verification_pending"
+    },
+    {
+      "id": 4,
+      "name": "Remove unsupported review parents",
+      "status": "implemented_pending_google_recrawl",
+      "remaining": [
+        "Review crawled-but-not-indexed and discovered-but-not-indexed URLs individually; preserve intentional noindex and canonical directives."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Petrol and diesel landing pages",
+      "status": "implemented_pending_release",
+      "remaining": [
+        "City/connector charger pages need verified city and connector data; current GeoJSON has neither, so expansion is deferred."
+      ]
+    }
+  ],
+  "releaseChecks": [
+    "TypeScript and production bundle",
+    "Correct canonical/H1 with JavaScript disabled",
+    "Fuel product classification and timestamp",
+    "Navigation and history interaction",
+    "No ratings nested under Service/Person",
+    "Public deployment validation"
+  ],
+  "measurement": {
+    "afterDeploymentDays": [
+      7,
+      28
+    ],
+    "compare": "Equal 28-day windows; query/page/device breakdown, impressions, clicks, CTR and position; annotate deployment date.",
+    "fieldMetrics": "Recheck CrUX after 28 days. Local metrics are diagnostic, not a field pass."
+  },
+  "verification": {
+    "typescript": "passed",
+    "productionBundle": "passed",
+    "automatedTests": 77,
+    "prerenderedPages": 655,
+    "browserCheckedRoutes": 10,
+    "fieldCoreWebVitals": "pending after release"
+  },
+  "fuelSource": {
+    "primary": "https://priceshub.ge/ company tables",
+    "schedule": "Daily 07:00 Asia/Tbilisi (03:00 UTC), plus existing stale-cache refreshes",
+    "status": "prepared_pending_database_and_function_deployment",
+    "deploymentOrder": [
+      "Apply 20261013090000_priceshub_daily_history.sql",
+      "Deploy fuel-prices edge function with its deno.json and shared modules",
+      "Prime refresh=true and verify the PricesHub source, company coverage and daily history rows",
+      "Deploy frontend and verify source attribution plus standard/self-service tariffs",
+      "Check cron job execution history"
+    ],
+    "history": "New daily observations accumulate from activation. Older upstream history remains a fallback for its supported companies."
+  }
+}

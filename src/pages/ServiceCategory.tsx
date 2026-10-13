@@ -1,3 +1,4 @@
+import CategoryDecisionGuide from "@/components/seo/CategoryDecisionGuide";
 import { useState, useEffect, useRef, Fragment } from "react";
 import { CategoryBootShell } from "@/components/layout/CategoryBootShell";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
@@ -419,6 +420,8 @@ const ServiceCategory = () => {
             </Card>
           )}
         </div>
+
+        <CategoryDecisionGuide slug={createCategorySlug(category.name)} name={category.name} services={services} />
 
         {/* Districts internal-link grid — Tbilisi-only, hides empty districts.
             On the parent /category/:slug page it offers 9 deeper landing pages;

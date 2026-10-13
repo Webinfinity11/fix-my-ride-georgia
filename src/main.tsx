@@ -29,6 +29,11 @@ if (readServiceSnapshot() && document.documentElement.dataset.ssg === location.p
       },
     });
   }).catch(() => createRoot(root).render(<App />));
+} else if (document.documentElement.dataset.ssg === location.pathname.replace(/\/$/, '') &&
+  (location.pathname.replace(/\/$/, '') === '/fuel-importers' || location.pathname.startsWith('/fuel-prices/'))) {
+  import('./pages/FuelImporters').then(({ default: FuelPage }) => createRoot(root).render(<App initialFuelComponent={FuelPage} />)).catch(() => createRoot(root).render(<App />));
+} else if (document.documentElement.dataset.ssg === '/map/chargers' && location.pathname.replace(/\/$/, '') === '/map/chargers') {
+  import('./pages/Map').then(({ default: MapPage }) => createRoot(root).render(<App initialMapComponent={MapPage} />)).catch(() => createRoot(root).render(<App />));
 } else {
   createRoot(root).render(<App />);
 }

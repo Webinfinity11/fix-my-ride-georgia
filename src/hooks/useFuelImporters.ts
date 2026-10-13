@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { readFuelSnapshot } from '@/lib/fuelSnapshot';
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 import {
@@ -22,6 +23,8 @@ export type FuelImporter = FuelImporterBase & {
   fuelPrices?: FuelPrice[];
   totalFuelTypes?: number;
   lastUpdated?: string;
+  sourceUrl?: string;
+  source?: string;
   priceRange?: {
     min: number;
     max: number;
@@ -86,6 +89,8 @@ const transformCompanyToImporter = (company: Company, index: number, timestamp: 
     fuelPrices: company.fuelPrices,
     totalFuelTypes: company.totalFuelTypes || company.fuelPrices.length,
     lastUpdated: timestamp,
+    sourceUrl: company.sourceUrl,
+    source: company.source,
     priceRange: company.priceRange,
   };
 };
@@ -105,7 +110,7 @@ export interface UseFuelImportersOptions {
 // window is plenty. The manual "განახლება" button and pull-to-refresh call
 // refetch(), which bypasses staleTime and always fetches live data.
 const FUEL_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
-const fuelCacheKey = (english: boolean) => `fuel-importers-cache-v1:${english ? "en" : "ka"}`;
+const fuelCacheKey = (english: boolean) => `fuel-importers-cache-v2:${english ? "en" : "ka"}`;
 
 type FuelCacheEntry = { data: FuelImporter[]; ts: number };
 
@@ -141,7 +146,7 @@ export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
       //    scrape. This is the normal path; on any failure we fall through to
       //    scraping the upstream API directly (below).
       try {
-        const { data: fn, error: fnErr } = await supabase.functions.invoke("fuel-prices");
+        const { data: fn, error: fnErr } = await supabase.functions.invoke("fuel-prices", { method: "GET" });
         const cachedCompanies = fn?.data?.companies as (Company & { timestamp?: string })[] | undefined;
         if (!fnErr && cachedCompanies?.length) {
           const importers = cachedCompanies.map((c, i) =>
@@ -228,8 +233,16 @@ export const useFuelImporters = (options: UseFuelImportersOptions = {}) => {
     // reloads don't re-scrape. If it's <6h old it counts as fresh (no fetch);
     // older than that, React Query shows it immediately and refetches in the
     // background.
-    initialData: () => readFuelCache(english)?.data,
-    initialDataUpdatedAt: () => readFuelCache(english)?.ts,
+    initialData: () => {
+      const local = readFuelCache(english);
+      const snapshot = english ? readFuelSnapshot() : null;
+      return (local && (!snapshot || local.ts > snapshot.ts) ? local : snapshot ?? local)?.data;
+    },
+    initialDataUpdatedAt: () => {
+      const local = readFuelCache(english);
+      const snapshot = english ? readFuelSnapshot() : null;
+      return Math.max(local?.ts ?? 0, snapshot?.ts ?? 0);
+    },
     staleTime: FUEL_CACHE_TTL, // 6 hours — prices change at most a couple of times a day
     gcTime: FUEL_CACHE_TTL,
     refetchOnWindowFocus: false,

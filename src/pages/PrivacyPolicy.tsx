@@ -7,6 +7,7 @@ const PrivacyPolicy = () => {
       <Helmet>
         <title>კონფიდენციალურობის პოლიტიკა | FixUp</title>
         <meta name="description" content="FixUp აპლიკაციის კონფიდენციალურობის პოლიტიკა - როგორ ვაგროვებთ, ვიყენებთ და ვიცავთ თქვენს ინფორმაციას." />
+        <link rel="canonical" href="https://fixup.ge/privacy-policy" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">

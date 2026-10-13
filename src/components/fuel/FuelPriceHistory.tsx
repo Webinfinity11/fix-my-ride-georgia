@@ -7,7 +7,7 @@ import { useFuelImporters } from "@/hooks/useFuelImporters";
 import { useFuelHistory, supportsHistoricalData, getDateRangeOptions } from "@/hooks/useFuelHistory";
 import type { CompanyName } from "@/services/fuelPricesApi";
 
-const FuelPriceHistory = () => {
+const FuelPriceHistory = ({ selfService = false }: { selfService?: boolean }) => {
   const [selectedCompany, setSelectedCompany] = useState<CompanyName>("wissol");
   const [selectedFuelType, setSelectedFuelType] = useState<string>("");
   const [dateRange, setDateRange] = useState<number>(30);
@@ -41,7 +41,8 @@ const FuelPriceHistory = () => {
     selectedCompany,
     selectedFuelType,
     dateRange,
-    Boolean(selectedFuelType)
+    Boolean(selectedFuelType),
+    selfService
   );
 
   // Format chart data
@@ -79,6 +80,7 @@ const FuelPriceHistory = () => {
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-primary" />
           ფასების ისტორია
+          <span className="text-sm font-normal">{selfService ? "თვითმომსახურება" : "სტანდარტული"}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">

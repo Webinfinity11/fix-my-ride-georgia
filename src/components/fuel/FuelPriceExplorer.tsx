@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { fuelTier } from "@/lib/fuelTypes";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { FuelImporter } from "@/hooks/useFuelImporters";
-import FuelPriceHistory from "@/components/fuel/FuelPriceHistory";
+const FuelPriceHistory = lazy(() => import("@/components/fuel/FuelPriceHistory"));
 import FuelCalculator from "@/components/fuel/FuelCalculator";
 import {
   Fuel,
@@ -23,13 +24,15 @@ import {
  * ("SOCAR super vs Wissol super"). Comparison is the default view.
  */
 
-type TierKey = "super" | "premium" | "regular" | "diesel" | "gas";
+type TierKey = "super" | "premium" | "regular" | "diesel" | "gas" | "cng" | "lpg";
 
 const TIERS: { key: TierKey; label: string; sub: string; match: RegExp }[] = [
   { key: "super", label: "სუპერი", sub: "98–100 ოქტ.", match: /სუპერ|super/i },
   { key: "premium", label: "პრემიუმი", sub: "95–96 ოქტ.", match: /პრემიუმ|premium/i },
   { key: "regular", label: "რეგულარი", sub: "92–93 ოქტ.", match: /რეგულარ|regular/i },
   { key: "diesel", label: "დიზელი", sub: "Euro 5", match: /დიზელ|diesel/i },
+  { key: "cng", label: "ბუნებრივი აირი", sub: "CNG", match: /ბუნებრივ|cng/i },
+  { key: "lpg", label: "თხევადი გაზი", sub: "LPG", match: /თხევად|lpg/i },
   { key: "gas", label: "ავტოგაზი", sub: "LPG / CNG", match: /აირ|გაზ|\bgas\b|lpg|cng/i },
 ];
 
@@ -49,15 +52,16 @@ interface TierRow {
 }
 
 /** For one tier, one representative (cheapest) product per company, sorted asc. */
-function buildTierRows(importers: FuelImporter[], match: RegExp): TierRow[] {
+function buildTierRows(importers: FuelImporter[], tier: TierKey, selfService = false): TierRow[] {
   const rows: TierRow[] = [];
   for (const imp of importers) {
     const matches = (imp.fuelPrices ?? []).filter(
-      (f) => typeof f.price === "number" && match.test(`${f.fuelType} ${f.fuelTypeEnglish ?? ""}`),
+      (f) => Number.isFinite(selfService ? f.selfServicePrice : f.price) && (selfService ? f.selfServicePrice! : f.price) > 0 && fuelTier(`${f.fuelType} ${f.fuelTypeEnglish ?? ""}`) === tier,
     );
     if (matches.length === 0) continue;
-    const cheapest = matches.reduce((a, b) => (b.price < a.price ? b : a));
-    rows.push({ name: imp.name, price: cheapest.price, product: cheapest.fuelType });
+    const value = (fuel: typeof matches[number]) => selfService ? fuel.selfServicePrice! : fuel.price;
+    const cheapest = matches.reduce((a, b) => (value(b) < value(a) ? b : a));
+    rows.push({ name: imp.name, price: value(cheapest), product: cheapest.fuelType });
   }
   return rows.sort((a, b) => a.price - b.price);
 }
@@ -71,18 +75,20 @@ interface Props {
   isLoading?: boolean;
   isRefetching?: boolean;
   onRefresh?: () => void;
+  initialTier?: TierKey;
 }
 
-const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh }: Props) => {
-  const [tier, setTier] = useState<TierKey>("super");
+const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, initialTier = "super" }: Props) => {
+  const [tier, setTier] = useState<TierKey>(initialTier);
+  const [selfService, setSelfService] = useState(false);
   const [subTab, setSubTab] = useState<SubTab>("compare");
 
   // Which tiers actually have data (hide empty pills).
   const tierRowsAll = useMemo(() => {
     const map = {} as Record<TierKey, TierRow[]>;
-    for (const t of TIERS) map[t.key] = buildTierRows(importers, t.match);
+    for (const t of TIERS) map[t.key] = buildTierRows(importers, t.key, selfService);
     return map;
-  }, [importers]);
+  }, [importers, selfService]);
 
   const availableTiers = TIERS.filter((t) => tierRowsAll[t.key].length > 0);
   const activeTier = availableTiers.some((t) => t.key === tier) ? tier : availableTiers[0]?.key ?? "super";
@@ -98,7 +104,14 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh }: Pr
 
   return (
     <div className="space-y-5">
+      <div className="flex flex-wrap gap-2" aria-label="ფასის ტიპი">
+        <button className={cn("border rounded-lg px-3 py-2", !selfService && "bg-primary text-primary-foreground")} aria-pressed={!selfService} onClick={() => setSelfService(false)}>სტანდარტული</button>
+        <button className={cn("border rounded-lg px-3 py-2", selfService && "bg-primary text-primary-foreground")} aria-pressed={selfService} onClick={() => setSelfService(true)}>თვითმომსახურება</button>
+      </div>
+      {selfService && <p className="text-sm text-muted-foreground">შედარებაში მხოლოდ წყაროში მითითებული თვითმომსახურების ფასებია. სხვა სადგურებზე ამ ტარიფის ხელმისაწვდომობა არ დასტურდება.</p>}
       {/* ── KPI ribbon ── */}
+      {isLoading && <div className="h-[210px] md:h-[100px] rounded-xl bg-muted animate-pulse" role="status">ფასები იტვირთება…</div>}
+      {!isLoading && !rows.length && <p>არჩეულ ტარიფზე ფასები არ არის მითითებული.</p>}
       {showData && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
@@ -340,7 +353,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh }: Pr
       {/* ── HISTORY / CALC (existing components) ── */}
       {subTab === "history" && (
         <div className="rounded-2xl bg-card border border-border/60 p-1">
-          <FuelPriceHistory />
+          <Suspense fallback={<div className="min-h-[320px] animate-pulse bg-muted rounded-xl" role="status">ისტორია იტვირთება…</div>}><FuelPriceHistory selfService={selfService} /></Suspense>
         </div>
       )}
       {subTab === "calc" && (

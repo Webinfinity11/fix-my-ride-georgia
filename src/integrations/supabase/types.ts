@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      fuel_price_daily_history: {
+        Row: { observed_at: string; observed_on: string; company: string; product: string; price: number; self_service_price: number | null; source_url: string }
+        Insert: { observed_at: string; observed_on?: never; company: string; product: string; price: number; self_service_price?: number | null; source_url: string }
+        Update: { observed_at?: string; observed_on?: never; company?: string; product?: string; price?: number; self_service_price?: number | null; source_url?: string }
+        Relationships: []
+      }
       admin_logs: {
         Row: {
           action: string

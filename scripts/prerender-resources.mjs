@@ -40,3 +40,22 @@ export function assertPageDocument(html) {
     throw new Error(`output looks broken (${html.length} bytes)`);
   }
 }
+
+// A successful render must identify the requested page, never the SPA fallback.
+export function assertRouteDocument(html, route) {
+  const links = [...html.matchAll(/<link\b[^>]*>/gi)]
+    .map(([tag]) => tag).filter(tag => /rel="canonical"/i.test(tag));
+  const canonical = links[0]?.match(/href="([^"]+)"/i)?.[1];
+  const expected = `https://fixup.ge${route === '/' ? '' : route}`;
+  if (links.length !== 1 || canonical?.replace(/\/$/, '') !== expected) {
+    throw new Error(`Wrong canonical for ${route}: ${canonical}`);
+  }
+  if (!/<h1\b[^>]*>[\s\S]*?<\/h1>/i.test(html)) throw new Error(`Missing H1 for ${route}`);
+}
+
+// renderToString runs inside Chromium, where Helmet still considers itself a
+// client. Preserve the settled live head before that renderer changes it.
+export function restoreCapturedHead(document, head) {
+  if (!/^<head\b/i.test(head) || !/<\/head>$/i.test(head)) throw new Error('Missing captured head');
+  return document.replace(/<head\b[^>]*>[\s\S]*?<\/head>/i, () => head);
+}

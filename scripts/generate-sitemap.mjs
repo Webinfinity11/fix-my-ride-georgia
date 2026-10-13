@@ -237,6 +237,8 @@ const STATIC_PAGES = [
   '/dealers',
   '/insurance',
   '/fuel-importers',
+  '/fuel-prices/petrol',
+  '/fuel-prices/diesel',
   '/fuel-brands',
   '/community',
   '/privacy-policy',

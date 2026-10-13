@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChargerLocation } from "@/types/charger";
 
@@ -48,15 +49,29 @@ const fetchChargers = async (): Promise<ChargerLocation[]> => {
     .map(transformFeature);
 };
 
+declare global { interface Window { __fixupChargerSnapshotCapture?: ChargerLocation[] } }
+function readChargersSnapshot(): ChargerLocation[] | undefined {
+  if (document.documentElement.dataset.ssg !== '/map/chargers') return undefined;
+  try {
+    const rows = JSON.parse(document.getElementById('chargers-initial-data')?.textContent ?? 'null');
+    return Array.isArray(rows) && rows.every(row => Number.isFinite(row.latitude) && Number.isFinite(row.longitude)) ? rows : undefined;
+  } catch { return undefined; }
+}
+
 export const useChargers = (enabled = true) => {
   const query = useQuery({
     enabled,
     queryKey: ['chargers'],
     queryFn: fetchChargers,
+    initialData: readChargersSnapshot,
+    initialDataUpdatedAt: 0,
     staleTime: 1000 * 60 * 60, // 1 hour - static data
     gcTime: 1000 * 60 * 60 * 24, // 24 hours cache
   });
 
+  useEffect(() => {
+    if (window.__fixupPrerenderCapture && query.data?.length) window.__fixupChargerSnapshotCapture = query.data;
+  }, [query.data]);
   return {
     chargers: query.data || [],
     isLoading: query.isLoading,
