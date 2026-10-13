@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "sitemap:generate": "node scripts/generate-sitemap.mjs",
-    "prerender": "node scripts/prerender.mjs"
+    "prerender": "node scripts/prerender.mjs",
+    "preview:static": "node scripts/preview-static.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

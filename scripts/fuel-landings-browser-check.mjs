@@ -47,7 +47,7 @@ try {
   await page.goto(`${base}/fuel-importers/`, { waitUntil: 'networkidle2' });
   await page.click('[aria-label="ფასის ტიპი"] a[href="/fuel-prices/self-service"]');
   await page.waitForFunction(() => location.pathname === '/fuel-prices/self-service');
-  await page.click('a[href="/fuel-prices/self-service/premium"]');
+  await page.click('[aria-label="საწვავის ტიპი"] a[href="/fuel-prices/self-service/premium"]');
   await page.waitForFunction(() => location.pathname === '/fuel-prices/self-service/premium');
   await page.reload({ waitUntil: 'networkidle2' });
   assert.match(await page.$eval('h1', node => node.textContent), /პრემიუმ.*თვითმომსახურებ/);

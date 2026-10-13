@@ -108,7 +108,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
   const showData = !isLoading && rows.length > 0;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
       <div className="flex flex-wrap gap-2" aria-label="ფასის ტიპი">
         {[false, true].map(value => {
           const className = cn("border rounded-lg px-3 py-2", selfService === value && "bg-primary text-primary-foreground");
@@ -117,19 +117,19 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
           return <Link key={String(value)} className={className} aria-current={selfService === value ? 'page' : undefined} to={fuelLandingPath(selectedType || undefined, value)}>{label}</Link>;
         })}
       </div>
-      {selfService && <p className="text-sm text-muted-foreground">შედარებაში მხოლოდ წყაროში მითითებული თვითმომსახურების ფასებია. სხვა სადგურებზე ამ ტარიფის ხელმისაწვდომობა არ დასტურდება.</p>}
+      {selfService && <p className="text-xs text-muted-foreground">მხოლოდ წყაროში მითითებული თვითმომსახურების ტარიფები</p>}
       {/* ── KPI ribbon ── */}
       {isLoading && <div className="h-[210px] md:h-[100px] rounded-xl bg-muted animate-pulse" role="status">ფასები იტვირთება…</div>}
       {!isLoading && !rows.length && <p>არჩეულ ტარიფზე ფასები არ არის მითითებული.</p>}
       {showData && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div role="region" aria-label="ფასების შეჯამება" className="flex gap-2 overflow-x-auto snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-4 md:gap-3">
           {[
             { l: "ყველაზე იაფი", v: cheapest.price.toFixed(2), s: cheapest.name, tone: "accent", unit: true },
             { l: "საშუალო", v: avg.toFixed(2), s: `${rows.length} კომპანია`, tone: "ink", unit: true },
             { l: "ყველაზე ძვირი", v: mostExp.price.toFixed(2), s: mostExp.name, tone: "ink", unit: true },
             { l: "სხვაობა", v: spread.toFixed(2), s: "იაფსა და ძვირს შორის", tone: "brand", unit: true },
           ].map((k, i) => (
-            <div key={i} className="rounded-2xl bg-card border border-border/60 p-4">
+            <div key={i} className="min-w-[145px] md:min-w-0 snap-start rounded-xl bg-card border border-border/60 p-3">
               <div className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-muted-foreground mb-1.5">{k.l}</div>
               <div className="flex items-baseline gap-1.5">
                 <span
@@ -150,7 +150,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
 
       {/* ── Tier pills + sub-tabs ── */}
       <div className="rounded-2xl bg-card border border-border/60 p-2.5 flex flex-col gap-2.5 sticky top-2 z-20">
-        <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div role="navigation" aria-label="საწვავის ტიპი" className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {availableTiers.map((t) => {
             const active = t.key === activeTier;
             return (
@@ -220,30 +220,33 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
             {tierMeta.label} · {rows.length} კომპანია
           </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-2" aria-label="კომპანიების ფასების შედარება">
             {rows.map((r, i) => {
               const pct = spread > 0 ? ((r.price - cheapest.price) / spread) * 100 : 0;
               const isCheapest = i === 0;
               return (
-                <div key={r.name} className="grid grid-cols-12 items-center gap-2.5 md:gap-3">
-                  <div className="col-span-5 md:col-span-3 flex items-center gap-2 min-w-0">
+                <div key={r.name} className={cn("grid grid-cols-12 items-center gap-2.5 md:gap-3 rounded-xl border px-3 py-2", isCheapest ? "border-orange-200 bg-orange-50/60 dark:border-orange-800 dark:bg-orange-950/25" : "border-border/60")}>
+                  <div className="col-span-8 md:col-span-3 flex items-center gap-2 min-w-0">
                     <span
                       className={cn(
                         "h-8 w-8 rounded-lg grid place-items-center text-[10.5px] font-bold shrink-0",
                         isCheapest ? "bg-orange-500 text-white" : "bg-foreground text-background",
                       )}
                     >
-                      {r.name.slice(0, 2).toUpperCase()}
+                      {i + 1}
                     </span>
-                    <span className="text-[13px] font-bold text-foreground truncate">{r.name}</span>
+                    <div className="min-w-0">
+                      <span className="text-[13px] font-bold text-foreground">{r.name}</span>
+                      <div className="text-[10px] text-muted-foreground truncate" title={r.product}>{r.product}</div>
+                    </div>
                   </div>
-                  <div className="col-span-4 md:col-span-7 relative h-8 rounded-lg bg-muted overflow-hidden">
+                  <div className="hidden md:block md:col-span-7 relative h-8 rounded-lg bg-muted overflow-hidden">
                     <div
                       className={cn("absolute inset-y-0 left-0 rounded-lg transition-all", isCheapest ? "bg-orange-500" : "bg-primary")}
                       style={{ width: `${Math.max(pct, 6)}%` }}
                     />
                   </div>
-                  <div className="col-span-3 md:col-span-2 text-right">
+                  <div className="col-span-4 md:col-span-2 text-right">
                     <Money v={r.price} className={cn("text-[14px] font-bold", isCheapest ? "text-orange-600" : "text-foreground")} />
                     <span className="text-[11px] text-muted-foreground ml-1">₾</span>
                   </div>
@@ -252,25 +255,6 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
             })}
           </div>
 
-          <div className="mt-6 pt-5 border-t border-border grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="rounded-xl bg-orange-50 border border-orange-200 p-4">
-              <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-orange-700">ყველაზე იაფი</div>
-              <div className="mt-1 text-[16px] font-bold text-foreground">{cheapest.name}</div>
-              <div className="mt-1 text-[12px] text-muted-foreground">
-                <Money v={cheapest.price} /> ₾/ლ{mostExp.price > 0 && ` · −${(((mostExp.price - cheapest.price) / mostExp.price) * 100).toFixed(1)}%`}
-              </div>
-            </div>
-            <div className="rounded-xl bg-muted/50 border border-border p-4">
-              <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-muted-foreground">საშუალო</div>
-              <div className="mt-1 text-[16px] font-bold text-foreground"><Money v={avg} /> ₾/ლ</div>
-              <div className="mt-1 text-[12px] text-muted-foreground">{rows.length} კომპანიის ბაზაზე</div>
-            </div>
-            <div className="rounded-xl bg-red-50 border border-red-200 p-4">
-              <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-red-700">ყველაზე ძვირი</div>
-              <div className="mt-1 text-[16px] font-bold text-foreground">{mostExp.name}</div>
-              <div className="mt-1 text-[12px] text-muted-foreground"><Money v={mostExp.price} /> ₾/ლ</div>
-            </div>
-          </div>
         </div>
       )}
 

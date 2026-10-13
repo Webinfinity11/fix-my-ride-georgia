@@ -75,7 +75,9 @@ export default defineConfig(({ mode }) => ({
       name: 'category-boot-shell',
       apply: 'build',
       transformIndexHtml(html: string) {
-        return injectServiceImagePreload(injectCategoryBootShells(html, categoryBootData.header, categoryBootData.categories), JSON.parse(readFileSync(path.resolve(__dirname, "scripts/service-boot-data.json"), "utf8")), categoryBootData.header);
+        const recovery = readFileSync(path.resolve(__dirname, 'public/app-recovery.js'), 'utf8');
+        const guarded = html.replace('<!-- App update recovery -->', `<script id="app-update-recovery">${recovery}</script>`);
+        return injectServiceImagePreload(injectCategoryBootShells(guarded, categoryBootData.header, categoryBootData.categories), JSON.parse(readFileSync(path.resolve(__dirname, "scripts/service-boot-data.json"), "utf8")), categoryBootData.header);
       },
     },
     react(),
@@ -118,35 +120,37 @@ export default defineConfig(({ mode }) => ({
         // Claim clients after installation; the next navigation uses the new shell.
         skipWaiting: true,
         clientsClaim: true,
-        // Parent categories have their own public prerendered HTML and data.
-        // Serving index.html here discarded that snapshot on repeat visits.
-        navigateFallbackDenylist: [/^\/$/, /^\/category\/[^/]+\/?$/, /^\/service\/[^/]+\/?$/],
+        // Every online navigation must revalidate its own document. A cached
+        // universal shell can reference deleted chunks after deployment.
+        navigateFallbackDenylist: [/./],
+        cleanupOutdatedCaches: true,
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
         // Precache ONLY the tiny app shell (html/css/manifest). Previously this
         // globbed **/*.js + all images, so the service worker downloaded the
         // ENTIRE ~2.8MB app on the first visit (killing mobile Speed Index).
         // JS chunks + images now load on demand and are cached via runtimeCaching.
-        globPatterns: ['**/*.{css,html,webmanifest}'],
+        globPatterns: ['index.html', 'assets/*.css', 'manifest.webmanifest'],
         runtimeCaching: [
           {
             urlPattern: ({ url, request, sameOrigin }) => sameOrigin
-              && request.mode === 'navigate' && (url.pathname === '/' || /^\/category\/[^/]+\/?$/.test(url.pathname) || /^\/service\/[^/]+\/?$/.test(url.pathname)),
+              && request.mode === 'navigate' && !/^\/(dashboard|chat|book|login|register|reset-password|update-password|api|rest|auth|functions)(\/|$)/.test(url.pathname),
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'public-category-documents',
-              networkTimeoutSeconds: 1,
+              cacheName: 'public-documents-v2',
+              fetchOptions: { cache: 'no-cache' },
               cacheableResponse: { statuses: [200] },
               expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 },
               precacheFallback: { fallbackURL: '/index.html' },
             },
           },
           {
-            // App JS/CSS chunks — cache after first use (fast repeat visits),
-            // but don't preload everything up front.
+            // Hashed files are immutable. Keep cached old chunks usable for open
+            // tabs instead of revalidating removed filenames in the background.
             urlPattern: ({ url, sameOrigin }) => sameOrigin && /\/assets\/.*\.(js|css)$/.test(url.pathname),
-            handler: 'StaleWhileRevalidate',
+            handler: 'CacheFirst',
             options: {
               cacheName: 'app-assets',
+              cacheableResponse: { statuses: [200] },
               expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
