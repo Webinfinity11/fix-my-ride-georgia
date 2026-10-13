@@ -111,10 +111,10 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2" aria-label="ფასის ტიპი">
         {[false, true].map(value => {
-          const className = cn("border rounded-lg px-3 py-2", selfService === value && "bg-primary text-primary-foreground");
+          const className = cn("inline-flex items-center gap-1.5 border rounded-lg px-3 py-2 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2", selfService === value ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-background text-muted-foreground hover:border-primary/40");
           const label = value ? "თვითმომსახურება" : "სტანდარტული";
           const selectedType = landingSlug.replace(/^self-service\/?/, '');
-          return <Link key={String(value)} className={className} aria-current={selfService === value ? 'page' : undefined} to={fuelLandingPath(selectedType || undefined, value)}>{label}</Link>;
+          return <Link key={String(value)} className={className} aria-current={selfService === value ? 'page' : undefined} to={fuelLandingPath(selectedType || undefined, value)}>{selfService === value && <span aria-hidden="true">✓</span>}{label}</Link>;
         })}
       </div>
       {selfService && <p className="text-xs text-muted-foreground">მხოლოდ წყაროში მითითებული თვითმომსახურების ტარიფები</p>}
