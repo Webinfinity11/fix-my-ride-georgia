@@ -145,4 +145,71 @@
   </url>
   <url><loc>https://fixup.ge/fuel-prices/petrol</loc></url>
   <url><loc>https://fixup.ge/fuel-prices/diesel</loc></url>
+
+  <url>
+    <loc>https://fixup.ge/fuel-prices/super</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/super" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/super" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/premium</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/premium" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/premium" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/regular</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/regular" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/regular" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/cng</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/cng" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/cng" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/lpg</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/lpg" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/lpg" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/self-service</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/self-service" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/self-service" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/self-service/petrol</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/self-service/petrol" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/self-service/petrol" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/self-service/diesel</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/self-service/diesel" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/self-service/diesel" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/self-service/super</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/self-service/super" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/self-service/super" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/self-service/premium</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/self-service/premium" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/self-service/premium" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://fixup.ge/fuel-prices/self-service/regular</loc>
+    <xhtml:link rel="alternate" hreflang="ka-ge" href="https://fixup.ge/fuel-prices/self-service/regular" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fixup.ge/fuel-prices/self-service/regular" />
+    <lastmod>2026-10-13T10:08:55.839Z</lastmod>
+  </url>
 </urlset>

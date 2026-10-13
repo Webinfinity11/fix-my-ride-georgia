@@ -31,6 +31,7 @@ import { getSnapshotCSS } from './snapshot-css.mjs';
 import { getServiceRoutes, prepareServiceSnapshot, assertServiceDocument } from './service-prerender.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const fuelLandingPages = JSON.parse(readFileSync(join(__dirname, '../src/data/fuel-landings.json'), 'utf8'));
 const DIST = join(__dirname, '..', 'dist');
 const PORT = 4178;
 
@@ -51,8 +52,7 @@ const ROUTES = [
   // raw HTML for fast LCP + reliable SEO.
   '/services',
   '/fuel-importers',
-  '/fuel-prices/petrol',
-  '/fuel-prices/diesel',
+  ...fuelLandingPages.map(page => `/fuel-prices/${page.slug}`),
   '/map/chargers',
 ];
 

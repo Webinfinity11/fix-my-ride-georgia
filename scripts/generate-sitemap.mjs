@@ -22,7 +22,7 @@
 //
 // Missing env → script skips regeneration (exit 0) so dev builds don't break.
 
-import { writeFile, unlink, readdir } from 'node:fs/promises';
+import { readFile, writeFile, unlink, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -223,6 +223,7 @@ function videoUrlEntry({ loc, lastmod, videos, thumbnail, title, description, pu
 //     (client-side tab switches of the same /map shell); the base /map ships
 //   • /laundries            — feature currently hidden in the UI
 // Keep in sync with validTabs in src/pages/Map.tsx.
+const fuelLandingPages = JSON.parse(await readFile(new URL('../src/data/fuel-landings.json', import.meta.url), 'utf8'));
 const STATIC_PAGES = [
   '/',
   '/services',
@@ -237,8 +238,7 @@ const STATIC_PAGES = [
   '/dealers',
   '/insurance',
   '/fuel-importers',
-  '/fuel-prices/petrol',
-  '/fuel-prices/diesel',
+  ...fuelLandingPages.map(page => `/fuel-prices/${page.slug}`),
   '/fuel-brands',
   '/community',
   '/privacy-policy',
@@ -249,6 +249,22 @@ async function main() {
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!SUPABASE_URL || !SERVICE_KEY) {
+    // Public landing pages do not require database credentials. Preserve the
+    // committed database-backed sitemaps, but discover newly shipped fuel URLs.
+    const file = new URL('../public/static-sitemap.xml', import.meta.url);
+    const previous = await readFile(file, 'utf8');
+    const now = new Date().toISOString();
+    const missing = fuelLandingPages.filter(page => !previous.includes(`<loc>${SITE_URL}/fuel-prices/${page.slug}</loc>`));
+    if (missing.length) {
+      const entries = missing.map(page => urlEntry({ loc: `${SITE_URL}/fuel-prices/${page.slug}`, lastmod: now })).join('');
+      await writeFile(file, previous.replace('</urlset>', `${entries}\n</urlset>`));
+      for (const name of ['sitemap_index.xml', 'sitemap-index.xml', 'sitemap.xml']) {
+        const indexFile = new URL(`../public/${name}`, import.meta.url);
+        const index = await readFile(indexFile, 'utf8');
+        await writeFile(indexFile, index.replace(/(<loc>https:\/\/fixup\.ge\/static-sitemap\.xml<\/loc>\s*<lastmod>)[^<]+/, `$1${now}`));
+      }
+      console.log(`[sitemap] Added ${missing.length} public fuel landing pages.`);
+    }
     console.warn('[sitemap] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing — skipping regeneration.');
     process.exit(0);
   }

@@ -1,6 +1,6 @@
-import { fuelTier } from "@/lib/fuelTypes";
+import { fuelLandingPages, matchesFuelLanding, initialFuelTier } from "@/lib/fuelLandingPages";
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useFuelImporters } from "@/hooks/useFuelImporters";
 import FuelHero from "@/components/fuel/FuelHero";
 import FuelPriceExplorer from "@/components/fuel/FuelPriceExplorer";
@@ -13,21 +13,15 @@ import { toast } from "sonner";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { PullToRefreshIndicator } from "@/components/mobile/PullToRefreshIndicator";
 
-const FUEL_TOPICS = {
-  petrol: { name: 'ბენზინის ფასები დღეს', tier: 'regular' as const, match: /სუპერ|პრემიუმ|რეგულარ|super|premium|regular/i,
-    intro: 'შეადარეთ რეგულარის, პრემიუმისა და სუპერის ფასები ცალ-ცალკე. სხვადასხვა ოქტანობის პროდუქტები პირდაპირ შესადარებელი არ არის. აირჩიეთ თქვენი ავტომობილის მწარმოებლის მიერ მოთხოვნილი საწვავი.' },
-  diesel: { name: 'დიზელის ფასები დღეს', tier: 'diesel' as const, match: /დიზელ|diesel/i,
-    intro: 'შეადარეთ დიზელის პროდუქტები ბრენდისა და დასახელების მიხედვით. ერთი კომპანიის სხვადასხვა დიზელის პროდუქტი შეიძლება ფასითა და სპეციფიკაციით განსხვავდებოდეს; გადაამოწმეთ მოთხოვნები ავტომობილის სახელმძღვანელოში.' },
-};
-
 const FuelImporters = () => {
-  const { fuelType } = useParams<{ fuelType?: string }>();
-  const topic = FUEL_TOPICS[fuelType as keyof typeof FUEL_TOPICS];
+  const pathname = useLocation().pathname.replace(/\/$/, '');
+  const slug = pathname.startsWith('/fuel-prices/') ? pathname.slice('/fuel-prices/'.length) : '';
+  const topic = fuelLandingPages.find(page => page.slug === slug);
   const heading = topic ? `${topic.name} საქართველოში` : 'საწვავის ფასები დღეს საქართველოში';
   const { data: importers = [], isLoading, refetch, isRefetching } = useFuelImporters({ english: true });
 
   const visibleImporters = topic ? importers.map(company => ({ ...company,
-    fuelPrices: company.fuelPrices?.filter(fuel => (fuelType === 'diesel' ? fuelTier(`${fuel.fuelType} ${fuel.fuelTypeEnglish ?? ''}`) === 'diesel' : ['regular', 'premium', 'super'].includes(fuelTier(`${fuel.fuelType} ${fuel.fuelTypeEnglish ?? ''}`) ?? ''))),
+    fuelPrices: company.fuelPrices?.filter(fuel => matchesFuelLanding(fuel, topic)),
   })).filter(company => company.fuelPrices?.length) : importers;
   useEffect(() => {
     if (window.__fixupPrerenderCapture && importers.some(company => company.fuelPrices?.length)) {
@@ -47,14 +41,15 @@ const FuelImporters = () => {
     threshold: 80,
   });
 
-  if (fuelType && !topic) return <NotFound />;
+  if (slug && !topic) return <NotFound />;
 
   return (
     <Layout>
       <SEOHead
         title={`${heading} — ფასების შედარება | FixUp`}
-        canonical={`https://fixup.ge${topic ? `/fuel-prices/${fuelType}` : "/fuel-importers"}`}
+        canonical={`https://fixup.ge${topic ? `/fuel-prices/${slug}` : "/fuel-importers"}`}
         description={`${heading} — შეადარეთ პროდუქტები და კომპანიების საჯარო ფასები. მონაცემების განახლების დრო, ფასების ცხრილი და კალკულატორი.`}
+        noindex={Boolean(topic) && !isLoading && visibleImporters.length === 0}
         keywords="საწვავის ფასები დღეს, ბენზინი, დიზელი, საწვავის ფასი, ბენზინის ფასები დღეს, საწვავის ფასები live, საწვავის ფასები ონლაინ, საწვავის ფასები საქართველოში, RON 98, RON 96, RON 93, SOCAR, WISSOL, GULF, ROMPETROL"
       />
 
@@ -81,13 +76,16 @@ const FuelImporters = () => {
         {topic && <p className="mb-5 text-muted-foreground">{topic.intro}</p>}
         <nav aria-label="საწვავის ფასების გვერდები" className="flex flex-wrap gap-4 mb-5">
           <Link className="text-primary underline" to="/fuel-importers">ყველა საწვავი</Link>
-          <Link className="text-primary underline" to="/fuel-prices/petrol">ბენზინის ფასები</Link>
-          <Link className="text-primary underline" to="/fuel-prices/diesel">დიზელის ფასები</Link>
+          {fuelLandingPages.filter(page => page.selfService === Boolean(topic?.selfService) || page.slug === 'self-service').map(page => (
+            <Link key={page.slug} className="text-primary underline" aria-current={page === topic ? 'page' : undefined} to={`/fuel-prices/${page.slug}`}>{page.name}</Link>
+          ))}
         </nav>
         <FuelPriceExplorer
-          key={fuelType ?? "all"}
-          initialTier={topic?.tier}
-          importers={visibleImporters}
+          key={pathname}
+          initialTier={initialFuelTier(topic)}
+          initialSelfService={topic?.selfService}
+          landingSlug={slug}
+          importers={importers}
           isLoading={isLoading}
           isRefetching={isRefetching}
           onRefresh={handleRefresh}

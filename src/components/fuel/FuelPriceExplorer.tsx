@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import { fuelLandingPath, fuelLandingPages } from "@/lib/fuelLandingPages";
 import { fuelTier } from "@/lib/fuelTypes";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -76,11 +78,13 @@ interface Props {
   isRefetching?: boolean;
   onRefresh?: () => void;
   initialTier?: TierKey;
+  initialSelfService?: boolean;
+  landingSlug?: string;
 }
 
-const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, initialTier = "super" }: Props) => {
-  const [tier, setTier] = useState<TierKey>(initialTier);
-  const [selfService, setSelfService] = useState(false);
+const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, initialTier = "super", initialSelfService = false, landingSlug = "" }: Props) => {
+  const tier = initialTier;
+  const selfService = initialSelfService;
   const [subTab, setSubTab] = useState<SubTab>("compare");
 
   // Which tiers actually have data (hide empty pills).
@@ -90,8 +94,9 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
     return map;
   }, [importers, selfService]);
 
-  const availableTiers = TIERS.filter((t) => tierRowsAll[t.key].length > 0);
-  const activeTier = availableTiers.some((t) => t.key === tier) ? tier : availableTiers[0]?.key ?? "super";
+  const availableTiers = TIERS.filter((t) => tierRowsAll[t.key].length > 0 && (fuelLandingPages.some(page => page.slug === `${selfService ? "self-service/" : ""}${t.key}`)));
+  const exactTierPage = fuelLandingPages.find(page => page.slug === landingSlug)?.tiers.length === 1;
+  const activeTier = exactTierPage || availableTiers.some((t) => t.key === tier) ? tier : availableTiers[0]?.key ?? "super";
   const rows = tierRowsAll[activeTier] ?? [];
   const tierMeta = TIERS.find((t) => t.key === activeTier)!;
 
@@ -105,8 +110,12 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap gap-2" aria-label="ფასის ტიპი">
-        <button className={cn("border rounded-lg px-3 py-2", !selfService && "bg-primary text-primary-foreground")} aria-pressed={!selfService} onClick={() => setSelfService(false)}>სტანდარტული</button>
-        <button className={cn("border rounded-lg px-3 py-2", selfService && "bg-primary text-primary-foreground")} aria-pressed={selfService} onClick={() => setSelfService(true)}>თვითმომსახურება</button>
+        {[false, true].map(value => {
+          const className = cn("border rounded-lg px-3 py-2", selfService === value && "bg-primary text-primary-foreground");
+          const label = value ? "თვითმომსახურება" : "სტანდარტული";
+          const selectedType = landingSlug.replace(/^self-service\/?/, '');
+          return <Link key={String(value)} className={className} aria-current={selfService === value ? 'page' : undefined} to={fuelLandingPath(selectedType || undefined, value)}>{label}</Link>;
+        })}
       </div>
       {selfService && <p className="text-sm text-muted-foreground">შედარებაში მხოლოდ წყაროში მითითებული თვითმომსახურების ფასებია. სხვა სადგურებზე ამ ტარიფის ხელმისაწვდომობა არ დასტურდება.</p>}
       {/* ── KPI ribbon ── */}
@@ -145,22 +154,15 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
           {availableTiers.map((t) => {
             const active = t.key === activeTier;
             return (
-              <button
+              <Link
                 key={t.key}
-                type="button"
-                onClick={() => setTier(t.key)}
-                className={cn(
-                  "shrink-0 h-11 px-3.5 rounded-xl text-left transition border",
-                  active
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-muted/50 text-foreground border-transparent hover:bg-muted",
-                )}
+                to={fuelLandingPath(t.key, selfService)}
+                aria-current={landingSlug === `${selfService ? 'self-service/' : ''}${t.key}` ? 'page' : undefined}
+                className={cn("shrink-0 h-11 px-3.5 rounded-xl text-left transition border", active ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-foreground border-transparent hover:bg-muted")}
               >
                 <div className="text-[13px] font-bold leading-tight whitespace-nowrap">{t.label}</div>
-                <div className={cn("text-[10px] font-medium", active ? "text-primary-foreground/70" : "text-muted-foreground")}>
-                  {t.sub}
-                </div>
-              </button>
+                <div className={cn("text-[10px] font-medium", active ? "text-primary-foreground/70" : "text-muted-foreground")}>{t.sub}</div>
+              </Link>
             );
           })}
         </div>
