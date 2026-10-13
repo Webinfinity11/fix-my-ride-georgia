@@ -1,3 +1,4 @@
+import HorizontalScroll from "@/components/fuel/HorizontalScroll";
 import { fuelLandingPages, matchesFuelLanding, initialFuelTier } from "@/lib/fuelLandingPages";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -57,9 +58,9 @@ const FuelImporters = () => {
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} threshold={80} />
 
       <div className="container mx-auto px-4 py-4 md:py-6">
-        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mb-2" tabIndex={0} aria-label="გვერდის სათაური">
+        <HorizontalScroll className="mb-2" tabIndex={0} aria-label="გვერდის სათაური">
           <h1 className="text-xl md:text-3xl font-bold whitespace-nowrap leading-8">{heading}</h1>
-        </div>
+        </HorizontalScroll>
         <p className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-green-600 shrink-0" aria-hidden="true" />
           {visibleImporters.length ? `${visibleImporters.length} კომპანიის მონაცემები` : 'კომპანიების ფასები'}
@@ -74,12 +75,12 @@ const FuelImporters = () => {
           <div className="border-t px-3 py-3 space-y-3">
             <h2 className="text-sm font-semibold">შეადარეთ პროდუქტები და გადაამოწმეთ მონაცემის განახლების დრო</h2>
             <p className="text-sm text-muted-foreground">{topic?.intro ?? 'შეადარეთ ერთი კლასის საწვავი კომპანიებს შორის. მიღების დრო არის მონაცემის ჩამოტვირთვის დრო; საბოლოო ფასი და პირობები გადაამოწმეთ სადგურთან.'}</p>
-            <nav aria-label="საწვავის ფასების გვერდები" className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <HorizontalScroll role="navigation" aria-label="საწვავის ფასების გვერდები" className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <Link className="shrink-0 rounded-full border px-3 py-1.5 text-xs text-primary whitespace-nowrap" to="/fuel-importers">ყველა საწვავი</Link>
               {fuelLandingPages.filter(page => page.selfService === Boolean(topic?.selfService) || page.slug === 'self-service').map(page => (
                 <Link key={page.slug} className="shrink-0 rounded-full border px-3 py-1.5 text-xs text-primary whitespace-nowrap" aria-current={page === topic ? 'page' : undefined} to={`/fuel-prices/${page.slug}`}>{page.name}</Link>
               ))}
-            </nav>
+            </HorizontalScroll>
           </div>
         </details>
         <FuelPriceExplorer
@@ -100,7 +101,7 @@ const FuelImporters = () => {
         <section className="p-4 border-t" aria-label="საწვავის ფასების ცხრილი">
           <h2 className="text-xl font-bold mb-3">{topic?.name ?? 'საწვავის ფასები'} — ბრენდების მიხედვით</h2>
           <p className="text-sm text-muted-foreground mb-3">მოცემულია სტანდარტული და, სადაც წყაროში არის მითითებული, თვითმომსახურების ფასები. მიღების დრო ასახავს მონაცემის ჩამოტვირთვას და არა კომპანიის მიერ ფასის შეცვლის დროს. სადგურის პირობები გადაამოწმეთ.</p>
-          <div className="overflow-x-auto">
+          <HorizontalScroll aria-label="საწვავის ცხრილის გადასქროლვა">
             <table className="w-full text-sm text-left">
               <thead><tr><th className="p-2">კომპანია</th><th className="p-2">პროდუქტი</th><th className="p-2">ფასი, ₾/ლ</th><th className="p-2">თვითმომსახურება, ₾/ლ</th><th className="p-2">მიღების დრო</th><th className="p-2">წყარო</th></tr></thead>
               <tbody>{visibleImporters.flatMap(company => (company.fuelPrices ?? []).filter(fuel => Number.isFinite(fuel.price) && fuel.price > 0).map((fuel, index) => (
@@ -112,13 +113,28 @@ const FuelImporters = () => {
                 </tr>
               )))}</tbody>
             </table>
-          </div>
+          </HorizontalScroll>
           {!isLoading && !visibleImporters.some(company => company.fuelPrices?.length) && <p>ფასები დროებით მიუწვდომელია. სცადეთ განახლება.</p>}
         </section>
         </details>
       </div>
 
       <FuelHero />
+
+      {topic && <details className="group container mx-auto px-4 mb-6" aria-label={`${topic.name} — ინფორმაცია`}>
+        <summary className="cursor-pointer text-sm font-semibold text-primary">{topic.name} — მეტის ნახვა</summary>
+        <div className="mt-3 space-y-4 text-sm text-muted-foreground">
+          <h2 className="text-lg font-semibold text-foreground">{topic.name} საქართველოში — როგორ შევადაროთ</h2>
+          <p>{topic.name} ამ გვერდზე მოცემულია კომპანიებისა და კონკრეტული პროდუქტების მიხედვით. {topic.intro}</p>
+          <h3 className="font-semibold text-foreground">რა განსაზღვრავს არჩევანს?</h3>
+          <p>{topic.tiers.includes('cng') ? 'ბუნებრივი აირის (CNG) ფასების შედარებისას გადაამოწმეთ სადგურზე მითითებული საზომი ერთეული და თქვენი ავტომობილის სისტემის თავსებადობა. CNG-ისა და LPG-ის ფასები სხვადასხვა პროდუქტს ეხება.' : topic.tiers.includes('lpg') ? 'თხევადი გაზის (LPG) ფასების შედარებისას გაითვალისწინეთ სადგურის მდებარეობა და მომსახურების პირობები. LPG და CNG სხვადასხვა პროდუქტია; არჩევანი ავტომობილის შესაბამის სისტემას უნდა ერგებოდეს.' : topic.tiers.includes('diesel') ? 'დიზელის ფასებთან ერთად შეადარეთ პროდუქტის სრული დასახელება და წყაროში მითითებული მახასიათებელი. სხვადასხვა დასახელების დიზელს განსხვავებული შემადგენლობა და სპეციფიკაცია შეიძლება ჰქონდეს.' : topic.tiers.length ? 'ბენზინის ფასებთან ერთად ყურადღება მიაქციეთ ოქტანობასა და პროდუქტის სრულ დასახელებას. სუპერი, პრემიუმი და რეგულარი ცალკე კლასებია; შეადარეთ ავტომობილის მოთხოვნებთან შესაბამისი პროდუქტები.' : 'თვითმომსახურების საწვავის არჩევისას ჯერ განსაზღვრეთ საჭირო საწვავის ტიპი და პროდუქტი, შემდეგ შეადარეთ შესაბამისი კომპანიების ტარიფები. ყველა პროდუქტის თვითმომსახურების ფასი წყაროში ხელმისაწვდომი არ არის.'}</p>
+          <h3 className="font-semibold text-foreground">როგორ წავიკითხოთ ფასები და განახლების დრო?</h3>
+          <p>{topic.selfService ? 'თვითმომსახურების ფასები ცალკე ტარიფია. ნაჩვენებია მხოლოდ წყაროში პირდაპირ მითითებული მნიშვნელობები; სტანდარტული ფასი თვითმომსახურების ფასად არ გამოიყენება.' : 'კომპანიების ბარათებში სტანდარტული ფასებია. სადაც წყარო თვითმომსახურების ტარიფსაც გვაწვდის, მისი ნახვა შესაბამისი გადამრთველით შეგიძლიათ.'} მიღების დრო აღნიშნავს მონაცემის ჩამოტვირთვის დროს. მიმდინარე ფასი, ფილიალში ხელმისაწვდომობა და ფასდაკლების პირობები გადაამოწმეთ სადგურთან.</p>
+          <h3 className="font-semibold text-foreground">{topic.name} — ხშირად დასმული კითხვა</h3>
+          <p>ყველაზე დაბალი ფასი როგორ ვიპოვო? შედარების სექციაში აირჩიეთ შესაბამისი პროდუქტის კლასი და ტარიფი. პირველი პოზიცია აჩვენებს ამ არჩევანის ყველაზე დაბალ ხელმისაწვდომ ფასს; კომპანიის ბარათში ნახავთ პროდუქტის სრულ დასახელებასა და წყაროს.</p>
+          <Link className="inline-block text-primary underline" to="/fuel-importers">ყველა საწვავის ფასის შედარება</Link>
+        </div>
+      </details>}
 
       {/* Long-form SEO content — intro + highlights + tips + FAQ + related blogs */}
       {!topic && <details className="group container mx-auto px-4 mb-6">

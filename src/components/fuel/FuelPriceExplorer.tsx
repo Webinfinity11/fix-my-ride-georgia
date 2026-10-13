@@ -1,3 +1,4 @@
+import HorizontalScroll from "./HorizontalScroll";
 import { Link } from "react-router-dom";
 import { fuelLandingPath, fuelLandingPages } from "@/lib/fuelLandingPages";
 import { fuelTier } from "@/lib/fuelTypes";
@@ -109,9 +110,9 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2" aria-label="ფასის ტიპი">
+      <div className="grid grid-cols-2 gap-2" aria-label="ფასის ტიპი">
         {[false, true].map(value => {
-          const className = cn("inline-flex items-center gap-1.5 border rounded-lg px-3 py-2 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2", selfService === value ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-background text-muted-foreground hover:border-primary/40");
+          const className = cn("inline-flex items-center justify-center gap-1 min-w-0 whitespace-nowrap border rounded-lg px-1.5 sm:px-3 py-2 text-xs sm:text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2", selfService === value ? "bg-primary text-primary-foreground border-primary shadow-sm" : "bg-background text-muted-foreground hover:border-primary/40");
           const label = value ? "თვითმომსახურება" : "სტანდარტული";
           const selectedType = landingSlug.replace(/^self-service\/?/, '');
           return <Link key={String(value)} className={className} aria-current={selfService === value ? 'page' : undefined} to={fuelLandingPath(selectedType || undefined, value)}>{selfService === value && <span aria-hidden="true">✓</span>}{label}</Link>;
@@ -122,7 +123,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
       {isLoading && <div className="h-[210px] md:h-[100px] rounded-xl bg-muted animate-pulse" role="status">ფასები იტვირთება…</div>}
       {!isLoading && !rows.length && <p>არჩეულ ტარიფზე ფასები არ არის მითითებული.</p>}
       {showData && (
-        <div role="region" aria-label="ფასების შეჯამება" className="flex gap-2 overflow-x-auto snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-4 md:gap-3">
+        <HorizontalScroll role="region" aria-label="ფასების შეჯამება" className="flex gap-2 overflow-x-auto snap-x [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-4 md:gap-3">
           {[
             { l: "ყველაზე იაფი", v: cheapest.price.toFixed(2), s: cheapest.name, tone: "accent", unit: true },
             { l: "საშუალო", v: avg.toFixed(2), s: `${rows.length} კომპანია`, tone: "ink", unit: true },
@@ -145,12 +146,12 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
               <div className="mt-1 text-[10.5px] text-muted-foreground truncate">{k.s}</div>
             </div>
           ))}
-        </div>
+        </HorizontalScroll>
       )}
 
       {/* ── Tier pills + sub-tabs ── */}
       <div className="rounded-2xl bg-card border border-border/60 p-2.5 flex flex-col gap-2.5 sticky top-2 z-20">
-        <div role="navigation" aria-label="საწვავის ტიპი" className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <HorizontalScroll role="navigation" aria-label="საწვავის ტიპი" className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {availableTiers.map((t) => {
             const active = t.key === activeTier;
             return (
@@ -165,11 +166,11 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
               </Link>
             );
           })}
-        </div>
+        </HorizontalScroll>
 
         <div className="h-px bg-border/60" />
 
-        <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <HorizontalScroll aria-label="ფასების ხედები" className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {SUB_TABS.map((t) => {
             const active = subTab === t.key;
             return (
@@ -198,7 +199,7 @@ const FuelPriceExplorer = ({ importers, isLoading, isRefetching, onRefresh, init
               <span className="hidden sm:inline">განახლება</span>
             </button>
           )}
-        </div>
+        </HorizontalScroll>
       </div>
 
       {/* ── Loading / empty ── */}
