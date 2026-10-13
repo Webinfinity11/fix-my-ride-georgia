@@ -17,13 +17,15 @@ try {
     const document = await raw.evaluate(() => ({
       h1: document.querySelector('h1')?.textContent.trim(),
       canonical: document.querySelector('link[rel="canonical"]')?.href,
-      tariff: document.querySelector('[aria-label="ფასის ტიპი"] a[aria-current="page"]')?.textContent,
+      tariff: document.querySelector('[aria-label="ფასის ტიპი"] a[aria-current="page"]')?.textContent.replace("✓", "").trim(),
+      info: [...document.querySelectorAll("details")].some(node => !node.open && node.textContent.includes("როგორ შევადაროთ")),
       rows: [...document.querySelectorAll('tbody tr')].map(row => ({ product: row.cells[1].textContent, self: row.cells[3].textContent })),
     }));
     assert.equal(document.canonical, `https://fixup.ge${path}`);
     assert.equal(document.h1, `${landing.name} საქართველოში`);
     assert.ok(!headings.has(document.h1), 'Each landing must have its own heading');
     headings.add(document.h1);
+    assert.ok(document.info, "Each landing has collapsed topic information in its static document");
     assert.ok(document.rows.length > 0, `${path} must not be an empty indexed page`);
     assert.equal(document.tariff, landing.selfService ? 'თვითმომსახურება' : 'სტანდარტული');
     if (landing.selfService) assert.ok(document.rows.every(row => Number(row.self) > 0));
@@ -51,7 +53,7 @@ try {
   await page.waitForFunction(() => location.pathname === '/fuel-prices/self-service/premium');
   await page.reload({ waitUntil: 'networkidle2' });
   assert.match(await page.$eval('h1', node => node.textContent), /პრემიუმ.*თვითმომსახურებ/);
-  assert.equal(await page.$eval('[aria-label="ფასის ტიპი"] a[aria-current="page"]', node => node.textContent), 'თვითმომსახურება');
+  assert.equal(await page.$eval('[aria-label="ფასის ტიპი"] a[aria-current="page"]', node => node.textContent.replace('✓', '').trim()), 'თვითმომსახურება');
   await page.goBack({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => location.pathname === '/fuel-prices/self-service');
   console.log(`Fuel landings: ${pages.length} nonempty static pages with unique H1/canonical, correct products/tariffs; filter navigation, reload and back passed.`);
