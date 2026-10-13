@@ -480,7 +480,7 @@ const Map = () => {
         minRating: null,
       },
       0,
-      { all: true }, // map needs every geolocated service, not a 24-row page
+      { all: true, withCoordinates: true }, // map needs every geolocated service, not a 24-row page
     );
   };
 

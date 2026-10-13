@@ -88,7 +88,8 @@ function getBrandRoutes() {
     const routes = locs
       .map((u) => { try { return new URL(u).pathname; } catch { return null; } })
       .filter((p) => p && /^\/brand(\/[^/]+){0,2}$/.test(p));
-    return [...new Set(routes)];
+    const brands = JSON.parse(readFileSync(new URL('../src/data/brand-pages.json', import.meta.url), 'utf8'));
+    return [...new Set([...routes, ...brands.map(b => `/brand/${b.slug}`)])];
   } catch {
     return [];
   }

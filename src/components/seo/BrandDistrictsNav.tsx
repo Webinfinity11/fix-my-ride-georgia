@@ -27,7 +27,7 @@ export function BrandDistrictsNav({ brand, currentDistrictSlug }: {
         .select('district, car_brands')
         .overlaps('car_brands', [brand.name])
         .eq('is_active', true)
-        .not('district', 'is', null);
+        .not('district', 'is', null).range(0, 4999);
       if (error) throw error;
       const counts = new Map<string, number>();
       for (const row of (data || []) as Array<{ district: string | null; car_brands: string[] | null }>) {

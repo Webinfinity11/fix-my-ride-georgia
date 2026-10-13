@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Car } from 'lucide-react';
-import { BRAND_PAGES } from '@/utils/carBrands';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { BRAND_PAGES, isSpecialist } from '@/utils/carBrands';
 import { CAR_BRAND_LOGOS } from '@/data/carBrandLogos';
 
 /**
@@ -13,7 +15,23 @@ export function BrandsNav({ currentSlug, heading = 'ავტოსერვი�
   currentSlug?: string;
   heading?: string;
 }) {
-  const brands = BRAND_PAGES.filter((b) => b.slug !== currentSlug);
+  const { data: available } = useQuery({
+    queryKey: ['brand-specialist-availability'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('mechanic_services')
+        .select('car_brands').eq('is_active', true).range(0, 4999);
+      if (error) throw error;
+      const names = new Set<string>();
+      for (const service of data || []) {
+        if (isSpecialist(service.car_brands)) {
+          for (const name of service.car_brands || []) names.add(name);
+        }
+      }
+      return names;
+    },
+    staleTime: 1000 * 60 * 30,
+  });
+  const brands = BRAND_PAGES.filter((b) => b.slug !== currentSlug && available?.has(b.name));
   if (brands.length === 0) return null;
 
   return (

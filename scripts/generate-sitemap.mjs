@@ -52,18 +52,10 @@ const DISTRICT_NAME_TO_SLUG = Object.fromEntries(DISTRICTS.map((d) => [d.name, d
 // A brand URL ships only when it has ≥ BRAND_MIN_SPECIALISTS *specialist*
 // services (services tagging ≤ SPECIALIST_MAX brands) — the "all brands" crowd
 // is noise and would make every brand page near-duplicate.
-const SPECIALIST_MAX = 5;
-const BRAND_MIN_SPECIALISTS = 5;
-const BRAND_PAGES = [
-  { name: 'Ford', slug: 'ford' }, { name: 'Toyota', slug: 'toyota' },
-  { name: 'Lincoln', slug: 'lincoln' }, { name: 'Chevrolet', slug: 'chevrolet' },
-  { name: 'Lexus', slug: 'lexus' }, { name: 'Buick', slug: 'buick' },
-  { name: 'Cadillac', slug: 'cadillac' }, { name: 'GMC', slug: 'gmc' },
-  { name: 'Opel', slug: 'opel' }, { name: 'Tesla', slug: 'tesla' },
-  { name: 'Audi', slug: 'audi' }, { name: 'Volkswagen', slug: 'volkswagen' },
-  { name: 'Mercedes-Benz', slug: 'mercedes-benz' }, { name: 'Skoda', slug: 'skoda' },
-  { name: 'Kia', slug: 'kia' }, { name: 'Hyundai', slug: 'hyundai' },
-];
+const brandIndexing = JSON.parse(await readFile(new URL('../src/data/brand-indexing.json', import.meta.url), 'utf8'));
+const SPECIALIST_MAX = brandIndexing.specialistMaxBrands;
+const BRAND_MIN_SPECIALISTS = brandIndexing.minimumServices;
+const BRAND_PAGES = JSON.parse(await readFile(new URL('../src/data/brand-pages.json', import.meta.url), 'utf8'));
 const BRAND_NAME_TO_SLUG = Object.fromEntries(BRAND_PAGES.map((b) => [b.name, b.slug]));
 
 // Keep in sync with src/utils/slugUtils.ts AND supabase/functions/_shared/slug.ts.

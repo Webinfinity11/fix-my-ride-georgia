@@ -1,3 +1,5 @@
+import brandPages from '@/data/brand-pages.json';
+import brandIndexing from '@/data/brand-indexing.json';
 /**
  * Car-brand landing pages (/brand/:slug).
  *
@@ -7,19 +9,16 @@
  * set of brands. A service counts as a specialist for brand pages when it tags
  * at most SPECIALIST_MAX brands.
  *
- * BRAND_PAGES is the snapshot of brands that cleared "≥5 specialist services"
- * (see scripts/brand-counts.mjs). Georgia's US-auction market shows here — the
- * list is American-brand heavy. Re-run the script and update this list as the
- * catalogue grows. The page itself ALSO gates on the live specialist count, so
- * a brand that drops below the bar self-noindexes even before this list is
- * refreshed.
+ * The shared catalogue also includes developing brands. Only pages with
+ * sufficient focused services enter the index sitemap; all supported hubs
+ * are prerendered so their own canonical and index policy reach crawlers.
  */
 
 /** A service tagging ≤ this many brands is treated as a specialist. */
-export const SPECIALIST_MAX = 5;
+export const SPECIALIST_MAX = brandIndexing.specialistMaxBrands;
 
 /** Minimum specialist services for a brand page to be indexable. */
-export const BRAND_MIN_SPECIALISTS = 5;
+export const BRAND_MIN_SPECIALISTS = brandIndexing.minimumServices;
 
 export type BrandInfo = {
   /** Canonical name — must match mechanic_services.car_brands values. */
@@ -32,24 +31,7 @@ export type BrandInfo = {
   slug: string;
 };
 
-export const BRAND_PAGES: BrandInfo[] = [
-  { name: 'Ford',          nameKa: 'ფორდი',          nameKaGen: 'ფორდის',          slug: 'ford' },
-  { name: 'Toyota',        nameKa: 'ტოიოტა',         nameKaGen: 'ტოიოტას',         slug: 'toyota' },
-  { name: 'Lincoln',       nameKa: 'ლინკოლნი',       nameKaGen: 'ლინკოლნის',       slug: 'lincoln' },
-  { name: 'Chevrolet',     nameKa: 'შევროლეტი',      nameKaGen: 'შევროლეტის',      slug: 'chevrolet' },
-  { name: 'Lexus',         nameKa: 'ლექსუსი',        nameKaGen: 'ლექსუსის',        slug: 'lexus' },
-  { name: 'Buick',         nameKa: 'ბიუიკი',         nameKaGen: 'ბიუიკის',         slug: 'buick' },
-  { name: 'Cadillac',      nameKa: 'კადილაკი',       nameKaGen: 'კადილაკის',       slug: 'cadillac' },
-  { name: 'GMC',           nameKa: 'GMC',            nameKaGen: 'GMC-ის',          slug: 'gmc' },
-  { name: 'Opel',          nameKa: 'ოპელი',          nameKaGen: 'ოპელის',          slug: 'opel' },
-  { name: 'Tesla',         nameKa: 'ტესლა',          nameKaGen: 'ტესლას',          slug: 'tesla' },
-  { name: 'Audi',          nameKa: 'აუდი',           nameKaGen: 'აუდის',           slug: 'audi' },
-  { name: 'Volkswagen',    nameKa: 'ფოლკსვაგენი',    nameKaGen: 'ფოლკსვაგენის',    slug: 'volkswagen' },
-  { name: 'Mercedes-Benz', nameKa: 'მერსედეს-ბენცი', nameKaGen: 'მერსედეს-ბენცის', slug: 'mercedes-benz' },
-  { name: 'Skoda',         nameKa: 'შკოდა',          nameKaGen: 'შკოდას',          slug: 'skoda' },
-  { name: 'Kia',           nameKa: 'კია',            nameKaGen: 'კიას',            slug: 'kia' },
-  { name: 'Hyundai',       nameKa: 'ჰიუნდაი',        nameKaGen: 'ჰიუნდაის',        slug: 'hyundai' },
-];
+export const BRAND_PAGES: BrandInfo[] = brandPages;
 
 const SLUG_INDEX: Record<string, BrandInfo> = Object.fromEntries(
   BRAND_PAGES.map((b) => [b.slug, b]),
