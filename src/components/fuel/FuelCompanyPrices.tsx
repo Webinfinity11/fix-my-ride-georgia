@@ -20,7 +20,7 @@ function CompanyCard({ company, initialSelfService }: { company: FuelImporter; i
       {company.sourceUrl?.startsWith('https://priceshub.ge/') && <a href={company.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground underline">წყარო</a>}
     </div>
     {hasSelfService && <div className="flex gap-1 p-2 bg-muted/40" role="group" aria-label={`${company.name} — ტარიფი`}>
-      {[false, true].map(value => <button key={String(value)} type="button" aria-pressed={selfService === value} onClick={() => setSelfService(value)} className={`flex-1 rounded-full px-2 py-2 text-xs font-medium ${selfService === value ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground'}`}>{value ? 'თვითმომსახურება' : 'სტანდარტული'}</button>)}
+      {[false, true].map(value => <button key={String(value)} type="button" aria-pressed={selfService === value} onClick={() => setSelfService(value)} className={`flex-1 inline-flex items-center justify-center gap-1 rounded-full border px-2 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${selfService === value ? 'bg-primary text-primary-foreground border-primary shadow-sm' : 'bg-background text-muted-foreground border-transparent hover:border-border'}`}> {selfService === value && <span aria-hidden="true">✓</span>}{value ? 'თვითმომსახურება' : 'სტანდარტული'}</button>)}
     </div>}
     <div className="px-3 py-3">
       <div className="grid grid-cols-[1fr_60px_64px] gap-2 px-2 pb-2 text-[10px] text-muted-foreground"><span>საწვავი</span><span className="text-center">მახასიათებელი</span><span className="text-right">ფასი, ₾</span></div>
