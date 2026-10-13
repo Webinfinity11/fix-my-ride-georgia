@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useFuelImporters } from "@/hooks/useFuelImporters";
 import FuelHero from "@/components/fuel/FuelHero";
+import FuelCompanyPrices from "@/components/fuel/FuelCompanyPrices";
 import FuelPriceExplorer from "@/components/fuel/FuelPriceExplorer";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
@@ -55,31 +56,32 @@ const FuelImporters = () => {
 
       <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isRefreshing} threshold={80} />
 
-      <FuelHero />
-
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">
-          {heading}
-        </h1>
-        <p className="flex items-center gap-2 text-sm md:text-base text-muted-foreground mb-3">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 text-green-700 font-medium">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-            ფასების შედარება
-          </span>
-          <span>{visibleImporters.length ? `${visibleImporters.length} კომპანიის მონაცემები` : "კომპანიების ფასები"} — {topic ? topic.name : "ბენზინი, დიზელი, აირი"}</span>
+      <div className="container mx-auto px-4 py-4 md:py-6">
+        <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mb-2" tabIndex={0} aria-label="გვერდის სათაური">
+          <h1 className="text-xl md:text-3xl font-bold whitespace-nowrap leading-8">{heading}</h1>
+        </div>
+        <p className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-green-600 shrink-0" aria-hidden="true" />
+          {visibleImporters.length ? `${visibleImporters.length} კომპანიის მონაცემები` : 'კომპანიების ფასები'}
+          <span aria-hidden="true">·</span> სტანდარტული და თვითმომსახურება
         </p>
-        <h2 className="hidden md:block text-lg text-muted-foreground mb-6">
-          შეადარეთ პროდუქტები და გადაამოწმეთ მონაცემის განახლების დრო
-        </h2>
-        {/* Octane-tier comparison — compare like-for-like across companies,
-            comparison view first. */}
-        {topic && <p className="mb-5 text-muted-foreground">{topic.intro}</p>}
-        <nav aria-label="საწვავის ფასების გვერდები" className="flex flex-wrap gap-4 mb-5">
-          <Link className="text-primary underline" to="/fuel-importers">ყველა საწვავი</Link>
-          {fuelLandingPages.filter(page => page.selfService === Boolean(topic?.selfService) || page.slug === 'self-service').map(page => (
-            <Link key={page.slug} className="text-primary underline" aria-current={page === topic ? 'page' : undefined} to={`/fuel-prices/${page.slug}`}>{page.name}</Link>
-          ))}
-        </nav>
+        <details className="group mb-3 rounded-xl border border-border/60 bg-card">
+          <summary className="cursor-pointer list-none px-3 py-2 text-sm text-primary font-medium flex items-center justify-between">
+            <span>ფასების შესახებ</span>
+            <span className="group-open:hidden">მეტის ნახვა +</span>
+            <span className="hidden group-open:inline">დამალვა −</span>
+          </summary>
+          <div className="border-t px-3 py-3 space-y-3">
+            <h2 className="text-sm font-semibold">შეადარეთ პროდუქტები და გადაამოწმეთ მონაცემის განახლების დრო</h2>
+            <p className="text-sm text-muted-foreground">{topic?.intro ?? 'შეადარეთ ერთი კლასის საწვავი კომპანიებს შორის. მიღების დრო არის მონაცემის ჩამოტვირთვის დრო; საბოლოო ფასი და პირობები გადაამოწმეთ სადგურთან.'}</p>
+            <nav aria-label="საწვავის ფასების გვერდები" className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <Link className="shrink-0 rounded-full border px-3 py-1.5 text-xs text-primary whitespace-nowrap" to="/fuel-importers">ყველა საწვავი</Link>
+              {fuelLandingPages.filter(page => page.selfService === Boolean(topic?.selfService) || page.slug === 'self-service').map(page => (
+                <Link key={page.slug} className="shrink-0 rounded-full border px-3 py-1.5 text-xs text-primary whitespace-nowrap" aria-current={page === topic ? 'page' : undefined} to={`/fuel-prices/${page.slug}`}>{page.name}</Link>
+              ))}
+            </nav>
+          </div>
+        </details>
         <FuelPriceExplorer
           key={pathname}
           initialTier={initialFuelTier(topic)}
@@ -90,7 +92,12 @@ const FuelImporters = () => {
           isRefetching={isRefetching}
           onRefresh={handleRefresh}
         />
-        <section className="mt-8" aria-label="საწვავის ფასების ცხრილი">
+        <FuelCompanyPrices key={`${pathname}-companies`} importers={visibleImporters} initialSelfService={Boolean(topic?.selfService)} />
+        <details className="group mt-5 rounded-xl border bg-card">
+          <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold flex justify-between gap-3">
+            <span>ყველა პროდუქტის ფასები</span><span className="text-primary group-open:hidden">მეტის ნახვა +</span><span className="text-primary hidden group-open:inline">დამალვა −</span>
+          </summary>
+        <section className="p-4 border-t" aria-label="საწვავის ფასების ცხრილი">
           <h2 className="text-xl font-bold mb-3">{topic?.name ?? 'საწვავის ფასები'} — ბრენდების მიხედვით</h2>
           <p className="text-sm text-muted-foreground mb-3">მოცემულია სტანდარტული და, სადაც წყაროში არის მითითებული, თვითმომსახურების ფასები. მიღების დრო ასახავს მონაცემის ჩამოტვირთვას და არა კომპანიის მიერ ფასის შეცვლის დროს. სადგურის პირობები გადაამოწმეთ.</p>
           <div className="overflow-x-auto">
@@ -108,10 +115,15 @@ const FuelImporters = () => {
           </div>
           {!isLoading && !visibleImporters.some(company => company.fuelPrices?.length) && <p>ფასები დროებით მიუწვდომელია. სცადეთ განახლება.</p>}
         </section>
+        </details>
       </div>
 
+      <FuelHero />
+
       {/* Long-form SEO content — intro + highlights + tips + FAQ + related blogs */}
-      {!topic && <StaticPageSeoBlock
+      {!topic && <details className="group container mx-auto px-4 mb-6">
+        <summary className="cursor-pointer text-sm font-semibold text-primary">საწვავის შესახებ — მეტის ნახვა</summary>
+        <StaticPageSeoBlock
         introHeading={FUEL_IMPORTERS_CONTENT.introHeading}
         introHtml={FUEL_IMPORTERS_CONTENT.introHtml}
         highlights={FUEL_IMPORTERS_CONTENT.highlights}
@@ -121,7 +133,7 @@ const FuelImporters = () => {
         faqItems={FUEL_IMPORTERS_CONTENT.faqItems}
         faqHeading={FUEL_IMPORTERS_CONTENT.faqHeading}
         topicName={FUEL_IMPORTERS_CONTENT.topicName}
-      />}
+      /></details>}
     </Layout>
   );
 };

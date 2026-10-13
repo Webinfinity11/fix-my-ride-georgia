@@ -16,6 +16,7 @@ export function InstallPWA() {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
+    if (['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)) return;
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
@@ -23,12 +24,13 @@ export function InstallPWA() {
     }
 
     const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      
       // Check if user has dismissed the banner before
-      const hasDismissed = localStorage.getItem('pwa-install-dismissed');
+      let hasDismissed = false;
+      try { hasDismissed = Boolean(localStorage.getItem('pwa-install-dismissed')); } catch { /* Storage can be disabled. */ }
       if (!hasDismissed) {
+        // Intentionally defer the native prompt until the Install button click.
+        e.preventDefault();
+        setDeferredPrompt(e as BeforeInstallPromptEvent);
         setShowInstallBanner(true);
       }
     };
@@ -36,32 +38,36 @@ export function InstallPWA() {
     window.addEventListener('beforeinstallprompt', handler);
 
     // Check if installed
-    window.addEventListener('appinstalled', () => {
+    const installed = () => {
       setIsInstalled(true);
       setShowInstallBanner(false);
-    });
+      setDeferredPrompt(null);
+    };
+    window.addEventListener('appinstalled', installed);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', installed);
     };
   }, []);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
 
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === 'accepted') {
+    try {
+      await deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+    } catch {
+      // The browser may expire or consume this one-use install event.
+    } finally {
       setShowInstallBanner(false);
+      setDeferredPrompt(null);
     }
-
-    setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
     setShowInstallBanner(false);
-    localStorage.setItem('pwa-install-dismissed', 'true');
+    try { localStorage.setItem('pwa-install-dismissed', 'true'); } catch { /* Keep the dismissal for this visit. */ }
   };
 
   if (isInstalled || !showInstallBanner || !pastFirstScreen) return null;

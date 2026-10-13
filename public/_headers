@@ -22,3 +22,21 @@
   Cache-Control: no-cache
 /registerSW.js
   Cache-Control: no-cache
+/app-recovery.js
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/fuel-importers
+  Cache-Control: no-cache
+/fuel-importers/*
+  Cache-Control: no-cache
+/fuel-prices/*
+  Cache-Control: no-cache
+/about
+  Cache-Control: no-cache
+/about/*
+  Cache-Control: no-cache
+/service/*
+  Cache-Control: no-cache
+/category/*
+  Cache-Control: no-cache

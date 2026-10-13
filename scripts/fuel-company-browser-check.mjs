@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import puppeteer from 'puppeteer';
+const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+try {
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1280, height: 1000 });
+  await page.goto('http://localhost:4180/fuel-importers/', { waitUntil: 'networkidle2' });
+  await page.waitForSelector('[aria-label="კომპანიების ფასები"] article');
+  assert.equal(await page.$$eval('[aria-label="კომპანიების ფასები"] article', cards => cards.length), 8);
+  const gulf = '[aria-label="Gulf — პროდუქტების ფასები"]';
+  const before = await page.$eval(gulf, card => card.querySelector('li').textContent);
+  const socar = await page.$eval('[aria-label="Socar — პროდუქტების ფასები"]', card => card.textContent);
+  const url = page.url();
+  await page.$eval(`${gulf} button[aria-pressed="false"]`, button => button.click());
+  assert.notEqual(await page.$eval(gulf, card => card.querySelector('li').textContent), before);
+  assert.equal(await page.$eval('[aria-label="Socar — პროდუქტების ფასები"]', card => card.textContent), socar);
+  assert.equal(page.url(), url);
+  const logos = await page.$$eval('[aria-label="კომპანიების ფასები"] img', imgs => imgs.map(img => img.src));
+  for (const logo of logos) assert.equal((await fetch(logo)).status, 200);
+  await page.$eval('[aria-label="კომპანიების ფასები"]', section => section.scrollIntoView());
+  await new Promise(resolve => setTimeout(resolve, 500));
+  await page.screenshot({ path: '/tmp/fixup-company-prices-desktop.png' });
+  await page.setViewport({ width: 390, height: 844 });
+  await page.goto('http://localhost:4180/fuel-importers/', { waitUntil: 'networkidle2' });
+  await page.$eval('[aria-label="კომპანიების ფასები"]', section => section.scrollIntoView());
+  await new Promise(resolve => setTimeout(resolve, 500));
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 390);
+  await page.screenshot({ path: '/tmp/fixup-company-prices-mobile.png' });
+  console.log('8 company cards; independent tariffs, existing logos and mobile overflow passed.');
+} finally { await browser.close(); }

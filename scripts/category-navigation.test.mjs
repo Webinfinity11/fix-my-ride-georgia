@@ -26,19 +26,20 @@ function workboxOptions() {
   return options;
 }
 
-test('parent category navigations keep their own HTML with an offline shell fallback', () => {
+test('public navigations revalidate their own HTML while private and API paths bypass the document cache', () => {
   const config = workboxOptions();
-  const rule = config.runtimeCaching.find(item => item.options?.cacheName === 'public-category-documents');
-  for (const pathname of ['/', '/category/lights', '/category/lights/', '/service/538-example', '/service/538-example/']) {
+  const rule = config.runtimeCaching.find(item => item.options?.cacheName === 'public-documents-v2');
+  for (const pathname of ['/', '/category/lights', '/category/lights/', '/service/538-example', '/service/538-example/', '/fuel-importers', '/fuel-prices/self-service/premium', '/about', '/category/lights/gldani']) {
     assert.equal(config.navigateFallbackDenylist.some(regex => regex.test(pathname)), true);
     assert.equal(rule.urlPattern({ url: { pathname }, request: { mode: 'navigate' }, sameOrigin: true }), true);
   }
-  for (const pathname of ['/dashboard/admin', '/category/lights/gldani', '/rest/v1/profiles']) {
-    assert.equal(config.navigateFallbackDenylist.some(regex => regex.test(pathname)), false);
+  for (const pathname of ['/dashboard/admin', '/login', '/rest/v1/profiles', '/api/private']) {
+    assert.equal(config.navigateFallbackDenylist.some(regex => regex.test(pathname)), true);
     assert.equal(rule.urlPattern({ url: { pathname }, request: { mode: 'navigate' }, sameOrigin: true }), false);
   }
   assert.equal(rule.urlPattern({ url: { pathname: '/category/lights' }, request: { mode: 'cors' }, sameOrigin: true }), false);
   assert.equal(rule.handler, 'NetworkFirst');
   assert.equal(rule.options.precacheFallback.fallbackURL, '/index.html');
-  assert.equal(rule.options.networkTimeoutSeconds, 1);
+  assert.equal(rule.options.fetchOptions.cache, 'no-cache');
+  assert.equal(rule.options.networkTimeoutSeconds, undefined);
 });

@@ -21,3 +21,19 @@ test('offline registration failure is handled without an unhandled rejection',as
 test('unsupported browsers do not register',()=>{vm.runInNewContext(source,{navigator:{}});});
 
 test('existing clients update before load even when other resources are stuck',async()=>{const h=harness('loading',false,true);await tick();assert.equal(h.calls.length,1);assert.equal(h.events.length,0);assert.equal(h.updates,1);});
+
+test('local previews unregister their worker and clear only app caches without touching user storage', async () => {
+ const removed=[]; let unregistered=0;
+ const caches={keys:async()=>['app-assets','workbox-precache-v2-local','another-project-cache'],delete:async name=>removed.push(name)};
+ vm.runInNewContext(source, {URL,caches,
+  window:{location:{hostname:'localhost'},caches},
+  navigator:{serviceWorker:{getRegistrations:async()=>[
+   {active:{scriptURL:'http://localhost:4180/sw.js'},unregister:async()=>unregistered++},
+   {active:{scriptURL:'http://localhost:4180/unrelated-worker.js'},unregister:async()=>{throw new Error('Unrelated worker');}},
+  ],register:()=>{throw new Error('Do not install localhost');}}},
+  get localStorage(){throw new Error('Do not clear user state');},
+ });
+ await tick();
+ assert.equal(unregistered,1);
+ assert.deepEqual(removed,['app-assets','workbox-precache-v2-local']);
+});

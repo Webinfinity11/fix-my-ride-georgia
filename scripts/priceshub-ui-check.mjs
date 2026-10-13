@@ -25,7 +25,7 @@ try {
   await page.goto('http://127.0.0.1:4180/fuel-importers/',{waitUntil:'networkidle2'});
   async function click(label) {
     for (const button of await page.$$('button, a')) {
-      if ((await button.evaluate(node=>node.textContent.trim())).startsWith(label)) { await button.click();return; }
+      if ((await button.evaluate(node=>node.textContent.trim())).startsWith(label) && await button.isVisible()) { await button.click();return; }
     }
     throw new Error(`Missing button: ${label}`);
   }
