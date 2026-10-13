@@ -13,7 +13,7 @@ function CompanyCard({ company, initialSelfService }: { company: FuelImporter; i
   const hasSelfService = products.some(fuel => typeof fuel.selfServicePrice === 'number' && fuel.selfServicePrice > 0);
   const shown = selfService ? products.filter(fuel => typeof fuel.selfServicePrice === 'number' && fuel.selfServicePrice > 0) : products;
   const logo = logos[company.name.toLowerCase()];
-  return <article className="rounded-2xl border bg-card min-w-[290px] w-[calc(100%-1rem)] shrink-0 snap-start md:min-w-0 md:w-auto overflow-hidden" aria-label={`${company.name} — პროდუქტების ფასები`}>
+  return <article className="rounded-2xl border bg-card min-w-0 w-full overflow-hidden" aria-label={`${company.name} — პროდუქტების ფასები`}>
     <div className="flex items-center gap-3 px-4 py-4 border-b">
       {logo ? <img src={`/fuel-company-logos/${logo}`} alt="" className="w-10 h-10 object-contain" loading="lazy" /> : <span className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold" aria-hidden="true">{company.name.slice(0, 1)}</span>}
       <h3 className="font-semibold text-primary flex-1">{company.name}</h3>
@@ -36,8 +36,8 @@ export default function FuelCompanyPrices({ importers, initialSelfService = fals
   if (!importers.some(company => company.fuelPrices?.length)) return null;
   return <section className="mt-6" aria-label="კომპანიების ფასები">
     <h2 className="text-lg font-bold mb-1">ფასები კომპანიების მიხედვით</h2>
-    <p className="text-xs text-muted-foreground mb-3">ყველა პროდუქტი ერთ ბარათში. მობილურზე გადაფურცლეთ კომპანიები.</p>
-    <div className="flex overflow-x-auto gap-4 pb-3 snap-x snap-mandatory md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible">
+    <p className="text-xs text-muted-foreground mb-3">თითოეული კომპანიის ყველა პროდუქტი ერთ ბარათში.</p>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {importers.filter(company => company.fuelPrices?.length).map(company => <CompanyCard key={company.name} company={company} initialSelfService={initialSelfService} />)}
     </div>
   </section>;
