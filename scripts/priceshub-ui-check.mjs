@@ -24,7 +24,7 @@ try {
   });
   await page.goto('http://127.0.0.1:4180/fuel-importers/',{waitUntil:'networkidle2'});
   async function click(label) {
-    for (const button of await page.$$('button')) {
+    for (const button of await page.$$('button, a')) {
       if ((await button.evaluate(node=>node.textContent.trim())).startsWith(label)) { await button.click();return; }
     }
     throw new Error(`Missing button: ${label}`);
@@ -33,12 +33,13 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('tbody tr').length === 44);
   assert.equal(await page.$$eval('tbody a',nodes=>nodes.filter(node=>node.href.startsWith('https://priceshub.ge/')).length),44);
   await click('თვითმომსახურება');
-  await page.waitForFunction(() => document.querySelector('button[aria-pressed="true"]')?.textContent.trim()==='თვითმომსახურება');
+  await page.waitForFunction(() => location.pathname === '/fuel-prices/self-service');
+  assert.equal(await page.$$eval('tbody tr', nodes => nodes.length), payload.companies.reduce((count, company) => count + company.fuelPrices.filter(fuel => fuel.selfServicePrice > 0).length, 0));
   await click('სტანდარტული');
   await click('ბუნებრივი აირი');
   assert.ok(await page.$eval('body',node=>node.textContent.includes('CNG')));
   await click('თხევადი გაზი');
   assert.ok(await page.$eval('body',node=>node.textContent.includes('LPG')));
   assert.deepEqual(errors,[]);
-  console.log('PricesHub UI: 8 companies, 44 source-linked products, tariff switch and separate CNG/LPG passed. Backend response was substituted locally; production was not changed.');
+  console.log('PricesHub UI: 8 companies, 44 source-linked products, tariff URL navigation and separate CNG/LPG passed. Backend response was substituted locally; production was not changed.');
 } finally { await browser.close(); }

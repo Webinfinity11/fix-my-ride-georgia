@@ -85,6 +85,7 @@ function App({ initialServiceComponent, queryClientOverride, initialFuelComponen
                   <Route path="/map/:tab" element={<MapPage />} />
                   <Route path="/laundries" element={<Laundries />} />
                   <Route path="/fuel-importers" element={<FuelPage />} />
+                  <Route path="/fuel-prices/self-service/:fuelType" element={<FuelPage />} />
                   <Route path="/fuel-prices/:fuelType" element={<FuelPage />} />
                   <Route path="/fuel-brands" element={<FuelBrands />} />
                   <Route path="/community" element={<Community />} />
