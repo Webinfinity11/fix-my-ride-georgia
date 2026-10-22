@@ -1,3 +1,17 @@
+import { CAR_BRAND_LOGOS } from "@/data/carBrandLogos";
+import { categoryNavigationSnapshot } from "@/lib/categoryNavigation";
+import { createCategorySlug } from "@/utils/slugUtils";
+import { cataloguePath } from "@/utils/catalogueNavigation";
+import { useQuery } from "@tanstack/react-query";
+import { availableServiceBrands } from "@/utils/availableServiceBrands";
+import { locationCatalogueOptions } from "@/lib/locationCatalogue";
+import { useParams } from "react-router-dom";
+import { BRAND_PAGES } from "@/utils/carBrands";
+import { getCityByName } from "@/utils/locationCatalogue";
+import HorizontalFilterChoices from "@/components/services/HorizontalFilterChoices";
+import CityFilter from "@/components/services/CityFilter";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import CategoryNavigation from "@/components/services/CategoryNavigation";
 import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,20 +19,15 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Star, Car, SlidersHorizontal, X, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
-
-type ServiceCategory = {
-  id: number;
-  name: string;
-  description?: string | null;
-};
+import { Search, Star, SlidersHorizontal, X, CheckCircle } from "lucide-react";
 
 interface ModernServiceFiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   selectedCategory: number | "all";
-  setSelectedCategory: (category: number | "all") => void;
-  categories: ServiceCategory[];
+  // Retained for existing callers; category selection now uses crawlable links.
+  setSelectedCategory?: (category: number | "all") => void;
+  categories?: { id: number; name: string }[];
   selectedCity: string | null;
   setSelectedCity: (city: string | null) => void;
   cities: string[];
@@ -42,7 +51,7 @@ const commonCarBrands = [
   "Subaru", "Lexus", "Infiniti", "Acura", "Jeep", "Land Rover",
   "Porsche", "Mitsubishi", "Opel", "Peugeot", "Renault", "Citroen",
   "Fiat", "Volvo", "Saab", "Skoda", "Seat", "Alfa Romeo", "Tesla", "სხვა",
-];
+].filter(name => BRAND_PAGES.some(brand => brand.name === name));
 
 const tbilisiDistricts = [
   "ვაკე", "საბურთალო", "ვერე", "გლდანი", "ისანი", "ნაძალადევი",
@@ -53,7 +62,7 @@ const tbilisiDistricts = [
 
 const ModernServiceFilters = ({
   searchTerm, setSearchTerm,
-  selectedCategory, setSelectedCategory, categories,
+  selectedCategory,
   selectedCity, setSelectedCity, cities,
   selectedDistrict, setSelectedDistrict, districts,
   selectedBrands, setSelectedBrands,
@@ -61,8 +70,35 @@ const ModernServiceFilters = ({
   minRating, setMinRating,
   onSearch, onClearSearch, onResetFilters,
 }: ModernServiceFiltersProps) => {
+  const { categorySlug: routeCategorySlug, brandSlug } = useParams();
+  const categoryName = categoryNavigationSnapshot.find(item => item.id === selectedCategory)?.name;
+  const categorySlug = routeCategorySlug || (categoryName ? createCategorySlug(categoryName) : undefined);
+  const { data: locationInventory } = useQuery({ ...locationCatalogueOptions, enabled: selectedCategory !== 'all' || Boolean(selectedCity) });
+  const availableCities = selectedCategory !== 'all' && locationInventory
+    ? [...new Set(locationInventory.filter(row => row.category_id === selectedCategory).map(row => row.city?.trim()).filter((city): city is string => Boolean(city)))] : undefined;
+  const constrainedBrands = selectedCategory !== 'all' || Boolean(selectedCity);
+  const availableBrands = availableServiceBrands(locationInventory ?? [], selectedCategory, selectedCity);
+  // Keep unavailable selections removable, but never offer empty intersections as new choices.
+  const visibleBrands = [...new Set([
+    ...commonCarBrands.filter(brand => !constrainedBrands || availableBrands.has(brand)),
+    ...selectedBrands,
+  ])];
+  const cityLink = (name: string) => {
+    const city = getCityByName(name);
+    if (!city) return undefined;
+    return cataloguePath({ categorySlug, citySlug: selectedCity === name ? undefined : city.slug, brands: selectedBrands });
+  };
+  const brandLink = (name: string) => {
+    // Extra brand filters are buttons so crawlers cannot enumerate combinations.
+    if (categorySlug || selectedCity) return undefined;
+    const brand = BRAND_PAGES.find(item => item.name === name);
+    if (!brand) return undefined;
+    return brandSlug === brand.slug ? "/services" : `/brand/${brand.slug}`;
+  };
   const [showFilters, setShowFilters] = useState(false);
-  const [showAllBrands, setShowAllBrands] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [appliedSearch, setAppliedSearch] = useState(searchTerm);
+  const searchTrigger = useRef<HTMLButtonElement>(null);
   const touchStartY = useRef<number | null>(null);
   const isScrolling = useRef(false);
 
@@ -74,15 +110,11 @@ const ModernServiceFilters = ({
     );
   };
 
-  const handleCityChange = (city: string) => {
-    const newCity = city === "all" ? null : city;
-    setSelectedCity(newCity);
-    if (newCity !== "თბილისი") setSelectedDistrict(null);
-  };
-
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setAppliedSearch(searchTerm.trim());
     onSearch();
+    setShowSearch(false);
     setShowFilters(false);
   };
 
@@ -93,6 +125,7 @@ const ModernServiceFilters = ({
 
   const handleReset = () => {
     onResetFilters();
+    setAppliedSearch("");
     setShowFilters(false);
   };
 
@@ -113,11 +146,10 @@ const ModernServiceFilters = ({
   }, []);
 
   const hasActiveFilters =
-    selectedCategory !== "all" || selectedCity || selectedDistrict ||
+    appliedSearch || selectedCity || selectedDistrict ||
     selectedBrands.length > 0 || onSiteOnly || minRating;
 
   const activeFiltersCount = [
-    selectedCategory !== "all",
     selectedCity,
     selectedDistrict,
     selectedBrands.length > 0,
@@ -127,13 +159,7 @@ const ModernServiceFilters = ({
 
   // Collect active filter chips
   const activeFilterChips: { label: string; onRemove: () => void }[] = [];
-  if (selectedCategory !== "all") {
-    const cat = categories.find(c => c.id === selectedCategory);
-    activeFilterChips.push({
-      label: cat?.name || "კატეგორია",
-      onRemove: () => setSelectedCategory("all"),
-    });
-  }
+  if (appliedSearch) activeFilterChips.push({ label: `ძიება: ${appliedSearch}`, onRemove: () => { setAppliedSearch(""); onClearSearch(); } });
   if (selectedCity) {
     activeFilterChips.push({ label: selectedCity, onRemove: () => { setSelectedCity(null); setSelectedDistrict(null); } });
   }
@@ -151,8 +177,11 @@ const ModernServiceFilters = ({
   });
 
   return (
-    <div className="space-y-2" style={{ touchAction: "pan-y" }}>
-      {/* Always visible: Search bar with map button */}
+    <div className="space-y-3">
+      <CategoryNavigation selectedCategory={selectedCategory} selectedCity={selectedCity} selectedBrands={selectedBrands} />
+      <Dialog open={showSearch} onOpenChange={open => { setShowSearch(open); if (!open) setSearchTerm(appliedSearch); }}>
+        <DialogContent className="max-w-lg" onCloseAutoFocus={event => { event.preventDefault(); searchTrigger.current?.focus(); }}>
+          <DialogHeader><DialogTitle>სერვისის ძიება</DialogTitle><DialogDescription>ჩაწერეთ სერვისის ან ხელოსნის სახელი.</DialogDescription></DialogHeader>
       <form onSubmit={handleSearchSubmit} className="flex gap-2">
         <div className="relative flex-1">
           <Search
@@ -160,6 +189,8 @@ const ModernServiceFilters = ({
             style={{ transform: "translateY(-50%)" }}
           />
           <Input
+            autoFocus
+            aria-label="სერვისის ძიება"
             placeholder="სერვისის ძიება..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -168,7 +199,7 @@ const ModernServiceFilters = ({
           {searchTerm && (
             <button
               type="button"
-              onClick={onClearSearch}
+              onClick={() => { setAppliedSearch(""); onClearSearch(); }}
               aria-label="ძიების გასუფთავება"
               className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
@@ -176,32 +207,38 @@ const ModernServiceFilters = ({
             </button>
           )}
         </div>
-        <Button type="submit" className="h-10 px-4 shrink-0">
+        <Button type="submit" aria-label="ძებნა" className="h-10 px-4 shrink-0">
           <Search className="h-4 w-4" />
         </Button>
       </form>
-
-      {/* Filter toggle button */}
-      <div
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-      >
-        <Button
-          variant="outline"
-          onClick={handleFilterToggle}
-          className="w-full h-10 border-primary/20 hover:bg-primary/5 justify-between"
-        >
-          <span className="flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4" />
-            ფილტრები
-            {activeFiltersCount > 0 && (
-              <Badge className="bg-primary text-primary-foreground text-xs px-1.5 py-0 h-5 min-w-5 flex items-center justify-center">
-                {activeFiltersCount}
-              </Badge>
-            )}
-          </span>
-          {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </Button>
+        </DialogContent>
+      </Dialog>
+      <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 md:gap-6">
+        <CityFilter availableCities={availableCities} getHref={cityLink} cities={cities} selectedCity={selectedCity} onChange={setSelectedCity} />
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <HorizontalFilterChoices getHref={brandLink} items={visibleBrands} renderItem={brand => CAR_BRAND_LOGOS[brand]
+              ? <img src={CAR_BRAND_LOGOS[brand]} alt="" aria-hidden="true" width={56} height={36} className="h-9 w-14 max-w-none object-contain" />
+              : <span className="text-xs">{brand}</span>} selected={selectedBrands} onToggle={handleBrandToggle} label="მანქანის მარკის არჩევა" previousLabel="წინა მარკები" nextLabel="შემდეგი მარკები" />
+          </div>
+          <Button ref={searchTrigger} type="button" size="icon" onClick={() => setShowSearch(true)} aria-label="სერვისის ძიების გახსნა" className="h-10 w-10 shrink-0"><Search className="h-4 w-4" /></Button>
+          <div className="shrink-0" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove}>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={handleFilterToggle}
+              aria-label="დამატებითი ფილტრები"
+              title="დამატებითი ფილტრები"
+              aria-expanded={showFilters}
+              aria-controls="additional-service-filters"
+              className="relative h-10 w-10 border-primary/20 hover:bg-primary/5"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {activeFiltersCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] text-primary-foreground">{activeFiltersCount}</span>}
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Active filter chips - always visible when filters are collapsed */}
@@ -235,47 +272,10 @@ const ModernServiceFilters = ({
       {/* Expandable filters panel */}
       {showFilters && (
         <div
+          id="additional-service-filters"
           className="space-y-4 border border-border rounded-xl p-4 bg-card animate-in slide-in-from-top-2 duration-200"
           style={{ touchAction: "pan-y" }}
         >
-          {/* Category + City row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">კატეგორია</Label>
-              <Select
-                value={selectedCategory.toString()}
-                onValueChange={(v) => setSelectedCategory(v === "all" ? "all" : parseInt(v))}
-              >
-                <SelectTrigger className="h-10 border-primary/20 text-sm" style={{ touchAction: "manipulation" }}>
-                  <SelectValue placeholder="ყველა" />
-                </SelectTrigger>
-                <SelectContent className="z-50">
-                  <SelectItem value="all">ყველა კატეგორია</SelectItem>
-                  {categories.map((c) => (
-                    <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <MapPin className="h-3 w-3" /> ქალაქი
-              </Label>
-              <Select value={selectedCity || "all"} onValueChange={handleCityChange}>
-                <SelectTrigger className="h-10 border-primary/20 text-sm" style={{ touchAction: "manipulation" }}>
-                  <SelectValue placeholder="ყველა" />
-                </SelectTrigger>
-                <SelectContent className="z-50">
-                  <SelectItem value="all">ყველა ქალაქი</SelectItem>
-                  {cities.map((city) => (
-                    <SelectItem key={city} value={city}>{city}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
           {/* District - only when Tbilisi selected */}
           {selectedCity === "თბილისი" && (
             <div className="space-y-1.5">
@@ -286,7 +286,7 @@ const ModernServiceFilters = ({
                 </SelectTrigger>
                 <SelectContent className="z-50">
                   <SelectItem value="all">ყველა უბანი</SelectItem>
-                  {tbilisiDistricts.map((d) => (
+                  {(districts.length ? districts : tbilisiDistricts).map((d) => (
                     <SelectItem key={d} value={d}>{d}</SelectItem>
                   ))}
                 </SelectContent>
@@ -328,36 +328,6 @@ const ModernServiceFilters = ({
                   ადგილზე მისვლა
                 </span>
               </label>
-            </div>
-          </div>
-
-          {/* Car brands */}
-          <div className="space-y-2">
-            <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-              <Car className="h-3 w-3" /> მანქანის მარკა
-            </Label>
-            <div className="flex flex-wrap gap-1.5">
-              {(showAllBrands ? commonCarBrands : commonCarBrands.slice(0, 8)).map((brand) => (
-                <button
-                  key={brand}
-                  type="button"
-                  onClick={() => handleBrandToggle(brand)}
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
-                    selectedBrands.includes(brand)
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background text-foreground border-border hover:border-primary/40"
-                  }`}
-                >
-                  {brand}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setShowAllBrands(!showAllBrands)}
-                className="px-2.5 py-1 rounded-full text-xs font-medium text-primary border border-primary/30 hover:bg-primary/5"
-              >
-                {showAllBrands ? "ნაკლები ▲" : `+${commonCarBrands.length - 8} სხვა`}
-              </button>
             </div>
           </div>
 

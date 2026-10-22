@@ -1,3 +1,4 @@
+import PersonalProfile from "@/components/dashboard/PersonalProfile";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -14,12 +15,6 @@ const MechanicProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    phone: user?.phone || "",
-    city: user?.city || "",
-    district: user?.district || "",
-    street: user?.street || "",
     description: "",
     experienceYears: "",
     specialization: "",
@@ -63,7 +58,7 @@ const MechanicProfile = () => {
     };
     
     fetchMechanicProfile();
-  }, [user]);
+  }, [user?.id]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -84,21 +79,6 @@ const MechanicProfile = () => {
     setLoading(true);
     
     try {
-      // Update basic profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          first_name: form.firstName,
-          last_name: form.lastName,
-          phone: form.phone,
-          city: form.city,
-          district: form.district,
-          street: form.street,
-        })
-        .eq("id", user.id);
-      
-      if (profileError) throw profileError;
-      
       // Update mechanic profile
       const { error: mechanicError } = await supabase
         .from("mechanic_profiles")
@@ -136,100 +116,14 @@ const MechanicProfile = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">ჩემი პროფილი</h1>
         {!isEditing ? (
-          <Button onClick={() => setIsEditing(true)}>რედაქტირება</Button>
+          <Button onClick={() => setIsEditing(true)}>პროფესიული მონაცემების შეცვლა</Button>
         ) : (
           <Button variant="outline" onClick={() => setIsEditing(false)}>გაუქმება</Button>
         )}
       </div>
       
+      <div className="mb-6"><PersonalProfile /></div>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold mb-4">ძირითადი ინფორმაცია</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">სახელი</Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                value={form.firstName}
-                onChange={handleChange}
-                readOnly={!isEditing}
-                className={!isEditing ? "bg-muted" : ""}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="lastName">გვარი</Label>
-              <Input
-                id="lastName"
-                name="lastName"
-                value={form.lastName}
-                onChange={handleChange}
-                readOnly={!isEditing}
-                className={!isEditing ? "bg-muted" : ""}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">ელ-ფოსტა</Label>
-              <Input
-                id="email"
-                value={user?.email || ""}
-                readOnly
-                className="bg-muted"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="phone">ტელეფონი</Label>
-              <Input
-                id="phone"
-                name="phone"
-                value={form.phone || ""}
-                onChange={handleChange}
-                readOnly={!isEditing}
-                className={!isEditing ? "bg-muted" : ""}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="city">ქალაქი</Label>
-              <Input
-                id="city"
-                name="city"
-                value={form.city || ""}
-                onChange={handleChange}
-                readOnly={!isEditing}
-                className={!isEditing ? "bg-muted" : ""}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="district">უბანი</Label>
-              <Input
-                id="district"
-                name="district"
-                value={form.district || ""}
-                onChange={handleChange}
-                readOnly={!isEditing}
-                className={!isEditing ? "bg-muted" : ""}
-              />
-            </div>
-            
-            <div className="col-span-2 space-y-2">
-              <Label htmlFor="street">მისამართი</Label>
-              <Input
-                id="street"
-                name="street"
-                value={form.street || ""}
-                onChange={handleChange}
-                readOnly={!isEditing}
-                className={!isEditing ? "bg-muted" : ""}
-              />
-            </div>
-          </div>
-        </div>
-        
         <div>
           <h2 className="text-lg font-semibold mb-4">პროფესიული ინფორმაცია</h2>
           <div className="space-y-4">

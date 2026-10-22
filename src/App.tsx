@@ -15,6 +15,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 
 // Lazy load routes so each page downloads only the code it needs.
 const Index = lazy(() => import("./pages/Index"));
+const LocationLanding = lazy(() => import("./pages/LocationLanding"));
 const ServicesDetail = lazy(() => import("./pages/ServicesDetail"));
 const ServiceSearch = lazy(() => import("./pages/ServiceSearch"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail"));
@@ -75,6 +76,8 @@ function App({ initialServiceComponent, queryClientOverride, initialFuelComponen
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/services" element={<ServicesDetail />} />
+                  <Route path="/city/:citySlug" element={<LocationLanding />} />
+                  <Route path="/category/:categorySlug/city/:citySlug" element={<LocationLanding />} />
                   <Route path="/mechanic" element={<Mechanics />} />
                   <Route path="/service-search" element={<ServiceSearch />} />
                   <Route path="/service/:id" element={<ServicePage />} />

@@ -58,10 +58,9 @@ const ROUTES = [
   '/map/chargers',
 ];
 
-// Read PARENT category routes (/category/<slug>, no district segment) from the
+// Read category and district routes from the
 // already-generated category-sitemap.xml. Keeps the exact slugs the sitemap
-// computed — no DB/slug duplication here. District variants are intentionally
-// excluded (too many to prerender every build).
+// computed — include qualifying district pages so Google receives their real HTML.
 function getCategoryRoutes() {
   try {
     const xmlPath = join(DIST, 'category-sitemap.xml');
@@ -70,11 +69,19 @@ function getCategoryRoutes() {
     const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
     const routes = locs
       .map((u) => { try { return new URL(u).pathname; } catch { return null; } })
-      .filter((p) => p && /^\/category\/[^/]+$/.test(p)); // parent only
-    return [...new Set(routes)];
+      .filter((p) => p && /^\/category\/[^/]+(?:\/[^/]+)?$/.test(p));
+    const diagnostic = process.env.PRERENDER_ROUTES?.split(',').filter(p => /^\/category\/[^/]+(?:\/[^/]+)?$/.test(p)) || [];
+    return [...new Set([...routes, ...diagnostic])];
   } catch {
     return [];
   }
+}
+
+function getMechanicRoutes() {
+ const file=join(DIST,'mechanic-sitemap.xml');
+ if(!existsSync(file)) return [];
+ const review=JSON.parse(readFileSync(join(__dirname,'review-mechanic-routes.json'),'utf8'));
+ return [...new Set([...readFileSync(file,'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>new URL(m[1]).pathname).concat(review))].filter(path=>/^\/mechanic\/[^/]+$/.test(path));
 }
 
 // Brand landing pages — read the qualifying /brand and /brand/:slug URLs from
@@ -197,12 +204,14 @@ async function main() {
   const failedRoutes = [];
   const categoryRoutes = getCategoryRoutes();
   const brandRoutes = getBrandRoutes();
+  const locationRoutes = JSON.parse(readFileSync(join(__dirname, 'location-render-routes.json'), 'utf8'));
+  const mechanicRoutes = getMechanicRoutes();
   const serviceRoutes = getServiceRoutes(join(__dirname, '..'));
   if (!serviceRoutes.length) throw new Error('No public service routes generated');
   const requestedRoutes = process.env.PRERENDER_ROUTES?.split(',');
-  const allRoutes = [...ROUTES, ...categoryRoutes, ...brandRoutes, ...serviceRoutes]
+  const allRoutes = [...ROUTES, ...categoryRoutes, ...locationRoutes, ...brandRoutes, ...serviceRoutes, ...mechanicRoutes]
     .filter(route => !requestedRoutes || requestedRoutes.includes(route));
-  console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories + ${brandRoutes.length} brands + ${serviceRoutes.length} services = ${allRoutes.length}`);
+  console.log(`[prerender] routes: ${ROUTES.length} static + ${categoryRoutes.length} categories + ${brandRoutes.length} brands + ${serviceRoutes.length} services + ${mechanicRoutes.length} mechanics = ${allRoutes.length}`);
 
   // Render a single route (own page). Extracted so we can run a concurrency
   // pool — sequential prerender of 140+ routes would take ~15 min.
@@ -258,6 +267,10 @@ async function main() {
         await page.waitForSelector(`[data-service-page-id="${expectedId}"]`, { timeout: 20000 });
       } else {
         await page.waitForNetworkIdle({ idleTime: 500, timeout: 30000 });
+      }
+
+      if (/^\/city\/|^\/category\/[^/]+\/city\//.test(route)) {
+        await page.waitForSelector('[data-location-ready="true"]', { timeout: 20000 });
       }
 
       // Wait until react-helmet has flushed the REAL <head> — i.e. the title is

@@ -1,8 +1,17 @@
+import { useCatalogueState } from "@/hooks/useCatalogueState";
+import { readBrandQuery, withBrandQuery } from "@/utils/catalogueNavigation";
+import { getCityByName, locationPath } from "@/utils/locationCatalogue";
+import { catalogueContainerClassName } from "@/components/services/catalogueLayout";
+import { getCategorySubtitle } from "@/utils/categorySubtitles";
+import ServiceCatalogueHeading from "@/components/services/ServiceCatalogueHeading";
+import ModernServiceFilters from "@/components/services/ModernServiceFilters";
+import CategoryDistrictGuide from "@/components/seo/CategoryDistrictGuide";
+import NotFound from "@/pages/NotFound";
 import CategoryDecisionGuide from "@/components/seo/CategoryDecisionGuide";
 import { useState, useEffect, useRef, Fragment } from "react";
 import { CategoryBootShell } from "@/components/layout/CategoryBootShell";
 import ServicesGridBanner from "@/components/banners/ServicesGridBanner";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Navigate, Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SEOHead from "@/components/seo/SEOHead";
@@ -11,13 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CollectionPageSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Search as SearchIcon, X } from "lucide-react";
 import { trackSearch } from "@/utils/tracking";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { getCategoryFromSlug, createCategorySlug, createSlug } from "@/utils/slugUtils";
 import { useServices, ServiceType } from "@/hooks/useServices";
@@ -55,6 +58,7 @@ const ServiceCategory = () => {
     categorySlug?: string;
     district?: string;
   }>();
+  const [searchParams] = useSearchParams();
   const districtInfo = getDistrictBySlug(districtSlug);
   const categoryParam = categoryId || categorySlug;
   const [initialData] = useState(readCategorySnapshot);
@@ -85,17 +89,17 @@ const ServiceCategory = () => {
       boot.snapshot = false;
     }
   }, [categoryLoading, servicesLoading]);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useCatalogueState({
     searchTerm: "",
-    selectedCity: null as string | null,
+    selectedCity: searchParams.get("city") || (districtInfo ? "თბილისი" : null) as string | null,
     selectedDistrict: districtInfo?.name ?? (null as string | null),
-    selectedBrands: [] as string[],
+    selectedBrands: readBrandQuery(searchParams),
     onSiteOnly: false,
     minRating: null as number | null
-  });
+  }, "filters");
   // Text search is decoupled from `filters` so typing doesn't auto-fetch;
   // it's applied to filters.searchTerm only on manual submit (button/Enter).
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useCatalogueState("", "searchInput");
 
   useEffect(() => {
     let active = true;
@@ -146,7 +150,7 @@ const ServiceCategory = () => {
     }
     // fetchServices is recreated on render; depend on the actual filter inputs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, serviceCategoryId]);
+  }, [filters, serviceCategoryId, districtSlug, districtInfo?.name]);
 
   useEffect(() => {
     if (window.__fixupPrerenderCapture && category && !categoryLoading && !servicesLoading) {
@@ -155,6 +159,8 @@ const ServiceCategory = () => {
       };
     }
   }, [category, categoryLoading, servicesLoading, services, totalCount, hasMore]);
+
+  if (districtSlug && !districtInfo) return <NotFound />;
 
   if (!snapshotReleased.current && initialSnapshotPath.current === window.location.pathname.replace(/\/$/, "")
     && (categoryLoading || (category && servicesLoading))) {
@@ -168,7 +174,7 @@ const ServiceCategory = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className={`${catalogueContainerClassName} flex-grow py-8`}>
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-muted rounded w-1/3"></div>
             <div className="h-4 bg-muted rounded w-2/3"></div>
@@ -184,19 +190,11 @@ const ServiceCategory = () => {
     );
   }
 
-  if (!category) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow container mx-auto px-4 py-8 text-center">
-          <div role="alert" className="text-2xl font-bold mb-4">კატეგორია ვერ მოიძებნა</div>
-          <Link to="/services" className="text-primary hover:underline">
-            უკან სერვისებზე
-          </Link>
-        </main>
-        <Footer />
-      </div>
-    );
+  if (!category || (districtSlug && !districtInfo)) return <NotFound />;
+
+  const legacyCity = getCityByName(searchParams.get('city'));
+  if (legacyCity && !districtSlug && [...searchParams.keys()].every(key => key === 'city')) {
+    return <Navigate replace to={locationPath(legacyCity.slug, createCategorySlug(category.name))} />;
   }
 
   // Breadcrumb data — district pages extend the parent crumb chain.
@@ -224,7 +222,7 @@ const ServiceCategory = () => {
 
   const seoStats: CategoryStats = {
     name: category.name,
-    serviceCount: services.length,
+    serviceCount: totalCount,
     priceMin,
     priceMax,
     cities,
@@ -247,10 +245,10 @@ const ServiceCategory = () => {
   const categoryUrl = `https://fixup.ge/category/${createCategorySlug(category.name)}`;
   const canonicalUrl = districtInfo ? `${categoryUrl}/${districtInfo.slug}` : categoryUrl;
   const metaTitle = districtInfo
-    ? `${category.name} ${districtInfo.nameLocative} — ${services.length} ხელოსანი | FixUp`
+    ? `${category.name} ${districtInfo.nameLocative} — ${totalCount} მომსახურება | FixUp`
     : baseMetaTitle;
   const metaDescription = districtInfo
-    ? `${category.name} ${districtInfo.nameLocative} — ${services.length} ვერიფიცირებული ხელოსანი. ფასები, შეფასებები, ჯავშანი ონლაინ. FixUp-ის პლატფორმაზე.`
+    ? `${category.name} ${districtInfo.nameLocative} — ${totalCount} მომსახურება. ფასები, შეფასებები, ჯავშანი ონლაინ. FixUp-ის პლატფორმაზე.`
     : baseMetaDescription;
 
   return (
@@ -263,6 +261,7 @@ const ServiceCategory = () => {
           : `${category.name}, ავტოსერვისი, მექანიკოსი, ${category.name} ფასები, ${category.name} თბილისი, ${category.name} ბათუმი, ავტომობილის რემონტი`}
         url={canonicalUrl}
         canonical={canonicalUrl}
+        noindex={searchParams.has("brands") || (!servicesLoading && totalCount === 0)}
       />
 
       {/* CollectionPage Schema for category */}
@@ -284,10 +283,10 @@ const ServiceCategory = () => {
       
       <main className="flex-grow">
         {/* Breadcrumb */}
-        <div data-category-shell="breadcrumb" className="bg-muted py-4">
-          <div className="container mx-auto px-4">
+        <div data-category-shell="breadcrumb" className="pt-4 md:pt-8 pb-3">
+          <div className={catalogueContainerClassName}>
             <Breadcrumb>
-              <BreadcrumbList>
+              <BreadcrumbList className="text-xs">
                 <BreadcrumbItem>
                   <BreadcrumbLink href="/">მთავარი</BreadcrumbLink>
                 </BreadcrumbItem>
@@ -297,101 +296,72 @@ const ServiceCategory = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{category.name}</BreadcrumbPage>
+                  {districtInfo ? <BreadcrumbLink href={`/category/${createCategorySlug(category.name)}`}>{category.name}</BreadcrumbLink> : <BreadcrumbPage>{category.name}</BreadcrumbPage>}
                 </BreadcrumbItem>
+                {districtInfo && <><BreadcrumbSeparator /><BreadcrumbItem><BreadcrumbPage>{districtInfo.name}</BreadcrumbPage></BreadcrumbItem></>}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </div>
 
-        {/* Header Section — keyword-rich H1 with city + count, plus subtitle */}
-        <div data-category-shell="hero" className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
-          <div className="container mx-auto px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                {category.name} {districtInfo ? districtInfo.nameLocative : 'თბილისში'}
-                <span data-service-count className="block min-h-[4rem] md:min-h-9 text-2xl md:text-3xl font-semibold text-primary mt-2">
-                  {!servicesLoading && services.length > 0 ? `${services.length} ვერიფიცირებული ხელოსანი` : "\u00a0"}
-                </span>
-              </h1>
-              <p className="text-lg text-muted-foreground mb-6">
-                {districtInfo
-                  ? `${category.name} ${districtInfo.nameLocative} — იპოვეთ უახლოესი ხელოსანი თქვენი მახლობლად, წინასწარი ჯავშნით და გამჭვირვალე ფასებით.`
-                  : category.description || `იპოვეთ საუკეთესო ${category.name}-ის ხელოსანი თბილისში, ბათუმში, ქუთაისში და მთელ საქართველოში — გამჭვირვალე ფასებით და რეალური შეფასებებით.`}
-              </p>
-              <div data-service-count className="text-sm text-muted-foreground">
-                {servicesLoading ? "\u00a0" : `${services.length} სერვისი ამ კატეგორიაში`}
-              </div>
-            </div>
+        <div data-category-shell="hero" className={catalogueContainerClassName}>
+          <div className="min-w-0">
+            <ServiceCatalogueHeading title={`${category.name} ${districtInfo ? districtInfo.nameLocative : 'საქართველოში'}`} subtitle={getCategorySubtitle(category, districtInfo)} />
           </div>
         </div>
 
-        {/* Simple filters for category page */}
-        <div className="container mx-auto px-4 py-6">
-          <Card className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="search">ძებნა</Label>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const q = searchInput.trim();
-                    setFilters(prev => ({ ...prev, searchTerm: q }));
-                    if (q.length >= 2) trackSearch(q, "category");
-                  }}
-                  className="flex gap-2"
-                >
-                  <div className="relative flex-1">
-                    <Input
-                      id="search"
-                      placeholder="ძებნა სერვისებში..."
-                      value={searchInput}
-                      onChange={(e) => setSearchInput(e.target.value)}
-                      className={searchInput ? "pr-9" : ""}
-                    />
-                    {searchInput && (
-                      <button
-                        type="button"
-                        onClick={() => { setSearchInput(""); setFilters(prev => ({ ...prev, searchTerm: "" })); }}
-                        aria-label="ძიების გასუფთავება"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                  <Button type="submit" size="icon" className="shrink-0" aria-label="ძებნა">
-                    <SearchIcon className="h-4 w-4" />
-                  </Button>
-                </form>
-              </div>
-              <div>
-                <Label htmlFor="city">ქალაქი</Label>
-                <Select value={filters.selectedCity || "all"} onValueChange={(value) => setFilters(prev => ({ ...prev, selectedCity: value === "all" ? null : value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="აირჩიეთ ქალაქი" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">ყველა ქალაქი</SelectItem>
-                    <SelectItem value="თბილისი">თბილისი</SelectItem>
-                    <SelectItem value="ბათუმი">ბათუმი</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center space-x-2 pt-6">
-                <Checkbox
-                  id="onsite"
-                  checked={filters.onSiteOnly}
-                  onCheckedChange={(checked) => setFilters(prev => ({ ...prev, onSiteOnly: checked as boolean }))}
-                />
-                <Label htmlFor="onsite">მხოლოდ ადგილზე სერვისი</Label>
-              </div>
-            </div>
-          </Card>
+        <div className={`${catalogueContainerClassName} pb-3 md:pb-8`}>
+          <div className="min-w-0">
+          <ModernServiceFilters
+            selectedCategory={category.id}
+            searchTerm={searchInput}
+            setSearchTerm={setSearchInput}
+            selectedCity={filters.selectedCity}
+            setSelectedCity={selectedCity => {
+              if (districtInfo && selectedCity !== "თბილისი") {
+                const query = selectedCity ? `?${new URLSearchParams({ city: selectedCity })}` : "";
+                window.location.assign(`/category/${createCategorySlug(category.name)}${query}`);
+              } else {
+                setFilters(prev => ({ ...prev, selectedCity, selectedDistrict: selectedCity === "თბილისი" ? prev.selectedDistrict : null }));
+              }
+            }}
+            cities={Array.from(new Set(["თბილისი", "ბათუმი", "ქუთაისი", "რუსთავი", "გორი", "ზუგდიდი", "ფოთი", ...cities]))}
+            selectedDistrict={filters.selectedDistrict}
+            setSelectedDistrict={selectedDistrict => {
+              if (districtInfo && selectedDistrict !== districtInfo.name) {
+                const district = DISTRICTS.find(item => item.name === selectedDistrict);
+                window.location.assign(`/category/${createCategorySlug(category.name)}${district ? `/${district.slug}` : ""}`);
+              } else {
+                setFilters(prev => ({ ...prev, selectedDistrict }));
+              }
+            }}
+            districts={DISTRICTS.map(district => district.name)}
+            selectedBrands={filters.selectedBrands}
+            setSelectedBrands={brands => window.location.assign(withBrandQuery(window.location.pathname, brands))}
+            onSiteOnly={filters.onSiteOnly}
+            setOnSiteOnly={onSiteOnly => setFilters(prev => ({ ...prev, onSiteOnly }))}
+            minRating={filters.minRating}
+            setMinRating={minRating => setFilters(prev => ({ ...prev, minRating }))}
+            onSearch={() => {
+              const q = searchInput.trim();
+              setFilters(prev => ({ ...prev, searchTerm: q }));
+              if (q.length >= 2) trackSearch(q, "category");
+            }}
+            onClearSearch={() => { setSearchInput(""); setFilters(prev => ({ ...prev, searchTerm: "" })); }}
+            onResetFilters={() => {
+              if (searchParams.has("brands")) { window.location.assign(window.location.pathname); return; }
+              setSearchInput("");
+              setFilters({ searchTerm: "", selectedCity: null, selectedDistrict: districtInfo?.name ?? null, selectedBrands: [], onSiteOnly: false, minRating: null });
+            }}
+          />
+          </div>
         </div>
 
         {/* Services Grid */}
-        <div className="container mx-auto px-4 pb-12">
+        <div className={`${catalogueContainerClassName} pb-12`}>
+          <p data-service-count className="mb-3 text-sm text-muted-foreground md:mb-6" aria-live="polite">
+            {servicesLoading ? "იტვირთება..." : `ნაპოვნია ${totalCount} სერვისი`}
+          </p>
           {servicesLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(6)].map((_, i) => (
@@ -421,7 +391,11 @@ const ServiceCategory = () => {
           )}
         </div>
 
-        <CategoryDecisionGuide slug={createCategorySlug(category.name)} name={category.name} services={services} />
+        <div className={`${catalogueContainerClassName} mb-8`}>
+          <details className="group rounded-2xl border bg-card [&_.container]:max-w-none [&_.container]:px-0 [&_.container]:py-5">
+            <summary className="cursor-pointer px-5 py-4 text-base font-semibold text-foreground marker:text-primary md:px-6">{category.name} — ინფორმაცია და ხშირად დასმული კითხვები</summary>
+            <div className="border-t px-5 pb-2 md:px-6">
+        {!districtInfo && <CategoryDecisionGuide slug={createCategorySlug(category.name)} name={category.name} services={services} />}
 
         {/* Districts internal-link grid — Tbilisi-only, hides empty districts.
             On the parent /category/:slug page it offers 9 deeper landing pages;
@@ -436,6 +410,7 @@ const ServiceCategory = () => {
         {/* SEO content sections — long-form copy + FAQ + internal links.
             Order: intro → FAQ → related categories → related blog posts.
             Sections render only when meaningful content exists. */}
+        {districtInfo ? <CategoryDistrictGuide categoryId={category.id} categorySlug={createCategorySlug(category.name)} categoryName={category.name} district={districtInfo} /> : <>
         <CategoryIntroSection
           stats={seoStats}
           introHtml={introHtml}
@@ -444,8 +419,13 @@ const ServiceCategory = () => {
         />
 
         <CategoryFAQSection items={faqItems} categoryName={category.name} />
+        </>}
 
         <RelatedCategories currentId={category.id} limit={6} />
+
+            </div>
+          </details>
+        </div>
 
         <RelatedBlogPosts limit={3} />
       </main>

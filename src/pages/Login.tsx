@@ -1,3 +1,4 @@
+import { PasswordInput } from "@/components/ui/password-input";
 
 import { useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,13 +15,13 @@ import { useAuth } from "@/context/AuthContext";
 const Login = () => {
   const { signIn, loading } = useAuth();
   const navigate = useNavigate();
-  
+
   const [form, setForm] = useState({
     email: '',
     password: '',
     rememberMe: false,
   });
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setForm(prev => ({
@@ -28,17 +29,17 @@ const Login = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!form.email || !form.password) {
       toast.error("შეავსეთ ყველა აუცილებელი ველი!");
       return;
     }
-    
+
     const { error } = await signIn(form.email, form.password);
-    
+
     if (error) {
       toast.error(`შესვლა ვერ მოხერხდა: ${error.message}`);
     } else {
@@ -46,7 +47,7 @@ const Login = () => {
       navigate('/');
     }
   };
-  
+
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
@@ -56,8 +57,8 @@ const Login = () => {
         <link rel="canonical" href="https://fixup.ge/login" />
       </Helmet>
       <Header />
-      
-      
+
+
       <main className="flex-grow flex items-center justify-center bg-muted py-10">
         <div className="container mx-auto px-4">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full mx-auto">
@@ -67,18 +68,18 @@ const Login = () => {
                 <span className="text-2xl font-bold text-primary">ავტოხელოსანი</span>
               </div>
             </div>
-            
+
             <h2 className="text-2xl font-bold text-center mb-6">სისტემაში შესვლა</h2>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">ელ-ფოსტა</Label>
-                  <Input 
-                    id="email" 
-                    name="email" 
-                    type="email" 
-                    placeholder="email@example.com" 
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="email@example.com"
                     required
                     value={form.email}
                     onChange={handleChange}
@@ -91,22 +92,22 @@ const Login = () => {
                       დაგავიწყდათ პაროლი?
                     </Link>
                   </div>
-                  <Input 
-                    id="password" 
-                    name="password" 
-                    type="password" 
-                    placeholder="შეიყვანეთ პაროლი" 
+                  <PasswordInput
+                    id="password"
+                    name="password"
+                    autoComplete="current-password"
+                    placeholder="შეიყვანეთ პაროლი"
                     required
                     value={form.password}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="flex items-center">
-                  <input 
-                    id="rememberMe" 
-                    name="rememberMe" 
-                    type="checkbox" 
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary-light" 
+                  <input
+                    id="rememberMe"
+                    name="rememberMe"
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary-light"
                     checked={form.rememberMe}
                     onChange={handleChange}
                   />
@@ -115,10 +116,10 @@ const Login = () => {
                   </Label>
                 </div>
               </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full mt-6 bg-primary hover:bg-primary-light" 
+
+              <Button
+                type="submit"
+                className="w-full mt-6 bg-primary hover:bg-primary-light"
                 disabled={loading}
               >
                 {loading ? 'მიმდინარეობს...' : 'შესვლა'}
@@ -134,7 +135,7 @@ const Login = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

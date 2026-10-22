@@ -1,0 +1,919 @@
+{
+  "audited_at": "2026-10-13T15:07:35.540Z",
+  "sources": [
+    "Public active service catalogue",
+    "Live service-sitemap.xml",
+    "Live category-sitemap.xml"
+  ],
+  "before": {
+    "service_urls": 530,
+    "canonical_mismatches": 172,
+    "category_urls": 202
+  },
+  "prepared": {
+    "canonical_service_urls": 552,
+    "category_district_urls": 208,
+    "category_urls_added": [
+      "https://fixup.ge/category/airbagi/digomi",
+      "https://fixup.ge/category/dazianebuli-avtomobilis-sruli-aghdgena",
+      "https://fixup.ge/category/dazianebuli-avtomobilis-sruli-aghdgena/digomi",
+      "https://fixup.ge/category/manqanis-saloni/digomi",
+      "https://fixup.ge/category/polireba/digomi",
+      "https://fixup.ge/category/tvlebis-sheqra/varketili"
+    ],
+    "public_mechanic_urls": 168,
+    "compatibility_aliases": 1602
+  },
+  "canonical_mismatches": [
+    {
+      "submitted": "https://fixup.ge/service/21-qvela-sakhis-servisi-honda-fitze",
+      "canonical": "https://fixup.ge/service/21-qvela-sakhis-servisi-honda-pitze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/24-honda-fit-servisi",
+      "canonical": "https://fixup.ge/service/24-honda-pit-servisi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/46-kabrioletebis-sheketeba-tsqlis-sistemis-gamoretskh",
+      "canonical": "https://fixup.ge/service/46-kabrioletebis-sheketeba-tsqlis-sistemis-gamoretskhva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/47-farebis-ortqlit-polireba",
+      "canonical": "https://fixup.ge/service/47-parebis-ortqlit-polireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/48-eleqtrooba-kondentsionerebieleqtrooba-kondentsione",
+      "canonical": "https://fixup.ge/service/48-eleqtrooba-kondentsionerebi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/49-minebis-damuqeba-3",
+      "canonical": "https://fixup.ge/service/49-minebis-damuqeb"
+    },
+    {
+      "submitted": "https://fixup.ge/service/50-radiatorebis-sheketebagamoretskhvaradiatorebis-she",
+      "canonical": "https://fixup.ge/service/50-radiatorebis-sheketebagamoretskhva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/55-dpf-sazhevoi-filtris-garetskhva",
+      "canonical": "https://fixup.ge/service/55-dpp-sazhevoi-piltris-garetskhva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/56-savali-natsilebis-shetsvla-lexus-da-toyota-nebismi",
+      "canonical": "https://fixup.ge/service/56-savali-natsilebis-shetsvla-lexus-da-toyota-nebismier-modelze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/59-chaketili-avtomobilis-karis-gagheba-adgilze-misvli",
+      "canonical": "https://fixup.ge/service/59-chaketili-avtomobilis-karis-gagheba-adgilze-misvlit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/71-farebis-polireba",
+      "canonical": "https://fixup.ge/service/71-parebis-polireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/83-ghvedebis-aghdgena-shetsvla-sasurveli-ferit-shetsv",
+      "canonical": "https://fixup.ge/service/83-ghvedebis-aghdgena-shetsvla-sasurveli-perit-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/86-usaprtkhoebis-balishebis-inspeqtirebausaprtkhoebis",
+      "canonical": "https://fixup.ge/service/86-usaprtkhoebis-balishebis-inspeqtireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/87-avtomaturivariatoris-tipia-gadatsemata-kolofis-she",
+      "canonical": "https://fixup.ge/service/87-avtomaturivariatoris-tipia-gadatsemata-kolopis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/96-cheris-aghdgena-da-feris-shetsvla",
+      "canonical": "https://fixup.ge/service/96-cheris-aghdgena-da-peris-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/107-savali-natsilebis-tsmendazhangis-moshoreba-mshrali",
+      "canonical": "https://fixup.ge/service/107-savali-natsilebis-tsmendazhangis-moshoreba-mshrali-qinulis-aparatit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/111-tsepleniis-plota-feradosa-da-makhavikis-garemonteb",
+      "canonical": "https://fixup.ge/service/111-tsepleniis-plota-peradosa-da-makhavikis-garemonteba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/112-avtomobilis-eleqtrooba-da-diagnostika-adgilze-misv",
+      "canonical": "https://fixup.ge/service/112-avtomobilis-eleqtrooba-da-diagnostika-adgilze-misvlit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/114-kondintsioneris-freonit-datumbva-da-sheketeba",
+      "canonical": "https://fixup.ge/service/114-kondintsioneris-preonit-datumbva-da-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/116-manqanis-gasaghebis-daprogramebagacharkhvamanqanis",
+      "canonical": "https://fixup.ge/service/116-manqanis-gasaghebis-daprogramebagacharkhva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/128-droselis-adaptatsia-blutuzebis-shemotsmeba-sachis",
+      "canonical": "https://fixup.ge/service/128-droselis-adaptatsia-blutuzebis-shemotsmeba-sachis-sensoris-adaptatsia"
+    },
+    {
+      "submitted": "https://fixup.ge/service/139-antifrizis-shetsvla",
+      "canonical": "https://fixup.ge/service/139-antiprizis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/159-savardzlebis-shekerva-aghdgena-dizainis-sruliad-sh",
+      "canonical": "https://fixup.ge/service/159-savardzlebis-shekerva-aghdgena-dizainis-sruliad-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/161-avtomobilis-damtsavi-firis-gadakvra",
+      "canonical": "https://fixup.ge/service/161-avtomobilis-damtsavi-piris-gadakvra"
+    },
+    {
+      "submitted": "https://fixup.ge/service/162-nikelebis-gashaveba-interieris-detalebis-feris-she",
+      "canonical": "https://fixup.ge/service/162-nikelebis-gashaveba-interieris-detalebis-peris-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/20-hibridebze-fiuzhenis-kolofis-sheketeba",
+      "canonical": "https://fixup.ge/service/20-savali-natsili"
+    },
+    {
+      "submitted": "https://fixup.ge/service/168-farebis-polireba-ortqlit",
+      "canonical": "https://fixup.ge/service/168-parebis-polireba-ortqlit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/173-kondintsionershi-preonis-chatumbvakondintsionershi",
+      "canonical": "https://fixup.ge/service/173-kondintsionershi-preonis-chatumbva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/247-akumulatorebis-shetsvla-shemotsmeba-datenva",
+      "canonical": "https://fixup.ge/service/247-abeesis-sistema-toiotasa-da-leqsusze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/175-kondintsioneris-sheketeba-shemotsmeba-freonis-dama",
+      "canonical": "https://fixup.ge/service/175-kondintsioneris-sheketeba-shemotsmeba-preonis-damateba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/176-benzinis-dzravis-shemfrqvebevis-inzheqtorebis-shem",
+      "canonical": "https://fixup.ge/service/176-benzinis-dzravis-shemprqvebevis-inzheqtorebis-shemotsmeba-gatsmenda"
+    },
+    {
+      "submitted": "https://fixup.ge/service/178-dzravis-co-s-tseos-shemotsmeba-dzravis-gamoretskhv",
+      "canonical": "https://fixup.ge/service/178-dzravis-co-s-tseos-shemotsmeba-dzravis-gamoretskhva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/181-samukhruche-diskis-gasuftaveba-mokhekhva-apornebis",
+      "canonical": "https://fixup.ge/service/181-samukhruche-diskis-gasuptaveba-mokhekhva-apornebis-shlipovka"
+    },
+    {
+      "submitted": "https://fixup.ge/service/187-farebis-polireba",
+      "canonical": "https://fixup.ge/service/187-parebis-polireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/191-samukhruche-diskebis-khekhva-apornebis-shlifovka",
+      "canonical": "https://fixup.ge/service/191-samukhruche-diskebis-khekhva-apornebis-shlipovka"
+    },
+    {
+      "submitted": "https://fixup.ge/service/192-gadatsemata-kolofis-zetis-shetsvla-hybrid-way",
+      "canonical": "https://fixup.ge/service/192-gadatsemata-kolopis-zetis-shetsvla-hybrid-way"
+    },
+    {
+      "submitted": "https://fixup.ge/service/194-savali-natsilebis-sheketeba-adgilze-shedzena-hybri",
+      "canonical": "https://fixup.ge/service/194-savali-natsilebis-sheketeba-adgilze-shedzena-hybrid-way"
+    },
+    {
+      "submitted": "https://fixup.ge/service/197-fordisa-da-linkonis-dashlilebi",
+      "canonical": "https://fixup.ge/service/197-pordisa-da-linkonis-dashlilebi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/199-gadatsemata-kolofis-zetis-shetsvla",
+      "canonical": "https://fixup.ge/service/199-gadatsemata-kolopis-zetis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/202-antifrizis-shetsvla",
+      "canonical": "https://fixup.ge/service/202-antiprizis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/206-akumulatoris-mdgomareobis-shemotsmebaakumulatoris",
+      "canonical": "https://fixup.ge/service/206-akumulatoris-mdgomareobis-shemotsmeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/207-savali-natsilebis-shetsvla-sheketeba-diagnostireba",
+      "canonical": "https://fixup.ge/service/207-savali-natsilebis-shetsvla-sheketeba-diagnostireba-upasod"
+    },
+    {
+      "submitted": "https://fixup.ge/service/209-gadatsemata-kolofis-shetsvla",
+      "canonical": "https://fixup.ge/service/209-gadatsemata-kolopis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/210-fordisa-da-linkonis-markis-avtomobilebze-dzravis-z",
+      "canonical": "https://fixup.ge/service/210-pordisa-da-linkonis-markis-avtomobilebze-dzravis-zetis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/211-gadatsemata-kolofis-zetis-shetsvla",
+      "canonical": "https://fixup.ge/service/211-gadatsemata-kolopis-zetis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/213-diagnostika-fordis-markis-avtomobilebze",
+      "canonical": "https://fixup.ge/service/213-diagnostika-pordis-markis-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/215-gadatsemata-kolofis-remonti-da-shetsvla",
+      "canonical": "https://fixup.ge/service/215-gadatsemata-kolopis-remonti-da-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/216-dzravis-zetis-shetsvla-da-shedzena-fordis-markis-a",
+      "canonical": "https://fixup.ge/service/216-dzravis-zetis-shetsvla-da-shedzena-pordis-markis-avtomobilebisatvis"
+    },
+    {
+      "submitted": "https://fixup.ge/service/217-gadatsemata-kolofis-zetis-shetsvla",
+      "canonical": "https://fixup.ge/service/217-gadatsemata-kolopis-zetis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/219-fordis-dashlilebi",
+      "canonical": "https://fixup.ge/service/219-pordis-dashlilebi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/220-tsqlis-sistemis-sheketeba-antifrizis-shetsvla",
+      "canonical": "https://fixup.ge/service/220-tsqlis-sistemis-sheketeba-antiprizis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/224-saqrdeni-diskis-mokhekhva-apornebis-gashlifovkeba",
+      "canonical": "https://fixup.ge/service/224-saqrdeni-diskis-mokhekhva-apornebis-gashlipovkeba-dashlis-gareshe"
+    },
+    {
+      "submitted": "https://fixup.ge/service/236-litiumis-elementebze-gadaqvana-hibriduli-avtomobil",
+      "canonical": "https://fixup.ge/service/236-litiumis-elementebze-gadaqvana-hibriduli-avtomobilebis-moqmedebs-ganvadebis-servisi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/237-utskhoetidan-chamotana-elementebis-shetsvla-moqmed",
+      "canonical": "https://fixup.ge/service/237-utskhoetidan-chamotana-elementebis-shetsvla-moqmedebs-ganvadebis-servisi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/241-samukhruche-sitkhis-shemotsmeba-shetsvla-kalibrats",
+      "canonical": "https://fixup.ge/service/241-samukhruche-sitkhis-shemotsmeba-shetsvla-kalibratsia-dahaereba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/246-hibridis-elementebi-shetsvla-tsmenda-akhlis-shedze",
+      "canonical": "https://fixup.ge/service/246-hibridis-elementebi-shetsvla-tsmenda-akhlis-shedzena-litiumis-chaqeneba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/248-savali-natsilebis-shetsvla-sheketeba-toiotasa-da-l",
+      "canonical": "https://fixup.ge/service/248-savali-natsilebis-shetsvla-sheketeba-toiotasa-da-leqsusis-markis-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/251-antifrizis-shedzena-da-shetsvla",
+      "canonical": "https://fixup.ge/service/251-antiprizis-shedzena-da-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/253-hibridis-inventori-toiotasa-da-leqsusis-avtomobile",
+      "canonical": "https://fixup.ge/service/253-hibridis-inventori-toiotasa-da-leqsusis-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/259-zetis-klebis-problemis-aghmofkhvra",
+      "canonical": "https://fixup.ge/service/259-zetis-klebis-problemis-aghmopkhvra"
+    },
+    {
+      "submitted": "https://fixup.ge/service/260-tsvis-sruli-sistemis-gasuftaveba",
+      "canonical": "https://fixup.ge/service/260-tsvis-sruli-sistemis-gasuptaveba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/261-tsqlis-sistemis-gasuftaveba",
+      "canonical": "https://fixup.ge/service/261-tsqlis-sistemis-gasuptaveba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/263-gadatsemata-kolofis-shetsvla-kia-nirohyundai-ioniq",
+      "canonical": "https://fixup.ge/service/263-gadatsemata-kolopis-shetsvla-kia-nirohyundai-ioniq"
+    },
+    {
+      "submitted": "https://fixup.ge/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohy",
+      "canonical": "https://fixup.ge/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohyundai-ioniq"
+    },
+    {
+      "submitted": "https://fixup.ge/service/265-tsqlis-sistemis-gasuftaveba-kia-niro-hyundai-ioniq",
+      "canonical": "https://fixup.ge/service/265-tsqlis-sistemis-gasuptaveba-kia-niro-hyundai-ioniq"
+    },
+    {
+      "submitted": "https://fixup.ge/service/268-dzravis-sheketeba-mersedesis-markis-avtomobilebze",
+      "canonical": "https://fixup.ge/service/268-dzravis-sheketeba-mersedesis-markis-avtomobilebze-2013-tslidan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/269-samghebro-samushaoebi-mersedesis-markis-avtomobile",
+      "canonical": "https://fixup.ge/service/269-samghebro-samushaoebi-mersedesis-markis-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/277-minebis-damuqeba-4",
+      "canonical": "https://fixup.ge/service/277-minebis-damuqeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/278-farebis-polireba",
+      "canonical": "https://fixup.ge/service/278-parebis-polireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/280-kondintsioneris-freonit-datumbva",
+      "canonical": "https://fixup.ge/service/280-kondintsioneris-preonit-datumbva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/283-samukhruche-sistemis-sruli-sheketeba-da-sitkhis-sh",
+      "canonical": "https://fixup.ge/service/283-samukhruche-sistemis-sruli-sheketeba-da-sitkhis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/287-zetis-shetsvla-dzravsa-da-gadatsemata-kolofshi",
+      "canonical": "https://fixup.ge/service/287-zetis-shetsvla-dzravsa-da-gadatsemata-kolopshi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/289-gadatsemata-kolofis-sruli-diagnostika-da-sheketeba",
+      "canonical": "https://fixup.ge/service/289-gadatsemata-kolopis-sruli-diagnostika-da-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/298-saqrdeni-diskebis-apornebis-gacharkhva-samukhruche",
+      "canonical": "https://fixup.ge/service/298-saqrdeni-diskebis-apornebis-gacharkhva-samukhruche-khundebis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/301-dzravis-bolze-shemotsmeba-da-vakuumis-sistemis-dia",
+      "canonical": "https://fixup.ge/service/301-dzravis-bolze-shemotsmeba-da-vakuumis-sistemis-diagnostika"
+    },
+    {
+      "submitted": "https://fixup.ge/service/305-minebis-damuqeba-1",
+      "canonical": "https://fixup.ge/service/305-minebis-damuqeba-new-auto-motors"
+    },
+    {
+      "submitted": "https://fixup.ge/service/334-ieri-komforti",
+      "canonical": "https://fixup.ge/service/334-ieri-komporti"
+    },
+    {
+      "submitted": "https://fixup.ge/service/346-antifrizis-shetsvla-leader-motors-shi",
+      "canonical": "https://fixup.ge/service/346-antiprizis-shetsvla-leader-motors-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/351-savali-natsilis-sheketeba-dzravis-diagnostika-da-s",
+      "canonical": "https://fixup.ge/service/351-savali-natsilis-sheketeba-dzravis-diagnostika-da-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/353-gadatsemata-kolofis-sheketeba-leader-motors-shi",
+      "canonical": "https://fixup.ge/service/353-gadatsemata-kolopis-sheketeba-leader-motors-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/358-firis-gadakvra-leader-motors-shi",
+      "canonical": "https://fixup.ge/service/358-piris-gadakvra-leader-motors-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/360-aalebis-santlebis-shetsvlashedzena-leader-motors-s",
+      "canonical": "https://fixup.ge/service/360-aalebis-santlebis-shetsvlashedzena-leader-motors-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/367-dazianebuli-farebis-aghdgena-car-lights-shi",
+      "canonical": "https://fixup.ge/service/367-dazianebuli-parebis-aghdgena-car-lights-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/368-shushis-shetsvla-tqveni-avtomobilis-farebze",
+      "canonical": "https://fixup.ge/service/368-shushis-shetsvla-tqveni-avtomobilis-parebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/371-farebis-qimiuri-ortqlit-polireba",
+      "canonical": "https://fixup.ge/service/371-parebis-qimiuri-ortqlit-polireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/374-manqanis-signalebis-qvelaze-didi-archevani-car-lig",
+      "canonical": "https://fixup.ge/service/374-manqanis-signalebis-qvelaze-didi-archevani-car-lights-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/377-modzravi-vulkanizatsia",
+      "canonical": "https://fixup.ge/service/377-modzravi-vulkanizatsia-247-solveri"
+    },
+    {
+      "submitted": "https://fixup.ge/service/379-saburavebis-shetsvla-da-shedzena-sakhlidan-gausvle",
+      "canonical": "https://fixup.ge/service/379-saburavebis-shetsvla-da-shedzena-sakhlidan-gausvlelad"
+    },
+    {
+      "submitted": "https://fixup.ge/service/384-aalebis-santlebis-shetsvla-da-shemotsmeba-chevrole",
+      "canonical": "https://fixup.ge/service/384-aalebis-santlebis-shetsvla-da-shemotsmeba-chevrolet-georgia"
+    },
+    {
+      "submitted": "https://fixup.ge/service/385-satsvavis-inzheqtorebis-gatsmenda-chevrolet-georgi",
+      "canonical": "https://fixup.ge/service/385-satsvavis-inzheqtorebis-gatsmenda-chevrolet-georgia"
+    },
+    {
+      "submitted": "https://fixup.ge/service/386-sauketeso-khariskhis-dzravis-zetebi-adgilze-shetsv",
+      "canonical": "https://fixup.ge/service/386-sauketeso-khariskhis-dzravis-zetebi-adgilze-shetsvlit-chevrolet-georgia"
+    },
+    {
+      "submitted": "https://fixup.ge/service/387-samukhruche-sistemis-sheketeb-da-sitkhis-shetsvla",
+      "canonical": "https://fixup.ge/service/387-samukhruche-sistemis-sheketeb-da-sitkhis-shetsvla-chevrolet-georgia"
+    },
+    {
+      "submitted": "https://fixup.ge/service/388-kondintsioneris-freonit-datumbva-da-sheketeba-chev",
+      "canonical": "https://fixup.ge/service/388-kondintsioneris-preonit-datumbva-da-sheketeba-chevrolet-georgia"
+    },
+    {
+      "submitted": "https://fixup.ge/service/390-gadatsemata-kolofshi-zetis-shetsvla-chevrolet-geor",
+      "canonical": "https://fixup.ge/service/390-gadatsemata-kolopshi-zetis-shetsvla-chevrolet-georgia-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/247-akumulatoris-adgilze-mitanis-shedzenis-servisi",
+      "canonical": "https://fixup.ge/service/247-abeesis-sistema-toiotasa-da-leqsusze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/403-roboti-diesji-variatoris-da-skhva-tipis-gadatsemat",
+      "canonical": "https://fixup.ge/service/403-roboti-diesji-variatoris-da-skhva-tipis-gadatsemata-kolopis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/409-shevrolet-volti-bolti-da-malibus-eleqtroobis-sheke",
+      "canonical": "https://fixup.ge/service/409-shevrolet-volti-bolti-da-malibus-eleqtroobis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/410-chevrolet-cadillac-buick-gmc-opel-avtomobilebis-pr",
+      "canonical": "https://fixup.ge/service/410-chevrolet-cadillac-buick-gmc-opel-avtomobilebis-programireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/413-gm-is-markis-avtomobilebze-eleqtroobis-sruli-aghdg",
+      "canonical": "https://fixup.ge/service/413-gm-is-markis-avtomobilebze-eleqtroobis-sruli-aghdgena"
+    },
+    {
+      "submitted": "https://fixup.ge/service/415-diagnostika-gm-is-ofitsialuri-programit-zusti-diag",
+      "canonical": "https://fixup.ge/service/415-diagnostika-gm-is-opitsialuri-programit-zusti-diagnozi-tqvens-manqanaze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/416-dzravis-sheketeba-gm-laboratory-ji-em-laboratorias",
+      "canonical": "https://fixup.ge/service/416-dzravis-sheketeba-gm-laboratory-ji-em-laboratoriashi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/417-savali-natsilis-sheketeba-gm-is-markis-avtomobileb",
+      "canonical": "https://fixup.ge/service/417-savali-natsilis-sheketeba-gm-is-markis-avtomobilebze-gm-laboratory"
+    },
+    {
+      "submitted": "https://fixup.ge/service/418-gadatsemata-kolofis-sheketeba-gm-laboratory",
+      "canonical": "https://fixup.ge/service/418-gadatsemata-kolopis-sheketeba-gm-laboratory"
+    },
+    {
+      "submitted": "https://fixup.ge/service/419-tsqalshi-chanadziri-manqanis-sruli-aghdgena-gm-lab",
+      "canonical": "https://fixup.ge/service/419-tsqalshi-chanadziri-manqanis-sruli-aghdgena-gm-laboratory-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/422-avtomobilis-sruli-teqnikuri-datvaliereba-gm-labora",
+      "canonical": "https://fixup.ge/service/422-avtomobilis-sruli-teqnikuri-datvaliereba-gm-laboratory-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/423-damtsavi-firis-gadakvra-g-wraps-shi",
+      "canonical": "https://fixup.ge/service/423-damtsavi-piris-gadakvra-g-wraps-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/424-feradi-firis-gadakvra-g-wraps-shi",
+      "canonical": "https://fixup.ge/service/424-peradi-piris-gadakvra-g-wraps-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/425-qromirebuli-detalebis-nikelebis-gashaveba-g-wraps",
+      "canonical": "https://fixup.ge/service/425-qromirebuli-detalebis-nikelebis-gashaveba-g-wraps-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/427-dpf-sazhavois-filtris-tsmenda",
+      "canonical": "https://fixup.ge/service/427-dpf-sazhavois-piltris-tsmenda"
+    },
+    {
+      "submitted": "https://fixup.ge/service/433-foltsvagenis-markis-avtomobilebis-eleqtroobis-shek",
+      "canonical": "https://fixup.ge/service/433-poltsvagenis-markis-avtomobilebis-eleqtroobis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/434-foltsvagenis-audisa-da-shkodas-diagnostika-litsenz",
+      "canonical": "https://fixup.ge/service/434-poltsvagenis-audisa-da-shkodas-diagnostika-litsenzirebuli-programit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/435-nebismieri-tipis-dzravis-sheketeba-dizelis-dzraveb",
+      "canonical": "https://fixup.ge/service/435-nebismieri-tipis-dzravis-sheketeba-dizelis-dzravebits"
+    },
+    {
+      "submitted": "https://fixup.ge/service/436-mersedesisa-da-skhva-markebis-gadatsemata-kolofis",
+      "canonical": "https://fixup.ge/service/436-mersedesisa-da-skhva-markebis-gadatsemata-kolopis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/445-farebis-polireba-keramikuli-ortqlit",
+      "canonical": "https://fixup.ge/service/445-parebis-polireba-keramikuli-ortqlit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/446-antifrizis-shemotsmeba-da-shetsvla",
+      "canonical": "https://fixup.ge/service/446-antiprizis-shemotsmeba-da-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/447-samukhruche-khundebis-shemotsmeba-da-shetsvla-adgi",
+      "canonical": "https://fixup.ge/service/447-samukhruche-khundebis-shemotsmeba-da-shetsvla-adgilze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/448-gadatsemata-kolofis-karobkis-zetis-vargisianobis-s",
+      "canonical": "https://fixup.ge/service/448-gadatsemata-kolopis-karobkis-zetis-vargisianobis-shemotsmeba-da-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/449-samukhruche-sitkhis-shemotsmeba-shetsvla-da-dahaer",
+      "canonical": "https://fixup.ge/service/449-samukhruche-sitkhis-shemotsmeba-shetsvla-da-dahaereba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/455-qumbaris-pilnikis-moukhsnelad-shetsvla-spetsialuri",
+      "canonical": "https://fixup.ge/service/455-qumbaris-pilnikis-moukhsnelad-shetsvla-spetsialuri-aparatit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/456-kempit-shedugheba-dazianebuli-iatakis-amochra-da-a",
+      "canonical": "https://fixup.ge/service/456-kempit-shedugheba-dazianebuli-iatakis-amochra-da-akhali-detalis-chakereba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/457-nebismier-gadatsemata-kolofshi-zetis-shetsvla",
+      "canonical": "https://fixup.ge/service/457-nebismier-gadatsemata-kolopshi-zetis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/458-nebismieri-tipis-gadatsemata-kolofis-sheketeba",
+      "canonical": "https://fixup.ge/service/458-nebismieri-tipis-gadatsemata-kolopis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/459-eleqtroobis-sruli-sheketeba-rustavis-avtobazrobast",
+      "canonical": "https://fixup.ge/service/459-eleqtroobis-sruli-sheketeba-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/461-savali-natsilebis-sruli-servisi-rustavis-avtobazro",
+      "canonical": "https://fixup.ge/service/461-savali-natsilebis-sruli-servisi-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/462-sruli-kompiuteruli-diagnostika-rustavis-avtobazrob",
+      "canonical": "https://fixup.ge/service/462-sruli-kompiuteruli-diagnostika-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/463-tsqlis-sistemis-shemotsmeba-da-gamoretskhva-rustav",
+      "canonical": "https://fixup.ge/service/463-tsqlis-sistemis-shemotsmeba-da-gamoretskhva-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/464-fechis-radiatoris-gamoretskhva-rustavis-avtobazrob",
+      "canonical": "https://fixup.ge/service/464-pechis-radiatoris-gamoretskhva-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/465-tsvis-sistemis-sheketeba-da-tsvis-shemtsireba-rust",
+      "canonical": "https://fixup.ge/service/465-tsvis-sistemis-sheketeba-da-tsvis-shemtsireba-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/466-gadatsemata-kolofis-sheketeba-rustavis-avtobazroba",
+      "canonical": "https://fixup.ge/service/466-gadatsemata-kolopis-sheketeba-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/467-tsqlisa-da-zetis-sistemebis-spetsialuri-aparatit-s",
+      "canonical": "https://fixup.ge/service/467-tsqlisa-da-zetis-sistemebis-spetsialuri-aparatit-shemotsmeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/469-gadatsemata-kolofis-zetis-gafiltvra-rustavis-avtob",
+      "canonical": "https://fixup.ge/service/469-gadatsemata-kolopis-zetis-gapiltvra-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/471-gadatsemata-kolofis-zetis-shetsvla-rustavis-avtoba",
+      "canonical": "https://fixup.ge/service/471-gadatsemata-kolopis-zetis-shetsvla-rustavis-avtobazrobastan"
+    },
+    {
+      "submitted": "https://fixup.ge/service/472-droselis-egeeris-fanjrebis-kolofis-distronikisa-da",
+      "canonical": "https://fixup.ge/service/472-droselis-egeeris-panjrebis-kolopis-distronikisa-da-skhva-motsqobilobebis-adaptatsia-da-kalibratsia"
+    },
+    {
+      "submitted": "https://fixup.ge/service/475-gadatsemata-kolofebi-toiota-qemri-honda-tseerve-fi",
+      "canonical": "https://fixup.ge/service/475-gadatsemata-kolopebi-toiota-qemri-honda-tseerve-piti-mitsubishi-kolti-autlenderi-nisan-tida-qvesti-iqstraili"
+    },
+    {
+      "submitted": "https://fixup.ge/service/477-damtsavi-da-feradi-firis-gadakvra-cheris-panoramul",
+      "canonical": "https://fixup.ge/service/477-damtsavi-da-peradi-piris-gadakvra-cheris-panoramuli-epeqti"
+    },
+    {
+      "submitted": "https://fixup.ge/service/481-sarobote-da-satunuqe-samushaoebi-tunuqis-sruli-agh",
+      "canonical": "https://fixup.ge/service/481-sarobote-da-satunuqe-samushaoebi-tunuqis-sruli-aghdgena"
+    },
+    {
+      "submitted": "https://fixup.ge/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmend",
+      "canonical": "https://fixup.ge/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmenda"
+    },
+    {
+      "submitted": "https://fixup.ge/service/485-fechisa-da-mtliani-tsqlis-sistemis-gamoretskhva-sp",
+      "canonical": "https://fixup.ge/service/485-pechisa-da-mtliani-tsqlis-sistemis-gamoretskhva-spetsialuri-aparatit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/486-gadatsemata-kolofis-zetebi-adgilze-shetsvlit",
+      "canonical": "https://fixup.ge/service/486-gadatsemata-kolopis-zetebi-adgilze-shetsvlit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/491-skoda-audi-volkswagen-markis-avtomobilebze-nebismi",
+      "canonical": "https://fixup.ge/service/491-skoda-audi-volkswagen-markis-avtomobilebze-nebismieri-dzravis-sruli-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/492-skoda-audi-volkswagen-markis-avtomobilebze-nebismi",
+      "canonical": "https://fixup.ge/service/492-skoda-audi-volkswagen-markis-avtomobilebze-nebismieri-sirtulis-eleqtroobis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/493-skoda-audi-volkswagen-markis-avtomobilebis-diagnos",
+      "canonical": "https://fixup.ge/service/493-skoda-audi-volkswagen-markis-avtomobilebis-diagnostika-litsenzirebuli-programit"
+    },
+    {
+      "submitted": "https://fixup.ge/service/496-eleqtro-diagnostika-1",
+      "canonical": "https://fixup.ge/service/496-eleqtro-diagnostika"
+    },
+    {
+      "submitted": "https://fixup.ge/service/499-gazhonvis-diagmostireba",
+      "canonical": "https://fixup.ge/service/499-gazhonvis-diagnostireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/508-tsqlis-sistemis-gamoretskhva-1",
+      "canonical": "https://fixup.ge/service/508-tsqlis-sistemis-gamoretskhva"
+    },
+    {
+      "submitted": "https://fixup.ge/service/509-dzravis-remonti-1",
+      "canonical": "https://fixup.ge/service/509-dzravis-remonti"
+    },
+    {
+      "submitted": "https://fixup.ge/service/510-savali-natsilebis-sheketeba-1",
+      "canonical": "https://fixup.ge/service/510-savali-natsilebis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/511-zetis-shetsvla-1",
+      "canonical": "https://fixup.ge/service/511-zetis-shetsvla"
+    },
+    {
+      "submitted": "https://fixup.ge/service/533-parebisa-da-plasmasis-detalebis-aghdgena-aseve-sru",
+      "canonical": "https://fixup.ge/service/533-parebisa-da-plasmasis-detalebis-aghdgena-aseve-sruli-vizualuri-kosmetika-guriashi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/534-plasmasis-detalebis-sruli-aghdgena-tqveni-avtomobi",
+      "canonical": "https://fixup.ge/service/534-plasmasis-detalebis-sruli-aghdgena-tqveni-avtomobilisatvis"
+    },
+    {
+      "submitted": "https://fixup.ge/service/536-parebis-polireba-pirvandeli-sakhis-aghdgena-batums",
+      "canonical": "https://fixup.ge/service/536-parebis-polireba-pirvandeli-sakhis-aghdgena-chokhataurshi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/537-samghebro-samushaoebi-maliari-batumshi",
+      "canonical": "https://fixup.ge/service/537-samghebro-samushaoebi-maliari-chokhatauri"
+    },
+    {
+      "submitted": "https://fixup.ge/service/538-dazianebuli-salonis-sruli-aghdgena-batumshi",
+      "canonical": "https://fixup.ge/service/538-dazianebuli-salonis-sruli-aghdgena-chokhataurshi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/539-cheris-gashaveba-gadakvra-batumshi",
+      "canonical": "https://fixup.ge/service/539-cheris-gashaveba-gadakvra-chokhataurshi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/540-nebismieri-sirtulis-satunuqe-samushaoebi-batumshi",
+      "canonical": "https://fixup.ge/service/540-nebismieri-sirtulis-satunuqe-samushaoebi-guriashi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/541-eleqtroobis-sheketeba-batumshi",
+      "canonical": "https://fixup.ge/service/541-eleqtroobis-sheketeba-chokhataurshi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/543-diagnostika-1",
+      "canonical": "https://fixup.ge/service/543-diagnostika"
+    },
+    {
+      "submitted": "https://fixup.ge/service/546-tsivad-gastsoreba-1",
+      "canonical": "https://fixup.ge/service/546-tsivad-gastsoreba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/559-manqanis-polireba-keramika",
+      "canonical": "https://fixup.ge/service/559-manqanis-polireba-keramika-qimtsmenda"
+    },
+    {
+      "submitted": "https://fixup.ge/service/560-kompiuteruli-programireba-eleqtro-avtomobilebsa-da",
+      "canonical": "https://fixup.ge/service/560-kompiuteruli-programireba-eleqtro-avtomobilebsa-da-hibridebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/561-diagnostika-eleqtro-avtomobilebze-da-hibridul-avto",
+      "canonical": "https://fixup.ge/service/561-diagnostika-eleqtro-avtomobilebze-da-hibridul-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/563-sruli-eleqtrobis-sheketeba-eleqtro-avtomobilebsa-d",
+      "canonical": "https://fixup.ge/service/563-sruli-eleqtrobis-sheketeba-eleqtro-avtomobilebsa-da-hibridebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/570-msubuqi-da-satvirto-avtomobilis-piltrebis-shetsvla",
+      "canonical": "https://fixup.ge/service/570-msubuqi-da-satvirto-avtomobilis-piltrebis-shetsvla-apomotors-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/573-parebis-gastsoreba-germanuli-naturebi-apomotors-sh",
+      "canonical": "https://fixup.ge/service/573-parebis-gastsoreba-germanuli-naturebi-apomotors-shi"
+    },
+    {
+      "submitted": "https://fixup.ge/service/583-eleqtroobis-nebismieri-problemis-mogvareba-toiotas",
+      "canonical": "https://fixup.ge/service/583-eleqtroobis-nebismieri-problemis-mogvareba-toiotas-hibridul-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/584-gadatsemata-kolopis-sheketeba-hibridul-avtomobileb",
+      "canonical": "https://fixup.ge/service/584-gadatsemata-kolopis-sheketeba-hibridul-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/585-invertoris-problemebis-mogvareba-toiotas-markis-hi",
+      "canonical": "https://fixup.ge/service/585-invertoris-problemebis-mogvareba-toiotas-markis-hibridul-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/590-programireba-1",
+      "canonical": "https://fixup.ge/service/590-programireba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/609-satsvavis-tumbos-sheketeba-aghdgena-dizelze-momush",
+      "canonical": "https://fixup.ge/service/609-satsvavis-tumbos-sheketeba-aghdgena-dizelze-momushave-avtomobilebistvis"
+    },
+    {
+      "submitted": "https://fixup.ge/service/617-savali-natsilis-sheketeba-bmw-da-skhva-avtomobileb",
+      "canonical": "https://fixup.ge/service/617-savali-natsilis-sheketeba-bmw-da-skhva-avtomobilebze"
+    },
+    {
+      "submitted": "https://fixup.ge/service/624-savali-natsilis-sheketeba-1",
+      "canonical": "https://fixup.ge/service/624-savali-natsilis-sheketeba"
+    },
+    {
+      "submitted": "https://fixup.ge/service/629-avto-saghebavebis-shezaveba-1",
+      "canonical": "https://fixup.ge/service/629-avto-saghebavebis-shezaveba"
+    }
+  ],
+  "verification_limit": "Prepared changes require manual publication. Current Search Console labels describe earlier crawls. Several active canonical HTML pages already have correct metadata; Google index selection must be reassessed after recrawl. The duplicate report examples were reviewed; a full duplicate CSV export was not obtained.",
+  "gsc_crawled_report": {
+    "total_records": 203,
+    "technical_json_files": 177,
+    "sitemap_xml_files": 10,
+    "html_pages": 16,
+    "note": "Technical JSON/XML exclusions are separated from actual content pages."
+  },
+  "live_html_review": [
+    {
+      "url": "https://fixup.ge/service/493",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "იპოვე ავტოხელოსანი",
+      "ssg": "/"
+    },
+    {
+      "url": "https://fixup.ge/service/339-airbagisa-da-gachedili-ghvedebis-aghdgena",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/339-airbagisa-da-gachedili-ghvedebis-aghdgena"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "აირბაგისა და გაჭედილი ღვედების აღდგენა.",
+      "ssg": "/service/339-airbagisa-da-gachedili-ghvedebis-aghdgena"
+    },
+    {
+      "url": "https://fixup.ge/service/619-motosa-da-mopedis-dzravis-sheketeba",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/619-motosa-da-mopedis-dzravis-sheketeba"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "მოტოსა და მოპედის ძრავის შეკეთება.",
+      "ssg": "/service/619-motosa-da-mopedis-dzravis-sheketeba"
+    },
+    {
+      "url": "https://fixup.ge/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmenda",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmenda"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "წვის პრობლემების მოგვარება, ინჟექტორების გაწმენდა.",
+      "ssg": "/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmenda"
+    },
+    {
+      "url": "https://fixup.ge/mechanic/307-dagi-dagi",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "იპოვე ავტოხელოსანი",
+      "ssg": "/"
+    },
+    {
+      "url": "https://fixup.ge/category/dashlilebi/digomi",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "იპოვე ავტოხელოსანი",
+      "ssg": "/"
+    },
+    {
+      "url": "https://fixup.ge/service/606",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "იპოვე ავტოხელოსანი",
+      "ssg": "/"
+    },
+    {
+      "url": "https://fixup.ge/service/303-bunebrivi-gazis-montazhi-da-sheketeba",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/303-bunebrivi-gazis-montazhi-da-sheketeba"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "ბუნებრივი გაზის მონტაჟი და შეკეთება.",
+      "ssg": "/service/303-bunebrivi-gazis-montazhi-da-sheketeba"
+    },
+    {
+      "url": "https://fixup.ge/service/274-mersedesis-dashlilebi-2013-tslidan-zemot",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/274-mersedesis-dashlilebi-2013-tslidan-zemot"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "მერსედესის დაშლილები 2013 წლიდან ზემოთ.",
+      "ssg": "/service/274-mersedesis-dashlilebi-2013-tslidan-zemot"
+    },
+    {
+      "url": "https://fixup.ge/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohyundai-ioniq",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohyundai-ioniq"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "ჰიბრიდული ელემენტების შეცვლა შეძენა kia niro/Hyundai ioniq .",
+      "ssg": "/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohyundai-ioniq"
+    },
+    {
+      "url": "https://fixup.ge/service/588-pord-piuzhenis-sruli-eleqtrooba",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/588-pord-piuzhenis-sruli-eleqtrooba"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "ფორდ ფიუჟენის სრული ელექტროობა.",
+      "ssg": "/service/588-pord-piuzhenis-sruli-eleqtrooba"
+    },
+    {
+      "url": "https://fixup.ge/service/bunebrivi-gazis-montazhi-da-sheketeba",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "იპოვე ავტოხელოსანი",
+      "ssg": "/"
+    },
+    {
+      "url": "https://fixup.ge/mechanic/127-127-sandro-gotsadze",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "იპოვე ავტოხელოსანი",
+      "ssg": "/"
+    },
+    {
+      "url": "https://fixup.ge/service/170-razvalis-gastsoreba",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/170-razvalis-gastsoreba"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "რაზვალის გასწორება.",
+      "ssg": "/service/170-razvalis-gastsoreba"
+    },
+    {
+      "url": "https://fixup.ge/service/171-razvalis-gastsoreba",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge/service/171-razvalis-gastsoreba"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "რაზვალის გასწორება.",
+      "ssg": "/service/171-razvalis-gastsoreba"
+    },
+    {
+      "url": "https://fixup.ge/service/514-eleqtrooba",
+      "status": 200,
+      "canonical": [
+        "https://fixup.ge"
+      ],
+      "robots": [
+        "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      ],
+      "h1": "იპოვე ავტოხელოსანი",
+      "ssg": "/"
+    }
+  ]
+}

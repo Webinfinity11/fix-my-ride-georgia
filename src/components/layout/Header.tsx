@@ -139,11 +139,14 @@ const Header = () => {
               >
                 რეგისტრაცია
               </Link>
-              {/* Desktop: register (login lives in the top ribbon) */}
-              <div className="hidden md:flex items-center space-x-4">
-                <Link to="/register">
-                  <Button size="sm">რეგისტრაცია</Button>
-                </Link>
+              {/* Desktop authentication actions */}
+              <div className="hidden md:flex items-center gap-2">
+                <Button asChild variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/5">
+                  <Link to="/login">შესვლა</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link to="/register">რეგისტრაცია</Link>
+                </Button>
               </div>
             </>
           )}

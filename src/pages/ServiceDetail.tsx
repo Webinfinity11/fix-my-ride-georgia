@@ -70,6 +70,10 @@ import { readServiceSnapshot } from "@/lib/serviceSnapshot";
 const ServiceDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const handleBack = () => {
+    if ((window.history.state?.idx ?? 0) > 0 || (document.referrer && window.history.length > 1)) navigate(-1);
+    else navigate("/services", { replace: true });
+  };
   const [service, setService] = useState<ServiceType | null>(() => readServiceSnapshot());
   const [loading, setLoading] = useState(() => !readServiceSnapshot());
   const serviceRequest = useRef(0);
@@ -104,9 +108,6 @@ const ServiceDetail = () => {
   const { seoData } = useSEOData('service', service?.id.toString() || '');
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-    });
     if (id) fetchServiceBySlugOrId(id);
     return () => { serviceRequest.current++; };
   }, [id]);
@@ -169,7 +170,7 @@ const ServiceDetail = () => {
         
         // If we found the service and it was accessed via ID-slug format, 
         // redirect to canonical URL if needed
-        if (!serviceError && serviceData && idSlugMatch) {
+        if (!serviceError && serviceData && (idSlugMatch || isNumericId)) {
           const correctSlug = `${serviceData.id}-${createSlug(serviceData.name)}`;
           if (needsCanonicalRedirect(slugOrId, correctSlug)) {
             performRedirect(navigate, `/service/${correctSlug}`, { permanent: true });
@@ -845,7 +846,7 @@ const ServiceDetail = () => {
                 <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
                   {/* Actions — min 40px tap targets + spacing for mobile */}
                   <div className="flex items-center gap-2">
-                    <button type="button" onClick={() => navigate("/services")} className="h-10 px-3.5 rounded-pill bg-white/80 backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-700 text-[12px] font-semibold inline-flex items-center gap-1.5"><ArrowLeft className="h-4 w-4" />უკან</button>
+                    <button type="button" onClick={handleBack} className="h-10 px-3.5 rounded-pill bg-white/80 backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-700 text-[12px] font-semibold inline-flex items-center gap-1.5"><ArrowLeft className="h-4 w-4" />უკან</button>
                     <SaveServiceButton serviceId={service.id} />
                     <ServiceShareButtons serviceName={service.name} serviceUrl={canonicalUrl} serviceDescription={service.description || undefined} />
                     <button type="button" onClick={() => setReportOpen(true)} className="h-10 w-10 rounded-pill bg-white/80 hover:bg-white backdrop-blur border border-ink-200/60 hover:border-ink-300 text-ink-500 grid place-items-center" aria-label="დააფიქსირე პრობლემა"><Flag className="h-4 w-4" /></button>

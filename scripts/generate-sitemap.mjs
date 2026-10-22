@@ -33,8 +33,7 @@ const XSL_HREF = '//fixup.ge/main-sitemap.xsl';
 const INDEXNOW_KEY = 'a3f7e2b9c4d6e8f1a2b3c4d5e6f78901';
 
 // District landing pages — mirror src/utils/districts.ts. Keep in sync.
-// Only districts with ≥10 services site-wide qualify; the per-category
-// combination still needs ≥1 service for its URL to ship.
+// Each category/district combination needs at least one active service.
 const DISTRICTS = [
   { slug: 'gldani',      name: 'გლდანი' },
   { slug: 'varketili',   name: 'ვარკეთილი' },
@@ -367,13 +366,7 @@ async function main() {
   const indexableServices = (services || []).filter(isServiceIndexable);
   const excludedServiceCount = (services?.length || 0) - indexableServices.length;
   const serviceEntries = indexableServices.map((s) => {
-    let urlPart;
-    if (s.slug && /^\d+-/.test(s.slug)) {
-      urlPart = s.slug;
-    } else {
-      const slug = s.slug || createSlug(s.name);
-      urlPart = slug ? `${s.id}-${slug}` : String(s.id);
-    }
+    const urlPart = `${s.id}-${createSlug(s.name)}`;
     const images = Array.isArray(s.photos) ? s.photos : [];
     return urlEntry({
       loc: `${SITE_URL}/service/${urlPart}`,
@@ -429,6 +422,7 @@ async function main() {
   }
   for (const c of categories || []) {
     const categorySlug = createSlug(c.name);
+    if (!(services || []).some(s => s.category_id === c.id)) continue;
     categoryEntries.push(urlEntry({
       loc: `${SITE_URL}/category/${categorySlug}`,
       lastmod: now,
@@ -514,13 +508,7 @@ async function main() {
   });
 
   const videoEntries = servicesWithVideos.map((s) => {
-    let urlPart;
-    if (s.slug && /^\d+-/.test(s.slug)) {
-      urlPart = s.slug;
-    } else {
-      const slug = s.slug || createSlug(s.name);
-      urlPart = slug ? `${s.id}-${slug}` : String(s.id);
-    }
+    const urlPart = `${s.id}-${createSlug(s.name)}`;
     const thumbnail = s.photos.find((p) => typeof p === 'string' && p.startsWith('http'));
     return videoUrlEntry({
       loc: `${SITE_URL}/service/${urlPart}`,
@@ -544,19 +532,9 @@ async function main() {
 `;
   await writeFile(join(publicDir, 'sitemap_index.xml'), indexXml, 'utf8');
 
-  // ---- Backward-compat shims ----
-  // Old robots.txt referenced /sitemap.xml and /sitemap-index.xml. Browsers can't
-  // 301-redirect static files without server config — we serve a 1-line index
-  // pointing to sitemap_index.xml so Search Console submissions continue working.
-  const legacyPointer = `${sitemapIndexHeader()}
-  <sitemap>
-    <loc>${SITE_URL}/sitemap_index.xml</loc>
-    <lastmod>${now}</lastmod>
-  </sitemap>
-</sitemapindex>
-`;
-  await writeFile(join(publicDir, 'sitemap.xml'), legacyPointer, 'utf8');
-  await writeFile(join(publicDir, 'sitemap-index.xml'), legacyPointer, 'utf8');
+  // Legacy submissions must reference leaf sitemaps, never another index.
+  await writeFile(join(publicDir, 'sitemap.xml'), indexXml, 'utf8');
+  await writeFile(join(publicDir, 'sitemap-index.xml'), indexXml, 'utf8');
 
   // Remove stale paginated files from previous runs (e.g. service-sitemap5.xml
   // if data shrank). Only delete files matching our managed naming.

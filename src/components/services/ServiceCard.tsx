@@ -242,7 +242,7 @@ const ServiceCard = ({ service, onMapFocus, priorityImage = false }: ServiceCard
 
             {/* Details Button */}
             <Button asChild className="flex-1 bg-primary hover:bg-primary-light transition-colors">
-              <Link to={`/service/${createServiceSlug(service.id, service.name)}`}>ვრცლად</Link>
+              <Link onClick={e => e.stopPropagation()} to={`/service/${createServiceSlug(service.id, service.name)}`}>ვრცლად</Link>
             </Button>
           </div>
         </div>

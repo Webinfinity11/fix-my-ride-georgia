@@ -1,3 +1,5 @@
+import { useCatalogueState, useCatalogueResume } from "@/hooks/useCatalogueState";
+import { rotateServiceIds, serviceRotationSeed, sessionServiceIds } from "@/utils/serviceRotation";
 import { normalizeModels, type ServiceModel } from '@/utils/serviceModels';
 import { getPublicServiceCategories, getPublicServiceCities } from "@/lib/serviceMetadata";
 
@@ -51,6 +53,7 @@ export type ServiceCategory = {
 };
 
 export type ServiceSortOption =
+  | "rotation"
   | "newest"
   | "oldest"
   | "price_low"
@@ -74,6 +77,7 @@ const PAGE_SIZE = 24;
 
 // Chosen sort → (column, ascending). VIP tier always ranks above these.
 const SORT_MAP: Record<ServiceSortOption, [string, boolean]> = {
+  rotation: ["id", true],
   newest: ["created_at", false],
   oldest: ["created_at", true],
   price_low: ["price_from", true],
@@ -83,16 +87,18 @@ const SORT_MAP: Record<ServiceSortOption, [string, boolean]> = {
 };
 
 export const useServices = (initial?: { services: ServiceType[]; totalCount: number; hasMore: boolean } | null) => {
-  const [services, setServices] = useState<ServiceType[]>(initial?.services ?? []);
-  const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-  const [loading, setLoading] = useState(!initial);
+  const resume = useCatalogueResume();
+  const [services, setServices] = useCatalogueState<ServiceType[]>(initial?.services ?? [], "services");
+  const [categories, setCategories] = useCatalogueState<ServiceCategory[]>([], "categories");
+  const [cities, setCities] = useCatalogueState<string[]>([], "cities");
+  const [districts, setDistricts] = useCatalogueState<string[]>([], "districts");
+  const [loading, setLoading] = useState(!initial && !resume.current);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [totalCount, setTotalCount] = useState(initial?.totalCount ?? 0);
-  const [hasMore, setHasMore] = useState(initial?.hasMore ?? false);
+  const [totalCount, setTotalCount] = useCatalogueState(initial?.totalCount ?? 0, "totalCount");
+  const [hasMore, setHasMore] = useCatalogueState(initial?.hasMore ?? false, "hasMore");
 
   const serviceRequest = useRef(0);
+  const [savedFilterSignature, setSavedFilterSignature] = useCatalogueState<string | null>(null, "serviceFilters");
 
   const fetchInitialData = async () => {
     console.log("🔄 Fetching initial data...");
@@ -143,9 +149,8 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
     }
   };
 
-  // Server-side paginated fetch. Previously this pulled EVERY active service
-  // (~1MB) so text search / brand filter / VIP sort could run client-side;
-  // that's now all done in the query and only one page (PAGE_SIZE) is fetched.
+  // Rotation reads matching IDs/provider IDs first, then only one page of full cards.
+  // Explicit user sorts keep server-side pagination.
   // `page` 0 replaces the list; higher pages append ("load more").
   // `options.all` fetches every matching row in one go (used by the map, which
   // needs all services as pins — not a 24-row page). `withCoordinates` is
@@ -155,6 +160,10 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
     page = 0,
     options?: { all?: boolean; withCoordinates?: boolean; background?: boolean },
   ) => {
+    const signature = JSON.stringify(filters);
+    if (page === 0 && resume.current && savedFilterSignature === signature) { resume.current = false; return; }
+    resume.current = false;
+    setSavedFilterSignature(signature);
     const request = ++serviceRequest.current;
     if (page === 0) {
       if (!options?.background) setLoading(true);
@@ -162,7 +171,7 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
     } else setLoadingMore(true);
 
     try {
-      const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "newest"];
+      const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "rotation"];
       const from = page * PAGE_SIZE;
       const fetchAll = options?.all === true;
 
@@ -171,11 +180,11 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
       // the chosen sort). If that column doesn't exist yet (migration not
       // applied), we fall back to is_vip_active ordering so the page never
       // breaks — see the retry below.
-      const build = (useRank: boolean) => {
+      const build = (useRank: boolean, inventoryOffset?: number, ids?: number[]) => {
         let q = (supabase as any)
           .from("mechanic_services")
           .select(
-            `
+            inventoryOffset !== undefined ? "id,mechanic_id,is_vip_active,vip_status,vip_until" : `
             id,
             name,
             slug,
@@ -248,6 +257,9 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
           q = q.or(ors.join(","));
         }
 
+        if (inventoryOffset !== undefined) return q.order("id", { ascending: true }).range(inventoryOffset, inventoryOffset + 999);
+        if (ids) return q.in("id", ids).order("id", { ascending: true }).range(0, Math.max(ids.length - 1, 0));
+
         // Ordering
         if (useRank) {
           q = q.order("vip_rank", { ascending: true, nullsFirst: false });
@@ -261,8 +273,27 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
         return fetchAll ? q.range(0, 4999) : q.range(from, from + PAGE_SIZE - 1);
       };
 
-      let { data: servicesData, error: servicesError, count } = await build(true);
-      if (servicesError && /vip_rank/i.test(servicesError.message || "")) {
+      const rotation = (filters.sortBy ?? "rotation") === "rotation" && !fetchAll;
+      let rotationIds: number[] | undefined;
+      if (rotation) {
+        const scope = JSON.stringify({ ...filters, selectedBrands: [...filters.selectedBrands].sort(), sortBy: 'rotation', coordinates: Boolean(options?.withCoordinates) });
+        rotationIds = await sessionServiceIds(scope, async () => {
+          const inventory = [];
+          for (let offset = 0; ; offset += 1000) {
+            const { data, error } = await build(false, offset);
+            if (error) throw error;
+            inventory.push(...(data ?? []));
+            if ((data?.length ?? 0) < 1000) break;
+          }
+          return rotateServiceIds(inventory, serviceRotationSeed());
+        });
+        if (request !== serviceRequest.current) return;
+      }
+      const pageIds = rotationIds?.slice(from, from + PAGE_SIZE);
+      let { data: servicesData, error: servicesError, count } = pageIds
+        ? pageIds.length ? await build(false, undefined, pageIds) : { data: [], error: null, count: 0 }
+        : await build(true);
+      if (!rotation && servicesError && /vip_rank/i.test(servicesError.message || "")) {
         console.warn("vip_rank column missing — run migration; using fallback order");
         ({ data: servicesData, error: servicesError, count } = await build(false));
       }
@@ -270,6 +301,20 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
       if (servicesError) throw servicesError;
 
       const rows = (servicesData ?? []) as any[];
+      if (pageIds) {
+        const positions = new Map(pageIds.map((id, index) => [id, index]));
+        rows.sort((a, b) => positions.get(a.id)! - positions.get(b.id)!);
+        count = rotationIds!.length;
+      }
+
+      if (fetchAll && (filters.sortBy ?? "rotation") === "rotation") {
+        const ids = await sessionServiceIds(JSON.stringify({ ...filters, selectedBrands: [...filters.selectedBrands].sort(), all: true, coordinates: Boolean(options?.withCoordinates) }), async () => rotateServiceIds(rows, serviceRotationSeed()));
+        if (request !== serviceRequest.current) return;
+        const positions = new Map(ids.map((id, index) => [id, index]));
+        const visible = rows.filter(row => positions.has(row.id));
+        rows.splice(0, rows.length, ...visible);
+        rows.sort((a, b) => positions.get(a.id)! - positions.get(b.id)!);
+      }
 
       // Transform the data
       let transformedServices: ServiceType[] = rows.map((service) => {
@@ -315,7 +360,7 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
             name: category.name
           } : null,
           mechanic: {
-            id: mechanic?.id || "",
+            id: mechanic?.id || service.mechanic_id || "",
             display_id: mechanicProfile?.display_id || undefined,
             first_name: mechanic?.first_name || "",
             last_name: mechanic?.last_name || "",

@@ -63,11 +63,13 @@ export function DistrictsNav({
               key={d.slug}
               to={`/category/${categorySlug}/${d.slug}`}
               className="block"
+              aria-label={`${categoryName} ${d.nameLocative} — ${d.count} მომსახურება`}
             >
               <Card className="p-3 hover:shadow-md transition-shadow hover:border-primary">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-sm md:text-base line-clamp-1">
-                    {categoryName} {d.nameLocative}
+                  <span className="min-w-0">
+                    <span className="block font-medium text-sm md:text-base">{d.nameLocative}</span>
+                    <span className="block text-xs text-muted-foreground line-clamp-2">{categoryName}</span>
                   </span>
                   <span className="flex-shrink-0 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                     {d.count}

@@ -1,0 +1,206 @@
+{
+  "mode": "Built-in image_gen",
+  "style": "Use case: product-mockup. Website automotive service category image. Subject: a complete modern automobile engine with black intake manifold and silver metal block. Photorealistic premium 3D studio product photography matching the user's reference: pale icy blue-gray seamless background and floor, soft contact shadow, cool diffuse studio lighting, realistic metallic and rubber textures. Single centered composition, three-quarter view, full subject visible with 12% breathing room, landscape 4:3 framing. No text, no labels, no logos, no people, no borders or card UI. Save image to a local file and return its path.",
+  "subjects": [
+    {
+      "id": 11,
+      "subject": "a complete modern automobile engine with black intake manifold and silver metal block",
+      "path": "public/images/categories/category-11.webp"
+    },
+    {
+      "id": 12,
+      "subject": "a silver automatic automobile transmission gearbox",
+      "path": "public/images/categories/category-12.webp"
+    },
+    {
+      "id": 13,
+      "subject": "automotive suspension assembly, shock absorber spring and control arm",
+      "path": "public/images/categories/category-13.webp"
+    },
+    {
+      "id": 14,
+      "subject": "dark motor oil jug pouring golden oil into a metal funnel",
+      "path": "public/images/categories/category-14.webp"
+    },
+    {
+      "id": 15,
+      "subject": "an upright black car tire with silver alloy wheel",
+      "path": "public/images/categories/category-15.webp"
+    },
+    {
+      "id": 16,
+      "subject": "automotive electrical wiring harness and relay fuse box",
+      "path": "public/images/categories/category-16.webp"
+    },
+    {
+      "id": 17,
+      "subject": "a black handheld OBD diagnostic scanner with blue waveform screen and coiled cable",
+      "path": "public/images/categories/category-17.webp"
+    },
+    {
+      "id": 18,
+      "subject": "a premium black leather automobile front seat",
+      "path": "public/images/categories/category-18.webp"
+    },
+    {
+      "id": 19,
+      "subject": "a hybrid vehicle battery pack with orange high voltage cables",
+      "path": "public/images/categories/category-19.webp"
+    },
+    {
+      "id": 20,
+      "subject": "a professional automotive spray paint gun with blue paint cup",
+      "path": "public/images/categories/category-20.webp"
+    },
+    {
+      "id": 21,
+      "subject": "a silver automotive fender panel and bodywork hammer",
+      "path": "public/images/categories/category-21.webp"
+    },
+    {
+      "id": 22,
+      "subject": "a black plastic car bumper and plastic repair welding tool",
+      "path": "public/images/categories/category-22.webp"
+    },
+    {
+      "id": 23,
+      "subject": "a single modern automobile LED headlight assembly",
+      "path": "public/images/categories/category-23.webp"
+    },
+    {
+      "id": 24,
+      "subject": "a curved automotive windshield glass with black edges",
+      "path": "public/images/categories/category-24.webp"
+    },
+    {
+      "id": 25,
+      "subject": "a silver automotive air conditioning compressor with black pulley",
+      "path": "public/images/categories/category-25.webp"
+    },
+    {
+      "id": 26,
+      "subject": "an upholstery extraction cleaner nozzle and foam on a car seat cushion",
+      "path": "public/images/categories/category-26.webp"
+    },
+    {
+      "id": 27,
+      "subject": "an automotive radiator with coolant reservoir and blue coolant",
+      "path": "public/images/categories/category-27.webp"
+    },
+    {
+      "id": 28,
+      "subject": "an automotive orbital polisher with yellow foam pad",
+      "path": "public/images/categories/category-28.webp"
+    },
+    {
+      "id": 29,
+      "subject": "curved tinted car side window and roll of smoke window tint film",
+      "path": "public/images/categories/category-29.webp"
+    },
+    {
+      "id": 30,
+      "subject": "a pristine silver alloy car wheel rim without tire",
+      "path": "public/images/categories/category-30.webp"
+    },
+    {
+      "id": 31,
+      "subject": "a car door lock cylinder with automotive lockout air wedge tool",
+      "path": "public/images/categories/category-31.webp"
+    },
+    {
+      "id": 32,
+      "subject": "three open small cans of automotive paint blue silver and white with mixing stick",
+      "path": "public/images/categories/category-32.webp"
+    },
+    {
+      "id": 33,
+      "subject": "a roll of blue automotive vinyl wrapping film with squeegee",
+      "path": "public/images/categories/category-33.webp"
+    },
+    {
+      "id": 34,
+      "subject": "neatly arranged used automotive spare parts, headlight alternator and gear",
+      "path": "public/images/categories/category-34.webp"
+    },
+    {
+      "id": 35,
+      "subject": "new automobile spare parts oil filter brake pad and bearing next to plain cardboard box",
+      "path": "public/images/categories/category-35.webp"
+    },
+    {
+      "id": 36,
+      "subject": "automotive steering rack and tie rods",
+      "path": "public/images/categories/category-36.webp"
+    },
+    {
+      "id": 37,
+      "subject": "automotive chrome grille and side mirror",
+      "path": "public/images/categories/category-37.webp"
+    },
+    {
+      "id": 38,
+      "subject": "a turbocharger with blue silicone intake pipe",
+      "path": "public/images/categories/category-38.webp"
+    },
+    {
+      "id": 39,
+      "subject": "a stainless steel car exhaust muffler with twin tips",
+      "path": "public/images/categories/category-39.webp"
+    },
+    {
+      "id": 40,
+      "subject": "a car wheel with professional wheel alignment clamp and laser sensor",
+      "path": "public/images/categories/category-40.webp"
+    },
+    {
+      "id": 41,
+      "subject": "a fuel injection rail with four injectors and fuel pump",
+      "path": "public/images/categories/category-41.webp"
+    },
+    {
+      "id": 42,
+      "subject": "a catalytic converter with cutaway honeycomb core",
+      "path": "public/images/categories/category-42.webp"
+    },
+    {
+      "id": 43,
+      "subject": "an automotive LPG gas tank with reducer and hoses",
+      "path": "public/images/categories/category-43.webp"
+    },
+    {
+      "id": 49,
+      "subject": "an automotive alternator and starter motor",
+      "path": "public/images/categories/category-49.webp"
+    },
+    {
+      "id": 50,
+      "subject": "a modern black automobile remote key fob and metal key",
+      "path": "public/images/categories/category-50.webp"
+    },
+    {
+      "id": 51,
+      "subject": "a steering wheel airbag module with deployed white airbag",
+      "path": "public/images/categories/category-51.webp"
+    },
+    {
+      "id": 52,
+      "subject": "a black automobile battery with red positive terminal",
+      "path": "public/images/categories/category-52.webp"
+    },
+    {
+      "id": 53,
+      "subject": "three automotive spark plugs with ceramic insulators",
+      "path": "public/images/categories/category-53.webp"
+    },
+    {
+      "id": 54,
+      "subject": "a detailing brush microfiber cloth and blue foam bottle",
+      "path": "public/images/categories/category-54.webp"
+    },
+    {
+      "id": 55,
+      "subject": "a silver automobile front body structure being restored, exposed frame with new fender",
+      "path": "public/images/categories/category-55.webp"
+    }
+  ]
+}

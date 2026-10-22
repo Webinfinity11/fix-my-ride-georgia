@@ -8,18 +8,6 @@
     <lastmod>2026-10-13T11:27:40.303Z</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://fixup.ge/service-sitemap.xml</loc>
-    <lastmod>2026-06-11T11:53:31.048+00:00</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://fixup.ge/mechanic-sitemap.xml</loc>
-    <lastmod>2026-06-11T11:39:57.539+00:00</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://fixup.ge/category-sitemap.xml</loc>
-    <lastmod>2026-06-12T14:51:58.905+00:00</lastmod>
-  </sitemap>
-  <sitemap>
     <loc>https://fixup.ge/brand-sitemap.xml</loc>
     <lastmod>2026-10-13T13:40:07.553Z</lastmod>
   </sitemap>
@@ -33,7 +21,11 @@
   </sitemap>
   <sitemap>
     <loc>https://fixup.ge/video-sitemap.xml</loc>
-    <lastmod>2026-05-10T09:57:40.049+00:00</lastmod>
+    <lastmod>2026-10-13T15:16:23.780Z</lastmod>
   </sitemap>
 <sitemap><loc>https://fixup.ge/model-sitemap.xml</loc><lastmod>2026-10-13T14:29:57.465Z</lastmod></sitemap>
+  <sitemap><loc>https://fixup.ge/city-sitemap.xml</loc></sitemap>
+<sitemap><loc>https://fixup.ge/service-sitemap.xml</loc><lastmod>2026-10-13T15:14:56.538Z</lastmod></sitemap>
+<sitemap><loc>https://fixup.ge/category-sitemap.xml</loc><lastmod>2026-10-13T15:14:56.538Z</lastmod></sitemap>
+<sitemap><loc>https://fixup.ge/mechanic-sitemap.xml</loc><lastmod>2026-10-13T16:53:41.745Z</lastmod></sitemap>
 </sitemapindex>

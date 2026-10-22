@@ -1,5 +1,12 @@
-import { useState, useEffect, useRef, Fragment } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCatalogueState, useCatalogueResume } from "@/hooks/useCatalogueState";
+import { cataloguePath, readBrandQuery } from "@/utils/catalogueNavigation";
+import { getCityByName } from "@/utils/locationCatalogue";
+import { categoryNavigationSnapshot } from "@/lib/categoryNavigation";
+import { catalogueContainerClassName } from "@/components/services/catalogueLayout";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import ServiceCatalogueHeading from "@/components/services/ServiceCatalogueHeading";
+import { useEffect, useRef, Fragment } from "react";
+import { Navigate, useSearchParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,7 +20,7 @@ import { useServices } from "@/hooks/useServices";
 import { RefreshCw } from "lucide-react";
 import SEOHead from "@/components/seo/SEOHead";
 import { CollectionPageSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
-import { createSlug } from "@/utils/slugUtils";
+import { createSlug, createCategorySlug } from "@/utils/slugUtils";
 import { trackSearch } from "@/utils/tracking";
 
 // საქართველოს მთავარი ქალაქები
@@ -53,16 +60,19 @@ const tbilisiDistricts = [
   "დიდუბე",
   "ფონიჭალა",
 ];
-type SortOption = "newest" | "oldest" | "price_low" | "price_high" | "rating" | "popular";
+type SortOption = "rotation" | "newest" | "oldest" | "price_low" | "price_high" | "rating" | "popular";
 const ServicesDetail = () => {
+  const resumeCatalogue = useCatalogueResume();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState(0);
+  const legacyCity = getCityByName(searchParams.get('city'));
+  const legacyCategory = categoryNavigationSnapshot.find(item => item.id === Number(searchParams.get('category')));
+  const redirectToCatalogue = (legacyCity || legacyCategory) && [...searchParams.keys()].every(key => ['city', 'category', 'brands'].includes(key)) && (!searchParams.has('city') || legacyCity) && (!searchParams.has('category') || legacyCategory)
+    ? cataloguePath({ citySlug: legacyCity?.slug, categorySlug: legacyCategory ? createCategorySlug(legacyCategory.name) : undefined, brands: readBrandQuery(searchParams) }) : null;
+  const [page, setPage] = useCatalogueState(0, "page");
   const searchRequest = useRef(0);
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
-  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useCatalogueState<SortOption>("rotation", "sortBy");
   const {
     services,
-    categories,
     cities,
     districts,
     loading,
@@ -75,18 +85,18 @@ const ServicesDetail = () => {
   } = useServices();
 
   // Filter states - initialized from URL params
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
-  const [selectedCategory, setSelectedCategory] = useState<number | "all">(
-    searchParams.get("category") ? parseInt(searchParams.get("category")!) : "all",
+  const [searchTerm, setSearchTerm] = useCatalogueState(searchParams.get("q") || "", "searchTerm");
+  const [selectedCategory, setSelectedCategory] = useCatalogueState<number | "all">(
+    searchParams.get("category") ? parseInt(searchParams.get("category")!) : "all", "selectedCategory",
   );
-  const [selectedCity, setSelectedCity] = useState<string | null>(searchParams.get("city") || null);
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(searchParams.get("district") || null);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>(
-    searchParams.get("brands") ? searchParams.get("brands")!.split(",") : [],
+  const [selectedCity, setSelectedCity] = useCatalogueState<string | null>(searchParams.get("city") || null, "selectedCity");
+  const [selectedDistrict, setSelectedDistrict] = useCatalogueState<string | null>(searchParams.get("district") || null, "selectedDistrict");
+  const [selectedBrands, setSelectedBrands] = useCatalogueState<string[]>(
+    searchParams.get("brands") ? searchParams.get("brands")!.split(",") : [], "selectedBrands",
   );
-  const [onSiteOnly, setOnSiteOnly] = useState(searchParams.get("onSite") === "true");
-  const [minRating, setMinRating] = useState<number | null>(
-    searchParams.get("minRating") ? parseInt(searchParams.get("minRating")!) : null,
+  const [onSiteOnly, setOnSiteOnly] = useCatalogueState(searchParams.get("onSite") === "true", "onSiteOnly");
+  const [minRating, setMinRating] = useCatalogueState<number | null>(
+    searchParams.get("minRating") ? parseInt(searchParams.get("minRating")!) : null, "minRating",
   );
   console.log("🏁 ServicesDetail component mounted");
   console.log("🔧 Initial filter states:", {
@@ -101,12 +111,18 @@ const ServicesDetail = () => {
 
   // Initialize data on component mount
   useEffect(() => {
+    // A late search URL update must not cancel a legacy location redirect.
+    if (redirectToCatalogue) return;
     console.log("🚀 Initializing component data...");
     const initializeData = async () => {
       await fetchInitialData();
     };
     initializeData();
-  }, []);
+    const requestCounter = searchRequest;
+    return () => { ++requestCounter.current; };
+    // Fetch functions are recreated on render; initialize only for route changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [redirectToCatalogue]);
 
   // Handle districts when city changes.
   // fetchDistricts is intentionally NOT a dependency — it's re-created every
@@ -124,6 +140,8 @@ const ServicesDetail = () => {
   // Auto-search when a filter changes (NOT searchTerm — text search is manual,
   // triggered only by the search button / Enter via handleSearch).
   useEffect(() => {
+    if (redirectToCatalogue) return;
+    if (resumeCatalogue.current) { resumeCatalogue.current = false; return; }
     console.log("🔄 Filters changed, triggering search...");
     console.log("📊 Current filter values:", {
       searchTerm,
@@ -137,7 +155,7 @@ const ServicesDetail = () => {
     // URL/filter state is sufficient to fetch services; filter metadata loads independently.
     performSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, sortBy]);
+  }, [selectedCategory, selectedCity, selectedDistrict, selectedBrands, onSiteOnly, minRating, sortBy, redirectToCatalogue]);
   const performSearch = async () => {
     const request = ++searchRequest.current;
     const filters = {
@@ -246,6 +264,7 @@ const ServicesDetail = () => {
     minRating;
   const availableCities = cities.length > 0 ? cities : georgianCities;
   const availableDistricts = selectedCity === "თბილისი" ? (districts.length > 0 ? districts : tbilisiDistricts) : [];
+  if (redirectToCatalogue) return <Navigate replace to={redirectToCatalogue} />;
   return (
     <>
     <SEOHead
@@ -254,6 +273,7 @@ const ServicesDetail = () => {
       keywords="ავტოსერვისი, სერვისების ძიება, ფილტრი, ხელოსანი, საქართველო"
       url="https://fixup.ge/services"
       canonical="https://fixup.ge/services"
+      noindex={selectedBrands.length > 0}
     />
     <CollectionPageSchema
       name="ავტოსერვისები საქართველოში"
@@ -272,13 +292,11 @@ const ServicesDetail = () => {
     ]} />
     <Layout>
       <div className="py-4 md:py-8">
-        <div className="container mx-auto px-4">
-          <div className="max-w-7xl mx-auto">
+        <div className={catalogueContainerClassName}>
+          <div className="min-w-0">
             {/* Header Section */}
-            <div className="text-center mb-3 md:mb-8">
-              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1">ავტოსერვისები საქართველოში</h1>
-              <h2 className="text-sm md:text-lg text-muted-foreground">იპოვე ხელოსანი თბილისში, ბათუმში, ქუთაისში — შეფასებებითა და ფასებით</h2>
-            </div>
+            <Breadcrumb className="mb-3"><BreadcrumbList className="text-xs"><BreadcrumbItem><BreadcrumbLink href="/">მთავარი</BreadcrumbLink></BreadcrumbItem><BreadcrumbSeparator /><BreadcrumbItem><BreadcrumbPage>სერვისები</BreadcrumbPage></BreadcrumbItem></BreadcrumbList></Breadcrumb>
+            <ServiceCatalogueHeading title="ავტოსერვისები საქართველოში" />
 
             {/* Filters Section */}
             <div className="mb-3 md:mb-8">
@@ -286,8 +304,6 @@ const ServicesDetail = () => {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                categories={categories}
                 selectedCity={selectedCity}
                 setSelectedCity={setSelectedCity}
                 cities={availableCities}
@@ -355,6 +371,7 @@ const ServicesDetail = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="rotation">მონაცვლეობით</SelectItem>
                       <SelectItem value="newest">ახალი → ძველი</SelectItem>
                       <SelectItem value="oldest">ძველი → ახალი</SelectItem>
                       <SelectItem value="rating">რეიტინგით</SelectItem>

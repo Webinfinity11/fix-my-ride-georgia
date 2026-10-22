@@ -1,3 +1,4 @@
+import { useCatalogueState } from "@/hooks/useCatalogueState";
 import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -43,7 +44,7 @@ export default function ModelLanding() {
   return <div className="min-h-screen flex flex-col">
     <SEOHead title={`${heading} | FixUp`} description={description} canonical={canonical} noindex={!pending && services.length===0 || isError} />
     <BreadcrumbSchema items={breadcrumbs} />
-    {services.length>0 && <CollectionPageSchema name={heading} description={description} numberOfItems={services.length} itemList={services.map(s=>({name:s.name,url:`https://fixup.ge/service/${s.slug || createServiceSlug(s.id,s.name)}`,image:s.photos?.[0],price:s.price_from || undefined}))} />}
+    {services.length>0 && <CollectionPageSchema name={heading} description={description} numberOfItems={services.length} itemList={services.map(s=>({name:s.name,url:`https://fixup.ge/service/${createServiceSlug(s.id,s.name)}`,image:s.photos?.[0],price:s.price_from || undefined}))} />}
     <Header />
     <main className="flex-grow container mx-auto px-4 py-6 space-y-6">
       <nav aria-label="გვერდის მდებარეობა" className="flex flex-wrap gap-2 text-sm text-primary"><Link to="/brand">მარკები</Link><span>›</span><Link to={`/brand/${brand.slug}`}>{brand.nameKa}</Link><span>›</span><span>{model}</span></nav>

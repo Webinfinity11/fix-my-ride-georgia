@@ -83,3 +83,10 @@ The application uses Supabase with comprehensive type definitions in `src/integr
 - Real-time features use Supabase subscriptions
 - Image/video uploads to Supabase storage buckets
 - SEO optimization with React Helmet Async
+
+### SEO Priority (User Preference)
+- SEO is a priority for every public page. Preserve crawlable internal links, meaningful page-specific headings and copy, canonical URLs, and accurate structured data when changing layouts or navigation.
+- Give category pages individual service-specific subtitles rather than repeating generic copy. Keep visible breadcrumbs compact and consistent with BreadcrumbList structured data.
+- Preserve the compact, consistent catalogue layout across /services and category pages while implementing SEO improvements.
+
+- City and category + city routes use `/city/:citySlug` and `/category/:categorySlug/city/:citySlug`; keep them separate from existing district URLs. Follow `scripts/LOCATION_SEO.md` and the shared location indexing policy when extending these pages.

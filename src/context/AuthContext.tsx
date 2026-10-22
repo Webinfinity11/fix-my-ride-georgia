@@ -10,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any | null }>;
   signUp: (email: string, password: string, userData: Partial<User>) => Promise<{ error: any | null, data: any | null }>;
+  refreshProfile: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any | null }>;
   updatePassword: (newPassword: string) => Promise<{ error: any | null }>;
@@ -55,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user: {
                   id: currentSession.user.id,
                   email: currentSession.user.email,
+                  avatarUrl: profile.avatar_url,
                   firstName: profile.first_name,
                   lastName: profile.last_name,
                   fullName: profile.full_name || `${profile.first_name} ${profile.last_name}`.trim(),
@@ -119,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user: {
                   id: currentSession.user.id,
                   email: currentSession.user.email,
+                  avatarUrl: profile.avatar_url,
                   firstName: profile.first_name,
                   lastName: profile.last_name,
                   fullName: profile.full_name || `${profile.first_name} ${profile.last_name}`.trim(),
@@ -288,6 +291,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   };
 
+  const refreshProfile = async () => {
+    if (!state.user) return;
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', state.user.id).single();
+    if (error) throw error;
+    setState(previous => ({ ...previous, user: previous.user ? { ...previous.user,
+      firstName: data.first_name, lastName: data.last_name, fullName: data.full_name,
+      avatarUrl: data.avatar_url, phone: data.phone, city: data.city, district: data.district,
+      street: data.street, fullAddress: data.full_address,
+    } : null }));
+  };
+
   const value = {
     session,
     user: state.user,
@@ -295,6 +309,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading: state.loading,
     signIn,
     signUp,
+    refreshProfile,
     signOut,
     resetPassword,
     updatePassword,
