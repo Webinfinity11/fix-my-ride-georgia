@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 const migration=(await readFile(new URL('../supabase/migrations/20261022160000_critical_authorization.sql',import.meta.url),'utf8')) + (await readFile(new URL('../supabase/migrations/20261022160100_search_history_policy.sql',import.meta.url),'utf8'));
+const expiryOrderMigration=await readFile(new URL('../supabase/migrations/20261022160200_vip_guard_trigger_order.sql',import.meta.url),'utf8');
 const owner='11111111-1111-4111-8111-111111111111';
 const admin='22222222-2222-4222-8222-222222222222';
 async function setup(){
@@ -40,6 +41,7 @@ async function setup(){
  insert into drives values(1);
  `);
  await db.exec(migration);
+ await db.exec(expiryOrderMigration);
  await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${owner}',false); select set_config('request.jwt.claim.role','authenticated',false);`);
  return db;
 }
@@ -99,4 +101,21 @@ test('Edge pin action fails closed before using its service-role write access',a
  await exports.pinPost(mock(true),owner,{postId:owner,isPinned:true});
  await exports.pinPost(mock(true),owner,{postId:owner,isPinned:false});
  assert.equal(writes,2);
+});
+
+
+test('ordinary edits of expired VIP services still allow the server expiry trigger',async()=>{
+ const db=await setup();try{
+ await db.exec(`reset role;
+ create function check_expiry() returns trigger language plpgsql security definer as $$begin if new.vip_until<now() then new.is_vip_active=false; end if; return new; end;$$;
+ create trigger check_vip_expiration_trigger before insert or update on mechanic_services for each row execute function check_expiry();
+ update mechanic_services set vip_status='vip',vip_until=now()-interval '1 day',is_vip_active=true;
+ alter table mechanic_services disable trigger check_vip_expiration_trigger;
+ update mechanic_services set is_vip_active=true;
+ alter table mechanic_services enable trigger check_vip_expiration_trigger;
+ set role authenticated; select set_config('request.jwt.claim.sub','${owner}',false);`);
+ await db.query("update mechanic_services set title='ordinary edit' where id=1");
+ assert.equal((await db.query('select is_vip_active from mechanic_services where id=1')).rows[0].is_vip_active,false);
+ await assert.rejects(db.query("update mechanic_services set vip_until=now()+interval '1 year' where id=1"),/administrator approval/);
+ }finally{await db.close();}
 });
