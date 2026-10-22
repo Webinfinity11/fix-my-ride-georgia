@@ -218,8 +218,15 @@ async function main() {
   const categoryBootShells = {};
   let categoryHeader = "";
   // Hard time budget: routes left uncaptured fall back to the normal app shell
-  // instead of letting the publish hit the platform build deadline.
-  const deadline = Date.now() + Number(process.env.PRERENDER_BUDGET_MS ?? 11 * 60 * 1000);
+  // instead of letting the publish hit the platform build deadline. The budget
+  // must leave room for install, prebuild, vite build and upload on the host.
+  const budgetMs = Number(process.env.PRERENDER_BUDGET_MS ?? 7 * 60 * 1000);
+  const deadline = Date.now() + budgetMs;
+  // Last-resort watchdog: a hung browser call must never stall the publish.
+  setTimeout(() => {
+    console.warn('[prerender] watchdog: time budget exceeded, exiting with captured pages');
+    process.exit(0);
+  }, budgetMs + 90 * 1000).unref();
   let skipped = 0;
   const renderRoute = async (route) => {
     if (Date.now() > deadline) { skipped++; return; }
@@ -462,28 +469,47 @@ async function main() {
   const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
     ? Math.min(requestedConcurrency, 5)
     : 1;
-  // Each capture owns a separate page. Three listing workers bound memory usage
-  // while avoiding the hosting timeout caused by hundreds of sequential pages.
+  // Each capture owns a separate page. A per-route cap stops one stuck page
+  // from holding a worker until the platform deadline.
+  const ROUTE_TIMEOUT_MS = 60 * 1000;
+  const renderWithCap = (route) => {
+    let timer;
+    return Promise.race([
+      renderRoute(route),
+      new Promise((resolve) => {
+        timer = setTimeout(() => {
+          console.error(`[prerender] ✗ ${route}: exceeded ${ROUTE_TIMEOUT_MS / 1000}s, left to the app shell`);
+          skipped++;
+          resolve();
+        }, ROUTE_TIMEOUT_MS);
+      }),
+    ]).finally(() => clearTimeout(timer));
+  };
   const runPool = async (routes, workers) => {
     const queue = [...routes];
     await Promise.all(Array.from({ length: workers }, async () => {
       while (queue.length) {
         const route = queue.shift();
-        if (route !== undefined) await renderRoute(route);
+        if (route !== undefined) await renderWithCap(route);
       }
     }));
   };
   // Capture the fallback first; remaining pages always use the pristine shell.
+  // Highest-value pages go first so a time-budget cut only drops long-tail pages.
   if (allRoutes.includes('/')) await renderRoute('/');
-  await runPool(allRoutes.filter(route => route !== '/' && !route.startsWith('/service/')), Math.min(CONCURRENCY, 3));
-  await runPool(allRoutes.filter(route => route.startsWith('/service/')), CONCURRENCY);
+  const isService = route => route.startsWith('/service/');
+  const primary = allRoutes.filter(route => route !== '/' && !isService(route) && (ROUTES.includes(route) || categoryRoutes.includes(route)));
+  const secondary = allRoutes.filter(route => route !== '/' && !isService(route) && !primary.includes(route));
+  await runPool(primary, Math.min(CONCURRENCY, 2));
+  await runPool(allRoutes.filter(isService), CONCURRENCY);
+  await runPool(secondary, Math.min(CONCURRENCY, 2));
 
   if (failedRoutes.length) {
     const retry = [...failedRoutes];
     await browser.close().catch(() => {});
     browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
     console.log(`[prerender] retrying ${retry.length} failed routes sequentially`);
-    for (const route of retry) { if (Date.now() > deadline) { fail--; skipped++; continue; } fail--; await renderRoute(route); }
+    for (const route of retry) { if (Date.now() > deadline) { fail--; skipped++; continue; } fail--; await renderWithCap(route); }
   }
 
   // Lovable may serve index.html as the fallback for category URLs. Include

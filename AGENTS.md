@@ -90,3 +90,5 @@ The application uses Supabase with comprehensive type definitions in `src/integr
 - Preserve the compact, consistent catalogue layout across /services and category pages while implementing SEO improvements.
 
 - City and category + city routes use `/city/:citySlug` and `/category/:categorySlug/city/:citySlug`; keep them separate from existing district URLs. Follow `scripts/LOCATION_SEO.md` and the shared location indexing policy when extending these pages.
+
+- Prerender (`scripts/prerender.mjs`) runs under a hard time budget with a per-page cap and watchdog, rendering static/category, then service, then brand/location/mechanic pages; route count keeps growing, so never remove the budget — pages past it fall back to the app shell instead of timing out the publish.
