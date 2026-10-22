@@ -23,7 +23,7 @@ export function mechanicRoutes(services,profiles) {
   const info=Array.isArray(profile.mechanic_profiles)?profile.mechanic_profiles[0]:profile.mechanic_profiles;
   if(!info?.display_id || !profile.first_name?.trim() || !(profile.city?.trim() || info.description?.trim() || activeOwners.has(profile.id))) return [];
   const nameSlug = categorySlug(`${profile.first_name || ""} ${profile.last_name || ""}`);
-  return nameSlug ? [`/mechanic/${info.display_id}-${nameSlug}`] : [];
+  return [`/mechanic/${nameSlug ? `${info.display_id}-${nameSlug}` : info.display_id}`];
  }).sort();
 }
 export function serviceAliases(services,categories=[]) {
@@ -50,6 +50,7 @@ export function serviceAliases(services,categories=[]) {
 
 export function mechanicAliases(paths) {
  return paths.flatMap(target=>{
+  if (/^\/mechanic\/\d+$/.test(target)) return [{path:`${target}-`,target}];
   const match=target.match(/^\/mechanic\/(\d+)-(.+)$/);
   return match ? [{path:`/mechanic/${match[1]}`,target},{path:`/mechanic/${match[1]}-${match[1]}-${match[2]}`,target}] : [];
  });

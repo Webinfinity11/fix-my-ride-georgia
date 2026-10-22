@@ -30,5 +30,5 @@ test('unnamed and symbol-only mechanic profiles stay reachable by ID without mal
  assert.equal(exports.createMechanicSlug(230,'⚙️',''), '230');
  assert.equal(exports.createMechanicSlug(231,null,null), '231');
  assert.equal(exports.extractMechanicDisplayId('230-'), '230');
- assert.deepEqual(mechanicRoutes([{mechanic_id:'owner'}],[{id:'owner',first_name:'⚙️',last_name:'',mechanic_profiles:{display_id:230}}]),[]);
+ assert.deepEqual(mechanicRoutes([{mechanic_id:'owner'}],[{id:'owner',first_name:'Рамзес',last_name:'Менабдишвили',mechanic_profiles:{display_id:230}}]),['/mechanic/230']);
 });
