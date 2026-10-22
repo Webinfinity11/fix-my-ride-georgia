@@ -462,7 +462,7 @@ async function main() {
   const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
     ? Math.min(requestedConcurrency, 5)
     : 1;
-  // Each capture owns a separate page. Two listing workers bound memory usage
+  // Each capture owns a separate page. Three listing workers bound memory usage
   // while avoiding the hosting timeout caused by hundreds of sequential pages.
   const runPool = async (routes, workers) => {
     const queue = [...routes];
@@ -475,7 +475,7 @@ async function main() {
   };
   // Capture the fallback first; remaining pages always use the pristine shell.
   if (allRoutes.includes('/')) await renderRoute('/');
-  await runPool(allRoutes.filter(route => route !== '/' && !route.startsWith('/service/')), Math.min(CONCURRENCY, 2));
+  await runPool(allRoutes.filter(route => route !== '/' && !route.startsWith('/service/')), Math.min(CONCURRENCY, 3));
   await runPool(allRoutes.filter(route => route.startsWith('/service/')), CONCURRENCY);
 
   if (failedRoutes.length) {
