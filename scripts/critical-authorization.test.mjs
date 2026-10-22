@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
-const migration=await readFile(new URL('../supabase/migrations/20261022160000_critical_authorization.sql',import.meta.url),'utf8');
+const migration=(await readFile(new URL('../supabase/migrations/20261022160000_critical_authorization.sql',import.meta.url),'utf8')) + (await readFile(new URL('../supabase/migrations/20261022160100_search_history_policy.sql',import.meta.url),'utf8'));
 const owner='11111111-1111-4111-8111-111111111111';
 const admin='22222222-2222-4222-8222-222222222222';
 async function setup(){
@@ -27,6 +27,7 @@ async function setup(){
  alter table certificates enable row level security;
  alter table drives enable row level security;
  create policy old_search on search_queries for all using(true) with check(true);
+ create policy "Anyone can view search queries" on search_queries for select using(true);
  create policy "Anyone can view mechanic profiles" on mechanic_profiles for select using(true);
  create policy "Certificates are viewable by everyone" on certificates for select using(true);
  create policy "Anyone can view drives" on drives for select using(true);
