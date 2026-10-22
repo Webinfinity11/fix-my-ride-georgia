@@ -465,7 +465,7 @@ async function main() {
   };
 
   // Concurrency pool — process routes in parallel (bounded).
-  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 4);
+  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 3);
   const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
     ? Math.min(requestedConcurrency, 5)
     : 1;
@@ -500,9 +500,9 @@ async function main() {
   const isService = route => route.startsWith('/service/');
   const primary = allRoutes.filter(route => route !== '/' && !isService(route) && (ROUTES.includes(route) || categoryRoutes.includes(route)));
   const secondary = allRoutes.filter(route => route !== '/' && !isService(route) && !primary.includes(route));
-  await runPool(primary, Math.min(CONCURRENCY, 3));
+  await runPool(primary, Math.min(CONCURRENCY, 2));
   await runPool(allRoutes.filter(isService), CONCURRENCY);
-  await runPool(secondary, Math.min(CONCURRENCY, 3));
+  await runPool(secondary, Math.min(CONCURRENCY, 2));
 
   if (failedRoutes.length) {
     const retry = [...failedRoutes];
