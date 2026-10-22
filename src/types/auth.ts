@@ -17,6 +17,7 @@ export interface User {
   firstName: string | null;
   lastName: string | null;
   fullName: string | null;
+  avatarUrl?: string | null;
   role: UserRole;
   isVerified: boolean;
   phone?: string | null;
