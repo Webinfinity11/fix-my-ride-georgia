@@ -22,7 +22,8 @@ export function mechanicRoutes(services,profiles) {
  return profiles.flatMap(profile=>{
   const info=Array.isArray(profile.mechanic_profiles)?profile.mechanic_profiles[0]:profile.mechanic_profiles;
   if(!info?.display_id || !profile.first_name?.trim() || !(profile.city?.trim() || info.description?.trim() || activeOwners.has(profile.id))) return [];
-  return [`/mechanic/${info.display_id}-${categorySlug(`${profile.first_name} ${profile.last_name}`)}`];
+  const nameSlug = categorySlug(`${profile.first_name || ""} ${profile.last_name || ""}`);
+  return nameSlug ? [`/mechanic/${info.display_id}-${nameSlug}`] : [];
  }).sort();
 }
 export function serviceAliases(services,categories=[]) {

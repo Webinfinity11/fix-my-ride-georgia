@@ -24,3 +24,11 @@ test('legacy aliases preserve IDs, never overwrite another canonical page, and r
  assert.deepEqual(paths,['/mechanic/307-dagi-dagi']);
  assert.deepEqual(mechanicAliases(paths),[{path:'/mechanic/307',target:'/mechanic/307-dagi-dagi'},{path:'/mechanic/307-307-dagi-dagi',target:'/mechanic/307-dagi-dagi'}]);
 });
+
+test('unnamed and symbol-only mechanic profiles stay reachable by ID without malformed sitemap URLs', async () => {
+ const {mechanicRoutes}=await import('./catalogue-routes.mjs');
+ assert.equal(exports.createMechanicSlug(230,'⚙️',''), '230');
+ assert.equal(exports.createMechanicSlug(231,null,null), '231');
+ assert.equal(exports.extractMechanicDisplayId('230-'), '230');
+ assert.deepEqual(mechanicRoutes([{mechanic_id:'owner'}],[{id:'owner',first_name:'⚙️',last_name:'',mechanic_profiles:{display_id:230}}]),[]);
+});
