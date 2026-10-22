@@ -13,6 +13,7 @@ const RATE_LIMITS = {
   save: { max: 60, window: 600000 },
   report: { max: 5, window: 600000 },
   reaction: { max: 100, window: 600000 },
+  pin: { max: 20, window: 600000 },
 };
 
 function checkRateLimit(userId: string, action: keyof typeof RATE_LIMITS): boolean {
@@ -69,6 +70,9 @@ Deno.serve(async (req) => {
 
     const { action, data } = await req.json();
 
+    if (!Object.prototype.hasOwnProperty.call(RATE_LIMITS, action)) {
+      return new Response(JSON.stringify({ error: 'Invalid action' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
     // Check rate limit
     if (!checkRateLimit(user.id, action)) {
       return new Response(
@@ -120,7 +124,7 @@ Deno.serve(async (req) => {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
       JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: errorMessage === 'Forbidden' ? 403 : 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
@@ -369,8 +373,13 @@ async function toggleReaction(supabase: any, userId: string, data: any) {
   }
 }
 
-async function pinPost(supabaseClient: any, userId: string, data: any) {
-  const { postId, isPinned } = data;
+export async function pinPost(supabaseClient: any, userId: string, data: any) {
+  // The service-role client bypasses RLS, so authorize the verified JWT's user
+  // before touching any post. Never trust a role supplied in the request body.
+  const { data: isAdmin, error: roleError } = await supabaseClient.rpc('is_admin', { user_id: userId });
+  if (roleError || isAdmin !== true) throw new Error('Forbidden');
+  const { postId, isPinned } = data ?? {};
+  if (typeof postId !== 'string' || !/^[0-9a-f-]{36}$/i.test(postId) || typeof isPinned !== 'boolean') throw new Error('Invalid pin request');
 
   const { error } = await supabaseClient
     .from('posts')
