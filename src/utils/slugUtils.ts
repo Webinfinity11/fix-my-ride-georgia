@@ -65,7 +65,7 @@ export function extractServiceId(slugOrId: string): string {
   }
   
   // Check if it follows the ID-slug format (e.g., "425-slug-name")
-  const idSlugMatch = slugOrId.match(/^(\d+)-(.+)$/);
+  const idSlugMatch = slugOrId.match(/^(\d+)-(.*)$/);
   if (idSlugMatch) {
     return idSlugMatch[1]; // Return the ID part
   }
@@ -86,9 +86,9 @@ export function createServiceSlug(id: number, name: string): string {
  * Create mechanic slug with display_id for backwards compatibility
  */
 export function createMechanicSlug(displayId: number, firstName: string, lastName: string): string {
-  const fullName = `${firstName} ${lastName}`;
+  const fullName = [firstName, lastName].filter(Boolean).join(" ");
   const slug = createSlug(fullName);
-  return `${displayId}-${slug}` || displayId.toString();
+  return slug ? `${displayId}-${slug}` : displayId.toString();
 }
 /**
  * Extract mechanic display ID from slug or return the slug if it's already an ID
@@ -96,7 +96,7 @@ export function createMechanicSlug(displayId: number, firstName: string, lastNam
  */
 export function extractMechanicDisplayId(slugOrId: string): string {
   // Check if it follows the display_id-slug format (e.g., "123-slug-name")
-  const idSlugMatch = slugOrId.match(/^(\d+)-(.+)$/);
+  const idSlugMatch = slugOrId.match(/^(\d+)-(.*)$/);
   if (idSlugMatch) {
     return idSlugMatch[1]; // Return the display_id part
   }
