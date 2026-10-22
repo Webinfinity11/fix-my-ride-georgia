@@ -462,19 +462,21 @@ async function main() {
   const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
     ? Math.min(requestedConcurrency, 5)
     : 1;
-  // Large listing pages are expensive; keep them sequential. Service detail
-  // pages use a bounded pool after those captures have finished.
-  for (const route of allRoutes.filter(route => !route.startsWith('/service/'))) await renderRoute(route);
-  const queue = allRoutes.filter(route => route.startsWith('/service/'));
-  await Promise.all(
-    Array.from({ length: CONCURRENCY }, async () => {
+  // Each capture owns a separate page. Two listing workers bound memory usage
+  // while avoiding the hosting timeout caused by hundreds of sequential pages.
+  const runPool = async (routes, workers) => {
+    const queue = [...routes];
+    await Promise.all(Array.from({ length: workers }, async () => {
       while (queue.length) {
         const route = queue.shift();
-        if (route === undefined) break;
-        await renderRoute(route);
+        if (route !== undefined) await renderRoute(route);
       }
-    })
-  );
+    }));
+  };
+  // Capture the fallback first; remaining pages always use the pristine shell.
+  if (allRoutes.includes('/')) await renderRoute('/');
+  await runPool(allRoutes.filter(route => route !== '/' && !route.startsWith('/service/')), Math.min(CONCURRENCY, 2));
+  await runPool(allRoutes.filter(route => route.startsWith('/service/')), CONCURRENCY);
 
   if (failedRoutes.length) {
     const retry = [...failedRoutes];
