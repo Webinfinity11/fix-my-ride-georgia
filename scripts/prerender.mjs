@@ -465,7 +465,7 @@ async function main() {
   };
 
   // Concurrency pool — process routes in parallel (bounded).
-  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 3);
+  const requestedConcurrency = Number(process.env.PRERENDER_CONCURRENCY ?? 4);
   const CONCURRENCY = Number.isInteger(requestedConcurrency) && requestedConcurrency > 0
     ? Math.min(requestedConcurrency, 5)
     : 1;
@@ -509,7 +509,7 @@ async function main() {
     await browser.close().catch(() => {});
     browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
     console.log(`[prerender] retrying ${retry.length} failed routes sequentially`);
-    for (const route of retry) { if (Date.now() > deadline) { fail--; skipped++; continue; } fail--; await renderRoute(route); }
+    for (const route of retry) { if (Date.now() > deadline) { fail--; skipped++; continue; } fail--; await renderWithCap(route); }
   }
 
   // Lovable may serve index.html as the fallback for category URLs. Include
