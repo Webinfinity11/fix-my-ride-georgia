@@ -2401,6 +2401,10 @@ export type Database = {
         }[]
       }
       get_reaction_counts: { Args: { p_post_id: string }; Returns: Json }
+      record_search_query: {
+        Args: { p_query: string }
+        Returns: undefined
+      }
       get_safe_mechanic_profiles: {
         Args: never
         Returns: {
