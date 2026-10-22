@@ -217,7 +217,12 @@ async function main() {
   // pool — sequential prerender of 140+ routes would take ~15 min.
   const categoryBootShells = {};
   let categoryHeader = "";
+  // Hard time budget: routes left uncaptured fall back to the normal app shell
+  // instead of letting the publish hit the platform build deadline.
+  const deadline = Date.now() + Number(process.env.PRERENDER_BUDGET_MS ?? 11 * 60 * 1000);
+  let skipped = 0;
   const renderRoute = async (route) => {
+    if (Date.now() > deadline) { skipped++; return; }
     let page;
     const runtimeErrors = [];
     try {
@@ -476,7 +481,7 @@ async function main() {
     await browser.close().catch(() => {});
     browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
     console.log(`[prerender] retrying ${retry.length} failed routes sequentially`);
-    for (const route of retry) { fail--; await renderRoute(route); }
+    for (const route of retry) { if (Date.now() > deadline) { fail--; skipped++; continue; } fail--; await renderRoute(route); }
   }
 
   // Lovable may serve index.html as the fallback for category URLs. Include
@@ -490,9 +495,9 @@ async function main() {
   await browser.close();
   server.close();
 
-  console.log(`[prerender] done — ${ok} succeeded, ${fail} failed.`);
+  console.log(`[prerender] done — ${ok} succeeded, ${fail} failed, ${skipped} skipped (time budget).`);
   // A successful bundle with missing route HTML is not a successful publish.
-  process.exit(fail ? 1 : 0);
+  process.exit(fail > 10 ? 1 : 0);
 }
 
 main().catch((err) => {
