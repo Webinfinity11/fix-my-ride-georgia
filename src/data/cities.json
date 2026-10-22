@@ -1,0 +1,20 @@
+[
+ {"name":"თბილისი","slug":"tbilisi","locative":"თბილისში"},
+ {"name":"რუსთავი","slug":"rustavi","locative":"რუსთავში"},
+ {"name":"ქუთაისი","slug":"kutaisi","locative":"ქუთაისში"},
+ {"name":"მცხეთა","slug":"mtskheta","locative":"მცხეთაში"},
+ {"name":"ბათუმი","slug":"batumi","locative":"ბათუმში"},
+ {"name":"ჩოხატაური","slug":"chokhatauri","locative":"ჩოხატაურში"},
+ {"name":"ზუგდიდი","slug":"zugdidi","locative":"ზუგდიდში"},
+ {"name":"გორი","slug":"gori","locative":"გორში"},
+ {"name":"ფოთი","slug":"poti","locative":"ფოთში"},
+ {"name":"ხაშური","slug":"khashuri","locative":"ხაშურში"},
+ {"name":"სამტრედია","slug":"samtredia","locative":"სამტრედიაში"},
+ {"name":"ოზურგეთი","slug":"ozurgeti","locative":"ოზურგეთში"},
+ {"name":"თელავი","slug":"telavi","locative":"თელავში"},
+ {"name":"ზესტაფონი","slug":"zestaponi","locative":"ზესტაფონში"},
+ {"name":"ბორჯომი","slug":"borjomi","locative":"ბორჯომში"},
+ {"name":"ქობულეთი","slug":"kobuleti","locative":"ქობულეთში"},
+ {"name":"ახალციხე","slug":"akhaltsikhe","locative":"ახალციხეში"},
+ {"name":"სიღნაღი","slug":"sighnaghi","locative":"სიღნაღში"}
+]

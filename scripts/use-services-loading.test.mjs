@@ -59,6 +59,12 @@ function harness(initial) {
     require(name) {
       if (name === '@/utils/serviceModels') return loadModelHelpers();
       if (name === 'react') return react;
+      if (name === '@/hooks/useCatalogueState') return { useCatalogueState: react.useState, useCatalogueResume: () => ({ current: false }) };
+      if (name === '@/utils/serviceRotation') {
+        const helpers = {};
+        vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/utils/serviceRotation.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, { exports: helpers });
+        return helpers;
+      }
       if (name === '@/lib/serviceMetadata') return metadata;
       if (name === '@/integrations/supabase/client') return { supabase };
       if (name === 'sonner') return { toast: { error: message => notices.push(message) } };
@@ -68,7 +74,7 @@ function harness(initial) {
   });
   return { hook: exports.useServices(initial), metadata, queryClient, states, requests, notices };
 }
-const filters = { searchTerm: '', selectedCategory: 'all', selectedCity: null, selectedDistrict: null, selectedBrands: [], onSiteOnly: false, minRating: null };
+const filters = { sortBy: 'newest', searchTerm: '', selectedCategory: 'all', selectedCity: null, selectedDistrict: null, selectedBrands: [], onSiteOnly: false, minRating: null };
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
 test('categories and cities start together and publish independently', async () => {

@@ -23,17 +23,36 @@ export function invalidatePublicServiceCategories() {
   return queryClient.invalidateQueries({ queryKey: publicCategoriesKey });
 }
 
+export const publicServiceCityCountsOptions = {
+  queryKey: ["public-service-city-counts"],
+  staleTime: 60_000,
+  gcTime: 5 * 60_000,
+  retry: false,
+  queryFn: async () => {
+    const counts = new Map<string, number>();
+    // Supabase caps responses: read every public active listing, not only the first page.
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await supabase.from("mechanic_services")
+        .select("city").not("city", "is", null).eq("is_active", true)
+        .order("id").range(offset, offset + 999);
+      if (error) throw error;
+      for (const row of data || []) {
+        const city = row.city?.trim();
+        if (city) counts.set(city, (counts.get(city) || 0) + 1);
+      }
+      if (!data || data.length < 1000) break;
+    }
+    return [...counts].map(([city, count]) => ({ city, count }))
+      .sort((a, b) => b.count - a.count || a.city.localeCompare(b.city, "ka"));
+  },
+};
+
 export const publicServiceCitiesOptions = {
   queryKey: ["public-service-cities"],
   staleTime: 60_000,
   gcTime: 5 * 60_000,
   retry: false,
-  queryFn: async () => {
-    const { data, error } = await supabase.from("mechanic_services")
-      .select("city").not("city", "is", null).eq("is_active", true);
-    if (error) throw error;
-    return [...new Set((data || []).map(row => row.city).filter((city): city is string => !!city))].sort();
-  },
+  queryFn: async () => (await queryClient.fetchQuery(publicServiceCityCountsOptions)).map(row => row.city),
 };
 
 export function getPublicServiceCities() {

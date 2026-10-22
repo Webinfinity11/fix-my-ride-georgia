@@ -21,6 +21,6 @@ export default function CategoryDecisionGuide({ slug, name, services }: { slug: 
     <p className="text-muted-foreground mb-4">{priced.length ? `ნაჩვენებ განცხადებებში მითითებული საწყისი ფასი ${Math.min(...priced.map(service => service.price_from!))}₾-დანაა. საბოლოო თანხა დამოკიდებულია სამუშაოს მოცულობაზე და ხელოსანთან შეთანხმებაზე.` : 'ამ განცხადებებში ფასი წინასწარ შეთანხმებით ზუსტდება. ხელოსანს აუხსენით პრობლემა და მოითხოვეთ სამუშაოსა და მასალების ცალკე შეფასება.'}</p>
     <ul className="list-disc pl-5 space-y-2 mb-4">{questions.map(question => <li key={question}>{question}</li>)}</ul>
     {onsite.length > 0 && <p className="mb-3">ნაჩვენებ განცხადებებში {onsite.length} მომსახურება ადგილზე შესრულების შესაძლებლობას უთითებს.</p>}
-    <div className="flex flex-wrap gap-3">{(onsite.length ? onsite : services).slice(0, 3).map(service => <Link className="text-primary underline" key={service.id} to={`/service/${(service.slug ? (service.slug.startsWith(`${service.id}-`) ? service.slug : `${service.id}-${service.slug}`) : createServiceSlug(service.id, service.name))}`}>{service.name}</Link>)}</div>
+    <div className="flex flex-wrap gap-3">{(onsite.length ? onsite : services).slice(0, 3).map(service => <Link className="text-primary underline" key={service.id} to={`/service/${createServiceSlug(service.id, service.name)}`}>{service.name}</Link>)}</div>
   </section>;
 }

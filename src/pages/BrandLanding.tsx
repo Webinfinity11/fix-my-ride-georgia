@@ -1,3 +1,13 @@
+import { useCatalogueState } from "@/hooks/useCatalogueState";
+import { RelatedBlogPosts } from "@/components/seo/InternalLinkWidgets";
+import { cataloguePath } from "@/utils/catalogueNavigation";
+import { useSearchParams } from "react-router-dom";
+import ModernServiceFilters from "@/components/services/ModernServiceFilters";
+import ServiceCatalogueHeading from "@/components/services/ServiceCatalogueHeading";
+import { catalogueContainerClassName } from "@/components/services/catalogueLayout";
+import { CITIES, getCityByName } from "@/utils/locationCatalogue";
+import { DISTRICTS } from "@/utils/districts";
+import { createSlug } from "@/utils/slugUtils";
 import { ModelLinks } from '@/components/seo/ModelLinks';
 import { useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -11,7 +21,6 @@ import { BreadcrumbSchema, CollectionPageSchema } from "@/components/seo/Structu
 import { BrandsNav } from "@/components/seo/BrandsNav";
 import { BrandDistrictsNav } from "@/components/seo/BrandDistrictsNav";
 import { CategoryFAQSection } from "@/components/seo/CategorySeoSections";
-import { CAR_BRAND_LOGOS } from "@/data/carBrandLogos";
 import { getBrandBySlug, isSpecialist, BRAND_MIN_SPECIALISTS } from "@/utils/carBrands";
 import { getDistrictBySlug } from "@/utils/districts";
 import { getBrandIntro, getBrandFAQ } from "@/utils/brandContent";
@@ -32,6 +41,10 @@ const BrandLanding = () => {
   const { brandSlug, district: districtSlug } = useParams<{ brandSlug: string; district?: string }>();
   const brand = getBrandBySlug(brandSlug);
   const districtInfo = getDistrictBySlug(districtSlug);
+  const [searchParams] = useSearchParams();
+  const [searchInput, setSearchInput] = useCatalogueState('', "searchInput");
+  const [filters, setFilters] = useCatalogueState({ ...emptyFilters, selectedCity: searchParams.get('city') }, "filters");
+  const selectedCity = getCityByName(filters.selectedCity);
   const { services, loading, fetchServices } = useServices();
 
   // Fetch active services that serve this brand (specialists + generalists),
@@ -39,11 +52,11 @@ const BrandLanding = () => {
   useEffect(() => {
     if (!brand) return;
     fetchServices(
-      { ...emptyFilters, selectedBrands: [brand.name], selectedDistrict: districtInfo?.name ?? null },
+      { ...filters, selectedBrands: [brand.name], selectedDistrict: districtInfo?.name ?? filters.selectedDistrict },
       0,
       { all: true },
     );
-  }, [brand?.name, districtInfo?.slug]);
+  }, [brand?.name, districtInfo?.slug, filters]);
 
   // Split specialists (focused mechanics) from generalists (the "all brands"
   // crowd). Specialists are the page's unique, indexable content.
@@ -58,8 +71,7 @@ const BrandLanding = () => {
   // deeper URL (duplicate) — 404 instead.
   if (districtSlug && !districtInfo) return <NotFound />;
 
-  const logo = CAR_BRAND_LOGOS[brand.name];
-  const locative = districtInfo ? ` ${districtInfo.nameLocative}` : "";
+  const locative = districtInfo ? ` ${districtInfo.nameLocative}` : selectedCity ? ` ${selectedCity.locative}` : "";
   const canonical = `https://fixup.ge/brand/${brand.slug}${districtInfo ? `/${districtInfo.slug}` : ""}`;
   // Index only when there is enough specialist signal — otherwise the page is
   // near-duplicate of every other brand page (all showing the "all brands" set).
@@ -83,7 +95,7 @@ const BrandLanding = () => {
         description={description}
         canonical={canonical}
         keywords={`${brand.nameKaGen} ხელოსანი${locative}, ${brand.name} სერვისი, ${brand.nameKaGen} შეკეთება, ავტოსერვისი ${brand.nameKa}, ${brand.name} ავტოხელოსანი თბილისი`}
-        noindex={!indexable}
+        noindex={!indexable || Boolean(filters.selectedCity)}
       />
       <BreadcrumbSchema items={breadcrumbItems} />
       {specialists.length > 0 && (
@@ -93,7 +105,7 @@ const BrandLanding = () => {
           numberOfItems={specialists.length}
           itemList={specialists.slice(0, 20).map((s) => ({
             name: s.name,
-            url: `https://fixup.ge/service/${s.id}`,
+            url: `https://fixup.ge/service/${s.id}-${createSlug(s.name)}`,
             image: s.photos?.[0],
             price: s.price_from || undefined,
           }))}
@@ -104,10 +116,10 @@ const BrandLanding = () => {
 
       <main className="flex-grow">
         {/* Breadcrumb */}
-        <div className="bg-muted py-4">
-          <div className="container mx-auto px-4">
+        <div className="pt-4 md:pt-8 pb-3">
+          <div className={catalogueContainerClassName}>
             <Breadcrumb>
-              <BreadcrumbList>
+              <BreadcrumbList className="text-xs">
                 <BreadcrumbItem>
                   <BreadcrumbLink href="/">მთავარი</BreadcrumbLink>
                 </BreadcrumbItem>
@@ -136,35 +148,25 @@ const BrandLanding = () => {
           </div>
         </div>
 
-        {/* Hero */}
-        <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-12">
-          <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              {logo && (
-                <img
-                  src={logo}
-                  alt={`${brand.nameKa} ლოგო`}
-                  className="h-16 w-16 md:h-20 md:w-20 object-contain mx-auto mb-4"
-                />
-              )}
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-                {brand.nameKaGen} ავტოსერვისი{locative}
-                {specialists.length > 0 && (
-                  <span className="block text-lg md:text-xl font-semibold text-primary mt-2">
-                    {specialists.length} მომსახურება · {providerCount} მიმწოდებელი
-                  </span>
-                )}
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                იპოვე ხელოსანი{districtInfo ? ` ${districtInfo.nameLocative}` : ""}, რომელიც {brand.nameKa} ({brand.name}) მანქანებზე
-                ემსახურება — შეადარე მომსახურებები, მითითებული ფასები და მისამართები.
-              </p>
-            </div>
-          </div>
+        <div className={catalogueContainerClassName}>
+          <ServiceCatalogueHeading title={`${brand.nameKaGen} ავტოსერვისი${locative}`} subtitle={`იპოვეთ ${brand.nameKa} (${brand.name}) მარკის ხელოსანი${locative} — შეადარეთ მომსახურებები, მითითებული ფასები და მისამართები.`} />
+          <ModernServiceFilters selectedCategory="all" searchTerm={searchInput} setSearchTerm={setSearchInput}
+            selectedCity={filters.selectedCity} setSelectedCity={selectedCity => setFilters(prev => ({ ...prev, selectedCity, selectedDistrict: selectedCity === 'თბილისი' ? prev.selectedDistrict : null }))}
+            cities={CITIES.map(city => city.name)} selectedDistrict={districtInfo?.name ?? filters.selectedDistrict}
+            setSelectedDistrict={selectedDistrict => {
+              if (districtInfo) { const next=DISTRICTS.find(item=>item.name===selectedDistrict);window.location.assign(`/brand/${brand.slug}${next ? `/${next.slug}` : ''}`); }
+              else setFilters(prev=>({...prev,selectedDistrict}));
+            }} districts={DISTRICTS.map(item=>item.name)} selectedBrands={[brand.name]} setSelectedBrands={brands => window.location.assign(cataloguePath({ citySlug: selectedCity?.slug, brands }))}
+            onSiteOnly={filters.onSiteOnly} setOnSiteOnly={onSiteOnly=>setFilters(prev=>({...prev,onSiteOnly}))}
+            minRating={filters.minRating} setMinRating={minRating=>setFilters(prev=>({...prev,minRating}))}
+            onSearch={()=>setFilters(prev=>({...prev,searchTerm:searchInput.trim()}))}
+            onClearSearch={()=>{setSearchInput('');setFilters(prev=>({...prev,searchTerm:''}));}}
+            onResetFilters={()=>window.location.assign("/services")}
+          />
         </div>
 
         {/* Specialists — the unique, indexable listing */}
-        <div className="container mx-auto px-4 py-10">
+        <div className={`${catalogueContainerClassName} py-6`}>
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
             {brand.nameKaGen} სპეციალისტები{locative}
           </h2>
@@ -198,7 +200,7 @@ const BrandLanding = () => {
         {/* Generalists — mechanics who serve this brand among many others. Kept
             secondary so the page's primary content stays brand-specific. */}
         {generalists.length > 0 && (
-          <div className="container mx-auto px-4 pb-12">
+          <div className={`${catalogueContainerClassName} pb-12`}>
             <h2 className="text-xl md:text-2xl font-bold mb-6">
               ასევე ემსახურება {brand.nameKa} მარკას
             </h2>
@@ -213,12 +215,13 @@ const BrandLanding = () => {
         {/* Brand-specific SEO copy — unique per brand so the cluster reads as
             distinct pages, not a name-swapped template. On a district page a
             district-specific lead keeps it distinct from the brand hub too. */}
-        <section className="container mx-auto px-4 py-8 md:py-12">
-          <details className="max-w-4xl mx-auto rounded-lg border bg-background p-5">
-            <summary className="cursor-pointer text-lg font-semibold text-primary">
-              {brand.nameKaGen} მომსახურების შესახებ · მეტის ნახვა
+        <div className={`${catalogueContainerClassName} my-8`}>
+          <details className="rounded-2xl border bg-card [&_.container]:max-w-none [&_.container]:px-0 [&_.container]:py-5">
+            <summary className="cursor-pointer px-5 py-4 text-base font-semibold text-foreground marker:text-primary md:px-6">
+              {brand.nameKaGen} მომსახურება — ინფორმაცია და ხშირად დასმული კითხვები
             </summary>
-            <div className="prose prose-lg max-w-none mt-4">
+            <div className="border-t px-5 pb-2 md:px-6">
+            <div className="prose prose-lg max-w-none py-5">
             {districtInfo && (
               <p>
                 <strong>{brand.nameKaGen} ხელოსანი {districtInfo.nameLocative}.</strong>{" "}
@@ -228,8 +231,6 @@ const BrandLanding = () => {
             )}
             <div dangerouslySetInnerHTML={{ __html: getBrandIntro(brand, specialists.length) }} />
             </div>
-          </details>
-        </section>
 
         <CategoryFAQSection items={getBrandFAQ(brand)} categoryName={brand.nameKa} />
 
@@ -240,6 +241,11 @@ const BrandLanding = () => {
 
         {/* Brand switcher — internal links to the other brand pages. */}
         <BrandsNav currentSlug={brand.slug} heading="სხვა მარკები" />
+            </div>
+          </details>
+        </div>
+
+        <RelatedBlogPosts limit={3} />
       </main>
 
       <Footer />

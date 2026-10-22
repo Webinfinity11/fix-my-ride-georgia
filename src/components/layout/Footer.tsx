@@ -1,255 +1,60 @@
+import FooterLinkSection from "@/components/layout/FooterLinkSection";
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Wrench, ArrowRight, Heart } from "lucide-react";
+import { Facebook, Phone, MapPin, ArrowUpRight } from "lucide-react";
 import { FooterTopCategories, FooterTopBrands, footerScrollListClass } from "@/components/seo/InternalLinkWidgets";
+import { catalogueContainerClassName } from "@/components/services/catalogueLayout";
 
-const Footer = () => {
+const quickLinks = [
+  ["/mechanic", "ხელოსნების ძიება"], ["/services", "სერვისები"], ["/about", "ჩვენ შესახებ"],
+  ["/contact", "კონტაქტი"], ["/blog", "ბლოგი"], ["/map", "რუკა"], ["/fuel-importers", "საწვავის ფასები"],
+];
+const accountLinks = [
+  ["/register?type=mechanic", "ხელოსნის რეგისტრაცია"], ["/register?type=customer", "მომხმარებლის რეგისტრაცია"],
+  ["/login", "შესვლა"], ["/dashboard", "პირადი კაბინეტი"],
+];
+
+export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-primary-dark to-primary text-white">
-      <div className="container mx-auto px-4">
-        {/* Newsletter Section (can be enabled if needed) */}
-        {/* <div className="py-10 border-b border-white/20">
-          <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="text-xl font-bold mb-2">გამოიწერეთ ჩვენი სიახლეები</h3>
-              <p className="text-blue-100">მიიღეთ სპეციალური შეთავაზებები და სიახლეები</p>
-            </div>
-            <div className="flex w-full md:w-auto">
-              <input
-                type="email"
-                placeholder="თქვენი ელ.ფოსტა"
-                className="px-4 py-3 rounded-l-lg w-full md:w-64 outline-none text-gray-800"
-              />
-              <Button className="rounded-l-none bg-secondary hover:bg-secondary-light">
-                გამოწერა <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
+    <footer className="border-t border-white/10 bg-[#0c2943] text-white">
+      <div className={catalogueContainerClassName}>
+        <div className="grid gap-7 border-b border-white/10 py-8 md:grid-cols-[1.2fr_1fr] md:items-center md:gap-12 md:py-10">
+          <div>
+            <Link to="/" className="inline-flex items-center rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">
+              <img src="/assets/fixup-logo-6c6398d629fe8a15.webp" alt="FixUp Auto Service" width={163} height={80} className="h-12 w-auto object-contain" loading="lazy" />
+            </Link>
+            <p className="mt-3 max-w-md text-sm leading-7 text-slate-300">პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს. იპოვეთ საუკეთესო ხელოსანი თქვენი ავტომობილისთვის.</p>
           </div>
-        </div> */}
-
-        {/* Main Footer */}
-        <div className="py-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10">
-            {/* Logo and Description */}
-            <div className="col-span-1 md:col-span-1 lg:col-span-1">
-              <Link to="/" className="flex items-center mb-6">
-                <div className="bg-white/10 p-2 rounded-lg mr-2">
-                  <Wrench className="h-6 w-6 text-secondary" />
-                </div>
-                <span className="text-xl font-bold">FixUp</span>
-              </Link>
-              <p className="text-blue-100 mb-6 leading-relaxed">
-                პლატფორმა, რომელიც აკავშირებს ავტომობილის ხელოსნებს და მომხმარებლებს. იპოვეთ საუკეთესო ხელოსანი თქვენი
-                ავტომობილისთვის.
-              </p>
-              <div className="flex space-x-4">
-                <a
-                  href="https://www.facebook.com/FixupGeorgia"
-                  target="_blank"
-                  rel="noopener"
-                  className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-                  aria-label="Facebook-ის გვერდი"
-                >
-                  <Facebook size={20} />
-                </a>
-                <a
-                  href="#"
-                  className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-                  aria-label="Instagram-ის გვერდი"
-                >
-                  <Instagram size={20} />
-                </a>
-                <a
-                  href="#"
-                  className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-                  aria-label="Twitter-ის გვერდი"
-                >
-                  <Twitter size={20} />
-                </a>
-              </div>
+          <address className="grid gap-3 text-sm not-italic md:justify-self-end">
+            <a href="tel:+995574047994" className="inline-flex items-center gap-3 rounded-lg text-lg font-semibold transition-colors hover:text-amber-300"><Phone className="h-4 w-4 text-amber-400" />+995 574 04 79 94</a>
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-slate-300">
+              <span className="inline-flex items-center gap-2"><MapPin className="h-4 w-4 text-slate-400" />თბილისი, საქართველო</span>
             </div>
-
-            {/* Quick Links */}
-            <div className="col-span-1">
-              <h3 className="text-lg font-semibold mb-6 flex items-center">
-                <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
-                სწრაფი ბმულები
-              </h3>
-              <ul className={footerScrollListClass}>
-                <li>
-                  <Link
-                    to="/mechanic"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    ხელოსნების ძიება
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/services"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    სერვისები
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/about" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    ჩვენ შესახებ
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    კონტაქტი
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/blog"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    ბლოგი
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/map"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    რუკა
-                  </Link>
-                </li>
-                {/* TEMP: სამრეცხაოები დამალულია — ჯერ საკმარისი რაოდენობა არ არის
-                <li>
-                  <Link
-                    to="/laundries"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    სამრეცხაოები
-                  </Link>
-                </li>
-                */}
-                <li>
-                  <Link
-                    to="/fuel-importers"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    საწვავის ფასები
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Top Categories — sitewide internal link equity for SEO. */}
-            <FooterTopCategories limit={10} />
-
-            {/* Car brands — internal links to the /brand cluster. */}
-            <FooterTopBrands />
-
-            {/* User Links */}
-            <div className="col-span-1">
-              <h3 className="text-lg font-semibold mb-6 flex items-center">
-                <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
-                მომხმარებლები
-              </h3>
-              <ul className={footerScrollListClass}>
-                <li>
-                  <Link
-                    to="/register?type=mechanic"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    ხელოსნის რეგისტრაცია
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/register?type=customer"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    მომხმარებლის რეგისტრაცია
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/login" className="text-blue-100 hover:text-secondary transition-colors flex items-center">
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    შესვლა
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/dashboard"
-                    className="text-blue-100 hover:text-secondary transition-colors flex items-center"
-                  >
-                    <ArrowRight className="h-4 w-4 mr-2" />
-                    პირადი კაბინეტი
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact Info */}
-            <div className="col-span-1">
-              <h3 className="text-lg font-semibold mb-6 flex items-center">
-                <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
-                კონტაქტი
-              </h3>
-              <ul className="space-y-5">
-                <li className="flex items-start">
-                  <div className="bg-white/10 p-2 rounded-lg mr-3 mt-1">
-                    <MapPin className="h-5 w-5 text-secondary shrink-0" />
-                  </div>
-                  <span className="text-blue-100">თბილისი, საქართველო</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="bg-white/10 p-2 rounded-lg mr-3">
-                    <Phone className="h-5 w-5 text-secondary shrink-0" />
-                  </div>
-                  <span className="text-blue-100">+995 574 04 79 94</span>
-                </li>
-                <li className="flex items-center">
-                  <div className="bg-white/10 p-2 rounded-lg mr-3">
-                    <Mail className="h-5 w-5 text-secondary shrink-0" />
-                  </div>
-                  <span className="text-blue-100">info@fixup.ge</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+          </address>
         </div>
 
-        <div className="border-t border-white/20 pt-8 pb-10 text-center text-blue-200 space-y-2">
-          <p className="flex items-center justify-center gap-1 text-sm">
-            &copy; {new Date().getFullYear()} FixUp. შექმნილია
-            <Heart className="h-4 w-4 text-secondary mx-1" fill="currentColor" />
-            -ით. ყველა უფლება დაცულია.
-          </p>
-          <p className="text-xs text-blue-200/80">
-            <a
-              href="https://infinity.ge/services/saitis-damzadeba/"
-              target="_blank"
-              rel="noopener"
-              className="hover:text-secondary transition-colors font-medium"
-              title="საიტის დამზადება — INFINITY"
-            >
-              საიტის დამზადება
-            </a>
-            {" "}—{" "}INFINITY
-          </p>
+        <nav aria-label="ფუტერის ნავიგაცია" className="grid min-w-0 grid-cols-1 gap-x-6 gap-y-0 py-3 md:grid-cols-4 md:gap-8 md:py-10">
+          <FooterLinkSection title="სწრაფი ბმულები">
+            <ul className={footerScrollListClass}>{quickLinks.map(([to, text]) => <li key={to}><Link to={to}>{text}</Link></li>)}</ul>
+          </FooterLinkSection>
+          <FooterTopCategories limit={10} />
+          <FooterTopBrands />
+          <FooterLinkSection title="მომხმარებლები">
+            <ul className={footerScrollListClass}>{accountLinks.map(([to, text]) => <li key={to}><Link to={to}>{text}</Link></li>)}</ul>
+            <Link to="/register?type=mechanic" className="mt-5 inline-flex items-center gap-2 rounded-xl border border-white/20 px-3 py-2.5 text-xs font-medium transition-colors hover:border-amber-300 hover:text-amber-300">შემოუერთდით FixUp-ს<ArrowUpRight className="h-4 w-4 shrink-0" /></Link>
+          </FooterLinkSection>
+        </nav>
+
+        <div className="flex flex-col gap-5 border-t border-white/10 py-6 pb-24 text-xs text-slate-400 md:flex-row md:items-center md:justify-between md:pb-6">
+          <p>© {new Date().getFullYear()} FixUp. ყველა უფლება დაცულია.</p>
+          <div className="flex items-center gap-2">
+            <a href="https://www.facebook.com/FixupGeorgia" target="_blank" rel="noopener noreferrer" className="rounded-lg bg-white/5 p-2 text-slate-300 transition-colors hover:bg-white/10 hover:text-white" aria-label="Facebook-ის გვერდი"><Facebook className="h-4 w-4" /></a>
+          </div>
+          <a href="https://infinity.ge/services/saitis-damzadeba/" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-3 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400" title="საიტის დამზადება — INFINITY">
+            <span className="text-xs text-slate-300">საიტის დამზადება</span>
+            <img src="/images/partners/infinity-card.png" alt="INFINITY solutions" width={1136} height={548} className="h-auto w-40 shrink-0 rounded-xl" loading="lazy" />
+          </a>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

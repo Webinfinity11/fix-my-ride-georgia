@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCatalogueState } from "@/hooks/useCatalogueState";
+import { useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -48,15 +49,15 @@ const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { trackSearch } = useSearchTracking();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const [activeTab, setActiveTab] = useState<"services" | "mechanics">("services");
-  const [mechanics, setMechanics] = useState<MechanicType[]>([]);
-  const [mechanicsLoading, setMechanicsLoading] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [popularSearches] = useState([
+  const [searchQuery, setSearchQuery] = useCatalogueState(searchParams.get("q") || "", "searchQuery");
+  const [activeTab, setActiveTab] = useCatalogueState<"services" | "mechanics">("services", "activeTab");
+  const [mechanics, setMechanics] = useCatalogueState<MechanicType[]>([], "mechanics");
+  const [mechanicsLoading, setMechanicsLoading] = useCatalogueState(false, "mechanicsLoading");
+  const [recentSearches, setRecentSearches] = useCatalogueState<string[]>([], "recentSearches");
+  const [popularSearches] = useCatalogueState([
     "ძრავის შეკეთება", "სამუხრუჭე სისტემა", "ელექტროობა", "კონდიცონერი",
     "საჭის სისტემა", "დიაგნოსტიკა", "ზეთის ცვლა", "წინა ფარები"
-  ]);
+  ], "popularSearches");
 
   const {
     services,
@@ -70,12 +71,12 @@ const Search = () => {
   } = useServices();
 
   // Filter states
-  const [selectedCategory, setSelectedCategory] = useState<number | "all">("all");
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [onSiteOnly, setOnSiteOnly] = useState(false);
-  const [minRating, setMinRating] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useCatalogueState<number | "all">("all", "selectedCategory");
+  const [selectedCity, setSelectedCity] = useCatalogueState<string | null>(null, "selectedCity");
+  const [selectedDistrict, setSelectedDistrict] = useCatalogueState<string | null>(null, "selectedDistrict");
+  const [selectedBrands, setSelectedBrands] = useCatalogueState<string[]>([], "selectedBrands");
+  const [onSiteOnly, setOnSiteOnly] = useCatalogueState(false, "onSiteOnly");
+  const [minRating, setMinRating] = useCatalogueState<number | null>(null, "minRating");
 
   useEffect(() => {
     fetchInitialData();
@@ -403,7 +404,7 @@ const Search = () => {
                           setSelectedCategory={setSelectedCategory}
                           categories={categories}
                           selectedCity={selectedCity}
-                          setSelectedCity={setSelectedCity}
+                          setSelectedCity={city => { setSelectedCity(city); if (city !== "თბილისი") setSelectedDistrict(null); }}
                           cities={cities}
                           selectedDistrict={selectedDistrict}
                           setSelectedDistrict={setSelectedDistrict}

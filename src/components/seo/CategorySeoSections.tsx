@@ -136,11 +136,12 @@ export function RelatedCategories({ currentId, limit = 6 }: { currentId: number;
       if (error) throw error;
       // Group + count + filter out current
       const counts = new Map<number, { id: number; name: string; icon: string | null; count: number }>();
-      for (const row of (data || []) as Array<{ id: number; name: string; icon: string | null }>) {
+      for (const row of (data || []) as Array<{ id: number; name: string; icon: string | null; mechanic_services?: {id:number}[] }>) {
         if (row.id === currentId) continue;
         const existing = counts.get(row.id);
-        if (existing) existing.count += 1;
-        else counts.set(row.id, { id: row.id, name: row.name, icon: row.icon ?? null, count: 1 });
+        const count = row.mechanic_services?.length || 0;
+        if (existing) existing.count += count;
+        else counts.set(row.id, { id: row.id, name: row.name, icon: row.icon ?? null, count });
       }
       return Array.from(counts.values())
         .sort((a, b) => b.count - a.count)

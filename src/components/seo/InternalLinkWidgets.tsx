@@ -1,3 +1,5 @@
+import FooterLinkSection from "@/components/layout/FooterLinkSection";
+import { catalogueContainerClassName } from "@/components/services/catalogueLayout";
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +9,7 @@ import { LazyImage } from '@/components/ui/lazy-image';
 import { ArrowRight, Calendar, Star, Wrench } from 'lucide-react';
 import { BlogCard } from '@/components/blog/BlogCard';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import { createSlug } from '@/utils/slugUtils';
+import { createSlug, createServiceSlug } from '@/utils/slugUtils';
 import { BRAND_PAGES } from '@/utils/carBrands';
 import { formatDate } from '@/utils/blogHelpers';
 import type { BlogPost } from '@/hooks/useBlogPosts';
@@ -39,8 +41,8 @@ export function RelatedBlogPosts({ limit = 3 }: { limit?: number }) {
 
   if (isLoading) {
     return (
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold mb-6">სასარგებლო სტატიები ბლოგიდან</h2>
+      <section className={`${catalogueContainerClassName} my-10 md:my-12`}>
+        <h2 className="text-xl md:text-2xl font-bold mb-6">სასარგებლო სტატიები ბლოგიდან</h2>
         {/* Mobile: horizontal row (matches the carousel, no page stretch) */}
         <div className="flex md:hidden gap-3 overflow-hidden">
           {Array.from({ length: limit }).map((_, i) => (
@@ -60,9 +62,9 @@ export function RelatedBlogPosts({ limit = 3 }: { limit?: number }) {
   if (!posts || posts.length === 0) return null;
 
   return (
-    <section className="mt-12">
-      <div className="flex items-end justify-between mb-6">
-        <h2 className="text-2xl font-bold">სასარგებლო სტატიები ბლოგიდან</h2>
+    <section className={`${catalogueContainerClassName} my-10 md:my-12`}>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <h2 className="text-xl md:text-2xl font-bold">სასარგებლო სტატიები ბლოგიდან</h2>
         <Link
           to="/blog"
           className="text-sm text-primary hover:underline flex items-center gap-1"
@@ -76,7 +78,7 @@ export function RelatedBlogPosts({ limit = 3 }: { limit?: number }) {
         <CarouselContent className="-ml-3">
           {posts.map((p) => (
             <CarouselItem key={p.id} className="pl-3 basis-[85%] sm:basis-1/2">
-              <BlogCard post={p} />
+              <BlogCard post={p} compact />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -140,9 +142,7 @@ export function RelatedServices({ limit = 6, excludeId }: { limit?: number; excl
   if (!services || services.length === 0) return null;
 
   const serviceUrl = (s: LiteService) => {
-    if (s.slug && /^\d+-/.test(s.slug)) return `/service/${s.slug}`;
-    const base = s.slug || createSlug(s.name);
-    return base ? `/service/${s.id}-${base}` : `/service/${s.id}`;
+    return `/service/${createServiceSlug(s.id, s.name)}`;
   };
 
   return (
@@ -196,13 +196,9 @@ export function RelatedServices({ limit = 6, excludeId }: { limit?: number; excl
 
 /* -------------------- Footer Top Categories (sitewide internal links) ----------- */
 
-// Shared footer list styling: on mobile the link list becomes a single
-// horizontal-scroll row (shrinks footer height); on md+ it's a normal
-// vertical list. Arrows hidden on mobile for a clean chip-like row.
+// All footer destinations remain visible and crawlable at every viewport size.
 export const footerScrollListClass =
-  "flex gap-x-5 overflow-x-auto pb-2 [&>li]:shrink-0 [&>li]:whitespace-nowrap [&_svg]:hidden " +
-  "md:block md:space-y-3 md:gap-0 md:overflow-visible md:pb-0 md:[&_svg]:block " +
-  "[scrollbar-width:thin] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/30";
+  "space-y-2.5 text-xs leading-6 text-slate-300 md:text-sm [&_a]:inline-flex [&_a]:max-w-full [&_a]:items-start [&_a]:transition-colors [&_a:hover]:text-amber-300 [&_a]:rounded-sm [&_a:focus-visible]:outline [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_svg]:hidden [&_span]:line-clamp-none [&_span]:whitespace-normal";
 
 export function FooterTopCategories({ limit = 10 }: { limit?: number }) {
   const { data: categories, isLoading } = useQuery({
@@ -233,17 +229,13 @@ export function FooterTopCategories({ limit = 10 }: { limit?: number }) {
   }
 
   return (
-    <div className="col-span-1">
-      <h3 className="text-lg font-semibold mb-6 flex items-center">
-        <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
-        პოპულარული კატეგორიები
-      </h3>
+    <FooterLinkSection title="პოპულარული კატეგორიები">
       <ul className={footerScrollListClass}>
         {categories.map((c) => (
           <li key={c.id}>
             <Link
               to={`/category/${createSlug(c.name)}`}
-              className="text-blue-100 hover:text-secondary transition-colors flex items-center"
+              className="hover:text-amber-300"
             >
               <ArrowRight className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className="line-clamp-1">{c.name}</span>
@@ -251,7 +243,7 @@ export function FooterTopCategories({ limit = 10 }: { limit?: number }) {
           </li>
         ))}
       </ul>
-    </div>
+    </FooterLinkSection>
   );
 }
 
@@ -262,14 +254,10 @@ export function FooterTopCategories({ limit = 10 }: { limit?: number }) {
  */
 export function FooterTopBrands() {
   return (
-    <div className="col-span-1">
-      <h3 className="text-lg font-semibold mb-6 flex items-center">
-        <span className="w-6 h-1 bg-secondary inline-block mr-2"></span>
-        მარკის მიხედვით
-      </h3>
+    <FooterLinkSection title="მარკის მიხედვით">
       <ul className={footerScrollListClass}>
         <li>
-          <Link to="/brand" className="text-blue-100 hover:text-secondary transition-colors flex items-center font-semibold">
+          <Link to="/brand" className="font-medium hover:text-amber-300">
             <ArrowRight className="h-4 w-4 mr-2 flex-shrink-0" />
             <span className="line-clamp-1">ყველა მარკა</span>
           </Link>
@@ -278,7 +266,7 @@ export function FooterTopBrands() {
           <li key={b.slug}>
             <Link
               to={`/brand/${b.slug}`}
-              className="text-blue-100 hover:text-secondary transition-colors flex items-center"
+              className="hover:text-amber-300"
             >
               <ArrowRight className="h-4 w-4 mr-2 flex-shrink-0" />
               <span className="line-clamp-1">{b.nameKa}</span>
@@ -286,7 +274,7 @@ export function FooterTopBrands() {
           </li>
         ))}
       </ul>
-    </div>
+    </FooterLinkSection>
   );
 }
 
@@ -326,9 +314,7 @@ export function MechanicOtherServices({
   if (isLoading || !services || services.length === 0) return null;
 
   const serviceUrl = (s: LiteService) => {
-    if (s.slug && /^\d+-/.test(s.slug)) return `/service/${s.slug}`;
-    const base = s.slug || createSlug(s.name);
-    return base ? `/service/${s.id}-${base}` : `/service/${s.id}`;
+    return `/service/${createServiceSlug(s.id, s.name)}`;
   };
 
   const renderCard = (s: LiteService) => {

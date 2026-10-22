@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SEOHead from "@/components/seo/SEOHead";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Wrench, Car, Zap, Settings, Gauge, Paintbrush } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { getCategoryImage } from "@/utils/categoryImages";
 import { createCategorySlug } from "@/utils/slugUtils";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
@@ -18,26 +18,7 @@ type ServiceCategory = {
   icon: string | null;
 };
 
-const getIcon = (iconName: string | null) => {
-  switch (iconName) {
-    case "engine":
-      return <Settings className="h-12 w-12 text-primary" />;
-    case "electric":
-      return <Zap className="h-12 w-12 text-primary" />;
-    case "suspension":
-    case "brakes":
-      return <Car className="h-12 w-12 text-primary" />;
-    case "diagnostic":
-      return <Gauge className="h-12 w-12 text-primary" />;
-    case "paint":
-      return <Paintbrush className="h-12 w-12 text-primary" />;
-    default:
-      return <Wrench className="h-12 w-12 text-primary" />;
-  }
-};
-
 const CategoryList = () => {
-  const navigate = useNavigate();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,18 +36,19 @@ const CategoryList = () => {
 
       if (error) throw error;
 
-      setCategories(data || []);
-    } catch (error: any) {
+      const featuredOrder = [11, 15, 14, 17, 16, 20, 13, 25];
+      setCategories([...(data || [])].sort((a, b) => {
+        const aRank = featuredOrder.indexOf(a.id);
+        const bRank = featuredOrder.indexOf(b.id);
+        return (aRank === -1 ? featuredOrder.length : aRank)
+          - (bRank === -1 ? featuredOrder.length : bRank);
+      }));
+    } catch (error: unknown) {
       console.error("Error fetching categories:", error);
       toast.error("კატეგორიების ჩატვირთვისას შეცდომა დაფიქსირდა");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleCategoryClick = (category: ServiceCategory) => {
-    const slug = createCategorySlug(category.name);
-    navigate(`/category/${slug}`);
   };
 
   const structuredData = {
@@ -94,13 +76,13 @@ const CategoryList = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow container max-w-[1120px] mx-auto px-4 py-8">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-muted rounded w-1/3"></div>
             <div className="h-4 bg-muted rounded w-2/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-48 bg-muted rounded"></div>
+                <div key={i} className="h-64 bg-muted rounded-2xl"></div>
               ))}
             </div>
           </div>
@@ -122,10 +104,10 @@ const CategoryList = () => {
       
       <Header />
       
-      <main className="flex-grow">
+      <main className="flex-grow bg-[#eef2f7] dark:bg-background">
         {/* Breadcrumb */}
         <div className="bg-muted py-4">
-          <div className="container mx-auto px-4">
+          <div className="container max-w-[1120px] mx-auto px-4">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -141,12 +123,12 @@ const CategoryList = () => {
         </div>
 
         {/* Header Section */}
-        <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <h1 className="text-4xl font-bold mb-4">ავტოსერვისის კატეგორიები — საქართველო</h1>
+        <div className="pt-10 md:pt-14 pb-2">
+          <div className="container max-w-[1120px] mx-auto px-4">
+            <div className="max-w-3xl">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4">რა გჭირდება?<span className="sr-only"> — ავტოსერვისის კატეგორიები საქართველოში</span></h1>
               <p className="text-lg text-muted-foreground mb-6">
-                აირჩიეთ კატეგორია და იპოვეთ საუკეთესო ავტოხელოსანი თქვენს უბანში — ძრავის რემონტი, ელექტრო დიაგნოსტიკა, ზეთის შეცვლა და სხვა
+                აირჩიეთ სასურველი სერვისი და იპოვეთ ავტოხელოსანი თქვენს უბანში.
               </p>
               <div className="text-sm text-muted-foreground">
                 სულ {categories.length} კატეგორია
@@ -156,37 +138,36 @@ const CategoryList = () => {
         </div>
 
         {/* Categories Grid */}
-        <div className="container mx-auto px-4 py-12">
+        <div className="container max-w-[1120px] mx-auto px-4 pt-6 pb-12">
           {categories.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
               {categories.map((category) => (
-                <Card 
-                  key={category.id} 
-                  className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105 bg-white border-2 hover:border-primary/30"
-                  onClick={() => handleCategoryClick(category)}
+                <Link
+                  key={category.id}
+                  to={`/category/${createCategorySlug(category.name)}`}
+                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-950 transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 dark:border-border dark:bg-card dark:text-card-foreground"
                 >
-                  <CardContent className="p-6 text-center">
-                    <div className="mb-4 flex justify-center">
-                      {getIcon(category.icon)}
+                  <div className="aspect-[4/3] overflow-hidden bg-[#e1e9f1]">
+                    <img
+                      src={getCategoryImage(category.id)}
+                      alt={category.name}
+                      width={640}
+                      height={480}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-300 motion-safe:group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex items-end gap-2 p-3 md:p-4">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-sm md:text-base font-bold leading-snug">{category.name}</h2>
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                        {category.description || "ხელოსნების ნახვა"}
+                      </p>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-foreground">
-                      {category.name}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 text-sm">
-                      {category.description || "პროფესიონალური სერვისი თქვენი ავტომობილისთვის"}
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      className="w-full hover:bg-primary hover:text-white transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCategoryClick(category);
-                      }}
-                    >
-                      სერვისების ნახვა
-                    </Button>
-                  </CardContent>
-                </Card>
+                    <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-primary transition-transform motion-safe:group-hover:translate-x-1" />
+                  </div>
+                </Link>
               ))}
             </div>
           ) : (

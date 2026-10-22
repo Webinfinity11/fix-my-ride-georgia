@@ -1,3 +1,5 @@
+import { useCatalogueState, useCatalogueResume } from "@/hooks/useCatalogueState";
+import { rotateServiceIds, serviceRotationSeed } from "@/utils/serviceRotation";
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "@/components/layout/Header";
@@ -46,7 +48,7 @@ type ServiceType = {
 
 type SortKey = "recommended" | "newest" | "price" | "rating" | "distance";
 const SORT_LABELS: Record<SortKey, string> = {
-  recommended: "რეკომენდებული", newest: "უახლესი", price: "ფასი (დაბლიდან)",
+  recommended: "მონაცვლეობით", newest: "უახლესი", price: "ფასი (დაბლიდან)",
   rating: "რეიტინგი", distance: "მანძილი (ახლოს)",
 };
 const DAY_KEYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
@@ -72,8 +74,8 @@ const Combo = ({ value, options, onChange, placeholder, allLabel, icon: Icon }: 
   value: string | null; options: { value: string; label: string }[];
   onChange: (v: string | null) => void; placeholder: string; allLabel: string; icon: typeof Layers;
 }) => {
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
+  const [open, setOpen] = useCatalogueState(false, "open");
+  const [q, setQ] = useCatalogueState("", "q");
   const label = value ? options.find(o => o.value === value)?.label : null;
   const filtered = q ? options.filter(o => o.label.toLowerCase().includes(q.toLowerCase())) : options;
   const Row = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
@@ -117,8 +119,8 @@ const BrandLogo = ({ brand, className }: { brand: string; className?: string }) 
 const BrandBox = ({ selected, options, onToggle, onClear }: {
   selected: string[]; options: string[]; onToggle: (b: string) => void; onClear: () => void;
 }) => {
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
+  const [open, setOpen] = useCatalogueState(false, "open");
+  const [q, setQ] = useCatalogueState("", "q");
   const sorted = useMemo(() => [...options].sort((a, b) => brandRank(a) - brandRank(b)), [options]);
   const filtered = q ? sorted.filter(b => b.toLowerCase().includes(q.toLowerCase())) : sorted;
   return (
@@ -177,28 +179,29 @@ const Toggle = ({ active, onClick, icon: Icon, label }: { active: boolean; onCli
 const ServiceSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(searchParams.get("category") ? Number(searchParams.get("category")) : null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(searchParams.get("city") || null);
-  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useCatalogueState(searchParams.get("q") || "", "searchInput");
+  const [searchQuery, setSearchQuery] = useCatalogueState(searchParams.get("q") || "", "searchQuery");
+  const [selectedCategory, setSelectedCategory] = useCatalogueState<number | null>(searchParams.get("category") ? Number(searchParams.get("category")) : null, "selectedCategory");
+  const [selectedCity, setSelectedCity] = useCatalogueState<string | null>(searchParams.get("city") || null, "selectedCity");
+  const [selectedDistrict, setSelectedDistrict] = useCatalogueState<string | null>(null, "selectedDistrict");
 
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [withPhotos, setWithPhotos] = useState(false);
-  const [openNow, setOpenNow] = useState(false);
-  const [onSiteOnly, setOnSiteOnly] = useState(false);
-  const [cardOnly, setCardOnly] = useState(false);
-  const [sortBy, setSortBy] = useState<SortKey>("recommended");
-  const [userLoc, setUserLoc] = useState<{ lat: number; lng: number } | null>(null);
-  const [locating, setLocating] = useState(false);
+  const [selectedBrands, setSelectedBrands] = useCatalogueState<string[]>([], "selectedBrands");
+  const [withPhotos, setWithPhotos] = useCatalogueState(false, "withPhotos");
+  const [openNow, setOpenNow] = useCatalogueState(false, "openNow");
+  const [onSiteOnly, setOnSiteOnly] = useCatalogueState(false, "onSiteOnly");
+  const [cardOnly, setCardOnly] = useCatalogueState(false, "cardOnly");
+  const [sortBy, setSortBy] = useCatalogueState<SortKey>("recommended", "sortBy");
+  const [userLoc, setUserLoc] = useCatalogueState<{ lat: number; lng: number } | null>(null, "userLoc");
+  const [locating, setLocating] = useCatalogueState(false, "locating");
 
-  const [rawServices, setRawServices] = useState<ServiceType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
-  const [brandOptions, setBrandOptions] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [rawServices, setRawServices] = useCatalogueState<ServiceType[]>([], "rawServices");
+  const resumeCatalogue = useCatalogueResume("rawServices");
+  const [loading, setLoading] = useState(!resumeCatalogue.current);
+  const [categories, setCategories] = useCatalogueState<{ id: number; name: string }[]>([], "categories");
+  const [brandOptions, setBrandOptions] = useCatalogueState<string[]>([], "brandOptions");
+  const [cities, setCities] = useCatalogueState<string[]>([], "cities");
+  const [districts, setDistricts] = useCatalogueState<string[]>([], "districts");
+  const [visibleCount, setVisibleCount] = useCatalogueState(12, "visibleCount");
 
   // Manual search — runs only on button click / Enter (no live as-you-type).
   const handleSearch = () => {
@@ -221,6 +224,7 @@ const ServiceSearch = () => {
     else { setDistricts([]); setSelectedDistrict(null); }
   }, [selectedCity]);
   useEffect(() => {
+    if (resumeCatalogue.current) { resumeCatalogue.current = false; return; }
     fetchServices();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, selectedCategory, selectedCity, selectedDistrict]);
@@ -303,6 +307,11 @@ const ServiceSearch = () => {
     });
     if (sortBy === "distance" && userLoc) {
       list = list.map(s => ({ ...s, _distance: s.latitude != null && s.longitude != null ? distanceKm(userLoc.lat, userLoc.lng, s.latitude, s.longitude) : null }));
+    }
+    if (sortBy === "recommended") {
+      const ids = rotateServiceIds(list.map(service => ({ ...service, mechanic_id: service.mechanic.id })), serviceRotationSeed());
+      const positions = new Map(ids.map((id, index) => [id, index]));
+      return [...list].sort((a, b) => positions.get(a.id)! - positions.get(b.id)!);
     }
     const byVip = (a: ServiceType, b: ServiceType) => Number(b.is_vip_active) - Number(a.is_vip_active);
     const byNew = (a: ServiceType, b: ServiceType) => +new Date(b.created_at) - +new Date(a.created_at);

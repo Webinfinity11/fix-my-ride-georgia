@@ -1,0 +1,6410 @@
+[
+  {
+    "path": "/service/100",
+    "target": "/service/100-bolze-shemotsmeba"
+  },
+  {
+    "path": "/service/101",
+    "target": "/service/101-dzravis-kompresiis-shemotsmeba"
+  },
+  {
+    "path": "/service/102",
+    "target": "/service/102-avtomobilis-diagnostika-da-eleqtrooba"
+  },
+  {
+    "path": "/service/103",
+    "target": "/service/103-saqare-minebi-qvela-avtomobilistvis"
+  },
+  {
+    "path": "/service/104",
+    "target": "/service/104-akumulatorebi-qvela-avtomlbilistvis"
+  },
+  {
+    "path": "/service/105",
+    "target": "/service/105-avtomobilis-polireba"
+  },
+  {
+    "path": "/service/106",
+    "target": "/service/106-dzravis-tsmenda-mshrali-qinulit"
+  },
+  {
+    "path": "/service/107",
+    "target": "/service/107-savali-natsilebis-tsmendazhangis-moshoreba-mshrali-qinulis-aparatit"
+  },
+  {
+    "path": "/service/107-savali-natsilebis-tsmendazhangis-moshoreba-mshrali",
+    "target": "/service/107-savali-natsilebis-tsmendazhangis-moshoreba-mshrali-qinulis-aparatit"
+  },
+  {
+    "path": "/service/108",
+    "target": "/service/108-diteilingi"
+  },
+  {
+    "path": "/service/109",
+    "target": "/service/109-avtomobilis-sruli-restavratsia"
+  },
+  {
+    "path": "/service/110",
+    "target": "/service/110-tsivad-gastsoreba"
+  },
+  {
+    "path": "/service/111",
+    "target": "/service/111-tsepleniis-plota-peradosa-da-makhavikis-garemonteba"
+  },
+  {
+    "path": "/service/111-tsepleniis-plota-feradosa-da-makhavikis-garemonteb",
+    "target": "/service/111-tsepleniis-plota-peradosa-da-makhavikis-garemonteba"
+  },
+  {
+    "path": "/service/112",
+    "target": "/service/112-avtomobilis-eleqtrooba-da-diagnostika-adgilze-misvlit"
+  },
+  {
+    "path": "/service/112-avtomobilis-eleqtrooba-da-diagnostika-adgilze-misv",
+    "target": "/service/112-avtomobilis-eleqtrooba-da-diagnostika-adgilze-misvlit"
+  },
+  {
+    "path": "/service/113",
+    "target": "/service/113-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/114",
+    "target": "/service/114-kondintsioneris-preonit-datumbva-da-sheketeba"
+  },
+  {
+    "path": "/service/114-kondintsioneris-freonit-datumbva-da-sheketeba",
+    "target": "/service/114-kondintsioneris-preonit-datumbva-da-sheketeba"
+  },
+  {
+    "path": "/service/115",
+    "target": "/service/115-starteris-sheketeba-adgilze-mosvlit"
+  },
+  {
+    "path": "/service/116",
+    "target": "/service/116-manqanis-gasaghebis-daprogramebagacharkhva"
+  },
+  {
+    "path": "/service/116-manqanis-gasaghebis-daprogramebagacharkhvamanqanis",
+    "target": "/service/116-manqanis-gasaghebis-daprogramebagacharkhva"
+  },
+  {
+    "path": "/service/117",
+    "target": "/service/117-qreshis-tsashla"
+  },
+  {
+    "path": "/service/128",
+    "target": "/service/128-droselis-adaptatsia-blutuzebis-shemotsmeba-sachis-sensoris-adaptatsia"
+  },
+  {
+    "path": "/service/128-droselis-adaptatsia-blutuzebis-shemotsmeba-sachis",
+    "target": "/service/128-droselis-adaptatsia-blutuzebis-shemotsmeba-sachis-sensoris-adaptatsia"
+  },
+  {
+    "path": "/service/129",
+    "target": "/service/129-elementebis-shetsvla-diagnostika-gatsmenda"
+  },
+  {
+    "path": "/service/130",
+    "target": "/service/130-samukhruche-sistemis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/131",
+    "target": "/service/131-quleris-gatsmenda"
+  },
+  {
+    "path": "/service/132",
+    "target": "/service/132-zetis-shetsvla"
+  },
+  {
+    "path": "/service/133",
+    "target": "/service/133-samukhruche-sitkhis-shemotsmeba-shetsvla"
+  },
+  {
+    "path": "/service/134",
+    "target": "/service/134-abs-diagnostika-sheketeba-shetsvla"
+  },
+  {
+    "path": "/service/135",
+    "target": "/service/135-hibriduli-sistemis-sruli-servisi"
+  },
+  {
+    "path": "/service/136",
+    "target": "/service/136-egr-gatsmenda-tseos-shemtsireba"
+  },
+  {
+    "path": "/service/137",
+    "target": "/service/137-zetis-shetsvla"
+  },
+  {
+    "path": "/service/138",
+    "target": "/service/138-pompa-pompis-magnitebi"
+  },
+  {
+    "path": "/service/139",
+    "target": "/service/139-antiprizis-shetsvla"
+  },
+  {
+    "path": "/service/139-antifrizis-shetsvla",
+    "target": "/service/139-antiprizis-shetsvla"
+  },
+  {
+    "path": "/service/14",
+    "target": "/service/14-sandrikas-vulkanizatsia"
+  },
+  {
+    "path": "/service/140",
+    "target": "/service/140-radiatoris-gamoretskhva"
+  },
+  {
+    "path": "/service/141",
+    "target": "/service/141-sruli-kompiuteruli-diagnostika"
+  },
+  {
+    "path": "/service/142",
+    "target": "/service/142-aalebis-santlebis-shetsvla"
+  },
+  {
+    "path": "/service/143",
+    "target": "/service/143-samghebro-samushaoebi"
+  },
+  {
+    "path": "/service/144",
+    "target": "/service/144-satunuqe-samushaoebi"
+  },
+  {
+    "path": "/service/145",
+    "target": "/service/145-satunuqe-samushaoebi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/146",
+    "target": "/service/146-samghebro-samushaoebi"
+  },
+  {
+    "path": "/service/147",
+    "target": "/service/147-plasmasis-detalebis-aghdgena"
+  },
+  {
+    "path": "/service/148",
+    "target": "/service/148-avtomobilis-sruli-polireba"
+  },
+  {
+    "path": "/service/15",
+    "target": "/service/15-saqare-minebis-shetsvla"
+  },
+  {
+    "path": "/service/150",
+    "target": "/service/150-rulevois-sheketeba"
+  },
+  {
+    "path": "/service/151",
+    "target": "/service/151-zetis-shetsvla-maghali-khariskhis-zetebi"
+  },
+  {
+    "path": "/service/152",
+    "target": "/service/152-aalebis-santlebis-shetsvla"
+  },
+  {
+    "path": "/service/153",
+    "target": "/service/153-samukhruche-khundebis-shetsvla"
+  },
+  {
+    "path": "/service/154",
+    "target": "/service/154-avtomobilis-sruli-qimtsmenda"
+  },
+  {
+    "path": "/service/155",
+    "target": "/service/155-sachis-gadakvra"
+  },
+  {
+    "path": "/service/156",
+    "target": "/service/156-mtliani-salonis-aghdgena"
+  },
+  {
+    "path": "/service/157",
+    "target": "/service/157-salonis-qvela-airbagis-aghdgena"
+  },
+  {
+    "path": "/service/158",
+    "target": "/service/158-torpedos-gadakvra"
+  },
+  {
+    "path": "/service/159",
+    "target": "/service/159-savardzlebis-shekerva-aghdgena-dizainis-sruliad-shetsvla"
+  },
+  {
+    "path": "/service/159-savardzlebis-shekerva-aghdgena-dizainis-sruliad-sh",
+    "target": "/service/159-savardzlebis-shekerva-aghdgena-dizainis-sruliad-shetsvla"
+  },
+  {
+    "path": "/service/16",
+    "target": "/service/16-ji-di-em-avtoservisi"
+  },
+  {
+    "path": "/service/160",
+    "target": "/service/160-cheris-gadakvra-da-aghdgena"
+  },
+  {
+    "path": "/service/161",
+    "target": "/service/161-avtomobilis-damtsavi-piris-gadakvra"
+  },
+  {
+    "path": "/service/161-avtomobilis-damtsavi-firis-gadakvra",
+    "target": "/service/161-avtomobilis-damtsavi-piris-gadakvra"
+  },
+  {
+    "path": "/service/162",
+    "target": "/service/162-nikelebis-gashaveba-interieris-detalebis-peris-shetsvla"
+  },
+  {
+    "path": "/service/162-nikelebis-gashaveba-interieris-detalebis-feris-she",
+    "target": "/service/162-nikelebis-gashaveba-interieris-detalebis-peris-shetsvla"
+  },
+  {
+    "path": "/service/163",
+    "target": "/service/163-shushebis-shuqgamtarobis-shemotsmeba"
+  },
+  {
+    "path": "/service/165",
+    "target": "/service/165-20-hibridebze-piuzhenis-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/166",
+    "target": "/service/166-tkhevadi-gazis-montazhi-da-sheketeba"
+  },
+  {
+    "path": "/service/167",
+    "target": "/service/167-bunebrivi-gazis-montazhi-da-sheketeba"
+  },
+  {
+    "path": "/service/168",
+    "target": "/service/168-parebis-polireba-ortqlit"
+  },
+  {
+    "path": "/service/168-farebis-polireba-ortqlit",
+    "target": "/service/168-parebis-polireba-ortqlit"
+  },
+  {
+    "path": "/service/169",
+    "target": "/service/169-dinamosa-da-starteris-sheketeba-remonti"
+  },
+  {
+    "path": "/service/17",
+    "target": "/service/17-qantrimenis-dashlilebi"
+  },
+  {
+    "path": "/service/170",
+    "target": "/service/170-razvalis-gastsoreba"
+  },
+  {
+    "path": "/service/171",
+    "target": "/service/171-razvalis-gastsoreba"
+  },
+  {
+    "path": "/service/172",
+    "target": "/service/172-razvalis-gastsoreba"
+  },
+  {
+    "path": "/service/173",
+    "target": "/service/173-kondintsionershi-preonis-chatumbva"
+  },
+  {
+    "path": "/service/173-kondintsionershi-preonis-chatumbvakondintsionershi",
+    "target": "/service/173-kondintsionershi-preonis-chatumbva"
+  },
+  {
+    "path": "/service/174",
+    "target": "/service/174-247-akumulatorebis-shetsvla-shemotsmeba-datenva"
+  },
+  {
+    "path": "/service/175",
+    "target": "/service/175-kondintsioneris-sheketeba-shemotsmeba-preonis-damateba"
+  },
+  {
+    "path": "/service/175-kondintsioneris-sheketeba-shemotsmeba-freonis-dama",
+    "target": "/service/175-kondintsioneris-sheketeba-shemotsmeba-preonis-damateba"
+  },
+  {
+    "path": "/service/176",
+    "target": "/service/176-benzinis-dzravis-shemprqvebevis-inzheqtorebis-shemotsmeba-gatsmenda"
+  },
+  {
+    "path": "/service/176-benzinis-dzravis-shemfrqvebevis-inzheqtorebis-shem",
+    "target": "/service/176-benzinis-dzravis-shemprqvebevis-inzheqtorebis-shemotsmeba-gatsmenda"
+  },
+  {
+    "path": "/service/177",
+    "target": "/service/177-tsqlis-sistemis-shemotsmeba-gamoretskhva"
+  },
+  {
+    "path": "/service/178",
+    "target": "/service/178-dzravis-co-s-tseos-shemotsmeba-dzravis-gamoretskhva"
+  },
+  {
+    "path": "/service/178-dzravis-co-s-tseos-shemotsmeba-dzravis-gamoretskhv",
+    "target": "/service/178-dzravis-co-s-tseos-shemotsmeba-dzravis-gamoretskhva"
+  },
+  {
+    "path": "/service/179",
+    "target": "/service/179-sruli-kompiuteruli-diagnostika"
+  },
+  {
+    "path": "/service/180",
+    "target": "/service/180-savali-natsilebis-sruli-servisi"
+  },
+  {
+    "path": "/service/181",
+    "target": "/service/181-samukhruche-diskis-gasuptaveba-mokhekhva-apornebis-shlipovka"
+  },
+  {
+    "path": "/service/181-samukhruche-diskis-gasuftaveba-mokhekhva-apornebis",
+    "target": "/service/181-samukhruche-diskis-gasuptaveba-mokhekhva-apornebis-shlipovka"
+  },
+  {
+    "path": "/service/182",
+    "target": "/service/182-gamonabolqvis-sistemis-gaqvana"
+  },
+  {
+    "path": "/service/183",
+    "target": "/service/183-turbos-diagnostireba-da-aghdgena"
+  },
+  {
+    "path": "/service/184",
+    "target": "/service/184-turbos-simdzlavris-momateba"
+  },
+  {
+    "path": "/service/185",
+    "target": "/service/185-kompiuteruli-tuningi-prashivka"
+  },
+  {
+    "path": "/service/186",
+    "target": "/service/186-popkornis-chatsera"
+  },
+  {
+    "path": "/service/187",
+    "target": "/service/187-parebis-polireba"
+  },
+  {
+    "path": "/service/187-farebis-polireba",
+    "target": "/service/187-parebis-polireba"
+  },
+  {
+    "path": "/service/188",
+    "target": "/service/188-gamonabolqvis-shemotsmeba"
+  },
+  {
+    "path": "/service/189",
+    "target": "/service/189-avtomobilis-vibrotesti-tbilisshi-pirvelad"
+  },
+  {
+    "path": "/service/190",
+    "target": "/service/190-savali-natsilebis-sruli-servisi"
+  },
+  {
+    "path": "/service/191",
+    "target": "/service/191-samukhruche-diskebis-khekhva-apornebis-shlipovka"
+  },
+  {
+    "path": "/service/191-samukhruche-diskebis-khekhva-apornebis-shlifovka",
+    "target": "/service/191-samukhruche-diskebis-khekhva-apornebis-shlipovka"
+  },
+  {
+    "path": "/service/192",
+    "target": "/service/192-gadatsemata-kolopis-zetis-shetsvla-hybrid-way"
+  },
+  {
+    "path": "/service/192-gadatsemata-kolofis-zetis-shetsvla-hybrid-way",
+    "target": "/service/192-gadatsemata-kolopis-zetis-shetsvla-hybrid-way"
+  },
+  {
+    "path": "/service/193",
+    "target": "/service/193-dzravis-zetis-shetsvla-hybrid-way"
+  },
+  {
+    "path": "/service/194",
+    "target": "/service/194-savali-natsilebis-sheketeba-adgilze-shedzena-hybrid-way"
+  },
+  {
+    "path": "/service/194-savali-natsilebis-sheketeba-adgilze-shedzena-hybri",
+    "target": "/service/194-savali-natsilebis-sheketeba-adgilze-shedzena-hybrid-way"
+  },
+  {
+    "path": "/service/195",
+    "target": "/service/195-avtomobilis-sruli-diagnostika-hybrid-way"
+  },
+  {
+    "path": "/service/196",
+    "target": "/service/196-aalebis-santlebis-shetsvla"
+  },
+  {
+    "path": "/service/197",
+    "target": "/service/197-pordisa-da-linkonis-dashlilebi"
+  },
+  {
+    "path": "/service/197-fordisa-da-linkonis-dashlilebi",
+    "target": "/service/197-pordisa-da-linkonis-dashlilebi"
+  },
+  {
+    "path": "/service/198",
+    "target": "/service/198-dzravis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/199",
+    "target": "/service/199-gadatsemata-kolopis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/199-gadatsemata-kolofis-zetis-shetsvla",
+    "target": "/service/199-gadatsemata-kolopis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/20",
+    "target": "/service/20-savali-natsili"
+  },
+  {
+    "path": "/service/200",
+    "target": "/service/200-avtomobilis-naturebis-shetsvla-da-adgilze-shedzena"
+  },
+  {
+    "path": "/service/201",
+    "target": "/service/201-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/202",
+    "target": "/service/202-antiprizis-shetsvla"
+  },
+  {
+    "path": "/service/202-antifrizis-shetsvla",
+    "target": "/service/202-antiprizis-shetsvla"
+  },
+  {
+    "path": "/service/203",
+    "target": "/service/203-sruli-diagnostika"
+  },
+  {
+    "path": "/service/204",
+    "target": "/service/204-aalebis-santlebis-svechebis-shetsvla-da-shedzena"
+  },
+  {
+    "path": "/service/205",
+    "target": "/service/205-skhvadaskhva-sakhis-natsilebi"
+  },
+  {
+    "path": "/service/206",
+    "target": "/service/206-akumulatoris-mdgomareobis-shemotsmeba"
+  },
+  {
+    "path": "/service/206-akumulatoris-mdgomareobis-shemotsmebaakumulatoris",
+    "target": "/service/206-akumulatoris-mdgomareobis-shemotsmeba"
+  },
+  {
+    "path": "/service/207",
+    "target": "/service/207-savali-natsilebis-shetsvla-sheketeba-diagnostireba-upasod"
+  },
+  {
+    "path": "/service/207-savali-natsilebis-shetsvla-sheketeba-diagnostireba",
+    "target": "/service/207-savali-natsilebis-shetsvla-sheketeba-diagnostireba-upasod"
+  },
+  {
+    "path": "/service/208",
+    "target": "/service/208-dzravis-shetsvla"
+  },
+  {
+    "path": "/service/209",
+    "target": "/service/209-gadatsemata-kolopis-shetsvla"
+  },
+  {
+    "path": "/service/209-gadatsemata-kolofis-shetsvla",
+    "target": "/service/209-gadatsemata-kolopis-shetsvla"
+  },
+  {
+    "path": "/service/21",
+    "target": "/service/21-qvela-sakhis-servisi-honda-pitze"
+  },
+  {
+    "path": "/service/21-qvela-sakhis-servisi-honda-fitze",
+    "target": "/service/21-qvela-sakhis-servisi-honda-pitze"
+  },
+  {
+    "path": "/service/210",
+    "target": "/service/210-pordisa-da-linkonis-markis-avtomobilebze-dzravis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/210-fordisa-da-linkonis-markis-avtomobilebze-dzravis-z",
+    "target": "/service/210-pordisa-da-linkonis-markis-avtomobilebze-dzravis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/211",
+    "target": "/service/211-gadatsemata-kolopis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/211-gadatsemata-kolofis-zetis-shetsvla",
+    "target": "/service/211-gadatsemata-kolopis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/212",
+    "target": "/service/212-samukhruche-sitkhis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/213",
+    "target": "/service/213-diagnostika-pordis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/213-diagnostika-fordis-markis-avtomobilebze",
+    "target": "/service/213-diagnostika-pordis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/214",
+    "target": "/service/214-dzravis-remonti"
+  },
+  {
+    "path": "/service/215",
+    "target": "/service/215-gadatsemata-kolopis-remonti-da-shetsvla"
+  },
+  {
+    "path": "/service/215-gadatsemata-kolofis-remonti-da-shetsvla",
+    "target": "/service/215-gadatsemata-kolopis-remonti-da-shetsvla"
+  },
+  {
+    "path": "/service/216",
+    "target": "/service/216-dzravis-zetis-shetsvla-da-shedzena-pordis-markis-avtomobilebisatvis"
+  },
+  {
+    "path": "/service/216-dzravis-zetis-shetsvla-da-shedzena-fordis-markis-a",
+    "target": "/service/216-dzravis-zetis-shetsvla-da-shedzena-pordis-markis-avtomobilebisatvis"
+  },
+  {
+    "path": "/service/217",
+    "target": "/service/217-gadatsemata-kolopis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/217-gadatsemata-kolofis-zetis-shetsvla",
+    "target": "/service/217-gadatsemata-kolopis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/218",
+    "target": "/service/218-savali-natsilebis-shetsvla-da-shedzena-adgilze"
+  },
+  {
+    "path": "/service/219",
+    "target": "/service/219-pordis-dashlilebi"
+  },
+  {
+    "path": "/service/219-fordis-dashlilebi",
+    "target": "/service/219-pordis-dashlilebi"
+  },
+  {
+    "path": "/service/220",
+    "target": "/service/220-tsqlis-sistemis-sheketeba-antiprizis-shetsvla"
+  },
+  {
+    "path": "/service/220-tsqlis-sistemis-sheketeba-antifrizis-shetsvla",
+    "target": "/service/220-tsqlis-sistemis-sheketeba-antiprizis-shetsvla"
+  },
+  {
+    "path": "/service/221",
+    "target": "/service/221-eleqtroobis-nebismieri-problemis-mogvareba"
+  },
+  {
+    "path": "/service/222",
+    "target": "/service/222-samukhruche-sitkhis-shetsvla-da-shemotsmeba"
+  },
+  {
+    "path": "/service/223",
+    "target": "/service/223-saburavis-blutuzebis-tsnevis-sensori-programireba"
+  },
+  {
+    "path": "/service/224",
+    "target": "/service/224-saqrdeni-diskis-mokhekhva-apornebis-gashlipovkeba-dashlis-gareshe"
+  },
+  {
+    "path": "/service/224-saqrdeni-diskis-mokhekhva-apornebis-gashlifovkeba",
+    "target": "/service/224-saqrdeni-diskis-mokhekhva-apornebis-gashlipovkeba-dashlis-gareshe"
+  },
+  {
+    "path": "/service/225",
+    "target": "/service/225-inzheqtorebis-gatsmenda"
+  },
+  {
+    "path": "/service/226",
+    "target": "/service/226-samukhruche-khundebis-shetsvla-adgilze-shedzena"
+  },
+  {
+    "path": "/service/227",
+    "target": "/service/227-toiota-priusis-dashlilebi"
+  },
+  {
+    "path": "/service/228",
+    "target": "/service/228-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/229",
+    "target": "/service/229-khadavois-sheketeba-hibridebze"
+  },
+  {
+    "path": "/service/23",
+    "target": "/service/23-sruli-sakhis-eleqtrooba"
+  },
+  {
+    "path": "/service/230",
+    "target": "/service/230-abeesis-sistema"
+  },
+  {
+    "path": "/service/231",
+    "target": "/service/231-samghebro-samushaoebi-maliari"
+  },
+  {
+    "path": "/service/232",
+    "target": "/service/232-satunuqe-samushao-zheshtianchiki"
+  },
+  {
+    "path": "/service/233",
+    "target": "/service/233-elementebis-sruli-servisi"
+  },
+  {
+    "path": "/service/234",
+    "target": "/service/234-zetis-shetsvla-hibridul-avtomobilze"
+  },
+  {
+    "path": "/service/235",
+    "target": "/service/235-svechebis-shetsvla-toiotaze"
+  },
+  {
+    "path": "/service/236",
+    "target": "/service/236-litiumis-elementebze-gadaqvana-hibriduli-avtomobilebis-moqmedebs-ganvadebis-servisi"
+  },
+  {
+    "path": "/service/236-litiumis-elementebze-gadaqvana-hibriduli-avtomobil",
+    "target": "/service/236-litiumis-elementebze-gadaqvana-hibriduli-avtomobilebis-moqmedebs-ganvadebis-servisi"
+  },
+  {
+    "path": "/service/237",
+    "target": "/service/237-utskhoetidan-chamotana-elementebis-shetsvla-moqmedebs-ganvadebis-servisi"
+  },
+  {
+    "path": "/service/237-utskhoetidan-chamotana-elementebis-shetsvla-moqmed",
+    "target": "/service/237-utskhoetidan-chamotana-elementebis-shetsvla-moqmedebs-ganvadebis-servisi"
+  },
+  {
+    "path": "/service/238",
+    "target": "/service/238-abeesis-servisi-garantiit-moqmedebs-ganvadeba"
+  },
+  {
+    "path": "/service/239",
+    "target": "/service/239-quleris-tsmenda"
+  },
+  {
+    "path": "/service/24",
+    "target": "/service/24-honda-pit-servisi"
+  },
+  {
+    "path": "/service/24-honda-fit-servisi",
+    "target": "/service/24-honda-pit-servisi"
+  },
+  {
+    "path": "/service/240",
+    "target": "/service/240-tsqlis-sruli-sistemis-tsmenda-da-sheketeba"
+  },
+  {
+    "path": "/service/241",
+    "target": "/service/241-samukhruche-sitkhis-shemotsmeba-shetsvla-kalibratsia-dahaereba"
+  },
+  {
+    "path": "/service/241-samukhruche-sitkhis-shemotsmeba-shetsvla-kalibrats",
+    "target": "/service/241-samukhruche-sitkhis-shemotsmeba-shetsvla-kalibratsia-dahaereba"
+  },
+  {
+    "path": "/service/242",
+    "target": "/service/242-savali-natsilebis-shetsvla-sheketeba-aghdgena"
+  },
+  {
+    "path": "/service/243",
+    "target": "/service/243-zetis-qidva-da-adgilze-shetsvla"
+  },
+  {
+    "path": "/service/244",
+    "target": "/service/244-aalebis-santlebis-qidva-da-adgilze-shetsvla"
+  },
+  {
+    "path": "/service/245",
+    "target": "/service/245-eleqtro-diagnostika"
+  },
+  {
+    "path": "/service/246",
+    "target": "/service/246-hibridis-elementebi-shetsvla-tsmenda-akhlis-shedzena-litiumis-chaqeneba"
+  },
+  {
+    "path": "/service/246-hibridis-elementebi-shetsvla-tsmenda-akhlis-shedze",
+    "target": "/service/246-hibridis-elementebi-shetsvla-tsmenda-akhlis-shedzena-litiumis-chaqeneba"
+  },
+  {
+    "path": "/service/247",
+    "target": "/service/247-abeesis-sistema-toiotasa-da-leqsusze"
+  },
+  {
+    "path": "/service/248",
+    "target": "/service/248-savali-natsilebis-shetsvla-sheketeba-toiotasa-da-leqsusis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/248-savali-natsilebis-shetsvla-sheketeba-toiotasa-da-l",
+    "target": "/service/248-savali-natsilebis-shetsvla-sheketeba-toiotasa-da-leqsusis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/249",
+    "target": "/service/249-aalebis-santlebis-shedzena-da-shetsvla"
+  },
+  {
+    "path": "/service/250",
+    "target": "/service/250-quleris-tsmenda"
+  },
+  {
+    "path": "/service/251",
+    "target": "/service/251-antiprizis-shedzena-da-shetsvla"
+  },
+  {
+    "path": "/service/251-antifrizis-shedzena-da-shetsvla",
+    "target": "/service/251-antiprizis-shedzena-da-shetsvla"
+  },
+  {
+    "path": "/service/252",
+    "target": "/service/252-zhidkostis-shemotsmeba-qidva-da-shetsvla"
+  },
+  {
+    "path": "/service/253",
+    "target": "/service/253-hibridis-inventori-toiotasa-da-leqsusis-avtomobilebze"
+  },
+  {
+    "path": "/service/253-hibridis-inventori-toiotasa-da-leqsusis-avtomobile",
+    "target": "/service/253-hibridis-inventori-toiotasa-da-leqsusis-avtomobilebze"
+  },
+  {
+    "path": "/service/254",
+    "target": "/service/254-sportuli-amortizatorebis-daqeneba"
+  },
+  {
+    "path": "/service/255",
+    "target": "/service/255-sportuli-sacheebis-daqeneba"
+  },
+  {
+    "path": "/service/256",
+    "target": "/service/256-abeesis-sistemis-sheketeba-shetsvla"
+  },
+  {
+    "path": "/service/257",
+    "target": "/service/257-samukhruche-sitkhis-shetsvla-sistemis-shemotsmeba"
+  },
+  {
+    "path": "/service/258",
+    "target": "/service/258-elementebis-sruli-servisi"
+  },
+  {
+    "path": "/service/259",
+    "target": "/service/259-zetis-klebis-problemis-aghmopkhvra"
+  },
+  {
+    "path": "/service/259-zetis-klebis-problemis-aghmofkhvra",
+    "target": "/service/259-zetis-klebis-problemis-aghmopkhvra"
+  },
+  {
+    "path": "/service/260",
+    "target": "/service/260-tsvis-sruli-sistemis-gasuptaveba"
+  },
+  {
+    "path": "/service/260-tsvis-sruli-sistemis-gasuftaveba",
+    "target": "/service/260-tsvis-sruli-sistemis-gasuptaveba"
+  },
+  {
+    "path": "/service/261",
+    "target": "/service/261-tsqlis-sistemis-gasuptaveba"
+  },
+  {
+    "path": "/service/261-tsqlis-sistemis-gasuftaveba",
+    "target": "/service/261-tsqlis-sistemis-gasuptaveba"
+  },
+  {
+    "path": "/service/262",
+    "target": "/service/262-dzravis-amoghebachadgma-hyundai-ioniqkia-niro"
+  },
+  {
+    "path": "/service/263",
+    "target": "/service/263-gadatsemata-kolopis-shetsvla-kia-nirohyundai-ioniq"
+  },
+  {
+    "path": "/service/263-gadatsemata-kolofis-shetsvla-kia-nirohyundai-ioniq",
+    "target": "/service/263-gadatsemata-kolopis-shetsvla-kia-nirohyundai-ioniq"
+  },
+  {
+    "path": "/service/264",
+    "target": "/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohyundai-ioniq"
+  },
+  {
+    "path": "/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohy",
+    "target": "/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohyundai-ioniq"
+  },
+  {
+    "path": "/service/265",
+    "target": "/service/265-tsqlis-sistemis-gasuptaveba-kia-niro-hyundai-ioniq"
+  },
+  {
+    "path": "/service/265-tsqlis-sistemis-gasuftaveba-kia-niro-hyundai-ioniq",
+    "target": "/service/265-tsqlis-sistemis-gasuptaveba-kia-niro-hyundai-ioniq"
+  },
+  {
+    "path": "/service/266",
+    "target": "/service/266-sruli-diagnostika-kia-niro-hyundai-ioniq"
+  },
+  {
+    "path": "/service/267",
+    "target": "/service/267-detaluri-qimtsmendis-servisi"
+  },
+  {
+    "path": "/service/268",
+    "target": "/service/268-dzravis-sheketeba-mersedesis-markis-avtomobilebze-2013-tslidan"
+  },
+  {
+    "path": "/service/268-dzravis-sheketeba-mersedesis-markis-avtomobilebze",
+    "target": "/service/268-dzravis-sheketeba-mersedesis-markis-avtomobilebze-2013-tslidan"
+  },
+  {
+    "path": "/service/269",
+    "target": "/service/269-samghebro-samushaoebi-mersedesis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/269-samghebro-samushaoebi-mersedesis-markis-avtomobile",
+    "target": "/service/269-samghebro-samushaoebi-mersedesis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/270",
+    "target": "/service/270-satunuqe-samushaoebi"
+  },
+  {
+    "path": "/service/271",
+    "target": "/service/271-eleqtrooba"
+  },
+  {
+    "path": "/service/272",
+    "target": "/service/272-diagnostika-mercedes-benz"
+  },
+  {
+    "path": "/service/273",
+    "target": "/service/273-chadziruli-avtomobilebis-sruli-aghdgenis-servisi"
+  },
+  {
+    "path": "/service/274",
+    "target": "/service/274-mersedesis-dashlilebi-2013-tslidan-zemot"
+  },
+  {
+    "path": "/service/275",
+    "target": "/service/275-avtomobilis-khalichebis-damzadeba"
+  },
+  {
+    "path": "/service/276",
+    "target": "/service/276-cheris-gadakvra"
+  },
+  {
+    "path": "/service/277",
+    "target": "/service/277-minebis-damuqeba"
+  },
+  {
+    "path": "/service/277-minebis-damuqeba-4",
+    "target": "/service/277-minebis-damuqeba"
+  },
+  {
+    "path": "/service/278",
+    "target": "/service/278-parebis-polireba"
+  },
+  {
+    "path": "/service/278-farebis-polireba",
+    "target": "/service/278-parebis-polireba"
+  },
+  {
+    "path": "/service/279",
+    "target": "/service/279-savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/280",
+    "target": "/service/280-kondintsioneris-preonit-datumbva"
+  },
+  {
+    "path": "/service/280-kondintsioneris-freonit-datumbva",
+    "target": "/service/280-kondintsioneris-preonit-datumbva"
+  },
+  {
+    "path": "/service/281",
+    "target": "/service/281-radiatoris-shetsvla-da-sheketeba"
+  },
+  {
+    "path": "/service/282",
+    "target": "/service/282-starterisa-da-dinamos-doagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/283",
+    "target": "/service/283-samukhruche-sistemis-sruli-sheketeba-da-sitkhis-shetsvla"
+  },
+  {
+    "path": "/service/283-samukhruche-sistemis-sruli-sheketeba-da-sitkhis-sh",
+    "target": "/service/283-samukhruche-sistemis-sruli-sheketeba-da-sitkhis-shetsvla"
+  },
+  {
+    "path": "/service/284",
+    "target": "/service/284-avtonatsilebi"
+  },
+  {
+    "path": "/service/285",
+    "target": "/service/285-saburavebis-sruli-servisi"
+  },
+  {
+    "path": "/service/286",
+    "target": "/service/286-plasmasis-detalebis-sruli-aghdgeniti-samushaoebi"
+  },
+  {
+    "path": "/service/287",
+    "target": "/service/287-zetis-shetsvla-dzravsa-da-gadatsemata-kolopshi"
+  },
+  {
+    "path": "/service/287-zetis-shetsvla-dzravsa-da-gadatsemata-kolofshi",
+    "target": "/service/287-zetis-shetsvla-dzravsa-da-gadatsemata-kolopshi"
+  },
+  {
+    "path": "/service/288",
+    "target": "/service/288-dzravis-sruli-remonti"
+  },
+  {
+    "path": "/service/289",
+    "target": "/service/289-gadatsemata-kolopis-sruli-diagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/289-gadatsemata-kolofis-sruli-diagnostika-da-sheketeba",
+    "target": "/service/289-gadatsemata-kolopis-sruli-diagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/290",
+    "target": "/service/290-amortizatorebis-aghdgena-da-shetsvla"
+  },
+  {
+    "path": "/service/291",
+    "target": "/service/291-tvlebis-sheqra-razvalis-gastsoreba"
+  },
+  {
+    "path": "/service/292",
+    "target": "/service/292-samghebro-samushaoebi"
+  },
+  {
+    "path": "/service/293",
+    "target": "/service/293-satunuqe-samushaoebi-roboti"
+  },
+  {
+    "path": "/service/294",
+    "target": "/service/294-sachis-meqanizmis-rulavois-aghdgena"
+  },
+  {
+    "path": "/service/295",
+    "target": "/service/295-sruli-diagnostika"
+  },
+  {
+    "path": "/service/296",
+    "target": "/service/296-sruli-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/297",
+    "target": "/service/297-aluminis-argonit-sheketeba-svarka"
+  },
+  {
+    "path": "/service/298",
+    "target": "/service/298-saqrdeni-diskebis-apornebis-gacharkhva-samukhruche-khundebis-shetsvla"
+  },
+  {
+    "path": "/service/298-saqrdeni-diskebis-apornebis-gacharkhva-samukhruche",
+    "target": "/service/298-saqrdeni-diskebis-apornebis-gacharkhva-samukhruche-khundebis-shetsvla"
+  },
+  {
+    "path": "/service/299",
+    "target": "/service/299-qumbarebis-aghdgenis-servisi"
+  },
+  {
+    "path": "/service/300",
+    "target": "/service/300-diskebis-gastsorebis-servisi"
+  },
+  {
+    "path": "/service/301",
+    "target": "/service/301-dzravis-bolze-shemotsmeba-da-vakuumis-sistemis-diagnostika"
+  },
+  {
+    "path": "/service/301-dzravis-bolze-shemotsmeba-da-vakuumis-sistemis-dia",
+    "target": "/service/301-dzravis-bolze-shemotsmeba-da-vakuumis-sistemis-diagnostika"
+  },
+  {
+    "path": "/service/302",
+    "target": "/service/302-tkhevadi-gazis-montazhi"
+  },
+  {
+    "path": "/service/303",
+    "target": "/service/303-bunebrivi-gazis-montazhi-da-sheketeba"
+  },
+  {
+    "path": "/service/304",
+    "target": "/service/304-co-tseos-regulireba"
+  },
+  {
+    "path": "/service/305",
+    "target": "/service/305-minebis-damuqeba-new-auto-motors"
+  },
+  {
+    "path": "/service/305-minebis-damuqeba-1",
+    "target": "/service/305-minebis-damuqeba-new-auto-motors"
+  },
+  {
+    "path": "/service/306",
+    "target": "/service/306-saqare-minebis-shetsvla"
+  },
+  {
+    "path": "/service/307",
+    "target": "/service/307-turbos-doagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/308",
+    "target": "/service/308-akumulatorebis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/32",
+    "target": "/service/32-raptorit-ghebva"
+  },
+  {
+    "path": "/service/325",
+    "target": "/service/325-avtomobilis-detaluri-qimtsmendis-servisi"
+  },
+  {
+    "path": "/service/326",
+    "target": "/service/326-dzravis-ortqlit-tsmenda-tqveni-avtomobilistvis"
+  },
+  {
+    "path": "/service/327",
+    "target": "/service/327-shushebis-daburva"
+  },
+  {
+    "path": "/service/328",
+    "target": "/service/328-parebis-daburva"
+  },
+  {
+    "path": "/service/329",
+    "target": "/service/329-tentis-aghdgena"
+  },
+  {
+    "path": "/service/33",
+    "target": "/service/33-zetebis-qidvashetsvla"
+  },
+  {
+    "path": "/service/330",
+    "target": "/service/330-karbonis-gadakvra-kapotze-da-cherze"
+  },
+  {
+    "path": "/service/331",
+    "target": "/service/331-minebis-damuqeba-auto-glass"
+  },
+  {
+    "path": "/service/332",
+    "target": "/service/332-minebze-dzveli-damuqebis-mokhsna-ortlis-aparatit"
+  },
+  {
+    "path": "/service/334",
+    "target": "/service/334-ieri-komporti"
+  },
+  {
+    "path": "/service/334-ieri-komforti",
+    "target": "/service/334-ieri-komporti"
+  },
+  {
+    "path": "/service/336",
+    "target": "/service/336-kondintsioneris-sruli-servisi"
+  },
+  {
+    "path": "/service/337",
+    "target": "/service/337-samghebro-samushaoebi-leader-motors-shi"
+  },
+  {
+    "path": "/service/338",
+    "target": "/service/338-satunuqe-sarobote-samushaoebi-leader-motors-shi"
+  },
+  {
+    "path": "/service/339",
+    "target": "/service/339-airbagisa-da-gachedili-ghvedebis-aghdgena"
+  },
+  {
+    "path": "/service/34",
+    "target": "/service/34-diagnostika"
+  },
+  {
+    "path": "/service/340",
+    "target": "/service/340-tvlebis-nakharis-shemotsmeba-da-gastsoreba"
+  },
+  {
+    "path": "/service/342",
+    "target": "/service/342-parebis-regulireba"
+  },
+  {
+    "path": "/service/343",
+    "target": "/service/343-zetis-shetsvla-leader-motors-shi"
+  },
+  {
+    "path": "/service/346",
+    "target": "/service/346-antiprizis-shetsvla-leader-motors-shi"
+  },
+  {
+    "path": "/service/346-antifrizis-shetsvla-leader-motors-shi",
+    "target": "/service/346-antiprizis-shetsvla-leader-motors-shi"
+  },
+  {
+    "path": "/service/347",
+    "target": "/service/347-sheakete-savali-natsili-leader-motors-shi"
+  },
+  {
+    "path": "/service/348",
+    "target": "/service/348-polirebis-servisi-lider-motorsshi"
+  },
+  {
+    "path": "/service/349",
+    "target": "/service/349-avto-qimtsmenda"
+  },
+  {
+    "path": "/service/35",
+    "target": "/service/35-bunebrivi-gazis-montazhi-da-sheketeba"
+  },
+  {
+    "path": "/service/350",
+    "target": "/service/350-kompiuteruli-diagnostika-leader-motors-shi"
+  },
+  {
+    "path": "/service/351",
+    "target": "/service/351-savali-natsilis-sheketeba-dzravis-diagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/351-savali-natsilis-sheketeba-dzravis-diagnostika-da-s",
+    "target": "/service/351-savali-natsilis-sheketeba-dzravis-diagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/352",
+    "target": "/service/352-sruli-diteilingi"
+  },
+  {
+    "path": "/service/353",
+    "target": "/service/353-gadatsemata-kolopis-sheketeba-leader-motors-shi"
+  },
+  {
+    "path": "/service/353-gadatsemata-kolofis-sheketeba-leader-motors-shi",
+    "target": "/service/353-gadatsemata-kolopis-sheketeba-leader-motors-shi"
+  },
+  {
+    "path": "/service/354",
+    "target": "/service/354-aluminis-detalebis-argonit-shedugheba"
+  },
+  {
+    "path": "/service/355",
+    "target": "/service/355-diskebis-sheghebva-leader-motors-shi"
+  },
+  {
+    "path": "/service/356",
+    "target": "/service/356-gatbobis-sistemis-mogvareba"
+  },
+  {
+    "path": "/service/357",
+    "target": "/service/357-plasmasis-aghdgena-leader-motors-shi"
+  },
+  {
+    "path": "/service/358",
+    "target": "/service/358-piris-gadakvra-leader-motors-shi"
+  },
+  {
+    "path": "/service/358-firis-gadakvra-leader-motors-shi",
+    "target": "/service/358-piris-gadakvra-leader-motors-shi"
+  },
+  {
+    "path": "/service/359",
+    "target": "/service/359-dzravis-sheketeba-leader-motors-shi"
+  },
+  {
+    "path": "/service/360",
+    "target": "/service/360-aalebis-santlebis-shetsvlashedzena-leader-motors-shi"
+  },
+  {
+    "path": "/service/360-aalebis-santlebis-shetsvlashedzena-leader-motors-s",
+    "target": "/service/360-aalebis-santlebis-shetsvlashedzena-leader-motors-shi"
+  },
+  {
+    "path": "/service/367",
+    "target": "/service/367-dazianebuli-parebis-aghdgena-car-lights-shi"
+  },
+  {
+    "path": "/service/367-dazianebuli-farebis-aghdgena-car-lights-shi",
+    "target": "/service/367-dazianebuli-parebis-aghdgena-car-lights-shi"
+  },
+  {
+    "path": "/service/368",
+    "target": "/service/368-shushis-shetsvla-tqveni-avtomobilis-parebze"
+  },
+  {
+    "path": "/service/368-shushis-shetsvla-tqveni-avtomobilis-farebze",
+    "target": "/service/368-shushis-shetsvla-tqveni-avtomobilis-parebze"
+  },
+  {
+    "path": "/service/369",
+    "target": "/service/369-qsenonis-blokebis-shetsvla"
+  },
+  {
+    "path": "/service/37",
+    "target": "/service/37-dzravis-diagnostika"
+  },
+  {
+    "path": "/service/370",
+    "target": "/service/370-qsenonis-blokebis-sruli-gauqmeba"
+  },
+  {
+    "path": "/service/371",
+    "target": "/service/371-parebis-qimiuri-ortqlit-polireba"
+  },
+  {
+    "path": "/service/371-farebis-qimiuri-ortqlit-polireba",
+    "target": "/service/371-parebis-qimiuri-ortqlit-polireba"
+  },
+  {
+    "path": "/service/372",
+    "target": "/service/372-parebis-gastsoreba-stendit"
+  },
+  {
+    "path": "/service/373",
+    "target": "/service/373-qvela-sakhis-led-ganateba-adgilze-montazhit"
+  },
+  {
+    "path": "/service/374",
+    "target": "/service/374-manqanis-signalebis-qvelaze-didi-archevani-car-lights-shi"
+  },
+  {
+    "path": "/service/374-manqanis-signalebis-qvelaze-didi-archevani-car-lig",
+    "target": "/service/374-manqanis-signalebis-qvelaze-didi-archevani-car-lights-shi"
+  },
+  {
+    "path": "/service/375",
+    "target": "/service/375-avtomobilis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/376",
+    "target": "/service/376-sruli-kompiuteruli-diagnostika-car-lights-shi"
+  },
+  {
+    "path": "/service/377",
+    "target": "/service/377-modzravi-vulkanizatsia-247-solveri"
+  },
+  {
+    "path": "/service/377-modzravi-vulkanizatsia",
+    "target": "/service/377-modzravi-vulkanizatsia-247-solveri"
+  },
+  {
+    "path": "/service/378",
+    "target": "/service/378-avtomobilis-retskhva-adgilze-misvlit"
+  },
+  {
+    "path": "/service/379",
+    "target": "/service/379-saburavebis-shetsvla-da-shedzena-sakhlidan-gausvlelad"
+  },
+  {
+    "path": "/service/379-saburavebis-shetsvla-da-shedzena-sakhlidan-gausvle",
+    "target": "/service/379-saburavebis-shetsvla-da-shedzena-sakhlidan-gausvlelad"
+  },
+  {
+    "path": "/service/38",
+    "target": "/service/38-kompiuteruli-diagnostika-adgilze-misvlit"
+  },
+  {
+    "path": "/service/380",
+    "target": "/service/380-wrapping"
+  },
+  {
+    "path": "/service/381",
+    "target": "/service/381-ford-fusion-is-karobkis-sheketeba"
+  },
+  {
+    "path": "/service/382",
+    "target": "/service/382-dzravis-sheketeba-chevrolet-georgia-shi"
+  },
+  {
+    "path": "/service/383",
+    "target": "/service/383-savali-natsilebis-sheketeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/384",
+    "target": "/service/384-aalebis-santlebis-shetsvla-da-shemotsmeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/384-aalebis-santlebis-shetsvla-da-shemotsmeba-chevrole",
+    "target": "/service/384-aalebis-santlebis-shetsvla-da-shemotsmeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/385",
+    "target": "/service/385-satsvavis-inzheqtorebis-gatsmenda-chevrolet-georgia"
+  },
+  {
+    "path": "/service/385-satsvavis-inzheqtorebis-gatsmenda-chevrolet-georgi",
+    "target": "/service/385-satsvavis-inzheqtorebis-gatsmenda-chevrolet-georgia"
+  },
+  {
+    "path": "/service/386",
+    "target": "/service/386-sauketeso-khariskhis-dzravis-zetebi-adgilze-shetsvlit-chevrolet-georgia"
+  },
+  {
+    "path": "/service/386-sauketeso-khariskhis-dzravis-zetebi-adgilze-shetsv",
+    "target": "/service/386-sauketeso-khariskhis-dzravis-zetebi-adgilze-shetsvlit-chevrolet-georgia"
+  },
+  {
+    "path": "/service/387",
+    "target": "/service/387-samukhruche-sistemis-sheketeb-da-sitkhis-shetsvla-chevrolet-georgia"
+  },
+  {
+    "path": "/service/387-samukhruche-sistemis-sheketeb-da-sitkhis-shetsvla",
+    "target": "/service/387-samukhruche-sistemis-sheketeb-da-sitkhis-shetsvla-chevrolet-georgia"
+  },
+  {
+    "path": "/service/388",
+    "target": "/service/388-kondintsioneris-preonit-datumbva-da-sheketeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/388-kondintsioneris-freonit-datumbva-da-sheketeba-chev",
+    "target": "/service/388-kondintsioneris-preonit-datumbva-da-sheketeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/389",
+    "target": "/service/389-eleqtroobis-sheketeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/39",
+    "target": "/service/39-detaluri-qimtsmenda"
+  },
+  {
+    "path": "/service/390",
+    "target": "/service/390-gadatsemata-kolopshi-zetis-shetsvla-chevrolet-georgia-shi"
+  },
+  {
+    "path": "/service/390-gadatsemata-kolofshi-zetis-shetsvla-chevrolet-geor",
+    "target": "/service/390-gadatsemata-kolopshi-zetis-shetsvla-chevrolet-georgia-shi"
+  },
+  {
+    "path": "/service/391",
+    "target": "/service/391-sruli-eleqtro-diagnostika-chevrolet-georgia"
+  },
+  {
+    "path": "/service/392",
+    "target": "/service/392-savali-natsilis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/393",
+    "target": "/service/393-sruli-kompiuteruli-diagnostika-uakhlesi-aparaturit"
+  },
+  {
+    "path": "/service/394",
+    "target": "/service/394-kempit-shedugheba"
+  },
+  {
+    "path": "/service/395",
+    "target": "/service/395-dzravis-shemotsmeba-endoskopit"
+  },
+  {
+    "path": "/service/396",
+    "target": "/service/396-dzravis-bolze-shemotsmeba-jima-motorsshi"
+  },
+  {
+    "path": "/service/397",
+    "target": "/service/397-mtliani-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/398",
+    "target": "/service/398-dzravis-kompresiis-shemotsmeba-qvela-avtomobilze"
+  },
+  {
+    "path": "/service/399",
+    "target": "/service/399-247-akumulatoris-adgilze-mitanis-shedzenis-servisi"
+  },
+  {
+    "path": "/service/403",
+    "target": "/service/403-roboti-diesji-variatoris-da-skhva-tipis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/403-roboti-diesji-variatoris-da-skhva-tipis-gadatsemat",
+    "target": "/service/403-roboti-diesji-variatoris-da-skhva-tipis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/404",
+    "target": "/service/404-savali-natsilebis-sheketeba-dmg-service-batumi"
+  },
+  {
+    "path": "/service/405",
+    "target": "/service/405-sruli-kompiuteruli-diagnostika-dmg-service-batumi"
+  },
+  {
+    "path": "/service/406",
+    "target": "/service/406-nebismieri-dzravis-sheketeba-batumshi"
+  },
+  {
+    "path": "/service/407",
+    "target": "/service/407-toiotasa-da-leqsusis-dzravebis-sheketeba-batumshi"
+  },
+  {
+    "path": "/service/409",
+    "target": "/service/409-shevrolet-volti-bolti-da-malibus-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/409-shevrolet-volti-bolti-da-malibus-eleqtroobis-sheke",
+    "target": "/service/409-shevrolet-volti-bolti-da-malibus-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/41",
+    "target": "/service/41-hibridebi"
+  },
+  {
+    "path": "/service/410",
+    "target": "/service/410-chevrolet-cadillac-buick-gmc-opel-avtomobilebis-programireba"
+  },
+  {
+    "path": "/service/410-chevrolet-cadillac-buick-gmc-opel-avtomobilebis-pr",
+    "target": "/service/410-chevrolet-cadillac-buick-gmc-opel-avtomobilebis-programireba"
+  },
+  {
+    "path": "/service/411",
+    "target": "/service/411-gm-is-avtomobilebis-sruli-diagnostika"
+  },
+  {
+    "path": "/service/412",
+    "target": "/service/412-dzravis-sheketebis-servisi-batumshi"
+  },
+  {
+    "path": "/service/413",
+    "target": "/service/413-gm-is-markis-avtomobilebze-eleqtroobis-sruli-aghdgena"
+  },
+  {
+    "path": "/service/413-gm-is-markis-avtomobilebze-eleqtroobis-sruli-aghdg",
+    "target": "/service/413-gm-is-markis-avtomobilebze-eleqtroobis-sruli-aghdgena"
+  },
+  {
+    "path": "/service/414",
+    "target": "/service/414-gm-is-avtomobilebis-programireba-ji-em-laboratoria"
+  },
+  {
+    "path": "/service/415",
+    "target": "/service/415-diagnostika-gm-is-opitsialuri-programit-zusti-diagnozi-tqvens-manqanaze"
+  },
+  {
+    "path": "/service/415-diagnostika-gm-is-ofitsialuri-programit-zusti-diag",
+    "target": "/service/415-diagnostika-gm-is-opitsialuri-programit-zusti-diagnozi-tqvens-manqanaze"
+  },
+  {
+    "path": "/service/416",
+    "target": "/service/416-dzravis-sheketeba-gm-laboratory-ji-em-laboratoriashi"
+  },
+  {
+    "path": "/service/416-dzravis-sheketeba-gm-laboratory-ji-em-laboratorias",
+    "target": "/service/416-dzravis-sheketeba-gm-laboratory-ji-em-laboratoriashi"
+  },
+  {
+    "path": "/service/417",
+    "target": "/service/417-savali-natsilis-sheketeba-gm-is-markis-avtomobilebze-gm-laboratory"
+  },
+  {
+    "path": "/service/417-savali-natsilis-sheketeba-gm-is-markis-avtomobileb",
+    "target": "/service/417-savali-natsilis-sheketeba-gm-is-markis-avtomobilebze-gm-laboratory"
+  },
+  {
+    "path": "/service/418",
+    "target": "/service/418-gadatsemata-kolopis-sheketeba-gm-laboratory"
+  },
+  {
+    "path": "/service/418-gadatsemata-kolofis-sheketeba-gm-laboratory",
+    "target": "/service/418-gadatsemata-kolopis-sheketeba-gm-laboratory"
+  },
+  {
+    "path": "/service/419",
+    "target": "/service/419-tsqalshi-chanadziri-manqanis-sruli-aghdgena-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/419-tsqalshi-chanadziri-manqanis-sruli-aghdgena-gm-lab",
+    "target": "/service/419-tsqalshi-chanadziri-manqanis-sruli-aghdgena-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/42",
+    "target": "/service/42-savali-natsilebi"
+  },
+  {
+    "path": "/service/420",
+    "target": "/service/420-zetis-shetsvla-gm-laboratory"
+  },
+  {
+    "path": "/service/421",
+    "target": "/service/421-aalebis-santlebis-shetsvla-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/422",
+    "target": "/service/422-avtomobilis-sruli-teqnikuri-datvaliereba-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/422-avtomobilis-sruli-teqnikuri-datvaliereba-gm-labora",
+    "target": "/service/422-avtomobilis-sruli-teqnikuri-datvaliereba-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/423",
+    "target": "/service/423-damtsavi-piris-gadakvra-g-wraps-shi"
+  },
+  {
+    "path": "/service/423-damtsavi-firis-gadakvra-g-wraps-shi",
+    "target": "/service/423-damtsavi-piris-gadakvra-g-wraps-shi"
+  },
+  {
+    "path": "/service/424",
+    "target": "/service/424-peradi-piris-gadakvra-g-wraps-shi"
+  },
+  {
+    "path": "/service/424-feradi-firis-gadakvra-g-wraps-shi",
+    "target": "/service/424-peradi-piris-gadakvra-g-wraps-shi"
+  },
+  {
+    "path": "/service/425",
+    "target": "/service/425-qromirebuli-detalebis-nikelebis-gashaveba-g-wraps-shi"
+  },
+  {
+    "path": "/service/425-qromirebuli-detalebis-nikelebis-gashaveba-g-wraps",
+    "target": "/service/425-qromirebuli-detalebis-nikelebis-gashaveba-g-wraps-shi"
+  },
+  {
+    "path": "/service/426",
+    "target": "/service/426-minebis-damuqeba-g-wraps-shi"
+  },
+  {
+    "path": "/service/427",
+    "target": "/service/427-dpf-sazhavois-piltris-tsmenda"
+  },
+  {
+    "path": "/service/427-dpf-sazhavois-filtris-tsmenda",
+    "target": "/service/427-dpf-sazhavois-piltris-tsmenda"
+  },
+  {
+    "path": "/service/43",
+    "target": "/service/43-avariuli-manqanebis-gachimva"
+  },
+  {
+    "path": "/service/431",
+    "target": "/service/431-poltsvagenis-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/432",
+    "target": "/service/432-avtomobilis-vizualisa-da-salonis-dashla-atsqoba"
+  },
+  {
+    "path": "/service/433",
+    "target": "/service/433-poltsvagenis-markis-avtomobilebis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/433-foltsvagenis-markis-avtomobilebis-eleqtroobis-shek",
+    "target": "/service/433-poltsvagenis-markis-avtomobilebis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/434",
+    "target": "/service/434-poltsvagenis-audisa-da-shkodas-diagnostika-litsenzirebuli-programit"
+  },
+  {
+    "path": "/service/434-foltsvagenis-audisa-da-shkodas-diagnostika-litsenz",
+    "target": "/service/434-poltsvagenis-audisa-da-shkodas-diagnostika-litsenzirebuli-programit"
+  },
+  {
+    "path": "/service/435",
+    "target": "/service/435-nebismieri-tipis-dzravis-sheketeba-dizelis-dzravebits"
+  },
+  {
+    "path": "/service/435-nebismieri-tipis-dzravis-sheketeba-dizelis-dzraveb",
+    "target": "/service/435-nebismieri-tipis-dzravis-sheketeba-dizelis-dzravebits"
+  },
+  {
+    "path": "/service/436",
+    "target": "/service/436-mersedesisa-da-skhva-markebis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/436-mersedesisa-da-skhva-markebis-gadatsemata-kolofis",
+    "target": "/service/436-mersedesisa-da-skhva-markebis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/437",
+    "target": "/service/437-dizelis-sistemis-sruli-diagnozireba-da-sheketeba"
+  },
+  {
+    "path": "/service/438",
+    "target": "/service/438-avtomlbilis-gare-da-shida-detalebis-dashla-atsqoba"
+  },
+  {
+    "path": "/service/439",
+    "target": "/service/439-tsqlis-sistemis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/44",
+    "target": "/service/44-maliari"
+  },
+  {
+    "path": "/service/440",
+    "target": "/service/440-eleqtroobis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/441",
+    "target": "/service/441-avtomobilis-diagnostika-did-dighomshi"
+  },
+  {
+    "path": "/service/442",
+    "target": "/service/442-savali-natsilebis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/443",
+    "target": "/service/443-plasmasis-detalebis-sheketeba-sruli-aghdgena"
+  },
+  {
+    "path": "/service/444",
+    "target": "/service/444-dazianebuli-parebis-aghdgena"
+  },
+  {
+    "path": "/service/445",
+    "target": "/service/445-parebis-polireba-keramikuli-ortqlit"
+  },
+  {
+    "path": "/service/445-farebis-polireba-keramikuli-ortqlit",
+    "target": "/service/445-parebis-polireba-keramikuli-ortqlit"
+  },
+  {
+    "path": "/service/446",
+    "target": "/service/446-antiprizis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/446-antifrizis-shemotsmeba-da-shetsvla",
+    "target": "/service/446-antiprizis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/447",
+    "target": "/service/447-samukhruche-khundebis-shemotsmeba-da-shetsvla-adgilze"
+  },
+  {
+    "path": "/service/447-samukhruche-khundebis-shemotsmeba-da-shetsvla-adgi",
+    "target": "/service/447-samukhruche-khundebis-shemotsmeba-da-shetsvla-adgilze"
+  },
+  {
+    "path": "/service/448",
+    "target": "/service/448-gadatsemata-kolopis-karobkis-zetis-vargisianobis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/448-gadatsemata-kolofis-karobkis-zetis-vargisianobis-s",
+    "target": "/service/448-gadatsemata-kolopis-karobkis-zetis-vargisianobis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/449",
+    "target": "/service/449-samukhruche-sitkhis-shemotsmeba-shetsvla-da-dahaereba"
+  },
+  {
+    "path": "/service/449-samukhruche-sitkhis-shemotsmeba-shetsvla-da-dahaer",
+    "target": "/service/449-samukhruche-sitkhis-shemotsmeba-shetsvla-da-dahaereba"
+  },
+  {
+    "path": "/service/45",
+    "target": "/service/45-zhesti-roboti"
+  },
+  {
+    "path": "/service/450",
+    "target": "/service/450-tsqlis-sistemis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/451",
+    "target": "/service/451-matoris-kompresiis-shemotsmeba"
+  },
+  {
+    "path": "/service/452",
+    "target": "/service/452-dzravis-tseos-co-shemotsmeba"
+  },
+  {
+    "path": "/service/453",
+    "target": "/service/453-releebis-shemotsmeba-vargisianobaze"
+  },
+  {
+    "path": "/service/454",
+    "target": "/service/454-manqanis-inzheqtorebis-gatsmenda"
+  },
+  {
+    "path": "/service/455",
+    "target": "/service/455-qumbaris-pilnikis-moukhsnelad-shetsvla-spetsialuri-aparatit"
+  },
+  {
+    "path": "/service/455-qumbaris-pilnikis-moukhsnelad-shetsvla-spetsialuri",
+    "target": "/service/455-qumbaris-pilnikis-moukhsnelad-shetsvla-spetsialuri-aparatit"
+  },
+  {
+    "path": "/service/456",
+    "target": "/service/456-kempit-shedugheba-dazianebuli-iatakis-amochra-da-akhali-detalis-chakereba"
+  },
+  {
+    "path": "/service/456-kempit-shedugheba-dazianebuli-iatakis-amochra-da-a",
+    "target": "/service/456-kempit-shedugheba-dazianebuli-iatakis-amochra-da-akhali-detalis-chakereba"
+  },
+  {
+    "path": "/service/457",
+    "target": "/service/457-nebismier-gadatsemata-kolopshi-zetis-shetsvla"
+  },
+  {
+    "path": "/service/457-nebismier-gadatsemata-kolofshi-zetis-shetsvla",
+    "target": "/service/457-nebismier-gadatsemata-kolopshi-zetis-shetsvla"
+  },
+  {
+    "path": "/service/458",
+    "target": "/service/458-nebismieri-tipis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/458-nebismieri-tipis-gadatsemata-kolofis-sheketeba",
+    "target": "/service/458-nebismieri-tipis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/459",
+    "target": "/service/459-eleqtroobis-sruli-sheketeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/459-eleqtroobis-sruli-sheketeba-rustavis-avtobazrobast",
+    "target": "/service/459-eleqtroobis-sruli-sheketeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/46",
+    "target": "/service/46-kabrioletebis-sheketeba-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/46-kabrioletebis-sheketeba-tsqlis-sistemis-gamoretskh",
+    "target": "/service/46-kabrioletebis-sheketeba-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/460",
+    "target": "/service/460-dzravis-sruli-servisi-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/461",
+    "target": "/service/461-savali-natsilebis-sruli-servisi-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/461-savali-natsilebis-sruli-servisi-rustavis-avtobazro",
+    "target": "/service/461-savali-natsilebis-sruli-servisi-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/462",
+    "target": "/service/462-sruli-kompiuteruli-diagnostika-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/462-sruli-kompiuteruli-diagnostika-rustavis-avtobazrob",
+    "target": "/service/462-sruli-kompiuteruli-diagnostika-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/463",
+    "target": "/service/463-tsqlis-sistemis-shemotsmeba-da-gamoretskhva-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/463-tsqlis-sistemis-shemotsmeba-da-gamoretskhva-rustav",
+    "target": "/service/463-tsqlis-sistemis-shemotsmeba-da-gamoretskhva-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/464",
+    "target": "/service/464-pechis-radiatoris-gamoretskhva-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/464-fechis-radiatoris-gamoretskhva-rustavis-avtobazrob",
+    "target": "/service/464-pechis-radiatoris-gamoretskhva-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/465",
+    "target": "/service/465-tsvis-sistemis-sheketeba-da-tsvis-shemtsireba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/465-tsvis-sistemis-sheketeba-da-tsvis-shemtsireba-rust",
+    "target": "/service/465-tsvis-sistemis-sheketeba-da-tsvis-shemtsireba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/466",
+    "target": "/service/466-gadatsemata-kolopis-sheketeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/466-gadatsemata-kolofis-sheketeba-rustavis-avtobazroba",
+    "target": "/service/466-gadatsemata-kolopis-sheketeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/467",
+    "target": "/service/467-tsqlisa-da-zetis-sistemebis-spetsialuri-aparatit-shemotsmeba"
+  },
+  {
+    "path": "/service/467-tsqlisa-da-zetis-sistemebis-spetsialuri-aparatit-s",
+    "target": "/service/467-tsqlisa-da-zetis-sistemebis-spetsialuri-aparatit-shemotsmeba"
+  },
+  {
+    "path": "/service/468",
+    "target": "/service/468-bolze-shemotsmeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/469",
+    "target": "/service/469-gadatsemata-kolopis-zetis-gapiltvra-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/469-gadatsemata-kolofis-zetis-gafiltvra-rustavis-avtob",
+    "target": "/service/469-gadatsemata-kolopis-zetis-gapiltvra-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/47",
+    "target": "/service/47-parebis-ortqlit-polireba"
+  },
+  {
+    "path": "/service/47-farebis-ortqlit-polireba",
+    "target": "/service/47-parebis-ortqlit-polireba"
+  },
+  {
+    "path": "/service/470",
+    "target": "/service/470-zetis-shetsvla-dzravshi-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/471",
+    "target": "/service/471-gadatsemata-kolopis-zetis-shetsvla-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/471-gadatsemata-kolofis-zetis-shetsvla-rustavis-avtoba",
+    "target": "/service/471-gadatsemata-kolopis-zetis-shetsvla-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/472",
+    "target": "/service/472-droselis-egeeris-panjrebis-kolopis-distronikisa-da-skhva-motsqobilobebis-adaptatsia-da-kalibratsia"
+  },
+  {
+    "path": "/service/472-droselis-egeeris-fanjrebis-kolofis-distronikisa-da",
+    "target": "/service/472-droselis-egeeris-panjrebis-kolopis-distronikisa-da-skhva-motsqobilobebis-adaptatsia-da-kalibratsia"
+  },
+  {
+    "path": "/service/473",
+    "target": "/service/473-tkhevadi-gazis-damontazheba"
+  },
+  {
+    "path": "/service/474",
+    "target": "/service/474-bunebrivi-gazis-damontazheba"
+  },
+  {
+    "path": "/service/475",
+    "target": "/service/475-gadatsemata-kolopebi-toiota-qemri-honda-tseerve-piti-mitsubishi-kolti-autlenderi-nisan-tida-qvesti-iqstraili"
+  },
+  {
+    "path": "/service/475-gadatsemata-kolofebi-toiota-qemri-honda-tseerve-fi",
+    "target": "/service/475-gadatsemata-kolopebi-toiota-qemri-honda-tseerve-piti-mitsubishi-kolti-autlenderi-nisan-tida-qvesti-iqstraili"
+  },
+  {
+    "path": "/service/476",
+    "target": "/service/476-minebis-damuqeba-nikeaze"
+  },
+  {
+    "path": "/service/477",
+    "target": "/service/477-damtsavi-da-peradi-piris-gadakvra-cheris-panoramuli-epeqti"
+  },
+  {
+    "path": "/service/477-damtsavi-da-feradi-firis-gadakvra-cheris-panoramul",
+    "target": "/service/477-damtsavi-da-peradi-piris-gadakvra-cheris-panoramuli-epeqti"
+  },
+  {
+    "path": "/service/478",
+    "target": "/service/478-nikelebis-gashaveba-qutaisshi-nikeaze"
+  },
+  {
+    "path": "/service/479",
+    "target": "/service/479-parebis-polireba-qutaisshi"
+  },
+  {
+    "path": "/service/48",
+    "target": "/service/48-eleqtrooba-kondentsionerebi"
+  },
+  {
+    "path": "/service/48-eleqtrooba-kondentsionerebieleqtrooba-kondentsione",
+    "target": "/service/48-eleqtrooba-kondentsionerebi"
+  },
+  {
+    "path": "/service/480",
+    "target": "/service/480-dzravis-sheketeba-legi-motors-shi"
+  },
+  {
+    "path": "/service/481",
+    "target": "/service/481-sarobote-da-satunuqe-samushaoebi-tunuqis-sruli-aghdgena"
+  },
+  {
+    "path": "/service/481-sarobote-da-satunuqe-samushaoebi-tunuqis-sruli-agh",
+    "target": "/service/481-sarobote-da-satunuqe-samushaoebi-tunuqis-sruli-aghdgena"
+  },
+  {
+    "path": "/service/482",
+    "target": "/service/482-samukhruche-diskis-mokhekhva-legi-motors-shi"
+  },
+  {
+    "path": "/service/483",
+    "target": "/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmenda"
+  },
+  {
+    "path": "/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmend",
+    "target": "/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmenda"
+  },
+  {
+    "path": "/service/484",
+    "target": "/service/484-savali-natsilebis-mtliani-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/485",
+    "target": "/service/485-pechisa-da-mtliani-tsqlis-sistemis-gamoretskhva-spetsialuri-aparatit"
+  },
+  {
+    "path": "/service/485-fechisa-da-mtliani-tsqlis-sistemis-gamoretskhva-sp",
+    "target": "/service/485-pechisa-da-mtliani-tsqlis-sistemis-gamoretskhva-spetsialuri-aparatit"
+  },
+  {
+    "path": "/service/486",
+    "target": "/service/486-gadatsemata-kolopis-zetebi-adgilze-shetsvlit"
+  },
+  {
+    "path": "/service/486-gadatsemata-kolofis-zetebi-adgilze-shetsvlit",
+    "target": "/service/486-gadatsemata-kolopis-zetebi-adgilze-shetsvlit"
+  },
+  {
+    "path": "/service/487",
+    "target": "/service/487-manqanis-sruli-polireba"
+  },
+  {
+    "path": "/service/488",
+    "target": "/service/488-eleqtroobis-sheketeba-legi-motorsshi"
+  },
+  {
+    "path": "/service/489",
+    "target": "/service/489-parebis-polireba"
+  },
+  {
+    "path": "/service/49",
+    "target": "/service/49-minebis-damuqeb"
+  },
+  {
+    "path": "/service/49-minebis-damuqeba-3",
+    "target": "/service/49-minebis-damuqeb"
+  },
+  {
+    "path": "/service/490",
+    "target": "/service/490-shell-helix-originali-zetebi-adgilze-shetsvlit"
+  },
+  {
+    "path": "/service/491",
+    "target": "/service/491-skoda-audi-volkswagen-markis-avtomobilebze-nebismieri-dzravis-sruli-sheketeba"
+  },
+  {
+    "path": "/service/491-skoda-audi-volkswagen-markis-avtomobilebze-nebismi",
+    "target": "/service/491-skoda-audi-volkswagen-markis-avtomobilebze-nebismieri-dzravis-sruli-sheketeba"
+  },
+  {
+    "path": "/service/492",
+    "target": "/service/492-skoda-audi-volkswagen-markis-avtomobilebze-nebismieri-sirtulis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/492-skoda-audi-volkswagen-markis-avtomobilebze-nebismi",
+    "target": "/service/492-skoda-audi-volkswagen-markis-avtomobilebze-nebismieri-sirtulis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/493",
+    "target": "/service/493-skoda-audi-volkswagen-markis-avtomobilebis-diagnostika-litsenzirebuli-programit"
+  },
+  {
+    "path": "/service/493-skoda-audi-volkswagen-markis-avtomobilebis-diagnos",
+    "target": "/service/493-skoda-audi-volkswagen-markis-avtomobilebis-diagnostika-litsenzirebuli-programit"
+  },
+  {
+    "path": "/service/494",
+    "target": "/service/494-samukhruche-khundebis-shetsvla"
+  },
+  {
+    "path": "/service/496",
+    "target": "/service/496-eleqtro-diagnostika"
+  },
+  {
+    "path": "/service/496-eleqtro-diagnostika-1",
+    "target": "/service/496-eleqtro-diagnostika"
+  },
+  {
+    "path": "/service/497",
+    "target": "/service/497-bolis-sheshveba"
+  },
+  {
+    "path": "/service/498",
+    "target": "/service/498-tseos-shemotsmeba"
+  },
+  {
+    "path": "/service/499",
+    "target": "/service/499-gazhonvis-diagnostireba"
+  },
+  {
+    "path": "/service/499-gazhonvis-diagmostireba",
+    "target": "/service/499-gazhonvis-diagnostireba"
+  },
+  {
+    "path": "/service/50",
+    "target": "/service/50-radiatorebis-sheketebagamoretskhva"
+  },
+  {
+    "path": "/service/50-radiatorebis-sheketebagamoretskhvaradiatorebis-she",
+    "target": "/service/50-radiatorebis-sheketebagamoretskhva"
+  },
+  {
+    "path": "/service/500",
+    "target": "/service/500-radiatoris-sheketeba"
+  },
+  {
+    "path": "/service/501",
+    "target": "/service/501-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/502",
+    "target": "/service/502-ghumelis-gamoretskhva"
+  },
+  {
+    "path": "/service/503",
+    "target": "/service/503-inzheqtorebis-tsmendatestireba"
+  },
+  {
+    "path": "/service/504",
+    "target": "/service/504-pechis-gamoretskhva"
+  },
+  {
+    "path": "/service/505",
+    "target": "/service/505-kompiuteruli-diagnostika"
+  },
+  {
+    "path": "/service/506",
+    "target": "/service/506-kvamlit-shemotsmeba"
+  },
+  {
+    "path": "/service/507",
+    "target": "/service/507-programireba"
+  },
+  {
+    "path": "/service/508",
+    "target": "/service/508-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/508-tsqlis-sistemis-gamoretskhva-1",
+    "target": "/service/508-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/509",
+    "target": "/service/509-dzravis-remonti"
+  },
+  {
+    "path": "/service/509-dzravis-remonti-1",
+    "target": "/service/509-dzravis-remonti"
+  },
+  {
+    "path": "/service/51",
+    "target": "/service/51-diteiling-polireba"
+  },
+  {
+    "path": "/service/510",
+    "target": "/service/510-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/510-savali-natsilebis-sheketeba-1",
+    "target": "/service/510-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/511",
+    "target": "/service/511-zetis-shetsvla"
+  },
+  {
+    "path": "/service/511-zetis-shetsvla-1",
+    "target": "/service/511-zetis-shetsvla"
+  },
+  {
+    "path": "/service/512",
+    "target": "/service/512-kolopshi-zetis-shetsvla"
+  },
+  {
+    "path": "/service/513",
+    "target": "/service/513-vulkanizatsia"
+  },
+  {
+    "path": "/service/515",
+    "target": "/service/515-vizualuri-sruli-kosmetika"
+  },
+  {
+    "path": "/service/516",
+    "target": "/service/516-abs-is-sheketeba"
+  },
+  {
+    "path": "/service/517",
+    "target": "/service/517-svarshiki"
+  },
+  {
+    "path": "/service/518",
+    "target": "/service/518-tunuqis-tsivadsheughebavad-gastsoreba"
+  },
+  {
+    "path": "/service/519",
+    "target": "/service/519-avtomobilis-qimtsmenda"
+  },
+  {
+    "path": "/service/53",
+    "target": "/service/53-kia-hyundai-dzravis-servisebi"
+  },
+  {
+    "path": "/service/533",
+    "target": "/service/533-parebisa-da-plasmasis-detalebis-aghdgena-aseve-sruli-vizualuri-kosmetika-guriashi"
+  },
+  {
+    "path": "/service/533-parebisa-da-plasmasis-detalebis-aghdgena-aseve-sru",
+    "target": "/service/533-parebisa-da-plasmasis-detalebis-aghdgena-aseve-sruli-vizualuri-kosmetika-guriashi"
+  },
+  {
+    "path": "/service/534",
+    "target": "/service/534-plasmasis-detalebis-sruli-aghdgena-tqveni-avtomobilisatvis"
+  },
+  {
+    "path": "/service/534-plasmasis-detalebis-sruli-aghdgena-tqveni-avtomobi",
+    "target": "/service/534-plasmasis-detalebis-sruli-aghdgena-tqveni-avtomobilisatvis"
+  },
+  {
+    "path": "/service/535",
+    "target": "/service/535-razvalni-vtulkebis-gacharkhva-da-aghdgena"
+  },
+  {
+    "path": "/service/536",
+    "target": "/service/536-parebis-polireba-pirvandeli-sakhis-aghdgena-chokhataurshi"
+  },
+  {
+    "path": "/service/536-parebis-polireba-pirvandeli-sakhis-aghdgena-batums",
+    "target": "/service/536-parebis-polireba-pirvandeli-sakhis-aghdgena-chokhataurshi"
+  },
+  {
+    "path": "/service/537",
+    "target": "/service/537-samghebro-samushaoebi-maliari-chokhatauri"
+  },
+  {
+    "path": "/service/537-samghebro-samushaoebi-maliari-batumshi",
+    "target": "/service/537-samghebro-samushaoebi-maliari-chokhatauri"
+  },
+  {
+    "path": "/service/538",
+    "target": "/service/538-dazianebuli-salonis-sruli-aghdgena-chokhataurshi"
+  },
+  {
+    "path": "/service/538-dazianebuli-salonis-sruli-aghdgena-batumshi",
+    "target": "/service/538-dazianebuli-salonis-sruli-aghdgena-chokhataurshi"
+  },
+  {
+    "path": "/service/539",
+    "target": "/service/539-cheris-gashaveba-gadakvra-chokhataurshi"
+  },
+  {
+    "path": "/service/539-cheris-gashaveba-gadakvra-batumshi",
+    "target": "/service/539-cheris-gashaveba-gadakvra-chokhataurshi"
+  },
+  {
+    "path": "/service/540",
+    "target": "/service/540-nebismieri-sirtulis-satunuqe-samushaoebi-guriashi"
+  },
+  {
+    "path": "/service/540-nebismieri-sirtulis-satunuqe-samushaoebi-batumshi",
+    "target": "/service/540-nebismieri-sirtulis-satunuqe-samushaoebi-guriashi"
+  },
+  {
+    "path": "/service/541",
+    "target": "/service/541-eleqtroobis-sheketeba-chokhataurshi"
+  },
+  {
+    "path": "/service/541-eleqtroobis-sheketeba-batumshi",
+    "target": "/service/541-eleqtroobis-sheketeba-chokhataurshi"
+  },
+  {
+    "path": "/service/542",
+    "target": "/service/542-saburavebi-da-vulkanizatsia"
+  },
+  {
+    "path": "/service/543",
+    "target": "/service/543-diagnostika"
+  },
+  {
+    "path": "/service/543-diagnostika-1",
+    "target": "/service/543-diagnostika"
+  },
+  {
+    "path": "/service/544",
+    "target": "/service/544-diagnostikaeleqtrooba"
+  },
+  {
+    "path": "/service/545",
+    "target": "/service/545-diagnostikaeleqtroobaprogramireba"
+  },
+  {
+    "path": "/service/546",
+    "target": "/service/546-tsivad-gastsoreba"
+  },
+  {
+    "path": "/service/546-tsivad-gastsoreba-1",
+    "target": "/service/546-tsivad-gastsoreba"
+  },
+  {
+    "path": "/service/55",
+    "target": "/service/55-dpp-sazhevoi-piltris-garetskhva"
+  },
+  {
+    "path": "/service/55-dpf-sazhevoi-filtris-garetskhva",
+    "target": "/service/55-dpp-sazhevoi-piltris-garetskhva"
+  },
+  {
+    "path": "/service/558",
+    "target": "/service/558-dinamos-sheketeba"
+  },
+  {
+    "path": "/service/559",
+    "target": "/service/559-manqanis-polireba-keramika-qimtsmenda"
+  },
+  {
+    "path": "/service/559-manqanis-polireba-keramika",
+    "target": "/service/559-manqanis-polireba-keramika-qimtsmenda"
+  },
+  {
+    "path": "/service/56",
+    "target": "/service/56-savali-natsilebis-shetsvla-lexus-da-toyota-nebismier-modelze"
+  },
+  {
+    "path": "/service/56-savali-natsilebis-shetsvla-lexus-da-toyota-nebismi",
+    "target": "/service/56-savali-natsilebis-shetsvla-lexus-da-toyota-nebismier-modelze"
+  },
+  {
+    "path": "/service/560",
+    "target": "/service/560-kompiuteruli-programireba-eleqtro-avtomobilebsa-da-hibridebze"
+  },
+  {
+    "path": "/service/560-kompiuteruli-programireba-eleqtro-avtomobilebsa-da",
+    "target": "/service/560-kompiuteruli-programireba-eleqtro-avtomobilebsa-da-hibridebze"
+  },
+  {
+    "path": "/service/561",
+    "target": "/service/561-diagnostika-eleqtro-avtomobilebze-da-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/561-diagnostika-eleqtro-avtomobilebze-da-hibridul-avto",
+    "target": "/service/561-diagnostika-eleqtro-avtomobilebze-da-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/563",
+    "target": "/service/563-sruli-eleqtrobis-sheketeba-eleqtro-avtomobilebsa-da-hibridebze"
+  },
+  {
+    "path": "/service/563-sruli-eleqtrobis-sheketeba-eleqtro-avtomobilebsa-d",
+    "target": "/service/563-sruli-eleqtrobis-sheketeba-eleqtro-avtomobilebsa-da-hibridebze"
+  },
+  {
+    "path": "/service/564",
+    "target": "/service/564-zetis-shetsvla-da-adgilze-shedzena-apomotors-shi"
+  },
+  {
+    "path": "/service/565",
+    "target": "/service/565-gadatsemata-kolopshi-zetis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/566",
+    "target": "/service/566-samukhruche-khundebis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/567",
+    "target": "/service/567-samukhruche-diskebis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/568",
+    "target": "/service/568-tvlebis-nakhari-razvalis-gastsoreba-apomotors-shi"
+  },
+  {
+    "path": "/service/569",
+    "target": "/service/569-akumulatoris-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/57",
+    "target": "/service/57-robotisatunuqe-samushaoebi-toiotasa-da-leqsuszs"
+  },
+  {
+    "path": "/service/570",
+    "target": "/service/570-msubuqi-da-satvirto-avtomobilis-piltrebis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/570-msubuqi-da-satvirto-avtomobilis-piltrebis-shetsvla",
+    "target": "/service/570-msubuqi-da-satvirto-avtomobilis-piltrebis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/571",
+    "target": "/service/571-mototsiklis-dzravshi-zetis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/572",
+    "target": "/service/572-samukhruche-sitkhis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/573",
+    "target": "/service/573-parebis-gastsoreba-germanuli-naturebi-apomotors-shi"
+  },
+  {
+    "path": "/service/573-parebis-gastsoreba-germanuli-naturebi-apomotors-sh",
+    "target": "/service/573-parebis-gastsoreba-germanuli-naturebi-apomotors-shi"
+  },
+  {
+    "path": "/service/574",
+    "target": "/service/574-zetis-shetsvla-avtomobilis-khidshi-apomotors-shi"
+  },
+  {
+    "path": "/service/575",
+    "target": "/service/575-antiprizis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/576",
+    "target": "/service/576-manqanis-sheghebva"
+  },
+  {
+    "path": "/service/577",
+    "target": "/service/577-qvela-kategoriis-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/578",
+    "target": "/service/578-dzravis-sheketeba-toiotas-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/579",
+    "target": "/service/579-jima-motorss"
+  },
+  {
+    "path": "/service/58",
+    "target": "/service/58-toyota-lexus-jeep-dzravebis-sheketeba"
+  },
+  {
+    "path": "/service/580",
+    "target": "/service/580-dignostika"
+  },
+  {
+    "path": "/service/581",
+    "target": "/service/581-savali-natsilebis-sheketeba-tioitas-hibridebze"
+  },
+  {
+    "path": "/service/582",
+    "target": "/service/582-elementebis-sruli-servisi-toiotas-hibridebze"
+  },
+  {
+    "path": "/service/583",
+    "target": "/service/583-eleqtroobis-nebismieri-problemis-mogvareba-toiotas-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/583-eleqtroobis-nebismieri-problemis-mogvareba-toiotas",
+    "target": "/service/583-eleqtroobis-nebismieri-problemis-mogvareba-toiotas-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/584",
+    "target": "/service/584-gadatsemata-kolopis-sheketeba-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/584-gadatsemata-kolopis-sheketeba-hibridul-avtomobileb",
+    "target": "/service/584-gadatsemata-kolopis-sheketeba-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/585",
+    "target": "/service/585-invertoris-problemebis-mogvareba-toiotas-markis-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/585-invertoris-problemebis-mogvareba-toiotas-markis-hi",
+    "target": "/service/585-invertoris-problemebis-mogvareba-toiotas-markis-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/586",
+    "target": "/service/586-dzravis-shetsvla-pord-piuzhenze"
+  },
+  {
+    "path": "/service/587",
+    "target": "/service/587-pord-piuzhenis-gadatsemata-kolopis-shetsvla"
+  },
+  {
+    "path": "/service/588",
+    "target": "/service/588-pord-piuzhenis-sruli-eleqtrooba"
+  },
+  {
+    "path": "/service/589",
+    "target": "/service/589-diagnostika-pord-piuzhensa-da-skhva-avtomobilebze"
+  },
+  {
+    "path": "/service/59",
+    "target": "/service/59-chaketili-avtomobilis-karis-gagheba-adgilze-misvlit"
+  },
+  {
+    "path": "/service/59-chaketili-avtomobilis-karis-gagheba-adgilze-misvli",
+    "target": "/service/59-chaketili-avtomobilis-karis-gagheba-adgilze-misvlit"
+  },
+  {
+    "path": "/service/590",
+    "target": "/service/590-programireba"
+  },
+  {
+    "path": "/service/590-programireba-1",
+    "target": "/service/590-programireba"
+  },
+  {
+    "path": "/service/591",
+    "target": "/service/591-pord-piuzhenis-dashlilebi"
+  },
+  {
+    "path": "/service/592",
+    "target": "/service/592-zetis-shetsvla-pordis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/593",
+    "target": "/service/593-gadatsemata-kolopshi-zetis-shetsvla"
+  },
+  {
+    "path": "/service/594",
+    "target": "/service/594-teslas-savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/595",
+    "target": "/service/595-teslas-elementebis-montazhi"
+  },
+  {
+    "path": "/service/596",
+    "target": "/service/596-teslas-elementebis-remonti"
+  },
+  {
+    "path": "/service/597",
+    "target": "/service/597-teslas-dzravebis-remonti"
+  },
+  {
+    "path": "/service/598",
+    "target": "/service/598-satunuqe-samushaoebi-teslas-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/599",
+    "target": "/service/599-sarobote-samushaoebi-teslaze"
+  },
+  {
+    "path": "/service/60",
+    "target": "/service/60-plasmasis-aghdgena"
+  },
+  {
+    "path": "/service/600",
+    "target": "/service/600-teslas-diagnostika"
+  },
+  {
+    "path": "/service/601",
+    "target": "/service/601-teslas-programireba"
+  },
+  {
+    "path": "/service/602",
+    "target": "/service/602-navigatsiis-chatsera-teslas-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/603",
+    "target": "/service/603-teslas-stsrapi-damtenit-uzrunvelqopa"
+  },
+  {
+    "path": "/service/604",
+    "target": "/service/604-teslas-sakhlis-damtenit-uzrunvelqopa"
+  },
+  {
+    "path": "/service/605",
+    "target": "/service/605-teslas-natsilebi"
+  },
+  {
+    "path": "/service/606",
+    "target": "/service/606-teslas-dashlilebi"
+  },
+  {
+    "path": "/service/607",
+    "target": "/service/607-dizelis-dzravebis-sheketeba"
+  },
+  {
+    "path": "/service/608",
+    "target": "/service/608-dizelis-tsvis-sistemis-sheketeba"
+  },
+  {
+    "path": "/service/609",
+    "target": "/service/609-satsvavis-tumbos-sheketeba-aghdgena-dizelze-momushave-avtomobilebistvis"
+  },
+  {
+    "path": "/service/609-satsvavis-tumbos-sheketeba-aghdgena-dizelze-momush",
+    "target": "/service/609-satsvavis-tumbos-sheketeba-aghdgena-dizelze-momushave-avtomobilebistvis"
+  },
+  {
+    "path": "/service/61",
+    "target": "/service/61-satunuqe-samushao"
+  },
+  {
+    "path": "/service/610",
+    "target": "/service/610-dizelis-parsonkebis-aghdgena-da-shetsvla"
+  },
+  {
+    "path": "/service/611",
+    "target": "/service/611-dizelis-turbinebis-sheketeba-shedzena-da-shetsvla"
+  },
+  {
+    "path": "/service/612",
+    "target": "/service/612-dizelis-kompresoris-sheketeba-shetsvla"
+  },
+  {
+    "path": "/service/613",
+    "target": "/service/613-sazhavois-tsmenda"
+  },
+  {
+    "path": "/service/614",
+    "target": "/service/614-programireba-dizelze-momushave-avtomobilebistvis"
+  },
+  {
+    "path": "/service/615",
+    "target": "/service/615-diagnostika-dizelze-momushave-avtomobilebisatvis"
+  },
+  {
+    "path": "/service/616",
+    "target": "/service/616-dzravis-sheketeba-bmw-da-skhva-avtomobilebze"
+  },
+  {
+    "path": "/service/617",
+    "target": "/service/617-savali-natsilis-sheketeba-bmw-da-skhva-avtomobilebze"
+  },
+  {
+    "path": "/service/617-savali-natsilis-sheketeba-bmw-da-skhva-avtomobileb",
+    "target": "/service/617-savali-natsilis-sheketeba-bmw-da-skhva-avtomobilebze"
+  },
+  {
+    "path": "/service/618",
+    "target": "/service/618-bmw-f30-dashlilebi"
+  },
+  {
+    "path": "/service/619",
+    "target": "/service/619-motosa-da-mopedis-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/62",
+    "target": "/service/62-iaponuri-katalizatorebis-montazhi"
+  },
+  {
+    "path": "/service/620",
+    "target": "/service/620-motosa-da-mopedis-diagnostika"
+  },
+  {
+    "path": "/service/621",
+    "target": "/service/621-motosa-da-mopedis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/622",
+    "target": "/service/622-minebis-damuqeba"
+  },
+  {
+    "path": "/service/623",
+    "target": "/service/623-perados-gadakvra-plitis-aghdgena-khadaviki"
+  },
+  {
+    "path": "/service/624",
+    "target": "/service/624-savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/624-savali-natsilis-sheketeba-1",
+    "target": "/service/624-savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/625",
+    "target": "/service/625-dzravis-shetsvla-remonti"
+  },
+  {
+    "path": "/service/626",
+    "target": "/service/626-perados-gadakvra-plitis-aghdgena"
+  },
+  {
+    "path": "/service/627",
+    "target": "/service/627-motos-da-mopedebis-sheketeba"
+  },
+  {
+    "path": "/service/628",
+    "target": "/service/628-avto-saghebavebis-shezaveba"
+  },
+  {
+    "path": "/service/629",
+    "target": "/service/629-avto-saghebavebis-shezaveba"
+  },
+  {
+    "path": "/service/629-avto-saghebavebis-shezaveba-1",
+    "target": "/service/629-avto-saghebavebis-shezaveba"
+  },
+  {
+    "path": "/service/63",
+    "target": "/service/63-katalizatoris-montazhi"
+  },
+  {
+    "path": "/service/630",
+    "target": "/service/630-samghebro-satunuqe-momsakhureba"
+  },
+  {
+    "path": "/service/631",
+    "target": "/service/631-avtomobilis-sruli-diagnostika-rustavshi"
+  },
+  {
+    "path": "/service/632",
+    "target": "/service/632-gadatsemata-kolopis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/632-gadatsemata-kolopis-sheketeba-nebismier-avtomobilz",
+    "target": "/service/632-gadatsemata-kolopis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/633",
+    "target": "/service/633-parebis-sruli-sheketeba-aghdgena-dashla-atsqoba-nebismieri-sirtulis-samushaoebi"
+  },
+  {
+    "path": "/service/633-parebis-sruli-sheketeba-aghdgena-dashla-atsqoba-ne",
+    "target": "/service/633-parebis-sruli-sheketeba-aghdgena-dashla-atsqoba-nebismieri-sirtulis-samushaoebi"
+  },
+  {
+    "path": "/service/634",
+    "target": "/service/634-satunuqe-samushaoebi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/634-satunuqe-samushaoebi-nebismier-avtomobilze-1",
+    "target": "/service/634-satunuqe-samushaoebi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/635",
+    "target": "/service/635-roboti-avtomobilis-aghdgena-sarobote-samushaoebi"
+  },
+  {
+    "path": "/service/636",
+    "target": "/service/636-samghebro-samushaoebi-qarkhnul-doneze-sashrobshi"
+  },
+  {
+    "path": "/service/637",
+    "target": "/service/637-savali-natsilis-sheketeba-khadavoi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/637-savali-natsilis-sheketeba-khadavoi-nebismier-avtom",
+    "target": "/service/637-savali-natsilis-sheketeba-khadavoi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/638",
+    "target": "/service/638-avtomobilis-salonis-sruli-qimtsmenda"
+  },
+  {
+    "path": "/service/639",
+    "target": "/service/639-premium-khariskhis-polireba"
+  },
+  {
+    "path": "/service/64",
+    "target": "/service/64-roboti"
+  },
+  {
+    "path": "/service/640",
+    "target": "/service/640-vulkanizatsia"
+  },
+  {
+    "path": "/service/640-vulkanizatsia-1",
+    "target": "/service/640-vulkanizatsia"
+  },
+  {
+    "path": "/service/641",
+    "target": "/service/641-zetis-shetsvla-umaghlesi-khariskhis-dzravis-zetebi"
+  },
+  {
+    "path": "/service/642",
+    "target": "/service/642-aalebis-santlebi-adgilze-shetsvlit"
+  },
+  {
+    "path": "/service/643",
+    "target": "/service/643-gadatsemata-kolopis-sheketeba-da-shetsvla-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/643-gadatsemata-kolopis-sheketeba-da-shetsvla-nebismie",
+    "target": "/service/643-gadatsemata-kolopis-sheketeba-da-shetsvla-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/644",
+    "target": "/service/644-avtomobilis-salonis-aghdgena-da-restavratsia"
+  },
+  {
+    "path": "/service/645",
+    "target": "/service/645-airbagebis-shetsvla-da-aghdgena-sruli-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/645-airbagebis-shetsvla-da-aghdgena-sruli-servisi-ert",
+    "target": "/service/645-airbagebis-shetsvla-da-aghdgena-sruli-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/646",
+    "target": "/service/646-dazianebuli-naavariebi-avtomobilis-sruli-aghdgena-qvela-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/646-dazianebuli-naavariebi-avtomobilis-sruli-aghdgena",
+    "target": "/service/646-dazianebuli-naavariebi-avtomobilis-sruli-aghdgena-qvela-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/649",
+    "target": "/service/649-eleqtroobis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/649-eleqtroobis-sheketeba-nebismier-avtomobilze-1",
+    "target": "/service/649-eleqtroobis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/65",
+    "target": "/service/65-satunuqe-samushao-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/651",
+    "target": "/service/651-avtomobilis-diagnostika-programireba-nebismieri-simptomebis-identipitsireba"
+  },
+  {
+    "path": "/service/651-avtomobilis-diagnostika-programireba-nebismieri-si",
+    "target": "/service/651-avtomobilis-diagnostika-programireba-nebismieri-simptomebis-identipitsireba"
+  },
+  {
+    "path": "/service/654",
+    "target": "/service/654-avtomobilis-diagnostika-sheketeba-komponentebis-shetsvla"
+  },
+  {
+    "path": "/service/654-avtomobilis-diagnostika-sheketeba-komponentebis-sh",
+    "target": "/service/654-avtomobilis-diagnostika-sheketeba-komponentebis-shetsvla"
+  },
+  {
+    "path": "/service/655",
+    "target": "/service/655-dabindzurebuli-droselis-tsmenda-da-adaptatsia"
+  },
+  {
+    "path": "/service/656",
+    "target": "/service/656-zetis-gamagrilebeli-radiatori-gocha-shetsvla"
+  },
+  {
+    "path": "/service/657",
+    "target": "/service/657-tsqlis-pompisa-da-termostatis-shetsvla"
+  },
+  {
+    "path": "/service/658",
+    "target": "/service/658-bolis-diagnostika"
+  },
+  {
+    "path": "/service/659",
+    "target": "/service/659-svechebis-da-babinebis-shetsvla-diagnostika"
+  },
+  {
+    "path": "/service/66",
+    "target": "/service/66-tanamedrove-teqnologiit-ghebva"
+  },
+  {
+    "path": "/service/660",
+    "target": "/service/660-radiatoris-shetsvla"
+  },
+  {
+    "path": "/service/661",
+    "target": "/service/661-dzravis-khupis-shetsvla-krishka"
+  },
+  {
+    "path": "/service/662",
+    "target": "/service/662-ghrma-nakatsris-amoqvana"
+  },
+  {
+    "path": "/service/663",
+    "target": "/service/663-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/663-savali-natsilebis-sheketeba-2",
+    "target": "/service/663-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/664",
+    "target": "/service/664-savali-natsilebis-aghdgena"
+  },
+  {
+    "path": "/service/665",
+    "target": "/service/665-razvali-giastan"
+  },
+  {
+    "path": "/service/666",
+    "target": "/service/666-toiota-chr-karobkis-sheketeba"
+  },
+  {
+    "path": "/service/67",
+    "target": "/service/67-plasmasis-aghdgeniti-samushaoebi"
+  },
+  {
+    "path": "/service/68",
+    "target": "/service/68-savali-natsili-khadavoi"
+  },
+  {
+    "path": "/service/69",
+    "target": "/service/69-aluminis-spetsialisti"
+  },
+  {
+    "path": "/service/70",
+    "target": "/service/70-sruli-qimtsmenda"
+  },
+  {
+    "path": "/service/71",
+    "target": "/service/71-parebis-polireba"
+  },
+  {
+    "path": "/service/71-farebis-polireba",
+    "target": "/service/71-parebis-polireba"
+  },
+  {
+    "path": "/service/72",
+    "target": "/service/72-avtomobilis-sruli-polireba"
+  },
+  {
+    "path": "/service/73",
+    "target": "/service/73-satunuqe-samushaoebi-dashla-atsqoba"
+  },
+  {
+    "path": "/service/74",
+    "target": "/service/74-samghebro-samushaoebi"
+  },
+  {
+    "path": "/service/75",
+    "target": "/service/75-diskebis-sheghebva-tkhevadi-rezinit"
+  },
+  {
+    "path": "/service/76",
+    "target": "/service/76-sachis-shemokerva"
+  },
+  {
+    "path": "/service/77",
+    "target": "/service/77-samghebro-sashrobi-kamera"
+  },
+  {
+    "path": "/service/78",
+    "target": "/service/78-sachis-airbagi"
+  },
+  {
+    "path": "/service/79",
+    "target": "/service/79-mukhlis-airbagi"
+  },
+  {
+    "path": "/service/80",
+    "target": "/service/80-torpedos-airbagi"
+  },
+  {
+    "path": "/service/81",
+    "target": "/service/81-savardzlis-airbagi"
+  },
+  {
+    "path": "/service/82",
+    "target": "/service/82-cheris-airbagi"
+  },
+  {
+    "path": "/service/83",
+    "target": "/service/83-ghvedebis-aghdgena-shetsvla-sasurveli-perit-shetsvla"
+  },
+  {
+    "path": "/service/83-ghvedebis-aghdgena-shetsvla-sasurveli-ferit-shetsv",
+    "target": "/service/83-ghvedebis-aghdgena-shetsvla-sasurveli-perit-shetsvla"
+  },
+  {
+    "path": "/service/84",
+    "target": "/service/84-airbagebis-shetsvlis-shemdgomi-programireba"
+  },
+  {
+    "path": "/service/85",
+    "target": "/service/85-airbagebis-sistemis-sruli-diagnostika"
+  },
+  {
+    "path": "/service/86",
+    "target": "/service/86-usaprtkhoebis-balishebis-inspeqtireba"
+  },
+  {
+    "path": "/service/86-usaprtkhoebis-balishebis-inspeqtirebausaprtkhoebis",
+    "target": "/service/86-usaprtkhoebis-balishebis-inspeqtireba"
+  },
+  {
+    "path": "/service/87",
+    "target": "/service/87-avtomaturivariatoris-tipia-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/87-avtomaturivariatoris-tipia-gadatsemata-kolofis-she",
+    "target": "/service/87-avtomaturivariatoris-tipia-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/88",
+    "target": "/service/88-tkhevadi-gazis-montazhi-da-sheketeba"
+  },
+  {
+    "path": "/service/89",
+    "target": "/service/89-konpiuteruli-diagnostika"
+  },
+  {
+    "path": "/service/90",
+    "target": "/service/90-avtomobilis-diagnostireba"
+  },
+  {
+    "path": "/service/91",
+    "target": "/service/91-tsqlis-sistemis-shemotsmeba"
+  },
+  {
+    "path": "/service/92",
+    "target": "/service/92-saqare-minis-polireba"
+  },
+  {
+    "path": "/service/93",
+    "target": "/service/93-airbagebis-aghdgenis-sruli-servisi"
+  },
+  {
+    "path": "/service/94",
+    "target": "/service/94-gachedili-ghvedebis-aghdgenis-servisi"
+  },
+  {
+    "path": "/service/95",
+    "target": "/service/95-torpedos-gadakvra"
+  },
+  {
+    "path": "/service/96",
+    "target": "/service/96-cheris-aghdgena-da-peris-shetsvla"
+  },
+  {
+    "path": "/service/96-cheris-aghdgena-da-feris-shetsvla",
+    "target": "/service/96-cheris-aghdgena-da-peris-shetsvla"
+  },
+  {
+    "path": "/service/97",
+    "target": "/service/97-khmisa-da-vibro-izolatsia-mtlian-avtomobilze"
+  },
+  {
+    "path": "/service/98",
+    "target": "/service/98-savardzlebis-shekerva-da-aghdgena"
+  },
+  {
+    "path": "/service/99",
+    "target": "/service/99-avtomobilis-diagnostika"
+  },
+  {
+    "path": "/service/aalebis-santlebi-adgilze-shetsvlit",
+    "target": "/service/642-aalebis-santlebi-adgilze-shetsvlit"
+  },
+  {
+    "path": "/service/aalebis-santlebis-qidva-da-adgilze-shetsvla",
+    "target": "/service/244-aalebis-santlebis-qidva-da-adgilze-shetsvla"
+  },
+  {
+    "path": "/service/aalebis-santlebis-shedzena-da-shetsvla",
+    "target": "/service/249-aalebis-santlebis-shedzena-da-shetsvla"
+  },
+  {
+    "path": "/service/aalebis-santlebis-shetsvla",
+    "target": "/category/aalebis-santlebi"
+  },
+  {
+    "path": "/service/aalebis-santlebis-shetsvla-da-shemotsmeba-chevrole",
+    "target": "/service/384-aalebis-santlebis-shetsvla-da-shemotsmeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/aalebis-santlebis-shetsvla-gm-laboratory-shi",
+    "target": "/service/421-aalebis-santlebis-shetsvla-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/aalebis-santlebis-shetsvlashedzena-leader-motors-s",
+    "target": "/service/360-aalebis-santlebis-shetsvlashedzena-leader-motors-shi"
+  },
+  {
+    "path": "/service/aalebis-santlebis-svechebis-shetsvla-da-shedzena",
+    "target": "/service/204-aalebis-santlebis-svechebis-shetsvla-da-shedzena"
+  },
+  {
+    "path": "/service/abeesis-servisi-garantiit-moqmedebs-ganvadeba",
+    "target": "/service/238-abeesis-servisi-garantiit-moqmedebs-ganvadeba"
+  },
+  {
+    "path": "/service/abeesis-sistema",
+    "target": "/service/230-abeesis-sistema"
+  },
+  {
+    "path": "/service/abeesis-sistema-toiotasa-da-leqsusze",
+    "target": "/service/247-abeesis-sistema-toiotasa-da-leqsusze"
+  },
+  {
+    "path": "/service/abeesis-sistemis-sheketeba-shetsvla",
+    "target": "/service/256-abeesis-sistemis-sheketeba-shetsvla"
+  },
+  {
+    "path": "/service/abs-diagnostika-sheketeba-shetsvla",
+    "target": "/service/134-abs-diagnostika-sheketeba-shetsvla"
+  },
+  {
+    "path": "/service/abs-is-sheketeba",
+    "target": "/service/516-abs-is-sheketeba"
+  },
+  {
+    "path": "/service/airbagebis-aghdgenis-sruli-servisi",
+    "target": "/service/93-airbagebis-aghdgenis-sruli-servisi"
+  },
+  {
+    "path": "/service/airbagebis-shetsvla-da-aghdgena-sruli-servisi-ert",
+    "target": "/service/645-airbagebis-shetsvla-da-aghdgena-sruli-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/airbagebis-shetsvlis-shemdgomi-programireba",
+    "target": "/service/84-airbagebis-shetsvlis-shemdgomi-programireba"
+  },
+  {
+    "path": "/service/airbagebis-sistemis-sruli-diagnostika",
+    "target": "/service/85-airbagebis-sistemis-sruli-diagnostika"
+  },
+  {
+    "path": "/service/airbagisa-da-gachedili-ghvedebis-aghdgena",
+    "target": "/service/339-airbagisa-da-gachedili-ghvedebis-aghdgena"
+  },
+  {
+    "path": "/service/akumulatorebi-qvela-avtomlbilistvis",
+    "target": "/service/104-akumulatorebi-qvela-avtomlbilistvis"
+  },
+  {
+    "path": "/service/akumulatorebis-shemotsmeba-da-shetsvla",
+    "target": "/service/308-akumulatorebis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/akumulatoris-mdgomareobis-shemotsmebaakumulatoris",
+    "target": "/service/206-akumulatoris-mdgomareobis-shemotsmeba"
+  },
+  {
+    "path": "/service/akumulatoris-shetsvla-apomotors-shi",
+    "target": "/service/569-akumulatoris-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/aluminis-argonit-sheketeba-svarka",
+    "target": "/service/297-aluminis-argonit-sheketeba-svarka"
+  },
+  {
+    "path": "/service/aluminis-detalebis-argonit-shedugheba",
+    "target": "/service/354-aluminis-detalebis-argonit-shedugheba"
+  },
+  {
+    "path": "/service/aluminis-spetsialisti",
+    "target": "/service/69-aluminis-spetsialisti"
+  },
+  {
+    "path": "/service/amortizatorebis-aghdgena-da-shetsvla",
+    "target": "/service/290-amortizatorebis-aghdgena-da-shetsvla"
+  },
+  {
+    "path": "/service/antifrizis-shedzena-da-shetsvla",
+    "target": "/service/251-antiprizis-shedzena-da-shetsvla"
+  },
+  {
+    "path": "/service/antifrizis-shemotsmeba-da-shetsvla",
+    "target": "/service/446-antiprizis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/antifrizis-shetsvla",
+    "target": "/category/tsqlis-sistema"
+  },
+  {
+    "path": "/service/antifrizis-shetsvla-leader-motors-shi",
+    "target": "/service/346-antiprizis-shetsvla-leader-motors-shi"
+  },
+  {
+    "path": "/service/antiprizis-shetsvla-apomotors-shi",
+    "target": "/service/575-antiprizis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/avariuli-manqanebis-gachimva",
+    "target": "/service/43-avariuli-manqanebis-gachimva"
+  },
+  {
+    "path": "/service/avto-qimtsmenda",
+    "target": "/service/349-avto-qimtsmenda"
+  },
+  {
+    "path": "/service/avto-saghebavebis-shezaveba",
+    "target": "/service/628-avto-saghebavebis-shezaveba"
+  },
+  {
+    "path": "/service/avto-saghebavebis-shezaveba-1",
+    "target": "/service/629-avto-saghebavebis-shezaveba"
+  },
+  {
+    "path": "/service/avtomaturivariatoris-tipia-gadatsemata-kolofis-she",
+    "target": "/service/87-avtomaturivariatoris-tipia-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/avtomlbilis-gare-da-shida-detalebis-dashla-atsqoba",
+    "target": "/service/438-avtomlbilis-gare-da-shida-detalebis-dashla-atsqoba"
+  },
+  {
+    "path": "/service/avtomobilis-damtsavi-firis-gadakvra",
+    "target": "/service/161-avtomobilis-damtsavi-piris-gadakvra"
+  },
+  {
+    "path": "/service/avtomobilis-detaluri-qimtsmendis-servisi",
+    "target": "/service/325-avtomobilis-detaluri-qimtsmendis-servisi"
+  },
+  {
+    "path": "/service/avtomobilis-diagnostika",
+    "target": "/service/99-avtomobilis-diagnostika"
+  },
+  {
+    "path": "/service/avtomobilis-diagnostika-da-eleqtrooba",
+    "target": "/service/102-avtomobilis-diagnostika-da-eleqtrooba"
+  },
+  {
+    "path": "/service/avtomobilis-diagnostika-did-dighomshi",
+    "target": "/service/441-avtomobilis-diagnostika-did-dighomshi"
+  },
+  {
+    "path": "/service/avtomobilis-diagnostika-programireba-nebismieri-si",
+    "target": "/service/651-avtomobilis-diagnostika-programireba-nebismieri-simptomebis-identipitsireba"
+  },
+  {
+    "path": "/service/avtomobilis-diagnostika-sheketeba-komponentebis-sh",
+    "target": "/service/654-avtomobilis-diagnostika-sheketeba-komponentebis-shetsvla"
+  },
+  {
+    "path": "/service/avtomobilis-diagnostireba",
+    "target": "/service/90-avtomobilis-diagnostireba"
+  },
+  {
+    "path": "/service/avtomobilis-eleqtrooba-da-diagnostika-adgilze-misv",
+    "target": "/service/112-avtomobilis-eleqtrooba-da-diagnostika-adgilze-misvlit"
+  },
+  {
+    "path": "/service/avtomobilis-eleqtroobis-sheketeba",
+    "target": "/service/375-avtomobilis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/avtomobilis-khalichebis-damzadeba",
+    "target": "/service/275-avtomobilis-khalichebis-damzadeba"
+  },
+  {
+    "path": "/service/avtomobilis-naturebis-shetsvla-da-adgilze-shedzena",
+    "target": "/service/200-avtomobilis-naturebis-shetsvla-da-adgilze-shedzena"
+  },
+  {
+    "path": "/service/avtomobilis-polireba",
+    "target": "/service/105-avtomobilis-polireba"
+  },
+  {
+    "path": "/service/avtomobilis-qimtsmenda",
+    "target": "/service/519-avtomobilis-qimtsmenda"
+  },
+  {
+    "path": "/service/avtomobilis-retskhva-adgilze-misvlit",
+    "target": "/service/378-avtomobilis-retskhva-adgilze-misvlit"
+  },
+  {
+    "path": "/service/avtomobilis-salonis-aghdgena-da-restavratsia",
+    "target": "/service/644-avtomobilis-salonis-aghdgena-da-restavratsia"
+  },
+  {
+    "path": "/service/avtomobilis-salonis-sruli-qimtsmenda",
+    "target": "/service/638-avtomobilis-salonis-sruli-qimtsmenda"
+  },
+  {
+    "path": "/service/avtomobilis-sruli-diagnostika-hybrid-way",
+    "target": "/service/195-avtomobilis-sruli-diagnostika-hybrid-way"
+  },
+  {
+    "path": "/service/avtomobilis-sruli-diagnostika-rustavshi",
+    "target": "/service/631-avtomobilis-sruli-diagnostika-rustavshi"
+  },
+  {
+    "path": "/service/avtomobilis-sruli-polireba",
+    "target": "/category/polireba"
+  },
+  {
+    "path": "/service/avtomobilis-sruli-qimtsmenda",
+    "target": "/service/154-avtomobilis-sruli-qimtsmenda"
+  },
+  {
+    "path": "/service/avtomobilis-sruli-restavratsia",
+    "target": "/service/109-avtomobilis-sruli-restavratsia"
+  },
+  {
+    "path": "/service/avtomobilis-sruli-teqnikuri-datvaliereba-gm-labora",
+    "target": "/service/422-avtomobilis-sruli-teqnikuri-datvaliereba-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/avtomobilis-vibrotesti-tbilisshi-pirvelad",
+    "target": "/service/189-avtomobilis-vibrotesti-tbilisshi-pirvelad"
+  },
+  {
+    "path": "/service/avtomobilis-vizualisa-da-salonis-dashla-atsqoba",
+    "target": "/service/432-avtomobilis-vizualisa-da-salonis-dashla-atsqoba"
+  },
+  {
+    "path": "/service/avtonatsilebi",
+    "target": "/service/284-avtonatsilebi"
+  },
+  {
+    "path": "/service/benzinis-dzravis-shemfrqvebevis-inzheqtorebis-shem",
+    "target": "/service/176-benzinis-dzravis-shemprqvebevis-inzheqtorebis-shemotsmeba-gatsmenda"
+  },
+  {
+    "path": "/service/bmw-f30-dashlilebi",
+    "target": "/service/618-bmw-f30-dashlilebi"
+  },
+  {
+    "path": "/service/bolis-diagnostika",
+    "target": "/service/658-bolis-diagnostika"
+  },
+  {
+    "path": "/service/bolis-sheshveba",
+    "target": "/service/497-bolis-sheshveba"
+  },
+  {
+    "path": "/service/bolze-shemotsmeba",
+    "target": "/service/100-bolze-shemotsmeba"
+  },
+  {
+    "path": "/service/bolze-shemotsmeba-rustavis-avtobazrobastan",
+    "target": "/service/468-bolze-shemotsmeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/bunebrivi-gazis-damontazheba",
+    "target": "/service/474-bunebrivi-gazis-damontazheba"
+  },
+  {
+    "path": "/service/bunebrivi-gazis-montazhi-da-sheketeba",
+    "target": "/category/gazis-sistemis-montazhisheketeba"
+  },
+  {
+    "path": "/service/chadziruli-avtomobilebis-sruli-aghdgenis-servisi",
+    "target": "/service/273-chadziruli-avtomobilebis-sruli-aghdgenis-servisi"
+  },
+  {
+    "path": "/service/chaketili-avtomobilis-karis-gagheba-adgilze-misvli",
+    "target": "/service/59-chaketili-avtomobilis-karis-gagheba-adgilze-misvlit"
+  },
+  {
+    "path": "/service/cheris-aghdgena-da-feris-shetsvla",
+    "target": "/service/96-cheris-aghdgena-da-peris-shetsvla"
+  },
+  {
+    "path": "/service/cheris-airbagi",
+    "target": "/service/82-cheris-airbagi"
+  },
+  {
+    "path": "/service/cheris-gadakvra",
+    "target": "/service/276-cheris-gadakvra"
+  },
+  {
+    "path": "/service/cheris-gadakvra-da-aghdgena",
+    "target": "/service/160-cheris-gadakvra-da-aghdgena"
+  },
+  {
+    "path": "/service/cheris-gashaveba-gadakvra-batumshi",
+    "target": "/service/539-cheris-gashaveba-gadakvra-chokhataurshi"
+  },
+  {
+    "path": "/service/chevrolet-cadillac-buick-gmc-opel-avtomobilebis-pr",
+    "target": "/service/410-chevrolet-cadillac-buick-gmc-opel-avtomobilebis-programireba"
+  },
+  {
+    "path": "/service/co-tseos-regulireba",
+    "target": "/service/304-co-tseos-regulireba"
+  },
+  {
+    "path": "/service/dabindzurebuli-droselis-tsmenda-da-adaptatsia",
+    "target": "/service/655-dabindzurebuli-droselis-tsmenda-da-adaptatsia"
+  },
+  {
+    "path": "/service/damtsavi-da-feradi-firis-gadakvra-cheris-panoramul",
+    "target": "/service/477-damtsavi-da-peradi-piris-gadakvra-cheris-panoramuli-epeqti"
+  },
+  {
+    "path": "/service/damtsavi-firis-gadakvra-g-wraps-shi",
+    "target": "/service/423-damtsavi-piris-gadakvra-g-wraps-shi"
+  },
+  {
+    "path": "/service/dazianebuli-farebis-aghdgena-car-lights-shi",
+    "target": "/service/367-dazianebuli-parebis-aghdgena-car-lights-shi"
+  },
+  {
+    "path": "/service/dazianebuli-naavariebi-avtomobilis-sruli-aghdgena",
+    "target": "/service/646-dazianebuli-naavariebi-avtomobilis-sruli-aghdgena-qvela-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/dazianebuli-parebis-aghdgena",
+    "target": "/service/444-dazianebuli-parebis-aghdgena"
+  },
+  {
+    "path": "/service/dazianebuli-salonis-sruli-aghdgena-batumshi",
+    "target": "/service/538-dazianebuli-salonis-sruli-aghdgena-chokhataurshi"
+  },
+  {
+    "path": "/service/detaluri-qimtsmenda",
+    "target": "/service/39-detaluri-qimtsmenda"
+  },
+  {
+    "path": "/service/detaluri-qimtsmendis-servisi",
+    "target": "/service/267-detaluri-qimtsmendis-servisi"
+  },
+  {
+    "path": "/service/diagnostika",
+    "target": "/service/34-diagnostika"
+  },
+  {
+    "path": "/service/diagnostika-1",
+    "target": "/service/543-diagnostika"
+  },
+  {
+    "path": "/service/diagnostika-dizelze-momushave-avtomobilebisatvis",
+    "target": "/service/615-diagnostika-dizelze-momushave-avtomobilebisatvis"
+  },
+  {
+    "path": "/service/diagnostika-eleqtro-avtomobilebze-da-hibridul-avto",
+    "target": "/service/561-diagnostika-eleqtro-avtomobilebze-da-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/diagnostika-fordis-markis-avtomobilebze",
+    "target": "/service/213-diagnostika-pordis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/diagnostika-gm-is-ofitsialuri-programit-zusti-diag",
+    "target": "/service/415-diagnostika-gm-is-opitsialuri-programit-zusti-diagnozi-tqvens-manqanaze"
+  },
+  {
+    "path": "/service/diagnostika-mercedes-benz",
+    "target": "/service/272-diagnostika-mercedes-benz"
+  },
+  {
+    "path": "/service/diagnostika-pord-piuzhensa-da-skhva-avtomobilebze",
+    "target": "/service/589-diagnostika-pord-piuzhensa-da-skhva-avtomobilebze"
+  },
+  {
+    "path": "/service/diagnostikaeleqtrooba",
+    "target": "/service/544-diagnostikaeleqtrooba"
+  },
+  {
+    "path": "/service/diagnostikaeleqtroobaprogramireba",
+    "target": "/service/545-diagnostikaeleqtroobaprogramireba"
+  },
+  {
+    "path": "/service/dignostika",
+    "target": "/service/580-dignostika"
+  },
+  {
+    "path": "/service/dinamos-sheketeba",
+    "target": "/service/558-dinamos-sheketeba"
+  },
+  {
+    "path": "/service/dinamosa-da-starteris-sheketeba-remonti",
+    "target": "/service/169-dinamosa-da-starteris-sheketeba-remonti"
+  },
+  {
+    "path": "/service/diskebis-gastsorebis-servisi",
+    "target": "/service/300-diskebis-gastsorebis-servisi"
+  },
+  {
+    "path": "/service/diskebis-sheghebva-leader-motors-shi",
+    "target": "/service/355-diskebis-sheghebva-leader-motors-shi"
+  },
+  {
+    "path": "/service/diskebis-sheghebva-tkhevadi-rezinit",
+    "target": "/service/75-diskebis-sheghebva-tkhevadi-rezinit"
+  },
+  {
+    "path": "/service/diteiling-polireba",
+    "target": "/service/51-diteiling-polireba"
+  },
+  {
+    "path": "/service/diteilingi",
+    "target": "/service/108-diteilingi"
+  },
+  {
+    "path": "/service/dizelis-dzravebis-sheketeba",
+    "target": "/service/607-dizelis-dzravebis-sheketeba"
+  },
+  {
+    "path": "/service/dizelis-kompresoris-sheketeba-shetsvla",
+    "target": "/service/612-dizelis-kompresoris-sheketeba-shetsvla"
+  },
+  {
+    "path": "/service/dizelis-parsonkebis-aghdgena-da-shetsvla",
+    "target": "/service/610-dizelis-parsonkebis-aghdgena-da-shetsvla"
+  },
+  {
+    "path": "/service/dizelis-sistemis-sruli-diagnozireba-da-sheketeba",
+    "target": "/service/437-dizelis-sistemis-sruli-diagnozireba-da-sheketeba"
+  },
+  {
+    "path": "/service/dizelis-tsvis-sistemis-sheketeba",
+    "target": "/service/608-dizelis-tsvis-sistemis-sheketeba"
+  },
+  {
+    "path": "/service/dizelis-turbinebis-sheketeba-shedzena-da-shetsvla",
+    "target": "/service/611-dizelis-turbinebis-sheketeba-shedzena-da-shetsvla"
+  },
+  {
+    "path": "/service/dpf-sazhavois-filtris-tsmenda",
+    "target": "/service/427-dpf-sazhavois-piltris-tsmenda"
+  },
+  {
+    "path": "/service/dpf-sazhevoi-filtris-garetskhva",
+    "target": "/service/55-dpp-sazhevoi-piltris-garetskhva"
+  },
+  {
+    "path": "/service/droselis-adaptatsia-blutuzebis-shemotsmeba-sachis",
+    "target": "/service/128-droselis-adaptatsia-blutuzebis-shemotsmeba-sachis-sensoris-adaptatsia"
+  },
+  {
+    "path": "/service/droselis-egeeris-fanjrebis-kolofis-distronikisa-da",
+    "target": "/service/472-droselis-egeeris-panjrebis-kolopis-distronikisa-da-skhva-motsqobilobebis-adaptatsia-da-kalibratsia"
+  },
+  {
+    "path": "/service/dzravis-amoghebachadgma-hyundai-ioniqkia-niro",
+    "target": "/service/262-dzravis-amoghebachadgma-hyundai-ioniqkia-niro"
+  },
+  {
+    "path": "/service/dzravis-bolze-shemotsmeba-da-vakuumis-sistemis-dia",
+    "target": "/service/301-dzravis-bolze-shemotsmeba-da-vakuumis-sistemis-diagnostika"
+  },
+  {
+    "path": "/service/dzravis-bolze-shemotsmeba-jima-motorsshi",
+    "target": "/service/396-dzravis-bolze-shemotsmeba-jima-motorsshi"
+  },
+  {
+    "path": "/service/dzravis-co-s-tseos-shemotsmeba-dzravis-gamoretskhv",
+    "target": "/service/178-dzravis-co-s-tseos-shemotsmeba-dzravis-gamoretskhva"
+  },
+  {
+    "path": "/service/dzravis-diagnostika",
+    "target": "/service/37-dzravis-diagnostika"
+  },
+  {
+    "path": "/service/dzravis-khupis-shetsvla-krishka",
+    "target": "/service/661-dzravis-khupis-shetsvla-krishka"
+  },
+  {
+    "path": "/service/dzravis-kompresiis-shemotsmeba",
+    "target": "/service/101-dzravis-kompresiis-shemotsmeba"
+  },
+  {
+    "path": "/service/dzravis-kompresiis-shemotsmeba-qvela-avtomobilze",
+    "target": "/service/398-dzravis-kompresiis-shemotsmeba-qvela-avtomobilze"
+  },
+  {
+    "path": "/service/dzravis-ortqlit-tsmenda-tqveni-avtomobilistvis",
+    "target": "/service/326-dzravis-ortqlit-tsmenda-tqveni-avtomobilistvis"
+  },
+  {
+    "path": "/service/dzravis-remonti",
+    "target": "/service/214-dzravis-remonti"
+  },
+  {
+    "path": "/service/dzravis-remonti-1",
+    "target": "/service/509-dzravis-remonti"
+  },
+  {
+    "path": "/service/dzravis-sheketeba",
+    "target": "/service/228-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/dzravis-sheketeba-bmw-da-skhva-avtomobilebze",
+    "target": "/service/616-dzravis-sheketeba-bmw-da-skhva-avtomobilebze"
+  },
+  {
+    "path": "/service/dzravis-sheketeba-chevrolet-georgia-shi",
+    "target": "/service/382-dzravis-sheketeba-chevrolet-georgia-shi"
+  },
+  {
+    "path": "/service/dzravis-sheketeba-gm-laboratory-ji-em-laboratorias",
+    "target": "/service/416-dzravis-sheketeba-gm-laboratory-ji-em-laboratoriashi"
+  },
+  {
+    "path": "/service/dzravis-sheketeba-leader-motors-shi",
+    "target": "/service/359-dzravis-sheketeba-leader-motors-shi"
+  },
+  {
+    "path": "/service/dzravis-sheketeba-legi-motors-shi",
+    "target": "/service/480-dzravis-sheketeba-legi-motors-shi"
+  },
+  {
+    "path": "/service/dzravis-sheketeba-mersedesis-markis-avtomobilebze",
+    "target": "/service/268-dzravis-sheketeba-mersedesis-markis-avtomobilebze-2013-tslidan"
+  },
+  {
+    "path": "/service/dzravis-sheketeba-toiotas-hibridul-avtomobilebze",
+    "target": "/service/578-dzravis-sheketeba-toiotas-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/dzravis-sheketebis-servisi-batumshi",
+    "target": "/service/412-dzravis-sheketebis-servisi-batumshi"
+  },
+  {
+    "path": "/service/dzravis-shemotsmeba-endoskopit",
+    "target": "/service/395-dzravis-shemotsmeba-endoskopit"
+  },
+  {
+    "path": "/service/dzravis-shetsvla",
+    "target": "/service/208-dzravis-shetsvla"
+  },
+  {
+    "path": "/service/dzravis-shetsvla-pord-piuzhenze",
+    "target": "/service/586-dzravis-shetsvla-pord-piuzhenze"
+  },
+  {
+    "path": "/service/dzravis-shetsvla-remonti",
+    "target": "/service/625-dzravis-shetsvla-remonti"
+  },
+  {
+    "path": "/service/dzravis-sruli-remonti",
+    "target": "/service/288-dzravis-sruli-remonti"
+  },
+  {
+    "path": "/service/dzravis-sruli-servisi-rustavis-avtobazrobastan",
+    "target": "/service/460-dzravis-sruli-servisi-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/dzravis-tseos-co-shemotsmeba",
+    "target": "/service/452-dzravis-tseos-co-shemotsmeba"
+  },
+  {
+    "path": "/service/dzravis-tsmenda-mshrali-qinulit",
+    "target": "/service/106-dzravis-tsmenda-mshrali-qinulit"
+  },
+  {
+    "path": "/service/dzravis-zetis-shetsvla",
+    "target": "/service/198-dzravis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/dzravis-zetis-shetsvla-da-shedzena-fordis-markis-a",
+    "target": "/service/216-dzravis-zetis-shetsvla-da-shedzena-pordis-markis-avtomobilebisatvis"
+  },
+  {
+    "path": "/service/dzravis-zetis-shetsvla-hybrid-way",
+    "target": "/service/193-dzravis-zetis-shetsvla-hybrid-way"
+  },
+  {
+    "path": "/service/egr-gatsmenda-tseos-shemtsireba",
+    "target": "/service/136-egr-gatsmenda-tseos-shemtsireba"
+  },
+  {
+    "path": "/service/elementebis-shetsvla-diagnostika-gatsmenda",
+    "target": "/service/129-elementebis-shetsvla-diagnostika-gatsmenda"
+  },
+  {
+    "path": "/service/elementebis-sruli-servisi-toiotas-hibridebze",
+    "target": "/service/582-elementebis-sruli-servisi-toiotas-hibridebze"
+  },
+  {
+    "path": "/service/eleqtro-diagnostika",
+    "target": "/service/245-eleqtro-diagnostika"
+  },
+  {
+    "path": "/service/eleqtro-diagnostika-1",
+    "target": "/service/496-eleqtro-diagnostika"
+  },
+  {
+    "path": "/service/eleqtrooba",
+    "target": "/service/271-eleqtrooba"
+  },
+  {
+    "path": "/service/eleqtrooba-kondentsionerebieleqtrooba-kondentsione",
+    "target": "/service/48-eleqtrooba-kondentsionerebi"
+  },
+  {
+    "path": "/service/eleqtroobis-nebismieri-problemis-mogvareba",
+    "target": "/service/221-eleqtroobis-nebismieri-problemis-mogvareba"
+  },
+  {
+    "path": "/service/eleqtroobis-nebismieri-problemis-mogvareba-toiotas",
+    "target": "/service/583-eleqtroobis-nebismieri-problemis-mogvareba-toiotas-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/eleqtroobis-sheketeba-batumshi",
+    "target": "/service/541-eleqtroobis-sheketeba-chokhataurshi"
+  },
+  {
+    "path": "/service/eleqtroobis-sheketeba-chevrolet-georgia",
+    "target": "/service/389-eleqtroobis-sheketeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/eleqtroobis-sheketeba-legi-motorsshi",
+    "target": "/service/488-eleqtroobis-sheketeba-legi-motorsshi"
+  },
+  {
+    "path": "/service/eleqtroobis-sheketeba-nebismier-avtomobilze",
+    "target": "/service/440-eleqtroobis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/eleqtroobis-sheketeba-nebismier-avtomobilze-1",
+    "target": "/service/649-eleqtroobis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/eleqtroobis-sruli-sheketeba-rustavis-avtobazrobast",
+    "target": "/service/459-eleqtroobis-sruli-sheketeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/farebis-ortqlit-polireba",
+    "target": "/service/47-parebis-ortqlit-polireba"
+  },
+  {
+    "path": "/service/farebis-polireba-keramikuli-ortqlit",
+    "target": "/service/445-parebis-polireba-keramikuli-ortqlit"
+  },
+  {
+    "path": "/service/farebis-polireba-ortqlit",
+    "target": "/service/168-parebis-polireba-ortqlit"
+  },
+  {
+    "path": "/service/farebis-qimiuri-ortqlit-polireba",
+    "target": "/service/371-parebis-qimiuri-ortqlit-polireba"
+  },
+  {
+    "path": "/service/fechis-radiatoris-gamoretskhva-rustavis-avtobazrob",
+    "target": "/service/464-pechis-radiatoris-gamoretskhva-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/fechisa-da-mtliani-tsqlis-sistemis-gamoretskhva-sp",
+    "target": "/service/485-pechisa-da-mtliani-tsqlis-sistemis-gamoretskhva-spetsialuri-aparatit"
+  },
+  {
+    "path": "/service/feradi-firis-gadakvra-g-wraps-shi",
+    "target": "/service/424-peradi-piris-gadakvra-g-wraps-shi"
+  },
+  {
+    "path": "/service/firis-gadakvra-leader-motors-shi",
+    "target": "/service/358-piris-gadakvra-leader-motors-shi"
+  },
+  {
+    "path": "/service/foltsvagenis-audisa-da-shkodas-diagnostika-litsenz",
+    "target": "/service/434-poltsvagenis-audisa-da-shkodas-diagnostika-litsenzirebuli-programit"
+  },
+  {
+    "path": "/service/foltsvagenis-markis-avtomobilebis-eleqtroobis-shek",
+    "target": "/service/433-poltsvagenis-markis-avtomobilebis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/ford-fusion-is-karobkis-sheketeba",
+    "target": "/service/381-ford-fusion-is-karobkis-sheketeba"
+  },
+  {
+    "path": "/service/fordis-dashlilebi",
+    "target": "/service/219-pordis-dashlilebi"
+  },
+  {
+    "path": "/service/fordisa-da-linkonis-dashlilebi",
+    "target": "/service/197-pordisa-da-linkonis-dashlilebi"
+  },
+  {
+    "path": "/service/fordisa-da-linkonis-markis-avtomobilebze-dzravis-z",
+    "target": "/service/210-pordisa-da-linkonis-markis-avtomobilebze-dzravis-zetis-shetsvla"
+  },
+  {
+    "path": "/service/gachedili-ghvedebis-aghdgenis-servisi",
+    "target": "/service/94-gachedili-ghvedebis-aghdgenis-servisi"
+  },
+  {
+    "path": "/service/gadatsemata-kolofebi-toiota-qemri-honda-tseerve-fi",
+    "target": "/service/475-gadatsemata-kolopebi-toiota-qemri-honda-tseerve-piti-mitsubishi-kolti-autlenderi-nisan-tida-qvesti-iqstraili"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-karobkis-zetis-vargisianobis-s",
+    "target": "/service/448-gadatsemata-kolopis-karobkis-zetis-vargisianobis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-remonti-da-shetsvla",
+    "target": "/service/215-gadatsemata-kolopis-remonti-da-shetsvla"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-sheketeba-gm-laboratory",
+    "target": "/service/418-gadatsemata-kolopis-sheketeba-gm-laboratory"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-sheketeba-leader-motors-shi",
+    "target": "/service/353-gadatsemata-kolopis-sheketeba-leader-motors-shi"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-sheketeba-rustavis-avtobazroba",
+    "target": "/service/466-gadatsemata-kolopis-sheketeba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-shetsvla",
+    "target": "/service/209-gadatsemata-kolopis-shetsvla"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-shetsvla-kia-nirohyundai-ioniq",
+    "target": "/service/263-gadatsemata-kolopis-shetsvla-kia-nirohyundai-ioniq"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-sruli-diagnostika-da-sheketeba",
+    "target": "/service/289-gadatsemata-kolopis-sruli-diagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-zetebi-adgilze-shetsvlit",
+    "target": "/service/486-gadatsemata-kolopis-zetebi-adgilze-shetsvlit"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-zetis-gafiltvra-rustavis-avtob",
+    "target": "/service/469-gadatsemata-kolopis-zetis-gapiltvra-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-zetis-shetsvla",
+    "target": "/category/zetis-shetsvla"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-zetis-shetsvla-hybrid-way",
+    "target": "/service/192-gadatsemata-kolopis-zetis-shetsvla-hybrid-way"
+  },
+  {
+    "path": "/service/gadatsemata-kolofis-zetis-shetsvla-rustavis-avtoba",
+    "target": "/service/471-gadatsemata-kolopis-zetis-shetsvla-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/gadatsemata-kolofshi-zetis-shetsvla-chevrolet-geor",
+    "target": "/service/390-gadatsemata-kolopshi-zetis-shetsvla-chevrolet-georgia-shi"
+  },
+  {
+    "path": "/service/gadatsemata-kolopis-sheketeba-da-shetsvla-nebismie",
+    "target": "/service/643-gadatsemata-kolopis-sheketeba-da-shetsvla-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/gadatsemata-kolopis-sheketeba-hibridul-avtomobileb",
+    "target": "/service/584-gadatsemata-kolopis-sheketeba-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/gadatsemata-kolopis-sheketeba-nebismier-avtomobilz",
+    "target": "/service/632-gadatsemata-kolopis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/gadatsemata-kolopshi-zetis-shetsvla",
+    "target": "/service/593-gadatsemata-kolopshi-zetis-shetsvla"
+  },
+  {
+    "path": "/service/gadatsemata-kolopshi-zetis-shetsvla-apomotors-shi",
+    "target": "/service/565-gadatsemata-kolopshi-zetis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/gamonabolqvis-shemotsmeba",
+    "target": "/service/188-gamonabolqvis-shemotsmeba"
+  },
+  {
+    "path": "/service/gamonabolqvis-sistemis-gaqvana",
+    "target": "/service/182-gamonabolqvis-sistemis-gaqvana"
+  },
+  {
+    "path": "/service/gatbobis-sistemis-mogvareba",
+    "target": "/service/356-gatbobis-sistemis-mogvareba"
+  },
+  {
+    "path": "/service/gazhonvis-diagmostireba",
+    "target": "/service/499-gazhonvis-diagnostireba"
+  },
+  {
+    "path": "/service/ghrma-nakatsris-amoqvana",
+    "target": "/service/662-ghrma-nakatsris-amoqvana"
+  },
+  {
+    "path": "/service/ghumelis-gamoretskhva",
+    "target": "/service/502-ghumelis-gamoretskhva"
+  },
+  {
+    "path": "/service/ghvedebis-aghdgena-shetsvla-sasurveli-ferit-shetsv",
+    "target": "/service/83-ghvedebis-aghdgena-shetsvla-sasurveli-perit-shetsvla"
+  },
+  {
+    "path": "/service/gm-is-avtomobilebis-programireba-ji-em-laboratoria",
+    "target": "/service/414-gm-is-avtomobilebis-programireba-ji-em-laboratoria"
+  },
+  {
+    "path": "/service/gm-is-avtomobilebis-sruli-diagnostika",
+    "target": "/service/411-gm-is-avtomobilebis-sruli-diagnostika"
+  },
+  {
+    "path": "/service/gm-is-markis-avtomobilebze-eleqtroobis-sruli-aghdg",
+    "target": "/service/413-gm-is-markis-avtomobilebze-eleqtroobis-sruli-aghdgena"
+  },
+  {
+    "path": "/service/hibridebi",
+    "target": "/service/41-hibridebi"
+  },
+  {
+    "path": "/service/hibridis-elementebi-shetsvla-tsmenda-akhlis-shedze",
+    "target": "/service/246-hibridis-elementebi-shetsvla-tsmenda-akhlis-shedzena-litiumis-chaqeneba"
+  },
+  {
+    "path": "/service/hibridis-inventori-toiotasa-da-leqsusis-avtomobile",
+    "target": "/service/253-hibridis-inventori-toiotasa-da-leqsusis-avtomobilebze"
+  },
+  {
+    "path": "/service/hibriduli-elementebis-shetsvla-shedzena-kia-nirohy",
+    "target": "/service/264-hibriduli-elementebis-shetsvla-shedzena-kia-nirohyundai-ioniq"
+  },
+  {
+    "path": "/service/hibriduli-sistemis-sruli-servisi",
+    "target": "/service/135-hibriduli-sistemis-sruli-servisi"
+  },
+  {
+    "path": "/service/honda-fit-servisi",
+    "target": "/service/24-honda-pit-servisi"
+  },
+  {
+    "path": "/service/iaponuri-katalizatorebis-montazhi",
+    "target": "/service/62-iaponuri-katalizatorebis-montazhi"
+  },
+  {
+    "path": "/service/ieri-komforti",
+    "target": "/service/334-ieri-komporti"
+  },
+  {
+    "path": "/service/invertoris-problemebis-mogvareba-toiotas-markis-hi",
+    "target": "/service/585-invertoris-problemebis-mogvareba-toiotas-markis-hibridul-avtomobilebze"
+  },
+  {
+    "path": "/service/inzheqtorebis-gatsmenda",
+    "target": "/service/225-inzheqtorebis-gatsmenda"
+  },
+  {
+    "path": "/service/inzheqtorebis-tsmendatestireba",
+    "target": "/service/503-inzheqtorebis-tsmendatestireba"
+  },
+  {
+    "path": "/service/ji-di-em-avtoservisi",
+    "target": "/service/16-ji-di-em-avtoservisi"
+  },
+  {
+    "path": "/service/jima-motorss",
+    "target": "/service/579-jima-motorss"
+  },
+  {
+    "path": "/service/kabrioletebis-sheketeba-tsqlis-sistemis-gamoretskh",
+    "target": "/service/46-kabrioletebis-sheketeba-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/karbonis-gadakvra-kapotze-da-cherze",
+    "target": "/service/330-karbonis-gadakvra-kapotze-da-cherze"
+  },
+  {
+    "path": "/service/katalizatoris-montazhi",
+    "target": "/service/63-katalizatoris-montazhi"
+  },
+  {
+    "path": "/service/kempit-shedugheba",
+    "target": "/service/394-kempit-shedugheba"
+  },
+  {
+    "path": "/service/kempit-shedugheba-dazianebuli-iatakis-amochra-da-a",
+    "target": "/service/456-kempit-shedugheba-dazianebuli-iatakis-amochra-da-akhali-detalis-chakereba"
+  },
+  {
+    "path": "/service/khadavois-sheketeba-hibridebze",
+    "target": "/service/229-khadavois-sheketeba-hibridebze"
+  },
+  {
+    "path": "/service/khmisa-da-vibro-izolatsia-mtlian-avtomobilze",
+    "target": "/service/97-khmisa-da-vibro-izolatsia-mtlian-avtomobilze"
+  },
+  {
+    "path": "/service/kia-hyundai-dzravis-servisebi",
+    "target": "/service/53-kia-hyundai-dzravis-servisebi"
+  },
+  {
+    "path": "/service/kolopshi-zetis-shetsvla",
+    "target": "/service/512-kolopshi-zetis-shetsvla"
+  },
+  {
+    "path": "/service/kompiuteruli-diagnostika",
+    "target": "/service/505-kompiuteruli-diagnostika"
+  },
+  {
+    "path": "/service/kompiuteruli-diagnostika-adgilze-misvlit",
+    "target": "/service/38-kompiuteruli-diagnostika-adgilze-misvlit"
+  },
+  {
+    "path": "/service/kompiuteruli-diagnostika-leader-motors-shi",
+    "target": "/service/350-kompiuteruli-diagnostika-leader-motors-shi"
+  },
+  {
+    "path": "/service/kompiuteruli-programireba-eleqtro-avtomobilebsa-da",
+    "target": "/service/560-kompiuteruli-programireba-eleqtro-avtomobilebsa-da-hibridebze"
+  },
+  {
+    "path": "/service/kompiuteruli-tuningi-prashivka",
+    "target": "/service/185-kompiuteruli-tuningi-prashivka"
+  },
+  {
+    "path": "/service/kondintsioneris-freonit-datumbva",
+    "target": "/service/280-kondintsioneris-preonit-datumbva"
+  },
+  {
+    "path": "/service/kondintsioneris-freonit-datumbva-da-sheketeba",
+    "target": "/service/114-kondintsioneris-preonit-datumbva-da-sheketeba"
+  },
+  {
+    "path": "/service/kondintsioneris-freonit-datumbva-da-sheketeba-chev",
+    "target": "/service/388-kondintsioneris-preonit-datumbva-da-sheketeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/kondintsioneris-sheketeba-shemotsmeba-freonis-dama",
+    "target": "/service/175-kondintsioneris-sheketeba-shemotsmeba-preonis-damateba"
+  },
+  {
+    "path": "/service/kondintsioneris-sruli-servisi",
+    "target": "/service/336-kondintsioneris-sruli-servisi"
+  },
+  {
+    "path": "/service/kondintsionershi-preonis-chatumbvakondintsionershi",
+    "target": "/service/173-kondintsionershi-preonis-chatumbva"
+  },
+  {
+    "path": "/service/konpiuteruli-diagnostika",
+    "target": "/service/89-konpiuteruli-diagnostika"
+  },
+  {
+    "path": "/service/kvamlit-shemotsmeba",
+    "target": "/service/506-kvamlit-shemotsmeba"
+  },
+  {
+    "path": "/service/litiumis-elementebze-gadaqvana-hibriduli-avtomobil",
+    "target": "/service/236-litiumis-elementebze-gadaqvana-hibriduli-avtomobilebis-moqmedebs-ganvadebis-servisi"
+  },
+  {
+    "path": "/service/maliari",
+    "target": "/service/44-maliari"
+  },
+  {
+    "path": "/service/manqanis-gasaghebis-daprogramebagacharkhvamanqanis",
+    "target": "/service/116-manqanis-gasaghebis-daprogramebagacharkhva"
+  },
+  {
+    "path": "/service/manqanis-inzheqtorebis-gatsmenda",
+    "target": "/service/454-manqanis-inzheqtorebis-gatsmenda"
+  },
+  {
+    "path": "/service/manqanis-polireba-keramika",
+    "target": "/service/559-manqanis-polireba-keramika-qimtsmenda"
+  },
+  {
+    "path": "/service/manqanis-sheghebva",
+    "target": "/service/576-manqanis-sheghebva"
+  },
+  {
+    "path": "/service/manqanis-signalebis-qvelaze-didi-archevani-car-lig",
+    "target": "/service/374-manqanis-signalebis-qvelaze-didi-archevani-car-lights-shi"
+  },
+  {
+    "path": "/service/manqanis-sruli-polireba",
+    "target": "/service/487-manqanis-sruli-polireba"
+  },
+  {
+    "path": "/service/matoris-kompresiis-shemotsmeba",
+    "target": "/service/451-matoris-kompresiis-shemotsmeba"
+  },
+  {
+    "path": "/service/mersedesis-dashlilebi-2013-tslidan-zemot",
+    "target": "/service/274-mersedesis-dashlilebi-2013-tslidan-zemot"
+  },
+  {
+    "path": "/service/mersedesisa-da-skhva-markebis-gadatsemata-kolofis",
+    "target": "/service/436-mersedesisa-da-skhva-markebis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/minebis-damuqeba",
+    "target": "/service/622-minebis-damuqeba"
+  },
+  {
+    "path": "/service/minebis-damuqeba-1",
+    "target": "/service/305-minebis-damuqeba-new-auto-motors"
+  },
+  {
+    "path": "/service/minebis-damuqeba-3",
+    "target": "/service/49-minebis-damuqeb"
+  },
+  {
+    "path": "/service/minebis-damuqeba-4",
+    "target": "/service/277-minebis-damuqeba"
+  },
+  {
+    "path": "/service/minebis-damuqeba-auto-glass",
+    "target": "/service/331-minebis-damuqeba-auto-glass"
+  },
+  {
+    "path": "/service/minebis-damuqeba-g-wraps-shi",
+    "target": "/service/426-minebis-damuqeba-g-wraps-shi"
+  },
+  {
+    "path": "/service/minebis-damuqeba-nikeaze",
+    "target": "/service/476-minebis-damuqeba-nikeaze"
+  },
+  {
+    "path": "/service/minebze-dzveli-damuqebis-mokhsna-ortlis-aparatit",
+    "target": "/service/332-minebze-dzveli-damuqebis-mokhsna-ortlis-aparatit"
+  },
+  {
+    "path": "/service/modzravi-vulkanizatsia",
+    "target": "/service/377-modzravi-vulkanizatsia-247-solveri"
+  },
+  {
+    "path": "/service/motos-da-mopedebis-sheketeba",
+    "target": "/service/627-motos-da-mopedebis-sheketeba"
+  },
+  {
+    "path": "/service/motosa-da-mopedis-diagnostika",
+    "target": "/service/620-motosa-da-mopedis-diagnostika"
+  },
+  {
+    "path": "/service/motosa-da-mopedis-dzravis-sheketeba",
+    "target": "/service/619-motosa-da-mopedis-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/motosa-da-mopedis-eleqtroobis-sheketeba",
+    "target": "/service/621-motosa-da-mopedis-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/mototsiklis-dzravshi-zetis-shetsvla-apomotors-shi",
+    "target": "/service/571-mototsiklis-dzravshi-zetis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/msubuqi-da-satvirto-avtomobilis-piltrebis-shetsvla",
+    "target": "/service/570-msubuqi-da-satvirto-avtomobilis-piltrebis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/mtliani-eleqtroobis-sheketeba",
+    "target": "/service/397-mtliani-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/mtliani-salonis-aghdgena",
+    "target": "/service/156-mtliani-salonis-aghdgena"
+  },
+  {
+    "path": "/service/mukhlis-airbagi",
+    "target": "/service/79-mukhlis-airbagi"
+  },
+  {
+    "path": "/service/navigatsiis-chatsera-teslas-markis-avtomobilebze",
+    "target": "/service/602-navigatsiis-chatsera-teslas-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/nebismier-gadatsemata-kolofshi-zetis-shetsvla",
+    "target": "/service/457-nebismier-gadatsemata-kolopshi-zetis-shetsvla"
+  },
+  {
+    "path": "/service/nebismieri-dzravis-sheketeba-batumshi",
+    "target": "/service/406-nebismieri-dzravis-sheketeba-batumshi"
+  },
+  {
+    "path": "/service/nebismieri-sirtulis-satunuqe-samushaoebi-batumshi",
+    "target": "/service/540-nebismieri-sirtulis-satunuqe-samushaoebi-guriashi"
+  },
+  {
+    "path": "/service/nebismieri-tipis-dzravis-sheketeba-dizelis-dzraveb",
+    "target": "/service/435-nebismieri-tipis-dzravis-sheketeba-dizelis-dzravebits"
+  },
+  {
+    "path": "/service/nebismieri-tipis-gadatsemata-kolofis-sheketeba",
+    "target": "/service/458-nebismieri-tipis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/nikelebis-gashaveba-interieris-detalebis-feris-she",
+    "target": "/service/162-nikelebis-gashaveba-interieris-detalebis-peris-shetsvla"
+  },
+  {
+    "path": "/service/nikelebis-gashaveba-qutaisshi-nikeaze",
+    "target": "/service/478-nikelebis-gashaveba-qutaisshi-nikeaze"
+  },
+  {
+    "path": "/service/parebis-daburva",
+    "target": "/service/328-parebis-daburva"
+  },
+  {
+    "path": "/service/parebis-gastsoreba-germanuli-naturebi-apomotors-sh",
+    "target": "/service/573-parebis-gastsoreba-germanuli-naturebi-apomotors-shi"
+  },
+  {
+    "path": "/service/parebis-gastsoreba-stendit",
+    "target": "/service/372-parebis-gastsoreba-stendit"
+  },
+  {
+    "path": "/service/parebis-polireba",
+    "target": "/service/489-parebis-polireba"
+  },
+  {
+    "path": "/service/parebis-polireba-pirvandeli-sakhis-aghdgena-batums",
+    "target": "/service/536-parebis-polireba-pirvandeli-sakhis-aghdgena-chokhataurshi"
+  },
+  {
+    "path": "/service/parebis-polireba-qutaisshi",
+    "target": "/service/479-parebis-polireba-qutaisshi"
+  },
+  {
+    "path": "/service/parebis-regulireba",
+    "target": "/service/342-parebis-regulireba"
+  },
+  {
+    "path": "/service/parebis-sruli-sheketeba-aghdgena-dashla-atsqoba-ne",
+    "target": "/service/633-parebis-sruli-sheketeba-aghdgena-dashla-atsqoba-nebismieri-sirtulis-samushaoebi"
+  },
+  {
+    "path": "/service/parebisa-da-plasmasis-detalebis-aghdgena-aseve-sru",
+    "target": "/service/533-parebisa-da-plasmasis-detalebis-aghdgena-aseve-sruli-vizualuri-kosmetika-guriashi"
+  },
+  {
+    "path": "/service/pechis-gamoretskhva",
+    "target": "/service/504-pechis-gamoretskhva"
+  },
+  {
+    "path": "/service/perados-gadakvra-plitis-aghdgena",
+    "target": "/service/626-perados-gadakvra-plitis-aghdgena"
+  },
+  {
+    "path": "/service/perados-gadakvra-plitis-aghdgena-khadaviki",
+    "target": "/service/623-perados-gadakvra-plitis-aghdgena-khadaviki"
+  },
+  {
+    "path": "/service/plasmasis-aghdgena",
+    "target": "/service/60-plasmasis-aghdgena"
+  },
+  {
+    "path": "/service/plasmasis-aghdgena-leader-motors-shi",
+    "target": "/service/357-plasmasis-aghdgena-leader-motors-shi"
+  },
+  {
+    "path": "/service/plasmasis-aghdgeniti-samushaoebi",
+    "target": "/service/67-plasmasis-aghdgeniti-samushaoebi"
+  },
+  {
+    "path": "/service/plasmasis-detalebis-aghdgena",
+    "target": "/service/147-plasmasis-detalebis-aghdgena"
+  },
+  {
+    "path": "/service/plasmasis-detalebis-sheketeba-sruli-aghdgena",
+    "target": "/service/443-plasmasis-detalebis-sheketeba-sruli-aghdgena"
+  },
+  {
+    "path": "/service/plasmasis-detalebis-sruli-aghdgena-tqveni-avtomobi",
+    "target": "/service/534-plasmasis-detalebis-sruli-aghdgena-tqveni-avtomobilisatvis"
+  },
+  {
+    "path": "/service/plasmasis-detalebis-sruli-aghdgeniti-samushaoebi",
+    "target": "/service/286-plasmasis-detalebis-sruli-aghdgeniti-samushaoebi"
+  },
+  {
+    "path": "/service/polirebis-servisi-lider-motorsshi",
+    "target": "/service/348-polirebis-servisi-lider-motorsshi"
+  },
+  {
+    "path": "/service/poltsvagenis-dzravis-sheketeba",
+    "target": "/service/431-poltsvagenis-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/pompa-pompis-magnitebi",
+    "target": "/service/138-pompa-pompis-magnitebi"
+  },
+  {
+    "path": "/service/popkornis-chatsera",
+    "target": "/service/186-popkornis-chatsera"
+  },
+  {
+    "path": "/service/pord-piuzhenis-dashlilebi",
+    "target": "/service/591-pord-piuzhenis-dashlilebi"
+  },
+  {
+    "path": "/service/pord-piuzhenis-gadatsemata-kolopis-shetsvla",
+    "target": "/service/587-pord-piuzhenis-gadatsemata-kolopis-shetsvla"
+  },
+  {
+    "path": "/service/pord-piuzhenis-sruli-eleqtrooba",
+    "target": "/service/588-pord-piuzhenis-sruli-eleqtrooba"
+  },
+  {
+    "path": "/service/premium-khariskhis-polireba",
+    "target": "/service/639-premium-khariskhis-polireba"
+  },
+  {
+    "path": "/service/programireba",
+    "target": "/service/507-programireba"
+  },
+  {
+    "path": "/service/programireba-1",
+    "target": "/service/590-programireba"
+  },
+  {
+    "path": "/service/programireba-dizelze-momushave-avtomobilebistvis",
+    "target": "/service/614-programireba-dizelze-momushave-avtomobilebistvis"
+  },
+  {
+    "path": "/service/qantrimenis-dashlilebi",
+    "target": "/service/17-qantrimenis-dashlilebi"
+  },
+  {
+    "path": "/service/qreshis-tsashla",
+    "target": "/service/117-qreshis-tsashla"
+  },
+  {
+    "path": "/service/qromirebuli-detalebis-nikelebis-gashaveba-g-wraps",
+    "target": "/service/425-qromirebuli-detalebis-nikelebis-gashaveba-g-wraps-shi"
+  },
+  {
+    "path": "/service/qsenonis-blokebis-shetsvla",
+    "target": "/service/369-qsenonis-blokebis-shetsvla"
+  },
+  {
+    "path": "/service/qsenonis-blokebis-sruli-gauqmeba",
+    "target": "/service/370-qsenonis-blokebis-sruli-gauqmeba"
+  },
+  {
+    "path": "/service/quleris-gatsmenda",
+    "target": "/service/131-quleris-gatsmenda"
+  },
+  {
+    "path": "/service/qumbarebis-aghdgenis-servisi",
+    "target": "/service/299-qumbarebis-aghdgenis-servisi"
+  },
+  {
+    "path": "/service/qumbaris-pilnikis-moukhsnelad-shetsvla-spetsialuri",
+    "target": "/service/455-qumbaris-pilnikis-moukhsnelad-shetsvla-spetsialuri-aparatit"
+  },
+  {
+    "path": "/service/qvela-kategoriis-dzravis-sheketeba",
+    "target": "/service/577-qvela-kategoriis-dzravis-sheketeba"
+  },
+  {
+    "path": "/service/qvela-sakhis-led-ganateba-adgilze-montazhit",
+    "target": "/service/373-qvela-sakhis-led-ganateba-adgilze-montazhit"
+  },
+  {
+    "path": "/service/qvela-sakhis-servisi-honda-fitze",
+    "target": "/service/21-qvela-sakhis-servisi-honda-pitze"
+  },
+  {
+    "path": "/service/radiatorebis-sheketebagamoretskhvaradiatorebis-she",
+    "target": "/service/50-radiatorebis-sheketebagamoretskhva"
+  },
+  {
+    "path": "/service/radiatoris-gamoretskhva",
+    "target": "/service/140-radiatoris-gamoretskhva"
+  },
+  {
+    "path": "/service/radiatoris-sheketeba",
+    "target": "/service/500-radiatoris-sheketeba"
+  },
+  {
+    "path": "/service/radiatoris-shetsvla",
+    "target": "/service/660-radiatoris-shetsvla"
+  },
+  {
+    "path": "/service/radiatoris-shetsvla-da-sheketeba",
+    "target": "/service/281-radiatoris-shetsvla-da-sheketeba"
+  },
+  {
+    "path": "/service/raptorit-ghebva",
+    "target": "/service/32-raptorit-ghebva"
+  },
+  {
+    "path": "/service/razvali-giastan",
+    "target": "/service/665-razvali-giastan"
+  },
+  {
+    "path": "/service/razvalis-gastsoreba",
+    "target": "/category/tvlebis-sheqra"
+  },
+  {
+    "path": "/service/razvalni-vtulkebis-gacharkhva-da-aghdgena",
+    "target": "/service/535-razvalni-vtulkebis-gacharkhva-da-aghdgena"
+  },
+  {
+    "path": "/service/releebis-shemotsmeba-vargisianobaze",
+    "target": "/service/453-releebis-shemotsmeba-vargisianobaze"
+  },
+  {
+    "path": "/service/roboti",
+    "target": "/service/64-roboti"
+  },
+  {
+    "path": "/service/roboti-avtomobilis-aghdgena-sarobote-samushaoebi",
+    "target": "/service/635-roboti-avtomobilis-aghdgena-sarobote-samushaoebi"
+  },
+  {
+    "path": "/service/roboti-diesji-variatoris-da-skhva-tipis-gadatsemat",
+    "target": "/service/403-roboti-diesji-variatoris-da-skhva-tipis-gadatsemata-kolopis-sheketeba"
+  },
+  {
+    "path": "/service/robotisatunuqe-samushaoebi-toiotasa-da-leqsuszs",
+    "target": "/service/57-robotisatunuqe-samushaoebi-toiotasa-da-leqsuszs"
+  },
+  {
+    "path": "/service/rulevois-sheketeba",
+    "target": "/service/150-rulevois-sheketeba"
+  },
+  {
+    "path": "/service/saburavebi-da-vulkanizatsia",
+    "target": "/service/542-saburavebi-da-vulkanizatsia"
+  },
+  {
+    "path": "/service/saburavebis-shetsvla-da-shedzena-sakhlidan-gausvle",
+    "target": "/service/379-saburavebis-shetsvla-da-shedzena-sakhlidan-gausvlelad"
+  },
+  {
+    "path": "/service/saburavebis-sruli-servisi",
+    "target": "/service/285-saburavebis-sruli-servisi"
+  },
+  {
+    "path": "/service/saburavis-blutuzebis-tsnevis-sensori-programireba",
+    "target": "/service/223-saburavis-blutuzebis-tsnevis-sensori-programireba"
+  },
+  {
+    "path": "/service/sachis-airbagi",
+    "target": "/service/78-sachis-airbagi"
+  },
+  {
+    "path": "/service/sachis-gadakvra",
+    "target": "/service/155-sachis-gadakvra"
+  },
+  {
+    "path": "/service/sachis-meqanizmis-rulavois-aghdgena",
+    "target": "/service/294-sachis-meqanizmis-rulavois-aghdgena"
+  },
+  {
+    "path": "/service/sachis-shemokerva",
+    "target": "/service/76-sachis-shemokerva"
+  },
+  {
+    "path": "/service/salonis-qvela-airbagis-aghdgena",
+    "target": "/service/157-salonis-qvela-airbagis-aghdgena"
+  },
+  {
+    "path": "/service/samghebro-samushaoebi",
+    "target": "/category/samghebro-samushaoebi"
+  },
+  {
+    "path": "/service/samghebro-samushaoebi-leader-motors-shi",
+    "target": "/service/337-samghebro-samushaoebi-leader-motors-shi"
+  },
+  {
+    "path": "/service/samghebro-samushaoebi-maliari",
+    "target": "/service/231-samghebro-samushaoebi-maliari"
+  },
+  {
+    "path": "/service/samghebro-samushaoebi-maliari-batumshi",
+    "target": "/service/537-samghebro-samushaoebi-maliari-chokhatauri"
+  },
+  {
+    "path": "/service/samghebro-samushaoebi-mersedesis-markis-avtomobile",
+    "target": "/service/269-samghebro-samushaoebi-mersedesis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/samghebro-samushaoebi-qarkhnul-doneze-sashrobshi",
+    "target": "/service/636-samghebro-samushaoebi-qarkhnul-doneze-sashrobshi"
+  },
+  {
+    "path": "/service/samghebro-sashrobi-kamera",
+    "target": "/service/77-samghebro-sashrobi-kamera"
+  },
+  {
+    "path": "/service/samghebro-satunuqe-momsakhureba",
+    "target": "/service/630-samghebro-satunuqe-momsakhureba"
+  },
+  {
+    "path": "/service/samukhruche-diskebis-khekhva-apornebis-shlifovka",
+    "target": "/service/191-samukhruche-diskebis-khekhva-apornebis-shlipovka"
+  },
+  {
+    "path": "/service/samukhruche-diskebis-shetsvla-apomotors-shi",
+    "target": "/service/567-samukhruche-diskebis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/samukhruche-diskis-gasuftaveba-mokhekhva-apornebis",
+    "target": "/service/181-samukhruche-diskis-gasuptaveba-mokhekhva-apornebis-shlipovka"
+  },
+  {
+    "path": "/service/samukhruche-diskis-mokhekhva-legi-motors-shi",
+    "target": "/service/482-samukhruche-diskis-mokhekhva-legi-motors-shi"
+  },
+  {
+    "path": "/service/samukhruche-khundebis-shemotsmeba-da-shetsvla-adgi",
+    "target": "/service/447-samukhruche-khundebis-shemotsmeba-da-shetsvla-adgilze"
+  },
+  {
+    "path": "/service/samukhruche-khundebis-shetsvla",
+    "target": "/category/savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/samukhruche-khundebis-shetsvla-adgilze-shedzena",
+    "target": "/service/226-samukhruche-khundebis-shetsvla-adgilze-shedzena"
+  },
+  {
+    "path": "/service/samukhruche-khundebis-shetsvla-apomotors-shi",
+    "target": "/service/566-samukhruche-khundebis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/samukhruche-sistemis-sheketeb-da-sitkhis-shetsvla",
+    "target": "/service/387-samukhruche-sistemis-sheketeb-da-sitkhis-shetsvla-chevrolet-georgia"
+  },
+  {
+    "path": "/service/samukhruche-sistemis-shemotsmeba-da-sheketeba",
+    "target": "/service/130-samukhruche-sistemis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/samukhruche-sistemis-sruli-sheketeba-da-sitkhis-sh",
+    "target": "/service/283-samukhruche-sistemis-sruli-sheketeba-da-sitkhis-shetsvla"
+  },
+  {
+    "path": "/service/samukhruche-sitkhis-shemotsmeba-da-shetsvla",
+    "target": "/service/212-samukhruche-sitkhis-shemotsmeba-da-shetsvla"
+  },
+  {
+    "path": "/service/samukhruche-sitkhis-shemotsmeba-shetsvla",
+    "target": "/service/133-samukhruche-sitkhis-shemotsmeba-shetsvla"
+  },
+  {
+    "path": "/service/samukhruche-sitkhis-shemotsmeba-shetsvla-da-dahaer",
+    "target": "/service/449-samukhruche-sitkhis-shemotsmeba-shetsvla-da-dahaereba"
+  },
+  {
+    "path": "/service/samukhruche-sitkhis-shemotsmeba-shetsvla-kalibrats",
+    "target": "/service/241-samukhruche-sitkhis-shemotsmeba-shetsvla-kalibratsia-dahaereba"
+  },
+  {
+    "path": "/service/samukhruche-sitkhis-shetsvla-apomotors-shi",
+    "target": "/service/572-samukhruche-sitkhis-shetsvla-apomotors-shi"
+  },
+  {
+    "path": "/service/samukhruche-sitkhis-shetsvla-da-shemotsmeba",
+    "target": "/service/222-samukhruche-sitkhis-shetsvla-da-shemotsmeba"
+  },
+  {
+    "path": "/service/samukhruche-sitkhis-shetsvla-sistemis-shemotsmeba",
+    "target": "/service/257-samukhruche-sitkhis-shetsvla-sistemis-shemotsmeba"
+  },
+  {
+    "path": "/service/sandrikas-vulkanizatsia",
+    "target": "/service/14-sandrikas-vulkanizatsia"
+  },
+  {
+    "path": "/service/saqare-minebi-qvela-avtomobilistvis",
+    "target": "/service/103-saqare-minebi-qvela-avtomobilistvis"
+  },
+  {
+    "path": "/service/saqare-minebis-shetsvla",
+    "target": "/category/saqare-minebi"
+  },
+  {
+    "path": "/service/saqare-minis-polireba",
+    "target": "/service/92-saqare-minis-polireba"
+  },
+  {
+    "path": "/service/saqrdeni-diskebis-apornebis-gacharkhva-samukhruche",
+    "target": "/service/298-saqrdeni-diskebis-apornebis-gacharkhva-samukhruche-khundebis-shetsvla"
+  },
+  {
+    "path": "/service/saqrdeni-diskis-mokhekhva-apornebis-gashlifovkeba",
+    "target": "/service/224-saqrdeni-diskis-mokhekhva-apornebis-gashlipovkeba-dashlis-gareshe"
+  },
+  {
+    "path": "/service/sarobote-da-satunuqe-samushaoebi-tunuqis-sruli-agh",
+    "target": "/service/481-sarobote-da-satunuqe-samushaoebi-tunuqis-sruli-aghdgena"
+  },
+  {
+    "path": "/service/sarobote-samushaoebi-teslaze",
+    "target": "/service/599-sarobote-samushaoebi-teslaze"
+  },
+  {
+    "path": "/service/satsvavis-inzheqtorebis-gatsmenda-chevrolet-georgi",
+    "target": "/service/385-satsvavis-inzheqtorebis-gatsmenda-chevrolet-georgia"
+  },
+  {
+    "path": "/service/satsvavis-tumbos-sheketeba-aghdgena-dizelze-momush",
+    "target": "/service/609-satsvavis-tumbos-sheketeba-aghdgena-dizelze-momushave-avtomobilebistvis"
+  },
+  {
+    "path": "/service/satunuqe-samushao",
+    "target": "/service/61-satunuqe-samushao"
+  },
+  {
+    "path": "/service/satunuqe-samushao-nebismier-avtomobilze",
+    "target": "/service/65-satunuqe-samushao-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/satunuqe-samushao-zheshtianchiki",
+    "target": "/service/232-satunuqe-samushao-zheshtianchiki"
+  },
+  {
+    "path": "/service/satunuqe-samushaoebi",
+    "target": "/category/satunuqe-samushaoebi"
+  },
+  {
+    "path": "/service/satunuqe-samushaoebi-dashla-atsqoba",
+    "target": "/service/73-satunuqe-samushaoebi-dashla-atsqoba"
+  },
+  {
+    "path": "/service/satunuqe-samushaoebi-nebismier-avtomobilze",
+    "target": "/service/145-satunuqe-samushaoebi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/satunuqe-samushaoebi-nebismier-avtomobilze-1",
+    "target": "/service/634-satunuqe-samushaoebi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/satunuqe-samushaoebi-roboti",
+    "target": "/service/293-satunuqe-samushaoebi-roboti"
+  },
+  {
+    "path": "/service/satunuqe-samushaoebi-teslas-markis-avtomobilebze",
+    "target": "/service/598-satunuqe-samushaoebi-teslas-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/satunuqe-sarobote-samushaoebi-leader-motors-shi",
+    "target": "/service/338-satunuqe-sarobote-samushaoebi-leader-motors-shi"
+  },
+  {
+    "path": "/service/sauketeso-khariskhis-dzravis-zetebi-adgilze-shetsv",
+    "target": "/service/386-sauketeso-khariskhis-dzravis-zetebi-adgilze-shetsvlit-chevrolet-georgia"
+  },
+  {
+    "path": "/service/savali-natsilebi",
+    "target": "/service/42-savali-natsilebi"
+  },
+  {
+    "path": "/service/savali-natsilebis-aghdgena",
+    "target": "/service/664-savali-natsilebis-aghdgena"
+  },
+  {
+    "path": "/service/savali-natsilebis-mtliani-servisi-ert-sivrtseshi",
+    "target": "/service/484-savali-natsilebis-mtliani-servisi-ert-sivrtseshi"
+  },
+  {
+    "path": "/service/savali-natsilebis-sheketeba",
+    "target": "/category/savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilebis-sheketeba-1",
+    "target": "/service/510-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilebis-sheketeba-2",
+    "target": "/service/663-savali-natsilebis-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilebis-sheketeba-adgilze-shedzena-hybri",
+    "target": "/service/194-savali-natsilebis-sheketeba-adgilze-shedzena-hybrid-way"
+  },
+  {
+    "path": "/service/savali-natsilebis-sheketeba-chevrolet-georgia",
+    "target": "/service/383-savali-natsilebis-sheketeba-chevrolet-georgia"
+  },
+  {
+    "path": "/service/savali-natsilebis-sheketeba-dmg-service-batumi",
+    "target": "/service/404-savali-natsilebis-sheketeba-dmg-service-batumi"
+  },
+  {
+    "path": "/service/savali-natsilebis-sheketeba-tioitas-hibridebze",
+    "target": "/service/581-savali-natsilebis-sheketeba-tioitas-hibridebze"
+  },
+  {
+    "path": "/service/savali-natsilebis-shemotsmeba-da-sheketeba",
+    "target": "/service/442-savali-natsilebis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilebis-shetsvla-da-shedzena-adgilze",
+    "target": "/service/218-savali-natsilebis-shetsvla-da-shedzena-adgilze"
+  },
+  {
+    "path": "/service/savali-natsilebis-shetsvla-lexus-da-toyota-nebismi",
+    "target": "/service/56-savali-natsilebis-shetsvla-lexus-da-toyota-nebismier-modelze"
+  },
+  {
+    "path": "/service/savali-natsilebis-shetsvla-sheketeba-aghdgena",
+    "target": "/service/242-savali-natsilebis-shetsvla-sheketeba-aghdgena"
+  },
+  {
+    "path": "/service/savali-natsilebis-shetsvla-sheketeba-diagnostireba",
+    "target": "/service/207-savali-natsilebis-shetsvla-sheketeba-diagnostireba-upasod"
+  },
+  {
+    "path": "/service/savali-natsilebis-shetsvla-sheketeba-toiotasa-da-l",
+    "target": "/service/248-savali-natsilebis-shetsvla-sheketeba-toiotasa-da-leqsusis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/savali-natsilebis-sruli-servisi",
+    "target": "/category/savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilebis-sruli-servisi-rustavis-avtobazro",
+    "target": "/service/461-savali-natsilebis-sruli-servisi-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/savali-natsilebis-tsmendazhangis-moshoreba-mshrali",
+    "target": "/service/107-savali-natsilebis-tsmendazhangis-moshoreba-mshrali-qinulis-aparatit"
+  },
+  {
+    "path": "/service/savali-natsili",
+    "target": "/service/20-savali-natsili"
+  },
+  {
+    "path": "/service/savali-natsili-khadavoi",
+    "target": "/service/68-savali-natsili-khadavoi"
+  },
+  {
+    "path": "/service/savali-natsilis-sheketeba",
+    "target": "/service/279-savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilis-sheketeba-1",
+    "target": "/service/624-savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilis-sheketeba-bmw-da-skhva-avtomobileb",
+    "target": "/service/617-savali-natsilis-sheketeba-bmw-da-skhva-avtomobilebze"
+  },
+  {
+    "path": "/service/savali-natsilis-sheketeba-dzravis-diagnostika-da-s",
+    "target": "/service/351-savali-natsilis-sheketeba-dzravis-diagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/savali-natsilis-sheketeba-gm-is-markis-avtomobileb",
+    "target": "/service/417-savali-natsilis-sheketeba-gm-is-markis-avtomobilebze-gm-laboratory"
+  },
+  {
+    "path": "/service/savali-natsilis-sheketeba-khadavoi-nebismier-avtom",
+    "target": "/service/637-savali-natsilis-sheketeba-khadavoi-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/savali-natsilis-shemotsmeba-da-sheketeba",
+    "target": "/service/392-savali-natsilis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/savardzlebis-shekerva-aghdgena-dizainis-sruliad-sh",
+    "target": "/service/159-savardzlebis-shekerva-aghdgena-dizainis-sruliad-shetsvla"
+  },
+  {
+    "path": "/service/savardzlebis-shekerva-da-aghdgena",
+    "target": "/service/98-savardzlebis-shekerva-da-aghdgena"
+  },
+  {
+    "path": "/service/savardzlis-airbagi",
+    "target": "/service/81-savardzlis-airbagi"
+  },
+  {
+    "path": "/service/sazhavois-tsmenda",
+    "target": "/service/613-sazhavois-tsmenda"
+  },
+  {
+    "path": "/service/sheakete-savali-natsili-leader-motors-shi",
+    "target": "/service/347-sheakete-savali-natsili-leader-motors-shi"
+  },
+  {
+    "path": "/service/shell-helix-originali-zetebi-adgilze-shetsvlit",
+    "target": "/service/490-shell-helix-originali-zetebi-adgilze-shetsvlit"
+  },
+  {
+    "path": "/service/shevrolet-volti-bolti-da-malibus-eleqtroobis-sheke",
+    "target": "/service/409-shevrolet-volti-bolti-da-malibus-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/shushebis-daburva",
+    "target": "/service/327-shushebis-daburva"
+  },
+  {
+    "path": "/service/shushebis-shuqgamtarobis-shemotsmeba",
+    "target": "/service/163-shushebis-shuqgamtarobis-shemotsmeba"
+  },
+  {
+    "path": "/service/shushis-shetsvla-tqveni-avtomobilis-farebze",
+    "target": "/service/368-shushis-shetsvla-tqveni-avtomobilis-parebze"
+  },
+  {
+    "path": "/service/skhvadaskhva-sakhis-natsilebi",
+    "target": "/service/205-skhvadaskhva-sakhis-natsilebi"
+  },
+  {
+    "path": "/service/skoda-audi-volkswagen-markis-avtomobilebis-diagnos",
+    "target": "/service/493-skoda-audi-volkswagen-markis-avtomobilebis-diagnostika-litsenzirebuli-programit"
+  },
+  {
+    "path": "/service/sportuli-amortizatorebis-daqeneba",
+    "target": "/service/254-sportuli-amortizatorebis-daqeneba"
+  },
+  {
+    "path": "/service/sportuli-sacheebis-daqeneba",
+    "target": "/service/255-sportuli-sacheebis-daqeneba"
+  },
+  {
+    "path": "/service/sruli-diagnostika",
+    "target": "/category/diagnostika"
+  },
+  {
+    "path": "/service/sruli-diagnostika-kia-niro-hyundai-ioniq",
+    "target": "/service/266-sruli-diagnostika-kia-niro-hyundai-ioniq"
+  },
+  {
+    "path": "/service/sruli-diteilingi",
+    "target": "/service/352-sruli-diteilingi"
+  },
+  {
+    "path": "/service/sruli-eleqtro-diagnostika-chevrolet-georgia",
+    "target": "/service/391-sruli-eleqtro-diagnostika-chevrolet-georgia"
+  },
+  {
+    "path": "/service/sruli-eleqtrobis-sheketeba-eleqtro-avtomobilebsa-d",
+    "target": "/service/563-sruli-eleqtrobis-sheketeba-eleqtro-avtomobilebsa-da-hibridebze"
+  },
+  {
+    "path": "/service/sruli-eleqtroobis-sheketeba",
+    "target": "/service/296-sruli-eleqtroobis-sheketeba"
+  },
+  {
+    "path": "/service/sruli-kompiuteruli-diagnostika",
+    "target": "/category/diagnostika"
+  },
+  {
+    "path": "/service/sruli-kompiuteruli-diagnostika-car-lights-shi",
+    "target": "/service/376-sruli-kompiuteruli-diagnostika-car-lights-shi"
+  },
+  {
+    "path": "/service/sruli-kompiuteruli-diagnostika-dmg-service-batumi",
+    "target": "/service/405-sruli-kompiuteruli-diagnostika-dmg-service-batumi"
+  },
+  {
+    "path": "/service/sruli-kompiuteruli-diagnostika-rustavis-avtobazrob",
+    "target": "/service/462-sruli-kompiuteruli-diagnostika-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/sruli-kompiuteruli-diagnostika-uakhlesi-aparaturit",
+    "target": "/service/393-sruli-kompiuteruli-diagnostika-uakhlesi-aparaturit"
+  },
+  {
+    "path": "/service/sruli-qimtsmenda",
+    "target": "/service/70-sruli-qimtsmenda"
+  },
+  {
+    "path": "/service/sruli-sakhis-eleqtrooba",
+    "target": "/service/23-sruli-sakhis-eleqtrooba"
+  },
+  {
+    "path": "/service/starteris-sheketeba-adgilze-mosvlit",
+    "target": "/service/115-starteris-sheketeba-adgilze-mosvlit"
+  },
+  {
+    "path": "/service/starterisa-da-dinamos-doagnostika-da-sheketeba",
+    "target": "/service/282-starterisa-da-dinamos-doagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/svarshiki",
+    "target": "/service/517-svarshiki"
+  },
+  {
+    "path": "/service/svechebis-da-babinebis-shetsvla-diagnostika",
+    "target": "/service/659-svechebis-da-babinebis-shetsvla-diagnostika"
+  },
+  {
+    "path": "/service/svechebis-shetsvla-toiotaze",
+    "target": "/service/235-svechebis-shetsvla-toiotaze"
+  },
+  {
+    "path": "/service/tanamedrove-teqnologiit-ghebva",
+    "target": "/service/66-tanamedrove-teqnologiit-ghebva"
+  },
+  {
+    "path": "/service/tentis-aghdgena",
+    "target": "/service/329-tentis-aghdgena"
+  },
+  {
+    "path": "/service/teslas-dashlilebi",
+    "target": "/service/606-teslas-dashlilebi"
+  },
+  {
+    "path": "/service/teslas-diagnostika",
+    "target": "/service/600-teslas-diagnostika"
+  },
+  {
+    "path": "/service/teslas-dzravebis-remonti",
+    "target": "/service/597-teslas-dzravebis-remonti"
+  },
+  {
+    "path": "/service/teslas-elementebis-montazhi",
+    "target": "/service/595-teslas-elementebis-montazhi"
+  },
+  {
+    "path": "/service/teslas-elementebis-remonti",
+    "target": "/service/596-teslas-elementebis-remonti"
+  },
+  {
+    "path": "/service/teslas-natsilebi",
+    "target": "/service/605-teslas-natsilebi"
+  },
+  {
+    "path": "/service/teslas-programireba",
+    "target": "/service/601-teslas-programireba"
+  },
+  {
+    "path": "/service/teslas-sakhlis-damtenit-uzrunvelqopa",
+    "target": "/service/604-teslas-sakhlis-damtenit-uzrunvelqopa"
+  },
+  {
+    "path": "/service/teslas-savali-natsilis-sheketeba",
+    "target": "/service/594-teslas-savali-natsilis-sheketeba"
+  },
+  {
+    "path": "/service/teslas-stsrapi-damtenit-uzrunvelqopa",
+    "target": "/service/603-teslas-stsrapi-damtenit-uzrunvelqopa"
+  },
+  {
+    "path": "/service/tkhevadi-gazis-damontazheba",
+    "target": "/service/473-tkhevadi-gazis-damontazheba"
+  },
+  {
+    "path": "/service/tkhevadi-gazis-montazhi",
+    "target": "/service/302-tkhevadi-gazis-montazhi"
+  },
+  {
+    "path": "/service/tkhevadi-gazis-montazhi-da-sheketeba",
+    "target": "/category/gazis-sistemis-montazhisheketeba"
+  },
+  {
+    "path": "/service/toiota-chr-karobkis-sheketeba",
+    "target": "/service/666-toiota-chr-karobkis-sheketeba"
+  },
+  {
+    "path": "/service/toiota-priusis-dashlilebi",
+    "target": "/service/227-toiota-priusis-dashlilebi"
+  },
+  {
+    "path": "/service/toiotasa-da-leqsusis-dzravebis-sheketeba-batumshi",
+    "target": "/service/407-toiotasa-da-leqsusis-dzravebis-sheketeba-batumshi"
+  },
+  {
+    "path": "/service/torpedos-airbagi",
+    "target": "/service/80-torpedos-airbagi"
+  },
+  {
+    "path": "/service/torpedos-gadakvra",
+    "target": "/category/manqanis-saloni"
+  },
+  {
+    "path": "/service/toyota-lexus-jeep-dzravebis-sheketeba",
+    "target": "/service/58-toyota-lexus-jeep-dzravebis-sheketeba"
+  },
+  {
+    "path": "/service/tseos-shemotsmeba",
+    "target": "/service/498-tseos-shemotsmeba"
+  },
+  {
+    "path": "/service/tsepleniis-plota-feradosa-da-makhavikis-garemonteb",
+    "target": "/service/111-tsepleniis-plota-peradosa-da-makhavikis-garemonteba"
+  },
+  {
+    "path": "/service/tsivad-gastsoreba",
+    "target": "/service/110-tsivad-gastsoreba"
+  },
+  {
+    "path": "/service/tsivad-gastsoreba-1",
+    "target": "/service/546-tsivad-gastsoreba"
+  },
+  {
+    "path": "/service/tsqalshi-chanadziri-manqanis-sruli-aghdgena-gm-lab",
+    "target": "/service/419-tsqalshi-chanadziri-manqanis-sruli-aghdgena-gm-laboratory-shi"
+  },
+  {
+    "path": "/service/tsqlis-pompisa-da-termostatis-shetsvla",
+    "target": "/service/657-tsqlis-pompisa-da-termostatis-shetsvla"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-gamoretskhva",
+    "target": "/service/501-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-gamoretskhva-1",
+    "target": "/service/508-tsqlis-sistemis-gamoretskhva"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-gasuftaveba",
+    "target": "/service/261-tsqlis-sistemis-gasuptaveba"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-gasuftaveba-kia-niro-hyundai-ioniq",
+    "target": "/service/265-tsqlis-sistemis-gasuptaveba-kia-niro-hyundai-ioniq"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-sheketeba-antifrizis-shetsvla",
+    "target": "/service/220-tsqlis-sistemis-sheketeba-antiprizis-shetsvla"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-sheketeba-nebismier-avtomobilze",
+    "target": "/service/439-tsqlis-sistemis-sheketeba-nebismier-avtomobilze"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-shemotsmeba",
+    "target": "/service/91-tsqlis-sistemis-shemotsmeba"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-shemotsmeba-da-gamoretskhva-rustav",
+    "target": "/service/463-tsqlis-sistemis-shemotsmeba-da-gamoretskhva-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-shemotsmeba-da-sheketeba",
+    "target": "/service/450-tsqlis-sistemis-shemotsmeba-da-sheketeba"
+  },
+  {
+    "path": "/service/tsqlis-sistemis-shemotsmeba-gamoretskhva",
+    "target": "/service/177-tsqlis-sistemis-shemotsmeba-gamoretskhva"
+  },
+  {
+    "path": "/service/tsqlis-sruli-sistemis-tsmenda-da-sheketeba",
+    "target": "/service/240-tsqlis-sruli-sistemis-tsmenda-da-sheketeba"
+  },
+  {
+    "path": "/service/tsqlisa-da-zetis-sistemebis-spetsialuri-aparatit-s",
+    "target": "/service/467-tsqlisa-da-zetis-sistemebis-spetsialuri-aparatit-shemotsmeba"
+  },
+  {
+    "path": "/service/tsvis-problemebis-mogvareba-inzheqtorebis-gatsmend",
+    "target": "/service/483-tsvis-problemebis-mogvareba-inzheqtorebis-gatsmenda"
+  },
+  {
+    "path": "/service/tsvis-sistemis-sheketeba-da-tsvis-shemtsireba-rust",
+    "target": "/service/465-tsvis-sistemis-sheketeba-da-tsvis-shemtsireba-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/tsvis-sruli-sistemis-gasuftaveba",
+    "target": "/service/260-tsvis-sruli-sistemis-gasuptaveba"
+  },
+  {
+    "path": "/service/tunuqis-tsivadsheughebavad-gastsoreba",
+    "target": "/service/518-tunuqis-tsivadsheughebavad-gastsoreba"
+  },
+  {
+    "path": "/service/turbos-diagnostireba-da-aghdgena",
+    "target": "/service/183-turbos-diagnostireba-da-aghdgena"
+  },
+  {
+    "path": "/service/turbos-doagnostika-da-sheketeba",
+    "target": "/service/307-turbos-doagnostika-da-sheketeba"
+  },
+  {
+    "path": "/service/turbos-simdzlavris-momateba",
+    "target": "/service/184-turbos-simdzlavris-momateba"
+  },
+  {
+    "path": "/service/tvlebis-nakhari-razvalis-gastsoreba-apomotors-shi",
+    "target": "/service/568-tvlebis-nakhari-razvalis-gastsoreba-apomotors-shi"
+  },
+  {
+    "path": "/service/tvlebis-nakharis-shemotsmeba-da-gastsoreba",
+    "target": "/service/340-tvlebis-nakharis-shemotsmeba-da-gastsoreba"
+  },
+  {
+    "path": "/service/tvlebis-sheqra-razvalis-gastsoreba",
+    "target": "/service/291-tvlebis-sheqra-razvalis-gastsoreba"
+  },
+  {
+    "path": "/service/usaprtkhoebis-balishebis-inspeqtirebausaprtkhoebis",
+    "target": "/service/86-usaprtkhoebis-balishebis-inspeqtireba"
+  },
+  {
+    "path": "/service/utskhoetidan-chamotana-elementebis-shetsvla-moqmed",
+    "target": "/service/237-utskhoetidan-chamotana-elementebis-shetsvla-moqmedebs-ganvadebis-servisi"
+  },
+  {
+    "path": "/service/vizualuri-sruli-kosmetika",
+    "target": "/service/515-vizualuri-sruli-kosmetika"
+  },
+  {
+    "path": "/service/vulkanizatsia",
+    "target": "/service/513-vulkanizatsia"
+  },
+  {
+    "path": "/service/vulkanizatsia-1",
+    "target": "/service/640-vulkanizatsia"
+  },
+  {
+    "path": "/service/wrapping",
+    "target": "/service/380-wrapping"
+  },
+  {
+    "path": "/service/zetebis-qidvashetsvla",
+    "target": "/service/33-zetebis-qidvashetsvla"
+  },
+  {
+    "path": "/service/zetis-gamagrilebeli-radiatori-gocha-shetsvla",
+    "target": "/service/656-zetis-gamagrilebeli-radiatori-gocha-shetsvla"
+  },
+  {
+    "path": "/service/zetis-klebis-problemis-aghmofkhvra",
+    "target": "/service/259-zetis-klebis-problemis-aghmopkhvra"
+  },
+  {
+    "path": "/service/zetis-qidva-da-adgilze-shetsvla",
+    "target": "/service/243-zetis-qidva-da-adgilze-shetsvla"
+  },
+  {
+    "path": "/service/zetis-shetsvla",
+    "target": "/category/zetis-shetsvla"
+  },
+  {
+    "path": "/service/zetis-shetsvla-1",
+    "target": "/service/511-zetis-shetsvla"
+  },
+  {
+    "path": "/service/zetis-shetsvla-avtomobilis-khidshi-apomotors-shi",
+    "target": "/service/574-zetis-shetsvla-avtomobilis-khidshi-apomotors-shi"
+  },
+  {
+    "path": "/service/zetis-shetsvla-da-adgilze-shedzena-apomotors-shi",
+    "target": "/service/564-zetis-shetsvla-da-adgilze-shedzena-apomotors-shi"
+  },
+  {
+    "path": "/service/zetis-shetsvla-dzravsa-da-gadatsemata-kolofshi",
+    "target": "/service/287-zetis-shetsvla-dzravsa-da-gadatsemata-kolopshi"
+  },
+  {
+    "path": "/service/zetis-shetsvla-dzravshi-rustavis-avtobazrobastan",
+    "target": "/service/470-zetis-shetsvla-dzravshi-rustavis-avtobazrobastan"
+  },
+  {
+    "path": "/service/zetis-shetsvla-gm-laboratory",
+    "target": "/service/420-zetis-shetsvla-gm-laboratory"
+  },
+  {
+    "path": "/service/zetis-shetsvla-hibridul-avtomobilze",
+    "target": "/service/234-zetis-shetsvla-hibridul-avtomobilze"
+  },
+  {
+    "path": "/service/zetis-shetsvla-leader-motors-shi",
+    "target": "/service/343-zetis-shetsvla-leader-motors-shi"
+  },
+  {
+    "path": "/service/zetis-shetsvla-maghali-khariskhis-zetebi",
+    "target": "/service/151-zetis-shetsvla-maghali-khariskhis-zetebi"
+  },
+  {
+    "path": "/service/zetis-shetsvla-pordis-markis-avtomobilebze",
+    "target": "/service/592-zetis-shetsvla-pordis-markis-avtomobilebze"
+  },
+  {
+    "path": "/service/zetis-shetsvla-umaghlesi-khariskhis-dzravis-zetebi",
+    "target": "/service/641-zetis-shetsvla-umaghlesi-khariskhis-dzravis-zetebi"
+  },
+  {
+    "path": "/service/zhesti-roboti",
+    "target": "/service/45-zhesti-roboti"
+  },
+  {
+    "path": "/service/zhidkostis-shemotsmeba-qidva-da-shetsvla",
+    "target": "/service/252-zhidkostis-shemotsmeba-qidva-da-shetsvla"
+  },
+  {
+    "path": "/mechanic/121",
+    "target": "/mechanic/121-tengo-gegechkori"
+  },
+  {
+    "path": "/mechanic/121-121-tengo-gegechkori",
+    "target": "/mechanic/121-tengo-gegechkori"
+  },
+  {
+    "path": "/mechanic/122",
+    "target": "/mechanic/122-giorgi-kobaidze"
+  },
+  {
+    "path": "/mechanic/122-122-giorgi-kobaidze",
+    "target": "/mechanic/122-giorgi-kobaidze"
+  },
+  {
+    "path": "/mechanic/123",
+    "target": "/mechanic/123-lado-natadze"
+  },
+  {
+    "path": "/mechanic/123-123-lado-natadze",
+    "target": "/mechanic/123-lado-natadze"
+  },
+  {
+    "path": "/mechanic/125",
+    "target": "/mechanic/125-carbon-clean"
+  },
+  {
+    "path": "/mechanic/125-125-carbon-clean",
+    "target": "/mechanic/125-carbon-clean"
+  },
+  {
+    "path": "/mechanic/126",
+    "target": "/mechanic/126-lumani-motors"
+  },
+  {
+    "path": "/mechanic/126-126-lumani-motors",
+    "target": "/mechanic/126-lumani-motors"
+  },
+  {
+    "path": "/mechanic/127",
+    "target": "/mechanic/127-sandro-gotsadze"
+  },
+  {
+    "path": "/mechanic/127-127-sandro-gotsadze",
+    "target": "/mechanic/127-sandro-gotsadze"
+  },
+  {
+    "path": "/mechanic/128",
+    "target": "/mechanic/128-gasgo-motorsi"
+  },
+  {
+    "path": "/mechanic/128-128-gasgo-motorsi",
+    "target": "/mechanic/128-gasgo-motorsi"
+  },
+  {
+    "path": "/mechanic/129",
+    "target": "/mechanic/129-ji-di-em-rent-qar-avtoservisi"
+  },
+  {
+    "path": "/mechanic/129-129-ji-di-em-rent-qar-avtoservisi",
+    "target": "/mechanic/129-ji-di-em-rent-qar-avtoservisi"
+  },
+  {
+    "path": "/mechanic/130",
+    "target": "/mechanic/130-irakli-tepnadze"
+  },
+  {
+    "path": "/mechanic/130-130-irakli-tepnadze",
+    "target": "/mechanic/130-irakli-tepnadze"
+  },
+  {
+    "path": "/mechanic/131",
+    "target": "/mechanic/131-khvicha-khvicha"
+  },
+  {
+    "path": "/mechanic/131-131-khvicha-khvicha",
+    "target": "/mechanic/131-khvicha-khvicha"
+  },
+  {
+    "path": "/mechanic/132",
+    "target": "/mechanic/132-beso-honda-piti"
+  },
+  {
+    "path": "/mechanic/132-132-beso-honda-piti",
+    "target": "/mechanic/132-beso-honda-piti"
+  },
+  {
+    "path": "/mechanic/133",
+    "target": "/mechanic/133-aleqsandre-ezikiani"
+  },
+  {
+    "path": "/mechanic/133-133-aleqsandre-ezikiani",
+    "target": "/mechanic/133-aleqsandre-ezikiani"
+  },
+  {
+    "path": "/mechanic/134",
+    "target": "/mechanic/134-test-test"
+  },
+  {
+    "path": "/mechanic/134-134-test-test",
+    "target": "/mechanic/134-test-test"
+  },
+  {
+    "path": "/mechanic/135",
+    "target": "/mechanic/135-fast-service"
+  },
+  {
+    "path": "/mechanic/135-135-fast-service",
+    "target": "/mechanic/135-fast-service"
+  },
+  {
+    "path": "/mechanic/136",
+    "target": "/mechanic/136-aleqs-honda-pit"
+  },
+  {
+    "path": "/mechanic/136-136-aleqs-honda-pit",
+    "target": "/mechanic/136-aleqs-honda-pit"
+  },
+  {
+    "path": "/mechanic/137",
+    "target": "/mechanic/137-giorgi-korkelia"
+  },
+  {
+    "path": "/mechanic/137-137-giorgi-korkelia",
+    "target": "/mechanic/137-giorgi-korkelia"
+  },
+  {
+    "path": "/mechanic/138",
+    "target": "/mechanic/138-vano-gazis-montazhi"
+  },
+  {
+    "path": "/mechanic/138-138-vano-gazis-montazhi",
+    "target": "/mechanic/138-vano-gazis-montazhi"
+  },
+  {
+    "path": "/mechanic/139",
+    "target": "/mechanic/139-gio-fusion"
+  },
+  {
+    "path": "/mechanic/139-139-gio-fusion",
+    "target": "/mechanic/139-gio-fusion"
+  },
+  {
+    "path": "/mechanic/140",
+    "target": "/mechanic/140-tsotne-esebua"
+  },
+  {
+    "path": "/mechanic/140-140-tsotne-esebua",
+    "target": "/mechanic/140-tsotne-esebua"
+  },
+  {
+    "path": "/mechanic/141",
+    "target": "/mechanic/141-kompiuteruli-diagnostika"
+  },
+  {
+    "path": "/mechanic/141-141-kompiuteruli-diagnostika",
+    "target": "/mechanic/141-kompiuteruli-diagnostika"
+  },
+  {
+    "path": "/mechanic/142",
+    "target": "/mechanic/142-fusion-gearbox"
+  },
+  {
+    "path": "/mechanic/142-142-fusion-gearbox",
+    "target": "/mechanic/142-fusion-gearbox"
+  },
+  {
+    "path": "/mechanic/143",
+    "target": "/mechanic/143-giorgi-suknidze"
+  },
+  {
+    "path": "/mechanic/143-143-giorgi-suknidze",
+    "target": "/mechanic/143-giorgi-suknidze"
+  },
+  {
+    "path": "/mechanic/144",
+    "target": "/mechanic/144-beka-beka123"
+  },
+  {
+    "path": "/mechanic/144-144-beka-beka123",
+    "target": "/mechanic/144-beka-beka123"
+  },
+  {
+    "path": "/mechanic/146",
+    "target": "/mechanic/146-iuara-endeladze"
+  },
+  {
+    "path": "/mechanic/146-146-iuara-endeladze",
+    "target": "/mechanic/146-iuara-endeladze"
+  },
+  {
+    "path": "/mechanic/147",
+    "target": "/mechanic/147-daviti-ghanishashvili"
+  },
+  {
+    "path": "/mechanic/147-147-daviti-ghanishashvili",
+    "target": "/mechanic/147-daviti-ghanishashvili"
+  },
+  {
+    "path": "/mechanic/148",
+    "target": "/mechanic/148-vasil-chibukhashvili"
+  },
+  {
+    "path": "/mechanic/148-148-vasil-chibukhashvili",
+    "target": "/mechanic/148-vasil-chibukhashvili"
+  },
+  {
+    "path": "/mechanic/149",
+    "target": "/mechanic/149-mamuka-bachanadze"
+  },
+  {
+    "path": "/mechanic/149-149-mamuka-bachanadze",
+    "target": "/mechanic/149-mamuka-bachanadze"
+  },
+  {
+    "path": "/mechanic/150",
+    "target": "/mechanic/150-ramazi-udzilauri"
+  },
+  {
+    "path": "/mechanic/150-150-ramazi-udzilauri",
+    "target": "/mechanic/150-ramazi-udzilauri"
+  },
+  {
+    "path": "/mechanic/151",
+    "target": "/mechanic/151-mikheili-martirosiani"
+  },
+  {
+    "path": "/mechanic/151-151-mikheili-martirosiani",
+    "target": "/mechanic/151-mikheili-martirosiani"
+  },
+  {
+    "path": "/mechanic/152",
+    "target": "/mechanic/152-nika-lekashvili"
+  },
+  {
+    "path": "/mechanic/152-152-nika-lekashvili",
+    "target": "/mechanic/152-nika-lekashvili"
+  },
+  {
+    "path": "/mechanic/153",
+    "target": "/mechanic/153-besik-gvalia"
+  },
+  {
+    "path": "/mechanic/153-153-besik-gvalia",
+    "target": "/mechanic/153-besik-gvalia"
+  },
+  {
+    "path": "/mechanic/154",
+    "target": "/mechanic/154-shotiko-anesashvili"
+  },
+  {
+    "path": "/mechanic/154-154-shotiko-anesashvili",
+    "target": "/mechanic/154-shotiko-anesashvili"
+  },
+  {
+    "path": "/mechanic/155",
+    "target": "/mechanic/155-tornike-gonashvili"
+  },
+  {
+    "path": "/mechanic/155-155-tornike-gonashvili",
+    "target": "/mechanic/155-tornike-gonashvili"
+  },
+  {
+    "path": "/mechanic/156",
+    "target": "/mechanic/156-racing-line-reising-laini"
+  },
+  {
+    "path": "/mechanic/156-156-racing-line-reising-laini",
+    "target": "/mechanic/156-racing-line-reising-laini"
+  },
+  {
+    "path": "/mechanic/158",
+    "target": "/mechanic/158-dato-giorgadze"
+  },
+  {
+    "path": "/mechanic/158-158-dato-giorgadze",
+    "target": "/mechanic/158-dato-giorgadze"
+  },
+  {
+    "path": "/mechanic/159",
+    "target": "/mechanic/159-zetebi-avto-mastersi"
+  },
+  {
+    "path": "/mechanic/159-159-zetebi-avto-mastersi",
+    "target": "/mechanic/159-zetebi-avto-mastersi"
+  },
+  {
+    "path": "/mechanic/160",
+    "target": "/mechanic/160-vladi-marut"
+  },
+  {
+    "path": "/mechanic/160-160-vladi-marut",
+    "target": "/mechanic/160-vladi-marut"
+  },
+  {
+    "path": "/mechanic/161",
+    "target": "/mechanic/161-car-point"
+  },
+  {
+    "path": "/mechanic/161-161-car-point",
+    "target": "/mechanic/161-car-point"
+  },
+  {
+    "path": "/mechanic/162",
+    "target": "/mechanic/162-city-motors-siti-motorsi"
+  },
+  {
+    "path": "/mechanic/162-162-city-motors-siti-motorsi",
+    "target": "/mechanic/162-city-motors-siti-motorsi"
+  },
+  {
+    "path": "/mechanic/163",
+    "target": "/mechanic/163-giorgi-kavtuashvili"
+  },
+  {
+    "path": "/mechanic/163-163-giorgi-kavtuashvili",
+    "target": "/mechanic/163-giorgi-kavtuashvili"
+  },
+  {
+    "path": "/mechanic/164",
+    "target": "/mechanic/164-iaponuri-katalizatori"
+  },
+  {
+    "path": "/mechanic/164-164-iaponuri-katalizatori",
+    "target": "/mechanic/164-iaponuri-katalizatori"
+  },
+  {
+    "path": "/mechanic/165",
+    "target": "/mechanic/165-full-service"
+  },
+  {
+    "path": "/mechanic/165-165-full-service",
+    "target": "/mechanic/165-full-service"
+  },
+  {
+    "path": "/mechanic/166",
+    "target": "/mechanic/166-natiqa-khelosani"
+  },
+  {
+    "path": "/mechanic/166-166-natiqa-khelosani",
+    "target": "/mechanic/166-natiqa-khelosani"
+  },
+  {
+    "path": "/mechanic/167",
+    "target": "/mechanic/167-samghebro-samushaoebi"
+  },
+  {
+    "path": "/mechanic/167-167-samghebro-samushaoebi",
+    "target": "/mechanic/167-samghebro-samushaoebi"
+  },
+  {
+    "path": "/mechanic/168",
+    "target": "/mechanic/168-diskebis-sheghebva-paint-rims"
+  },
+  {
+    "path": "/mechanic/168-168-diskebis-sheghebva-paint-rims",
+    "target": "/mechanic/168-diskebis-sheghebva-paint-rims"
+  },
+  {
+    "path": "/mechanic/170",
+    "target": "/mechanic/170-airbagge-airbagge"
+  },
+  {
+    "path": "/mechanic/170-170-airbagge-airbagge",
+    "target": "/mechanic/170-airbagge-airbagge"
+  },
+  {
+    "path": "/mechanic/171",
+    "target": "/mechanic/171-giorgi-khelosani"
+  },
+  {
+    "path": "/mechanic/171-171-giorgi-khelosani",
+    "target": "/mechanic/171-giorgi-khelosani"
+  },
+  {
+    "path": "/mechanic/172",
+    "target": "/mechanic/172-levani-diagnostika"
+  },
+  {
+    "path": "/mechanic/172-172-levani-diagnostika",
+    "target": "/mechanic/172-levani-diagnostika"
+  },
+  {
+    "path": "/mechanic/173",
+    "target": "/mechanic/173-dato-diagnostika"
+  },
+  {
+    "path": "/mechanic/173-173-dato-diagnostika",
+    "target": "/mechanic/173-dato-diagnostika"
+  },
+  {
+    "path": "/mechanic/174",
+    "target": "/mechanic/174-giorgi-giorgi"
+  },
+  {
+    "path": "/mechanic/174-174-giorgi-giorgi",
+    "target": "/mechanic/174-giorgi-giorgi"
+  },
+  {
+    "path": "/mechanic/175",
+    "target": "/mechanic/175-gk-auto-elegance"
+  },
+  {
+    "path": "/mechanic/175-175-gk-auto-elegance",
+    "target": "/mechanic/175-gk-auto-elegance"
+  },
+  {
+    "path": "/mechanic/176",
+    "target": "/mechanic/176-avto-diagnostika"
+  },
+  {
+    "path": "/mechanic/176-176-avto-diagnostika",
+    "target": "/mechanic/176-avto-diagnostika"
+  },
+  {
+    "path": "/mechanic/177",
+    "target": "/mechanic/177-baqari-diagnostika"
+  },
+  {
+    "path": "/mechanic/177-177-baqari-diagnostika",
+    "target": "/mechanic/177-baqari-diagnostika"
+  },
+  {
+    "path": "/mechanic/178",
+    "target": "/mechanic/178-saqare-minebi"
+  },
+  {
+    "path": "/mechanic/178-178-saqare-minebi",
+    "target": "/mechanic/178-saqare-minebi"
+  },
+  {
+    "path": "/mechanic/179",
+    "target": "/mechanic/179-gt-polish"
+  },
+  {
+    "path": "/mechanic/179-179-gt-polish",
+    "target": "/mechanic/179-gt-polish"
+  },
+  {
+    "path": "/mechanic/180",
+    "target": "/mechanic/180-dry-ice-cleaning"
+  },
+  {
+    "path": "/mechanic/180-180-dry-ice-cleaning",
+    "target": "/mechanic/180-dry-ice-cleaning"
+  },
+  {
+    "path": "/mechanic/181",
+    "target": "/mechanic/181-malkhazi-malkhazi"
+  },
+  {
+    "path": "/mechanic/181-181-malkhazi-malkhazi",
+    "target": "/mechanic/181-malkhazi-malkhazi"
+  },
+  {
+    "path": "/mechanic/182",
+    "target": "/mechanic/182-khelosani-khelosani"
+  },
+  {
+    "path": "/mechanic/182-182-khelosani-khelosani",
+    "target": "/mechanic/182-khelosani-khelosani"
+  },
+  {
+    "path": "/mechanic/183",
+    "target": "/mechanic/183-auto-service"
+  },
+  {
+    "path": "/mechanic/183-183-auto-service",
+    "target": "/mechanic/183-auto-service"
+  },
+  {
+    "path": "/mechanic/184",
+    "target": "/mechanic/184-car-keys"
+  },
+  {
+    "path": "/mechanic/184-184-car-keys",
+    "target": "/mechanic/184-car-keys"
+  },
+  {
+    "path": "/mechanic/185",
+    "target": "/mechanic/185-giorgi-giorgi"
+  },
+  {
+    "path": "/mechanic/185-185-giorgi-giorgi",
+    "target": "/mechanic/185-giorgi-giorgi"
+  },
+  {
+    "path": "/mechanic/186",
+    "target": "/mechanic/186-eco-hybrid"
+  },
+  {
+    "path": "/mechanic/186-186-eco-hybrid",
+    "target": "/mechanic/186-eco-hybrid"
+  },
+  {
+    "path": "/mechanic/187",
+    "target": "/mechanic/187-car-paint"
+  },
+  {
+    "path": "/mechanic/187-187-car-paint",
+    "target": "/mechanic/187-car-paint"
+  },
+  {
+    "path": "/mechanic/188",
+    "target": "/mechanic/188-levani-rulevois-khelosani"
+  },
+  {
+    "path": "/mechanic/188-188-levani-rulevois-khelosani",
+    "target": "/mechanic/188-levani-rulevois-khelosani"
+  },
+  {
+    "path": "/mechanic/189",
+    "target": "/mechanic/189-gm-services"
+  },
+  {
+    "path": "/mechanic/189-189-gm-services",
+    "target": "/mechanic/189-gm-services"
+  },
+  {
+    "path": "/mechanic/190",
+    "target": "/mechanic/190-new-auto-tuning"
+  },
+  {
+    "path": "/mechanic/190-190-new-auto-tuning",
+    "target": "/mechanic/190-new-auto-tuning"
+  },
+  {
+    "path": "/mechanic/191",
+    "target": "/mechanic/191-gazis-montazhi"
+  },
+  {
+    "path": "/mechanic/191-191-gazis-montazhi",
+    "target": "/mechanic/191-gazis-montazhi"
+  },
+  {
+    "path": "/mechanic/192",
+    "target": "/mechanic/192-ortqlit-polireba"
+  },
+  {
+    "path": "/mechanic/192-192-ortqlit-polireba",
+    "target": "/mechanic/192-ortqlit-polireba"
+  },
+  {
+    "path": "/mechanic/193",
+    "target": "/mechanic/193-starter-starter"
+  },
+  {
+    "path": "/mechanic/193-193-starter-starter",
+    "target": "/mechanic/193-starter-starter"
+  },
+  {
+    "path": "/mechanic/194",
+    "target": "/mechanic/194-razvalis-gastsoreba"
+  },
+  {
+    "path": "/mechanic/194-194-razvalis-gastsoreba",
+    "target": "/mechanic/194-razvalis-gastsoreba"
+  },
+  {
+    "path": "/mechanic/195",
+    "target": "/mechanic/195-razvalis-gastsoreba"
+  },
+  {
+    "path": "/mechanic/195-195-razvalis-gastsoreba",
+    "target": "/mechanic/195-razvalis-gastsoreba"
+  },
+  {
+    "path": "/mechanic/196",
+    "target": "/mechanic/196-razvali-sasha"
+  },
+  {
+    "path": "/mechanic/196-196-razvali-sasha",
+    "target": "/mechanic/196-razvali-sasha"
+  },
+  {
+    "path": "/mechanic/197",
+    "target": "/mechanic/197-preonis-damateba"
+  },
+  {
+    "path": "/mechanic/197-197-preonis-damateba",
+    "target": "/mechanic/197-preonis-damateba"
+  },
+  {
+    "path": "/mechanic/198",
+    "target": "/mechanic/198-accumulator-accumulator"
+  },
+  {
+    "path": "/mechanic/198-198-accumulator-accumulator",
+    "target": "/mechanic/198-accumulator-accumulator"
+  },
+  {
+    "path": "/mechanic/199",
+    "target": "/mechanic/199-mega-clean"
+  },
+  {
+    "path": "/mechanic/199-199-mega-clean",
+    "target": "/mechanic/199-mega-clean"
+  },
+  {
+    "path": "/mechanic/200",
+    "target": "/mechanic/200-gu-group"
+  },
+  {
+    "path": "/mechanic/200-200-gu-group",
+    "target": "/mechanic/200-gu-group"
+  },
+  {
+    "path": "/mechanic/201",
+    "target": "/mechanic/201-vama-motors"
+  },
+  {
+    "path": "/mechanic/201-201-vama-motors",
+    "target": "/mechanic/201-vama-motors"
+  },
+  {
+    "path": "/mechanic/202",
+    "target": "/mechanic/202-hibriduli-gza-hybrid-way"
+  },
+  {
+    "path": "/mechanic/202-202-hibriduli-gza-hybrid-way",
+    "target": "/mechanic/202-hibriduli-gza-hybrid-way"
+  },
+  {
+    "path": "/mechanic/203",
+    "target": "/mechanic/203-green-line-autoservice"
+  },
+  {
+    "path": "/mechanic/203-203-green-line-autoservice",
+    "target": "/mechanic/203-green-line-autoservice"
+  },
+  {
+    "path": "/mechanic/204",
+    "target": "/mechanic/204-car-point"
+  },
+  {
+    "path": "/mechanic/204-204-car-point",
+    "target": "/mechanic/204-car-point"
+  },
+  {
+    "path": "/mechanic/205",
+    "target": "/mechanic/205-f-service"
+  },
+  {
+    "path": "/mechanic/205-205-f-service",
+    "target": "/mechanic/205-f-service"
+  },
+  {
+    "path": "/mechanic/206",
+    "target": "/mechanic/206-toyota-prius"
+  },
+  {
+    "path": "/mechanic/206-206-toyota-prius",
+    "target": "/mechanic/206-toyota-prius"
+  },
+  {
+    "path": "/mechanic/207",
+    "target": "/mechanic/207-hybrid-service"
+  },
+  {
+    "path": "/mechanic/207-207-hybrid-service",
+    "target": "/mechanic/207-hybrid-service"
+  },
+  {
+    "path": "/mechanic/208",
+    "target": "/mechanic/208-hualing-hybrid"
+  },
+  {
+    "path": "/mechanic/208-208-hualing-hybrid",
+    "target": "/mechanic/208-hualing-hybrid"
+  },
+  {
+    "path": "/mechanic/209",
+    "target": "/mechanic/209-gg-hybrid-motors"
+  },
+  {
+    "path": "/mechanic/209-209-gg-hybrid-motors",
+    "target": "/mechanic/209-gg-hybrid-motors"
+  },
+  {
+    "path": "/mechanic/210",
+    "target": "/mechanic/210-iva-motorsi"
+  },
+  {
+    "path": "/mechanic/210-210-iva-motorsi",
+    "target": "/mechanic/210-iva-motorsi"
+  },
+  {
+    "path": "/mechanic/211",
+    "target": "/mechanic/211-up-hybrid"
+  },
+  {
+    "path": "/mechanic/211-211-up-hybrid",
+    "target": "/mechanic/211-up-hybrid"
+  },
+  {
+    "path": "/mechanic/212",
+    "target": "/mechanic/212-zt-motors"
+  },
+  {
+    "path": "/mechanic/212-212-zt-motors",
+    "target": "/mechanic/212-zt-motors"
+  },
+  {
+    "path": "/mechanic/213",
+    "target": "/mechanic/213-plyonka-geo"
+  },
+  {
+    "path": "/mechanic/213-213-plyonka-geo",
+    "target": "/mechanic/213-plyonka-geo"
+  },
+  {
+    "path": "/mechanic/214",
+    "target": "/mechanic/214-new-auto-motors"
+  },
+  {
+    "path": "/mechanic/214-214-new-auto-motors",
+    "target": "/mechanic/214-new-auto-motors"
+  },
+  {
+    "path": "/mechanic/215",
+    "target": "/mechanic/215-vano-avlokha"
+  },
+  {
+    "path": "/mechanic/215-215-vano-avlokha",
+    "target": "/mechanic/215-vano-avlokha"
+  },
+  {
+    "path": "/mechanic/216",
+    "target": "/mechanic/216-garage-car-detailing-avto-qimtsmenda"
+  },
+  {
+    "path": "/mechanic/216-216-garage-car-detailing-avto-qimtsmenda",
+    "target": "/mechanic/216-garage-car-detailing-avto-qimtsmenda"
+  },
+  {
+    "path": "/mechanic/217",
+    "target": "/mechanic/217-shushebis-daburva"
+  },
+  {
+    "path": "/mechanic/217-217-shushebis-daburva",
+    "target": "/mechanic/217-shushebis-daburva"
+  },
+  {
+    "path": "/mechanic/218",
+    "target": "/mechanic/218-auto-glass"
+  },
+  {
+    "path": "/mechanic/218-218-auto-glass",
+    "target": "/mechanic/218-auto-glass"
+  },
+  {
+    "path": "/mechanic/219",
+    "target": "/mechanic/219-leader-motors-lider-motorsi"
+  },
+  {
+    "path": "/mechanic/219-219-leader-motors-lider-motorsi",
+    "target": "/mechanic/219-leader-motors-lider-motorsi"
+  },
+  {
+    "path": "/mechanic/220",
+    "target": "/mechanic/220-ieri-komporti"
+  },
+  {
+    "path": "/mechanic/220-220-ieri-komporti",
+    "target": "/mechanic/220-ieri-komporti"
+  },
+  {
+    "path": "/mechanic/221",
+    "target": "/mechanic/221-tako-razmadze"
+  },
+  {
+    "path": "/mechanic/221-221-tako-razmadze",
+    "target": "/mechanic/221-tako-razmadze"
+  },
+  {
+    "path": "/mechanic/222",
+    "target": "/mechanic/222-car-lights-qar-laitsi"
+  },
+  {
+    "path": "/mechanic/222-222-car-lights-qar-laitsi",
+    "target": "/mechanic/222-car-lights-qar-laitsi"
+  },
+  {
+    "path": "/mechanic/223",
+    "target": "/mechanic/223-solver-solveri"
+  },
+  {
+    "path": "/mechanic/223-223-solver-solveri",
+    "target": "/mechanic/223-solver-solveri"
+  },
+  {
+    "path": "/mechanic/224",
+    "target": "/mechanic/224-levani-chaduneli"
+  },
+  {
+    "path": "/mechanic/224-224-levani-chaduneli",
+    "target": "/mechanic/224-levani-chaduneli"
+  },
+  {
+    "path": "/mechanic/225",
+    "target": "/mechanic/225-ford-fusion-gearbox"
+  },
+  {
+    "path": "/mechanic/225-225-ford-fusion-gearbox",
+    "target": "/mechanic/225-ford-fusion-gearbox"
+  },
+  {
+    "path": "/mechanic/226",
+    "target": "/mechanic/226-chevrolet-georgia-shevroleti-saqartvelo"
+  },
+  {
+    "path": "/mechanic/226-226-chevrolet-georgia-shevroleti-saqartvelo",
+    "target": "/mechanic/226-chevrolet-georgia-shevroleti-saqartvelo"
+  },
+  {
+    "path": "/mechanic/227",
+    "target": "/mechanic/227-jima-motors"
+  },
+  {
+    "path": "/mechanic/227-227-jima-motors",
+    "target": "/mechanic/227-jima-motors"
+  },
+  {
+    "path": "/mechanic/228",
+    "target": "/mechanic/228-akumulatoris-adgilze-mitana"
+  },
+  {
+    "path": "/mechanic/228-228-akumulatoris-adgilze-mitana",
+    "target": "/mechanic/228-akumulatoris-adgilze-mitana"
+  },
+  {
+    "path": "/mechanic/229",
+    "target": "/mechanic/229-tamazi-tvaliashvili"
+  },
+  {
+    "path": "/mechanic/229-229-tamazi-tvaliashvili",
+    "target": "/mechanic/229-tamazi-tvaliashvili"
+  },
+  {
+    "path": "/mechanic/231",
+    "target": "/mechanic/231-dmg-service-batumi"
+  },
+  {
+    "path": "/mechanic/231-231-dmg-service-batumi",
+    "target": "/mechanic/231-dmg-service-batumi"
+  },
+  {
+    "path": "/mechanic/232",
+    "target": "/mechanic/232-dzravis-sheketeba-batumi"
+  },
+  {
+    "path": "/mechanic/232-232-dzravis-sheketeba-batumi",
+    "target": "/mechanic/232-dzravis-sheketeba-batumi"
+  },
+  {
+    "path": "/mechanic/233",
+    "target": "/mechanic/233-dzravis-sheketeba-beso"
+  },
+  {
+    "path": "/mechanic/233-233-dzravis-sheketeba-beso",
+    "target": "/mechanic/233-dzravis-sheketeba-beso"
+  },
+  {
+    "path": "/mechanic/235",
+    "target": "/mechanic/235-sheveoletis-servisi-gega"
+  },
+  {
+    "path": "/mechanic/235-235-sheveoletis-servisi-gega",
+    "target": "/mechanic/235-sheveoletis-servisi-gega"
+  },
+  {
+    "path": "/mechanic/236",
+    "target": "/mechanic/236-dzravis-sheketeba"
+  },
+  {
+    "path": "/mechanic/236-236-dzravis-sheketeba",
+    "target": "/mechanic/236-dzravis-sheketeba"
+  },
+  {
+    "path": "/mechanic/237",
+    "target": "/mechanic/237-gm-laboratory-ji-em-laboratoria"
+  },
+  {
+    "path": "/mechanic/237-237-gm-laboratory-ji-em-laboratoria",
+    "target": "/mechanic/237-gm-laboratory-ji-em-laboratoria"
+  },
+  {
+    "path": "/mechanic/238",
+    "target": "/mechanic/238-g-wraps"
+  },
+  {
+    "path": "/mechanic/238-238-g-wraps",
+    "target": "/mechanic/238-g-wraps"
+  },
+  {
+    "path": "/mechanic/239",
+    "target": "/mechanic/239-emzari-samadashvili"
+  },
+  {
+    "path": "/mechanic/239-239-emzari-samadashvili",
+    "target": "/mechanic/239-emzari-samadashvili"
+  },
+  {
+    "path": "/mechanic/240",
+    "target": "/mechanic/240-dpf-georgia"
+  },
+  {
+    "path": "/mechanic/240-240-dpf-georgia",
+    "target": "/mechanic/240-dpf-georgia"
+  },
+  {
+    "path": "/mechanic/241",
+    "target": "/mechanic/241-ggggggge-ggggggge"
+  },
+  {
+    "path": "/mechanic/241-241-ggggggge-ggggggge",
+    "target": "/mechanic/241-ggggggge-ggggggge"
+  },
+  {
+    "path": "/mechanic/242",
+    "target": "/mechanic/242-poltsvagenis-servisi"
+  },
+  {
+    "path": "/mechanic/242-242-poltsvagenis-servisi",
+    "target": "/mechanic/242-poltsvagenis-servisi"
+  },
+  {
+    "path": "/mechanic/243",
+    "target": "/mechanic/243-avtoservisi-parekhi"
+  },
+  {
+    "path": "/mechanic/243-243-avtoservisi-parekhi",
+    "target": "/mechanic/243-avtoservisi-parekhi"
+  },
+  {
+    "path": "/mechanic/244",
+    "target": "/mechanic/244-sruli-servisi"
+  },
+  {
+    "path": "/mechanic/244-244-sruli-servisi",
+    "target": "/mechanic/244-sruli-servisi"
+  },
+  {
+    "path": "/mechanic/245",
+    "target": "/mechanic/245-goga-gogize"
+  },
+  {
+    "path": "/mechanic/245-245-goga-gogize",
+    "target": "/mechanic/245-goga-gogize"
+  },
+  {
+    "path": "/mechanic/246",
+    "target": "/mechanic/246-gadatsemata-kolopis-sakhelosno"
+  },
+  {
+    "path": "/mechanic/246-246-gadatsemata-kolopis-sakhelosno",
+    "target": "/mechanic/246-gadatsemata-kolopis-sakhelosno"
+  },
+  {
+    "path": "/mechanic/247",
+    "target": "/mechanic/247-service-rustavi"
+  },
+  {
+    "path": "/mechanic/247-247-service-rustavi",
+    "target": "/mechanic/247-service-rustavi"
+  },
+  {
+    "path": "/mechanic/248",
+    "target": "/mechanic/248-gazis-montazhi"
+  },
+  {
+    "path": "/mechanic/248-248-gazis-montazhi",
+    "target": "/mechanic/248-gazis-montazhi"
+  },
+  {
+    "path": "/mechanic/249",
+    "target": "/mechanic/249-etta-menabdishvili"
+  },
+  {
+    "path": "/mechanic/249-249-etta-menabdishvili",
+    "target": "/mechanic/249-etta-menabdishvili"
+  },
+  {
+    "path": "/mechanic/250",
+    "target": "/mechanic/250-tunning-room-racing"
+  },
+  {
+    "path": "/mechanic/250-250-tunning-room-racing",
+    "target": "/mechanic/250-tunning-room-racing"
+  },
+  {
+    "path": "/mechanic/251",
+    "target": "/mechanic/251-giorgi-muzashvilk"
+  },
+  {
+    "path": "/mechanic/251-251-giorgi-muzashvilk",
+    "target": "/mechanic/251-giorgi-muzashvilk"
+  },
+  {
+    "path": "/mechanic/252",
+    "target": "/mechanic/252-legi-motors"
+  },
+  {
+    "path": "/mechanic/252-252-legi-motors",
+    "target": "/mechanic/252-legi-motors"
+  },
+  {
+    "path": "/mechanic/259",
+    "target": "/mechanic/259-vag-motors"
+  },
+  {
+    "path": "/mechanic/259-259-vag-motors",
+    "target": "/mechanic/259-vag-motors"
+  },
+  {
+    "path": "/mechanic/261",
+    "target": "/mechanic/261-alik-oganesiani"
+  },
+  {
+    "path": "/mechanic/261-261-alik-oganesiani",
+    "target": "/mechanic/261-alik-oganesiani"
+  },
+  {
+    "path": "/mechanic/268",
+    "target": "/mechanic/268-avto-mastersi"
+  },
+  {
+    "path": "/mechanic/268-268-avto-mastersi",
+    "target": "/mechanic/268-avto-mastersi"
+  },
+  {
+    "path": "/mechanic/269",
+    "target": "/mechanic/269-giorgi-kiparoidze"
+  },
+  {
+    "path": "/mechanic/269-269-giorgi-kiparoidze",
+    "target": "/mechanic/269-giorgi-kiparoidze"
+  },
+  {
+    "path": "/mechanic/273",
+    "target": "/mechanic/273-vano-tsigroshvili"
+  },
+  {
+    "path": "/mechanic/273-273-vano-tsigroshvili",
+    "target": "/mechanic/273-vano-tsigroshvili"
+  },
+  {
+    "path": "/mechanic/279",
+    "target": "/mechanic/279-subaru-performance"
+  },
+  {
+    "path": "/mechanic/279-279-subaru-performance",
+    "target": "/mechanic/279-subaru-performance"
+  },
+  {
+    "path": "/mechanic/283",
+    "target": "/mechanic/283-goga-beridze"
+  },
+  {
+    "path": "/mechanic/283-283-goga-beridze",
+    "target": "/mechanic/283-goga-beridze"
+  },
+  {
+    "path": "/mechanic/284",
+    "target": "/mechanic/284-mix-motors"
+  },
+  {
+    "path": "/mechanic/284-284-mix-motors",
+    "target": "/mechanic/284-mix-motors"
+  },
+  {
+    "path": "/mechanic/287",
+    "target": "/mechanic/287-davit-katsadze"
+  },
+  {
+    "path": "/mechanic/287-287-davit-katsadze",
+    "target": "/mechanic/287-davit-katsadze"
+  },
+  {
+    "path": "/mechanic/302",
+    "target": "/mechanic/302-goga-beridze"
+  },
+  {
+    "path": "/mechanic/302-302-goga-beridze",
+    "target": "/mechanic/302-goga-beridze"
+  },
+  {
+    "path": "/mechanic/305",
+    "target": "/mechanic/305-saburavebi-qutaisi-sd"
+  },
+  {
+    "path": "/mechanic/305-305-saburavebi-qutaisi-sd",
+    "target": "/mechanic/305-saburavebi-qutaisi-sd"
+  },
+  {
+    "path": "/mechanic/307",
+    "target": "/mechanic/307-dagi-dagi"
+  },
+  {
+    "path": "/mechanic/307-307-dagi-dagi",
+    "target": "/mechanic/307-dagi-dagi"
+  },
+  {
+    "path": "/mechanic/313",
+    "target": "/mechanic/313-romeo-miqaberidze"
+  },
+  {
+    "path": "/mechanic/313-313-romeo-miqaberidze",
+    "target": "/mechanic/313-romeo-miqaberidze"
+  },
+  {
+    "path": "/mechanic/317",
+    "target": "/mechanic/317-beto-khujadze"
+  },
+  {
+    "path": "/mechanic/317-317-beto-khujadze",
+    "target": "/mechanic/317-beto-khujadze"
+  },
+  {
+    "path": "/mechanic/327",
+    "target": "/mechanic/327-alternator-georgia"
+  },
+  {
+    "path": "/mechanic/327-327-alternator-georgia",
+    "target": "/mechanic/327-alternator-georgia"
+  },
+  {
+    "path": "/mechanic/328",
+    "target": "/mechanic/328-lt-detailverse"
+  },
+  {
+    "path": "/mechanic/328-328-lt-detailverse",
+    "target": "/mechanic/328-lt-detailverse"
+  },
+  {
+    "path": "/mechanic/332",
+    "target": "/mechanic/332-dual-clutch"
+  },
+  {
+    "path": "/mechanic/332-332-dual-clutch",
+    "target": "/mechanic/332-dual-clutch"
+  },
+  {
+    "path": "/mechanic/336",
+    "target": "/mechanic/336-apomotors-apomotors"
+  },
+  {
+    "path": "/mechanic/336-336-apomotors-apomotors",
+    "target": "/mechanic/336-apomotors-apomotors"
+  },
+  {
+    "path": "/mechanic/341",
+    "target": "/mechanic/341-giorgi-nozadze"
+  },
+  {
+    "path": "/mechanic/341-341-giorgi-nozadze",
+    "target": "/mechanic/341-giorgi-nozadze"
+  },
+  {
+    "path": "/mechanic/344",
+    "target": "/mechanic/344-avtomobilis-sruli-aghdgena"
+  },
+  {
+    "path": "/mechanic/344-344-avtomobilis-sruli-aghdgena",
+    "target": "/mechanic/344-avtomobilis-sruli-aghdgena"
+  },
+  {
+    "path": "/mechanic/345",
+    "target": "/mechanic/345-bacho-abralava"
+  },
+  {
+    "path": "/mechanic/345-345-bacho-abralava",
+    "target": "/mechanic/345-bacho-abralava"
+  },
+  {
+    "path": "/mechanic/348",
+    "target": "/mechanic/348-ford-fusion-box"
+  },
+  {
+    "path": "/mechanic/348-348-ford-fusion-box",
+    "target": "/mechanic/348-ford-fusion-box"
+  },
+  {
+    "path": "/mechanic/349",
+    "target": "/mechanic/349-tesla-georgia"
+  },
+  {
+    "path": "/mechanic/349-349-tesla-georgia",
+    "target": "/mechanic/349-tesla-georgia"
+  },
+  {
+    "path": "/mechanic/354",
+    "target": "/mechanic/354-dizel-motorsi"
+  },
+  {
+    "path": "/mechanic/354-354-dizel-motorsi",
+    "target": "/mechanic/354-dizel-motorsi"
+  },
+  {
+    "path": "/mechanic/356",
+    "target": "/mechanic/356-gigas-boqsebi"
+  },
+  {
+    "path": "/mechanic/356-356-gigas-boqsebi",
+    "target": "/mechanic/356-gigas-boqsebi"
+  },
+  {
+    "path": "/mechanic/357",
+    "target": "/mechanic/357-moto-moped-sakhelosno"
+  },
+  {
+    "path": "/mechanic/357-357-moto-moped-sakhelosno",
+    "target": "/mechanic/357-moto-moped-sakhelosno"
+  },
+  {
+    "path": "/mechanic/360",
+    "target": "/mechanic/360-360-minebis-damuqeba"
+  },
+  {
+    "path": "/mechanic/360-360-360-minebis-damuqeba",
+    "target": "/mechanic/360-360-minebis-damuqeba"
+  },
+  {
+    "path": "/mechanic/362",
+    "target": "/mechanic/362-ss-ss"
+  },
+  {
+    "path": "/mechanic/362-362-ss-ss",
+    "target": "/mechanic/362-ss-ss"
+  },
+  {
+    "path": "/mechanic/371",
+    "target": "/mechanic/371-achiko-volti"
+  },
+  {
+    "path": "/mechanic/371-371-achiko-volti",
+    "target": "/mechanic/371-achiko-volti"
+  },
+  {
+    "path": "/mechanic/372",
+    "target": "/mechanic/372-mopedebis-sakhelosni-moto-doctor"
+  },
+  {
+    "path": "/mechanic/372-372-mopedebis-sakhelosni-moto-doctor",
+    "target": "/mechanic/372-mopedebis-sakhelosni-moto-doctor"
+  },
+  {
+    "path": "/mechanic/374",
+    "target": "/mechanic/374-2m-color-color"
+  },
+  {
+    "path": "/mechanic/374-374-2m-color-color",
+    "target": "/mechanic/374-2m-color-color"
+  },
+  {
+    "path": "/mechanic/376",
+    "target": "/mechanic/376-daviti-popkhadze"
+  },
+  {
+    "path": "/mechanic/376-376-daviti-popkhadze",
+    "target": "/mechanic/376-daviti-popkhadze"
+  },
+  {
+    "path": "/mechanic/377",
+    "target": "/mechanic/377-diagnostic-rustavi"
+  },
+  {
+    "path": "/mechanic/377-377-diagnostic-rustavi",
+    "target": "/mechanic/377-diagnostic-rustavi"
+  },
+  {
+    "path": "/mechanic/378",
+    "target": "/mechanic/378-gearbox-fix"
+  },
+  {
+    "path": "/mechanic/378-378-gearbox-fix",
+    "target": "/mechanic/378-gearbox-fix"
+  },
+  {
+    "path": "/mechanic/379",
+    "target": "/mechanic/379-parebis-sruli-servisi"
+  },
+  {
+    "path": "/mechanic/379-379-parebis-sruli-servisi",
+    "target": "/mechanic/379-parebis-sruli-servisi"
+  },
+  {
+    "path": "/mechanic/381",
+    "target": "/mechanic/381-prime-motors"
+  },
+  {
+    "path": "/mechanic/381-381-prime-motors",
+    "target": "/mechanic/381-prime-motors"
+  },
+  {
+    "path": "/mechanic/385",
+    "target": "/mechanic/385-machinist-ge"
+  },
+  {
+    "path": "/mechanic/385-385-machinist-ge",
+    "target": "/mechanic/385-machinist-ge"
+  },
+  {
+    "path": "/mechanic/387",
+    "target": "/mechanic/387-giorgi-kapanadze"
+  },
+  {
+    "path": "/mechanic/387-387-giorgi-kapanadze",
+    "target": "/mechanic/387-giorgi-kapanadze"
+  },
+  {
+    "path": "/mechanic/397",
+    "target": "/mechanic/397-tamazi-benashvili"
+  },
+  {
+    "path": "/mechanic/397-397-tamazi-benashvili",
+    "target": "/mechanic/397-tamazi-benashvili"
+  },
+  {
+    "path": "/mechanic/402",
+    "target": "/mechanic/402-giorgi-sukhishvili"
+  },
+  {
+    "path": "/mechanic/402-402-giorgi-sukhishvili",
+    "target": "/mechanic/402-giorgi-sukhishvili"
+  },
+  {
+    "path": "/mechanic/404",
+    "target": "/mechanic/404-temo-tchipashvili"
+  },
+  {
+    "path": "/mechanic/404-404-temo-tchipashvili",
+    "target": "/mechanic/404-temo-tchipashvili"
+  }
+]

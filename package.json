@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/generate-sitemap.mjs && node scripts/update-brand-sitemap.mjs && node scripts/update-model-sitemap.mjs && node scripts/update-service-boot-data.mjs",
+    "prebuild": "node scripts/generate-sitemap.mjs && node scripts/update-catalogue-sitemaps.mjs && node scripts/update-brand-sitemap.mjs && node scripts/update-model-sitemap.mjs && node scripts/update-location-sitemap.mjs && node scripts/sync-sitemap-index.mjs && node scripts/update-service-boot-data.mjs",
     "build": "vite build",
-    "postbuild": "node scripts/prerender.mjs",
+    "postbuild": "node scripts/prerender.mjs && node scripts/write-catalogue-aliases.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",

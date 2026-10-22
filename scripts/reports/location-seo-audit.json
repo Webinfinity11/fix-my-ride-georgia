@@ -1,0 +1,13 @@
+{
+  "brandPages": 52,
+  "routes": 87,
+  "indexable": 33,
+  "noindex": 54,
+  "checks": [
+    "single exact canonical",
+    "single H1",
+    "robots policy matches sitemap",
+    "BreadcrumbList",
+    "data loaded before capture"
+  ]
+}
