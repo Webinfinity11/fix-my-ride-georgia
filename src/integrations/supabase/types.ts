@@ -1074,7 +1074,6 @@ export type Database = {
           accepts_card_payment: boolean | null
           accepts_cash_payment: boolean | null
           address: string | null
-          vehicle_models: Json
           car_brands: string[] | null
           category_id: number | null
           city: string | null
@@ -1099,6 +1098,7 @@ export type Database = {
           slug: string | null
           slug_is_manual: boolean | null
           updated_at: string
+          vehicle_models: Json
           videos: string[] | null
           vip_rank: number | null
           vip_status: Database["public"]["Enums"]["vip_plan_type"] | null
@@ -1111,7 +1111,6 @@ export type Database = {
           accepts_card_payment?: boolean | null
           accepts_cash_payment?: boolean | null
           address?: string | null
-          vehicle_models?: Json
           car_brands?: string[] | null
           category_id?: number | null
           city?: string | null
@@ -1136,6 +1135,7 @@ export type Database = {
           slug?: string | null
           slug_is_manual?: boolean | null
           updated_at?: string
+          vehicle_models?: Json
           videos?: string[] | null
           vip_rank?: number | null
           vip_status?: Database["public"]["Enums"]["vip_plan_type"] | null
@@ -1148,7 +1148,6 @@ export type Database = {
           accepts_card_payment?: boolean | null
           accepts_cash_payment?: boolean | null
           address?: string | null
-          vehicle_models?: Json
           car_brands?: string[] | null
           category_id?: number | null
           city?: string | null
@@ -1173,6 +1172,7 @@ export type Database = {
           slug?: string | null
           slug_is_manual?: boolean | null
           updated_at?: string
+          vehicle_models?: Json
           videos?: string[] | null
           vip_rank?: number | null
           vip_status?: Database["public"]["Enums"]["vip_plan_type"] | null
@@ -2240,6 +2240,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_view_chat_presence: {
+        Args: { target_user: string }
+        Returns: boolean
+      }
       current_user_is_admin: { Args: never; Returns: boolean }
       expire_vip_services: { Args: never; Returns: number }
       generate_unique_blog_slug: {
