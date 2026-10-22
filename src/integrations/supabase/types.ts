@@ -383,6 +383,7 @@ export type Database = {
           created_at: string
           id: number
           image_url: string | null
+          is_public: boolean
           issue_date: string | null
           issuing_organization: string | null
           mechanic_id: string
@@ -392,6 +393,7 @@ export type Database = {
           created_at?: string
           id?: number
           image_url?: string | null
+          is_public?: boolean
           issue_date?: string | null
           issuing_organization?: string | null
           mechanic_id: string
@@ -401,6 +403,7 @@ export type Database = {
           created_at?: string
           id?: number
           image_url?: string | null
+          is_public?: boolean
           issue_date?: string | null
           issuing_organization?: string | null
           mechanic_id?: string
@@ -644,6 +647,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           id: number
+          is_published: boolean
           latitude: number | null
           longitude: number
           name: string
@@ -659,6 +663,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: number
+          is_published?: boolean
           latitude?: number | null
           longitude: number
           name: string
@@ -674,6 +679,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: number
+          is_published?: boolean
           latitude?: number | null
           longitude?: number
           name?: string
@@ -2401,10 +2407,6 @@ export type Database = {
         }[]
       }
       get_reaction_counts: { Args: { p_post_id: string }; Returns: Json }
-      record_search_query: {
-        Args: { p_query: string }
-        Returns: undefined
-      }
       get_safe_mechanic_profiles: {
         Args: never
         Returns: {
@@ -2475,6 +2477,7 @@ export type Database = {
       }
       is_current_user_admin: { Args: never; Returns: boolean }
       is_moderator_or_admin: { Args: { _user_id: string }; Returns: boolean }
+      record_search_query: { Args: { p_query: string }; Returns: undefined }
       store_fuel_prices_snapshot: {
         Args: { payload: Json }
         Returns: undefined
