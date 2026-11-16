@@ -174,6 +174,12 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
       const [sortCol, sortAsc] = SORT_MAP[filters.sortBy ?? "rotation"];
       const from = page * PAGE_SIZE;
       const fetchAll = options?.all === true;
+      const term = filters.searchTerm?.trim().replace(/\s+/g, " ") ?? "";
+      const listingNumber = term.match(/^(?:[#№]\s*)?(\d+)$/)?.[1];
+      const listingId = listingNumber ? Number(listingNumber) : undefined;
+      const hasListingNumber = listingId !== undefined && listingId > 0 && listingId <= 2147483647;
+      const listingLink = term.match(/^(?:https?:\/\/)?(?:www\.)?fixup\.ge\/service\/([\w-]+)\/?(?:[?#].*)?$/i)?.[1];
+      const searchProfile = term && !listingNumber && !listingLink ? ",search_mechanic:profiles!fk_mechanic_services_profiles()" : "";
 
       // Build the filtered/paginated query. `useRank` orders by the vip_rank
       // generated column (active super_vip → active vip → everyone else, each by
@@ -184,7 +190,7 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
         let q = (supabase as any)
           .from("mechanic_services")
           .select(
-            inventoryOffset !== undefined ? "id,mechanic_id,is_vip_active,vip_status,vip_until" : `
+            (inventoryOffset !== undefined ? "id,mechanic_id,is_vip_active,vip_status,vip_until" : `
             id,
             name,
             slug,
@@ -215,7 +221,7 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
             mechanic:profiles!fk_mechanic_services_profiles(
               id, first_name, last_name, phone, mechanic_profiles(display_id, rating)
             )
-          `,
+          `) + searchProfile,
             { count: "exact" },
           )
           .eq("is_active", true);
@@ -244,17 +250,27 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
 
         if (filters.selectedModel) q = q.contains("vehicle_models", JSON.stringify([filters.selectedModel]));
 
-        // Text search — service name + description, plus any category whose name
-        // matches. Strip characters that would break PostgREST's or() grammar.
-        const term = filters.searchTerm?.trim();
-        if (term) {
-          const safe = term.replace(/[,()]/g, " ").trim();
+        if (listingNumber) {
+          q = q.eq("id", hasListingNumber ? listingId : 0);
+        } else if (listingLink) {
+          const linkedId = listingLink.match(/^(\d+)(?:-|$)/)?.[1];
+          const numericId = Number(linkedId);
+          q = linkedId && numericId > 0 && numericId <= 2147483647
+            ? q.or(`id.eq.${numericId},slug.eq.${listingLink}`)
+            : q.eq("slug", listingLink);
+        } else if (term) {
+          const pattern = JSON.stringify(`%${term.replace(/[\\%_*]/g, "\\$&")}%`);
           const matchingCatIds = categories
-            .filter((c) => c.name.toLowerCase().includes(safe.toLowerCase()))
-            .map((c) => c.id);
-          const ors = [`name.ilike.%${safe}%`, `description.ilike.%${safe}%`];
-          if (matchingCatIds.length > 0) ors.push(`category_id.in.(${matchingCatIds.join(",")})`);
-          q = q.or(ors.join(","));
+            .filter((category) => category.name.toLowerCase().includes(term.toLowerCase()))
+            .map((category) => category.id);
+          const matches = ["name", "description", "city", "district", "address"]
+            .map((column) => `${column}.ilike.${pattern}`);
+          const mechanicMatches = ["first_name", "last_name", "full_name"]
+            .map((column) => `${column}.ilike.${pattern}`);
+          q = q.or(mechanicMatches.join(","), { referencedTable: "search_mechanic" });
+          matches.push("search_mechanic.not.is.null");
+          if (matchingCatIds.length) matches.push(`category_id.in.(${matchingCatIds.join(",")})`);
+          q = q.or(matches.join(","));
         }
 
         if (inventoryOffset !== undefined) return q.order("id", { ascending: true }).range(inventoryOffset, inventoryOffset + 999);

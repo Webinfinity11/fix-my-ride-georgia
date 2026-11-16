@@ -181,7 +181,7 @@ const ModernServiceFilters = ({
       <CategoryNavigation selectedCategory={selectedCategory} selectedCity={selectedCity} selectedBrands={selectedBrands} />
       <Dialog open={showSearch} onOpenChange={open => { setShowSearch(open); if (!open) setSearchTerm(appliedSearch); }}>
         <DialogContent className="max-w-lg" onCloseAutoFocus={event => { event.preventDefault(); searchTrigger.current?.focus(); }}>
-          <DialogHeader><DialogTitle>სერვისის ძიება</DialogTitle><DialogDescription>ჩაწერეთ სერვისის ან ხელოსნის სახელი.</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle>სერვისის ძიება</DialogTitle><DialogDescription>მოძებნეთ სერვისის სახელით, აღწერით, მდებარეობით, ხელოსნის სახელით ან განცხადების ნომრით. ასევე შეგიძლიათ ჩასვათ განცხადების ბმული.</DialogDescription></DialogHeader>
       <form onSubmit={handleSearchSubmit} className="flex gap-2">
         <div className="relative flex-1">
           <Search
@@ -191,7 +191,7 @@ const ModernServiceFilters = ({
           <Input
             autoFocus
             aria-label="სერვისის ძიება"
-            placeholder="სერვისის ძიება..."
+            placeholder="მაგ. დიაგნოსტიკა, გიორგი ან #626"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={`pl-10 h-10 border-2 border-primary/20 focus-visible:ring-primary text-sm ${searchTerm ? "pr-9" : ""}`}
