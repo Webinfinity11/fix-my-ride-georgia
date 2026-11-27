@@ -1,5 +1,6 @@
 import { Phone, X, Copy, BadgePercent } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 // Group a Georgian mobile number for readability: 577611515 → +995 577 61 15 15
 const formatPhone = (raw: string) => {
@@ -73,8 +74,9 @@ export const PhoneRevealDialog = ({ open, onOpenChange, name, city, phone }: Pho
             </div>
           </div>
 
-          <a href={`tel:${phone}`} className="mt-3 w-full h-11 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2"><Phone className="h-4 w-4" />დარეკვა ახლავე</a>
-          <p className="mt-2.5 text-[10.5px] text-ink-500 text-center">დარეკვის ღილაკი გაუშვებს სატელეფონო აპლიკაციას</p>
+          <a href={`tel:${phone}`} className="mt-3 w-full h-11 rounded-pill bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold inline-flex items-center justify-center gap-2 [@media(hover:hover)_and_(pointer:fine)]:hidden"><Phone className="h-4 w-4" />დარეკვა ახლავე</a>
+          <p className="mt-2.5 text-[10.5px] text-ink-500 text-center [@media(hover:hover)_and_(pointer:fine)]:hidden">დარეკვის ღილაკი გაუშვებს სატელეფონო აპლიკაციას</p>
+          <Link to="/request" onClick={() => onOpenChange(false)} className="mt-3 flex h-11 w-full items-center justify-center rounded-pill border border-accent-500 text-[13px] font-bold text-accent-600 hover:bg-accent-50">ხელოსანი ვერ იპოვე?</Link>
         </div>
       </div>
     </div>
