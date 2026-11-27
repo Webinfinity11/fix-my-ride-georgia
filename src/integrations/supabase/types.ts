@@ -2316,6 +2316,10 @@ export type Database = {
           viewer: string
         }[]
       }
+      get_admin_overview: {
+        Args: { p_from: string; p_to: string }
+        Returns: Json
+      }
       get_admin_stats: {
         Args: never
         Returns: {

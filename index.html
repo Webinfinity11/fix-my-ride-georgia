@@ -172,6 +172,12 @@
       gtag('js', new Date());
       gtag('config', 'G-SHBK1B237B');
       window.addEventListener('load', function () {
+        // The service operates only in Georgia. Foreign data-centre bots were
+        // flooding Analytics, so it loads only for Georgian-time-zone browsers
+        // that are not automated. Visiting the site itself is not restricted.
+        var zone = '';
+        try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+        if (zone !== 'Asia/Tbilisi' || navigator.webdriver) return;
         setTimeout(function () {
           var src = 'https://www.googletagmanager.com/gtag/js?id=G-SHBK1B237B';
           if (window.__fixupAnalyticsLoaded || document.querySelector('script[src="' + src + '"]')) return;
