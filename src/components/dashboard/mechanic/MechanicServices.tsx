@@ -10,6 +10,7 @@ import { createServiceSlug } from "@/utils/slugUtils";
 import { Plus, Edit, Trash2, Eye, Star, MapPin, Clock, CreditCard, Banknote, ChevronDown, Filter, Crown, Zap, AlertCircle, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useServiceVIPRequest, useCreateVIPRequest, VIPPlanType } from "@/hooks/useVIPRequests";
+import { VipPrice, VipPromoNote } from "@/components/vip/VipPrice";
 import { VIPBadge } from "@/components/services/VIPBadge";
 import {
   DropdownMenu,
@@ -545,28 +546,31 @@ const MechanicServices = () => {
           </DialogHeader>
 
           <div className="space-y-4">
+            <VipPromoNote />
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant={selectedPlan === "vip" ? "default" : "outline"}
                 onClick={() => setSelectedPlan("vip")}
-                className="h-auto flex flex-col items-center gap-2 py-4"
+                className="h-auto flex flex-col items-center gap-2 whitespace-normal py-4"
               >
                 <Crown className="w-6 h-6" />
                 <div>
                   <div className="font-semibold">VIP</div>
                   <div className="text-xs text-muted-foreground">პრიორიტეტული ჩვენება</div>
+                  <VipPrice plan="vip" compact className="mt-1 justify-center" />
                 </div>
               </Button>
 
               <Button
                 variant={selectedPlan === "super_vip" ? "default" : "outline"}
                 onClick={() => setSelectedPlan("super_vip")}
-                className="h-auto flex flex-col items-center gap-2 py-4"
+                className="h-auto flex flex-col items-center gap-2 whitespace-normal py-4"
               >
                 <Zap className="w-6 h-6" />
                 <div>
                   <div className="font-semibold">Super VIP</div>
                   <div className="text-xs text-muted-foreground">მაქსიმალური ხილვადობა</div>
+                  <VipPrice plan="super_vip" compact className="mt-1 justify-center" />
                 </div>
               </Button>
             </div>

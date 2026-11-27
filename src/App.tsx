@@ -23,6 +23,7 @@ const Search = lazy(() => import("./pages/Search"));
 const Saved = lazy(() => import("./pages/Saved"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Vip = lazy(() => import("./pages/Vip"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -102,6 +103,7 @@ function App({ initialServiceComponent, queryClientOverride, initialFuelComponen
                   <Route path="/add-listing" element={<AddListing />} />
                   <Route path="/order-parts" element={<OrderParts />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/vip" element={<Vip />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />

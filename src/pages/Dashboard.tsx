@@ -28,6 +28,7 @@ const DriveManagement = lazy(() => import("@/components/dashboard/admin/DriveMan
 const BookingManagement = lazy(() => import("@/components/dashboard/admin/BookingManagement"));
 const SavedServicesManagement = lazy(() => import("@/components/dashboard/admin/SavedServicesManagement"));
 const AdminVIPManagement = lazy(() => import("@/components/dashboard/admin/AdminVIPManagement").then(module => ({ default: module.AdminVIPManagement })));
+const VipLeadsPanel = lazy(() => import("@/components/dashboard/admin/VipLeadsPanel").then(module => ({ default: module.VipLeadsPanel })));
 const AdminCommunity = lazy(() => import("@/components/dashboard/admin/AdminCommunity").then(module => ({ default: module.AdminCommunity })));
 const FuelImporterManagement = lazy(() => import("@/components/dashboard/admin/FuelImporterManagement"));
 const AdminFuelBrands = lazy(() => import("@/components/dashboard/admin/AdminFuelBrands").then(module => ({ default: module.AdminFuelBrands })));
@@ -293,7 +294,10 @@ const Dashboard = () => {
                   path="/admin/vip-management"
                   element={
                     user.role === "admin" ? (
-                      <AdminVIPManagement />
+                      <>
+                        <VipLeadsPanel />
+                        <AdminVIPManagement />
+                      </>
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

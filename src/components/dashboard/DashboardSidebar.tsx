@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useOldLeadsCount, useNewRequestsCount } from "@/hooks/useAutoLeads";
 import { useNewPartsOrdersCount } from "@/hooks/usePartsOrders";
 import { useNewEvacuatorRequestsCount } from "@/hooks/useEvacuatorRequests";
+import { useNewVipLeadsCount } from "@/hooks/useVipLeads";
 
 type IconType = typeof Shield;
 type Item = { to: string; icon: IconType; label: string; badge?: number; end?: boolean; extraActive?: boolean };
@@ -46,6 +47,7 @@ const DashboardSidebar = () => {
   const { data: newRequestsCount = 0 } = useNewRequestsCount();
   const { data: newPartsOrdersCount = 0 } = useNewPartsOrdersCount();
   const { data: newEvacuatorRequestsCount = 0 } = useNewEvacuatorRequestsCount();
+  const { data: newVipLeadsCount = 0 } = useNewVipLeadsCount(user?.role === "admin");
 
   const onAddService = typeof window !== "undefined" && window.location.pathname === "/add-service";
 
@@ -71,6 +73,7 @@ const DashboardSidebar = () => {
     ]},
     { label: "მოთხოვნები", items: [
       { to: "/dashboard/admin/leads", icon: Mail, label: "ლიდები", badge: oldLeadsCount },
+      { to: "/dashboard/admin/vip-management", icon: Crown, label: "VIP მართვა", badge: newVipLeadsCount },
       { to: "/dashboard/admin/requests", icon: FileText, label: "მოთხოვნები", badge: newRequestsCount },
       { to: "/dashboard/admin/parts-orders", icon: Package, label: "ნაწილების შეკვეთები", badge: newPartsOrdersCount },
       { to: "/dashboard/admin/evacuator-requests", icon: Truck, label: "ევაკუატორი", badge: newEvacuatorRequestsCount },
@@ -88,7 +91,6 @@ const DashboardSidebar = () => {
       { to: "/dashboard/admin/drives", icon: Car, label: "დრაივები" },
       { to: "/dashboard/admin/fuel-importers", icon: Fuel, label: "საწვავის იმპორტიორები" },
       { to: "/dashboard/admin/fuel-brands", icon: Award, label: "საწვავის ბრენდები" },
-      { to: "/dashboard/admin/vip-management", icon: Crown, label: "VIP მართვა" },
     ]},
     { label: "მართვა", items: [
       { to: "/dashboard/admin/users", icon: Users, label: "მომხმარებლები" },
