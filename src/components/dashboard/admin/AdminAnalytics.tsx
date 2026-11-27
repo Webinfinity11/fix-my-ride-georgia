@@ -8,13 +8,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart3, Eye, Phone, Repeat, Search, Info, Download, CalendarDays, ListFilter, ChartNoAxesColumn } from "lucide-react";
+import OverviewTab from "./analytics/OverviewTab";
 import {
-  BarChart3, Eye, Phone, UserRound, Repeat, Search,
-  TrendingUp, TrendingDown, Info, Download, Clock, CalendarDays, ListFilter, ChartNoAxesColumn,
-} from "lucide-react";
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
+  addDays, calendarDay, dailyCsv, downloadCsv, labelDM, Overview, TBILISI_OFFSET, tbilisiToday,
+} from "./analytics/overview";
 
-type Daily = { day: string; service_views: number; service_calls: number; mechanic_calls: number; profile_views: number };
 type Ev = { ts: string; kind: string; target: string; viewer: string; link: string | null };
 type Preset = "today" | "yesterday" | "7" | "30" | "90" | "custom";
 
@@ -22,51 +22,25 @@ const PRESETS: { k: Preset; label: string }[] = [
   { k: "today", label: "დღეს" }, { k: "yesterday", label: "გუშინ" },
   { k: "7", label: "7 დღე" }, { k: "30", label: "30 დღე" }, { k: "90", label: "90 დღე" },
 ];
+const EVENT_LIMIT = 500;
 
-const fmtDate = (d: Date) => d.toISOString().slice(0, 10);
-const todayUTC = () => new Date().toISOString().slice(0, 10);
-const addDays = (dateStr: string, n: number) => {
-  const d = new Date(dateStr + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + n);
-  return d.toISOString().slice(0, 10);
-};
-const diffInclusive = (from: string, to: string) =>
-  Math.round((+new Date(to + "T00:00:00Z") - +new Date(from + "T00:00:00Z")) / 864e5) + 1;
-const labelDM = (dateStr: string) => { const [, m, d] = dateStr.split("-"); return `${+d}/${+m}`; };
-const evTime = (iso: string) => {
-  const d = new Date(iso);
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${p(d.getDate())}/${p(d.getMonth() + 1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
-};
-
-const TopList = ({ items, emptyText, loading }: { items: { name: string; n: number; link?: string }[]; emptyText: string; loading?: boolean }) => (
-  <CardContent className="p-0">
-    {loading ? <div className="p-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-7 w-full" />)}</div> :
-      items.length === 0 ? <p className="text-sm text-muted-foreground py-6 text-center">{emptyText}</p> : (
-        <div className="max-h-[300px] overflow-y-auto px-4 pb-3">
-          {items.map((s, i) => (
-            <div key={i} className="flex items-center gap-3 py-1.5 border-b last:border-0">
-              <span className="w-5 text-center text-sm font-semibold text-muted-foreground">{i + 1}</span>
-              {s.link
-                ? <Link to={s.link} target="_blank" className="flex-1 text-sm truncate hover:text-primary hover:underline">{s.name}</Link>
-                : <span className="flex-1 text-sm truncate">{s.name}</span>}
-              <span className="text-sm font-semibold">{s.n}</span>
-            </div>
-          ))}
-        </div>
-      )}
-  </CardContent>
-);
+// The database calls a number click a "call"; the site cannot know a call happened.
+const kindLabel = (kind: string) => kind.replace("დარეკვა", "დაჭერა");
+const dayStart = (day: string) => `${day}T00:00:00${TBILISI_OFFSET}`;
+const evTime = (iso: string) =>
+  new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Tbilisi", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false })
+    .format(new Date(iso)).replace(",", "");
 
 const AdminAnalytics = () => {
   const [preset, setPreset] = useState<Preset>("30");
   const [range, setRange] = useState<DateRange | undefined>();
   const [calOpen, setCalOpen] = useState(false);
+  const [tab, setTab] = useState("overview");
   const [evFilter, setEvFilter] = useState<"all" | "view" | "call" | "search">("all");
   const [activeSvc, setActiveSvc] = useState<{ id: number; name: string } | null>(null);
 
   const { from, to } = useMemo(() => {
-    const t = todayUTC();
+    const t = tbilisiToday();
     switch (preset) {
       case "today": return { from: t, to: t };
       case "yesterday": { const y = addDays(t, -1); return { from: y, to: y }; }
@@ -74,30 +48,26 @@ const AdminAnalytics = () => {
       case "30": return { from: addDays(t, -29), to: t };
       case "90": return { from: addDays(t, -89), to: t };
       case "custom":
-        if (range?.from) { const f = fmtDate(range.from); return { from: f, to: range.to ? fmtDate(range.to) : f }; }
+        if (range?.from) { const f = calendarDay(range.from); return { from: f, to: range.to ? calendarDay(range.to) : f }; }
         return { from: t, to: t };
     }
   }, [preset, range]);
 
-  const len = diffInclusive(from, to);
-  const prevFrom = addDays(from, -len);
-
-  const daily = useQuery({
-    queryKey: ["an-range", prevFrom, to],
+  const overview = useQuery({
+    queryKey: ["an-overview", from, to],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_admin_analytics_range", { p_from: prevFrom, p_to: to });
+      const { data, error } = await supabase.rpc("get_admin_overview", { p_from: from, p_to: to });
       if (error) throw error;
-      return (data || []) as Daily[];
+      return data as unknown as Overview;
     },
   });
 
   const events = useQuery({
-    queryKey: ["an-events", from, to, evFilter],
+    queryKey: ["an-events", from, to],
+    enabled: tab === "activity",
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_admin_events", {
-        p_from: from + "T00:00:00Z",
-        p_to: addDays(to, 1) + "T00:00:00Z",
-        p_limit: 500,
+        p_from: dayStart(from), p_to: dayStart(addDays(to, 1)), p_limit: EVENT_LIMIT,
       });
       if (error) throw error;
       return (data || []) as Ev[];
@@ -109,7 +79,7 @@ const AdminAnalytics = () => {
     enabled: !!activeSvc,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_service_activity", {
-        p_service_id: activeSvc!.id, p_from: from + "T00:00:00Z", p_to: addDays(to, 1) + "T00:00:00Z", p_limit: 1000,
+        p_service_id: activeSvc!.id, p_from: dayStart(from), p_to: dayStart(addDays(to, 1)), p_limit: 1000,
       });
       if (error) throw error;
       return (data || []) as { ts: string; kind: string; viewer: string }[];
@@ -118,57 +88,6 @@ const AdminAnalytics = () => {
   const svcViews = (svcActivity.data || []).filter(e => e.kind === "ნახვა").length;
   const svcCalls = (svcActivity.data || []).filter(e => e.kind === "დარეკვა").length;
   const svcConv = svcViews > 0 ? Math.round((svcCalls / svcViews) * 100) : null;
-
-  const rows = daily.data || [];
-  const curRows = rows.filter(r => r.day >= from);
-  const prevRows = rows.filter(r => r.day < from);
-  const sumK = (arr: Daily[], keys: (keyof Daily)[]) => arr.reduce((s, r) => s + keys.reduce((a, k) => a + (Number(r[k]) || 0), 0), 0);
-  const kpi = (keys: (keyof Daily)[]) => {
-    const cur = sumK(curRows, keys), prev = sumK(prevRows, keys);
-    return { cur, change: prev ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0 };
-  };
-  const mViews = kpi(["service_views"]);
-  const mCalls = kpi(["service_calls", "mechanic_calls"]);
-  const mServiceCalls = kpi(["service_calls"]);
-  const mProfile = kpi(["profile_views"]);
-  const conv = mViews.cur > 0 ? Math.round((mServiceCalls.cur / mViews.cur) * 100) : null;
-
-  const series = useMemo(() => curRows.map(r => ({
-    label: labelDM(r.day), ნახვები: Number(r.service_views) || 0,
-    დარეკვები: (Number(r.service_calls) || 0) + (Number(r.mechanic_calls) || 0),
-  })), [curRows]);
-
-  // Top viewed / called services — exact server-side aggregation (period-aware).
-  const topViewed = useQuery({
-    queryKey: ["an-top", "view", from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_top_services", { p_metric: "view", p_from: from, p_to: to, p_limit: 25 });
-      if (error) throw error;
-      return (data || []) as { service_id: number; name: string; n: number }[];
-    },
-  });
-  const topCalled = useQuery({
-    queryKey: ["an-top", "call", from, to],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_top_services", { p_metric: "call", p_from: from, p_to: to, p_limit: 25 });
-      if (error) throw error;
-      return (data || []) as { service_id: number; name: string; n: number }[];
-    },
-  });
-
-  // Top searches from the event feed (lower volume → feed is sufficient).
-  const topSearches = useMemo(() => {
-    const cnt: Record<string, number> = {};
-    (events.data || []).forEach(e => { if (e.kind === "ძიება") cnt[e.target] = (cnt[e.target] || 0) + 1; });
-    return Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, n]) => ({ name, n }));
-  }, [events.data]);
-
-  const byHour = useMemo(() => {
-    const h = Array.from({ length: 24 }, (_, i) => ({ h: i, n: 0 }));
-    (events.data || []).forEach(e => { if (e.kind.startsWith("დარეკვა")) h[new Date(e.ts).getHours()].n++; });
-    return h;
-  }, [events.data]);
-  const maxHour = Math.max(1, ...byHour.map(h => h.n));
 
   const filteredEvents = useMemo(() => (events.data || []).filter(e =>
     evFilter === "all" ? true
@@ -181,43 +100,26 @@ const AdminAnalytics = () => {
     ? `${labelDM(from)} – ${labelDM(to)}`
     : PRESETS.find(p => p.k === preset)?.label || `${labelDM(from)} – ${labelDM(to)}`;
 
-  const exportCsv = () => {
+  const exportEvents = () => {
     const lines = ["დრო,ტიპი,სამიზნე,მომხმარებელი"];
-    (events.data || []).forEach(e => lines.push(`${evTime(e.ts)},${e.kind},"${e.target.replace(/"/g, "'")}","${e.viewer.replace(/"/g, "'")}"`));
-    const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob); a.download = `events-${from}_${to}.csv`; a.click();
+    // Quote every text cell and stop spreadsheets from reading user input as a formula.
+    const cell = (v: string) => `"${(/^[=+\-@]/.test(v) ? "'" + v : v).replace(/"/g, '""')}"`;
+    (events.data || []).forEach(e => lines.push([evTime(e.ts), kindLabel(e.kind), cell(e.target), cell(e.viewer)].join(",")));
+    downloadCsv(`events-${from}_${to}.csv`, lines.join("\n"));
   };
-
-  const Kpi = ({ icon: Icon, label, value, change, color }: { icon: typeof Eye; label: string; value: number | null; change: number | null; color: string }) => (
-    <Card><CardContent className="p-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${color}`}><Icon className="h-4 w-4" /></span>
-        {change != null && (
-          <span className={`text-xs font-medium flex items-center gap-0.5 ${change >= 0 ? "text-green-600" : "text-red-600"}`}>
-            {change >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}{Math.abs(change)}%
-          </span>
-        )}
-      </div>
-      <div className="text-2xl font-bold">{value ?? "—"}</div>
-      <div className="text-xs text-muted-foreground">{label}</div>
-    </CardContent></Card>
-  );
-
-  const loading = daily.isLoading;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><BarChart3 className="h-6 w-6 text-primary" />ანალიტიკა</h1>
-          <p className="text-sm text-muted-foreground mt-1">{periodLabel}</p>
+          <p className="text-sm text-muted-foreground mt-1">{periodLabel} · {labelDM(from)}{from !== to && `–${labelDM(to)}`}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex gap-1 bg-muted rounded-lg p-1">
             {PRESETS.map(p => (
               <button key={p.k} onClick={() => setPreset(p.k)}
-                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${preset === p.k ? "bg-background shadow-sm font-medium" : "text-muted-foreground hover:text-foreground"}`}>
+                className={`whitespace-nowrap px-2 sm:px-3 py-1.5 text-sm rounded-md transition-colors ${preset === p.k ? "bg-background shadow-sm font-medium" : "text-muted-foreground hover:text-foreground"}`}>
                 {p.label}
               </button>
             ))}
@@ -232,141 +134,90 @@ const AdminAnalytics = () => {
               <Calendar mode="range" selected={range} onSelect={(r) => { setRange(r); setPreset("custom"); }} numberOfMonths={2} />
             </PopoverContent>
           </Popover>
-          <button onClick={exportCsv} className="flex items-center gap-1.5 h-9 px-3 rounded-lg border text-sm hover:bg-muted transition-colors">
+          <button onClick={() => overview.data && downloadCsv(`analytics-${from}_${to}.csv`, dailyCsv(overview.data.daily))} disabled={!overview.data}
+            title="დღიური ჯამები" className="flex disabled:opacity-50 items-center gap-1.5 h-9 px-3 rounded-lg border text-sm hover:bg-muted transition-colors">
             <Download className="h-4 w-4" />CSV
           </button>
         </div>
       </div>
 
-      {daily.isError && (
-        <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-          <Info className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>აგრეგაცია ვერ ჩაიტვირთა — გაუშვი migration (get_admin_analytics_range / get_admin_events), შემდეგ refresh.</span>
-        </div>
-      )}
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList>
+          <TabsTrigger value="overview">მიმოხილვა</TabsTrigger>
+          <TabsTrigger value="activity">აქტივობა</TabsTrigger>
+        </TabsList>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {loading ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />) : (
-          <>
-            <Kpi icon={Eye} label="სერვისის ნახვები" value={mViews.cur} change={mViews.change} color="bg-blue-50 text-blue-600" />
-            <Kpi icon={Phone} label="დარეკვები" value={mCalls.cur} change={mCalls.change} color="bg-green-50 text-green-600" />
-            <Kpi icon={Repeat} label="კონვერსია" value={conv} change={null} color="bg-purple-50 text-purple-600" />
-            <Kpi icon={UserRound} label="პროფილის ნახვები" value={mProfile.cur} change={mProfile.change} color="bg-orange-50 text-orange-600" />
-          </>
-        )}
-      </div>
-
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><TrendingUp className="h-5 w-5 text-primary" />ნახვები vs დარეკვები</CardTitle></CardHeader>
-        <CardContent>
-          <div className="h-[220px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={series} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="gv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2563eb" stopOpacity={0.25} /><stop offset="100%" stopColor="#2563eb" stopOpacity={0} /></linearGradient>
-                  <linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#16a34a" stopOpacity={0.3} /><stop offset="100%" stopColor="#16a34a" stopOpacity={0} /></linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} interval={Math.max(0, Math.floor(series.length / 10))} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))", fontSize: 12 }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Area type="monotone" dataKey="ნახვები" stroke="#2563eb" strokeWidth={2} fill="url(#gv)" dot={{ r: 2, fill: "#2563eb", strokeWidth: 0 }} activeDot={{ r: 4 }} />
-                <Area type="monotone" dataKey="დარეკვები" stroke="#16a34a" strokeWidth={2} fill="url(#gc)" dot={{ r: 2, fill: "#16a34a", strokeWidth: 0 }} activeDot={{ r: 4 }} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* DRILL-DOWN: who viewed / called what */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-base flex items-center gap-2"><ListFilter className="h-5 w-5 text-primary" />დეტალური აქტივობა</CardTitle>
-            <div className="flex gap-1 bg-muted rounded-lg p-0.5 text-xs">
-              {([["all", "ყველა"], ["view", "ნახვები"], ["call", "დარეკვები"], ["search", "ძიებები"]] as const).map(([k, l]) => (
-                <button key={k} onClick={() => setEvFilter(k)} className={`px-2.5 py-1 rounded-md transition-colors ${evFilter === k ? "bg-background shadow-sm font-medium" : "text-muted-foreground"}`}>{l}</button>
-              ))}
+        <TabsContent value="overview" className="pt-4">
+          {overview.isError ? (
+            <div role="alert" className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+              <Info className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>მიმოხილვა ვერ ჩაიტვირთა. თუ ეს პირველი გაშვებაა, ბაზაში გასაშვებია მიგრაცია `20261127160000_admin_overview.sql`.</span>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {events.isLoading ? <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}</div> :
-            filteredEvents.length === 0 ? <p className="text-sm text-muted-foreground py-4 text-center">ამ პერიოდში აქტივობა არ ყოფილა</p> : (
-              <div className="max-h-[420px] overflow-y-auto overflow-x-auto rounded-lg border">
-                <table className="w-full text-sm">
-                  <thead className="sticky top-0 z-10 bg-background"><tr className="text-left text-xs text-muted-foreground border-b">
-                    <th className="py-2 px-3 font-medium">დრო</th><th className="py-2 px-2 font-medium">ტიპი</th>
-                    <th className="py-2 px-2 font-medium">სამიზნე</th><th className="py-2 px-3 font-medium">მომხმარებელი</th>
-                  </tr></thead>
-                  <tbody>
-                    {filteredEvents.slice(0, 200).map((e, i) => (
-                      <tr key={i} className="border-b last:border-0 hover:bg-muted/40">
-                        <td className="py-1.5 px-3 whitespace-nowrap text-muted-foreground">{evTime(e.ts)}</td>
-                        <td className="py-1.5 px-2 whitespace-nowrap">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${e.kind === "ნახვა" ? "bg-blue-50 text-blue-700" : e.kind === "ძიება" ? "bg-purple-50 text-purple-700" : "bg-green-50 text-green-700"}`}>
-                            {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : e.kind === "ძიება" ? <Search className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
-                          </span>
-                        </td>
-                        <td className="py-1.5 px-2 max-w-[260px]">
-                          <div className="flex items-center gap-1.5">
-                            {e.link ? (
-                              <Link to={e.link} target="_blank" className="text-primary hover:underline truncate">{e.target}</Link>
-                            ) : <span className="truncate">{e.target}</span>}
-                            {e.link?.startsWith("/service/") && (
-                              <button
-                                onClick={() => setActiveSvc({ id: Number(e.link!.split("/").pop()), name: e.target })}
-                                title="სერვისის ანალიტიკა"
-                                className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
-                              >
-                                <ChartNoAxesColumn className="h-3.5 w-3.5" />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-1.5 px-3 truncate max-w-[160px] text-muted-foreground">{e.viewer}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            {filteredEvents.length > 200 && <p className="text-xs text-muted-foreground pt-2 text-center">ნაჩვენებია ბოლო 200 (სულ {filteredEvents.length}). CSV-ში ყველაა.</p>}
-        </CardContent>
-      </Card>
+          ) : !overview.data ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-36 rounded-xl" />)}</div>
+          ) : <OverviewTab data={overview.data} />}
+        </TabsContent>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Eye className="h-5 w-5 text-blue-600" />Top ნახვები</CardTitle></CardHeader>
-          <TopList loading={topViewed.isLoading} emptyText="ამ პერიოდში ნახვა არ ყოფილა"
-            items={(topViewed.data || []).map(s => ({ name: s.name, n: s.n, link: `/service/${s.service_id}` }))} />
-        </Card>
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Phone className="h-5 w-5 text-green-600" />Top დარეკვები</CardTitle></CardHeader>
-          <TopList loading={topCalled.isLoading} emptyText="ამ პერიოდში დარეკვა არ ყოფილა"
-            items={(topCalled.data || []).map(s => ({ name: s.name, n: s.n, link: `/service/${s.service_id}` }))} />
-        </Card>
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Search className="h-5 w-5 text-primary" />Top ძიებები</CardTitle></CardHeader>
-          <TopList emptyText="ამ პერიოდში ძიება არ ყოფილა" items={topSearches} />
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Clock className="h-5 w-5 text-primary" />დარეკვის peak საათები</CardTitle></CardHeader>
-        <CardContent>
-          <div className="flex items-end gap-1 h-32">
-            {byHour.map(h => (
-              <div key={h.h} className="flex-1 flex flex-col items-center gap-1 group">
-                <div className="w-full rounded-t bg-primary/80 hover:bg-primary transition-colors relative" style={{ height: `${(h.n / maxHour) * 100}%`, minHeight: h.n > 0 ? 3 : 0 }}>
-                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] opacity-0 group-hover:opacity-100">{h.n}</span>
+        <TabsContent value="activity" className="pt-4">
+          {/* DRILL-DOWN: who viewed / called what */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-base flex items-center gap-2"><ListFilter className="h-5 w-5 text-primary" />დეტალური აქტივობა</CardTitle>
+                <button onClick={exportEvents} className="ml-auto flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs hover:bg-muted"><Download className="h-3.5 w-3.5" />CSV</button>
+                <div className="flex gap-1 bg-muted rounded-lg p-0.5 text-xs">
+                  {([["all", "ყველა"], ["view", "ნახვები"], ["call", "დაჭერები"], ["search", "ძიებები"]] as const).map(([k, l]) => (
+                    <button key={k} onClick={() => setEvFilter(k)} className={`px-2.5 py-1 rounded-md transition-colors ${evFilter === k ? "bg-background shadow-sm font-medium" : "text-muted-foreground"}`}>{l}</button>
+                  ))}
                 </div>
-                {h.h % 3 === 0 && <span className="text-[9px] text-muted-foreground">{h.h}</span>}
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent>
+              {events.isLoading ? <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}</div> :
+                filteredEvents.length === 0 ? <p className="text-sm text-muted-foreground py-4 text-center">ამ პერიოდში აქტივობა არ ყოფილა</p> : (
+                  <div className="max-h-[420px] overflow-y-auto overflow-x-auto rounded-lg border">
+                    <table className="w-full text-sm">
+                      <thead className="sticky top-0 z-10 bg-background"><tr className="text-left text-xs text-muted-foreground border-b">
+                        <th className="py-2 px-3 font-medium">დრო</th><th className="py-2 px-2 font-medium">ტიპი</th>
+                        <th className="py-2 px-2 font-medium">სამიზნე</th><th className="py-2 px-3 font-medium">მომხმარებელი</th>
+                      </tr></thead>
+                      <tbody>
+                        {filteredEvents.slice(0, 200).map((e, i) => (
+                          <tr key={i} className="border-b last:border-0 hover:bg-muted/40">
+                            <td className="py-1.5 px-3 whitespace-nowrap text-muted-foreground">{evTime(e.ts)}</td>
+                            <td className="py-1.5 px-2 whitespace-nowrap">
+                              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${e.kind === "ნახვა" ? "bg-blue-50 text-blue-700" : e.kind === "ძიება" ? "bg-purple-50 text-purple-700" : "bg-green-50 text-green-700"}`}>
+                                {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : e.kind === "ძიება" ? <Search className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{kindLabel(e.kind)}
+                              </span>
+                            </td>
+                            <td className="py-1.5 px-2 max-w-[260px]">
+                              <div className="flex items-center gap-1.5">
+                                {e.link ? (
+                                  <Link to={e.link} target="_blank" className="text-primary hover:underline truncate">{e.target}</Link>
+                                ) : <span className="truncate">{e.target}</span>}
+                                {e.link?.startsWith("/service/") && (
+                                  <button
+                                    onClick={() => setActiveSvc({ id: Number(e.link!.split("/").pop()), name: e.target })}
+                                    title="სერვისის ანალიტიკა"
+                                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+                                  >
+                                    <ChartNoAxesColumn className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-1.5 px-3 truncate max-w-[160px] text-muted-foreground">{e.viewer}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground pt-2 text-center">ეს არის მხოლოდ პერიოდის ბოლო {EVENT_LIMIT} მოვლენა (ცხრილში ჩანს 200-მდე). ჯამები „მიმოხილვაში“ სრულია.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Per-service drill-down */}
       <Dialog open={!!activeSvc} onOpenChange={(o) => !o && setActiveSvc(null)}>
@@ -382,7 +233,7 @@ const AdminAnalytics = () => {
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { label: "ნახვები", value: svcViews, color: "text-blue-600", icon: Eye },
-                  { label: "დარეკვები", value: svcCalls, color: "text-green-600", icon: Phone },
+                  { label: "დაჭერები", value: svcCalls, color: "text-green-600", icon: Phone },
                   { label: "კონვერსია", value: svcConv == null ? "—" : `${svcConv}%`, color: "text-purple-600", icon: Repeat },
                 ].map((s, i) => (
                   <div key={i} className="rounded-lg border p-3 text-center">
@@ -409,7 +260,7 @@ const AdminAnalytics = () => {
                           <td className="py-1.5 px-3 whitespace-nowrap text-muted-foreground">{evTime(e.ts)}</td>
                           <td className="py-1.5 px-2 whitespace-nowrap">
                             <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${e.kind === "ნახვა" ? "bg-blue-50 text-blue-700" : "bg-green-50 text-green-700"}`}>
-                              {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{e.kind}
+                              {e.kind === "ნახვა" ? <Eye className="h-3 w-3" /> : <Phone className="h-3 w-3" />}{kindLabel(e.kind)}
                             </span>
                           </td>
                           <td className="py-1.5 px-3 truncate max-w-[180px] text-muted-foreground">{e.viewer}</td>
