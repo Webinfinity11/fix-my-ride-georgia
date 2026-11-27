@@ -15,7 +15,7 @@ const accountLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#0c2943] text-white">
+    <footer className="relative z-[45] border-t border-white/10 bg-[#0c2943] text-white">
       <div className={catalogueContainerClassName}>
         <div className="grid gap-7 border-b border-white/10 py-8 md:grid-cols-[1.2fr_1fr] md:items-center md:gap-12 md:py-10">
           <div>

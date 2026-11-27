@@ -63,7 +63,7 @@ const ChatContent = () => {
   if (isMobile) {
     if (showChatWindow && activeRoom) {
       return (
-        <div className="h-[calc(100vh-134px)] flex flex-col bg-gray-50">
+        <div className="h-[calc(100vh-170px)] flex flex-col bg-gray-50">
           {/* Mobile Chat Header */}
           <div className="border-b bg-white shadow-sm p-4 flex items-center">
             <Button 
@@ -86,7 +86,7 @@ const ChatContent = () => {
     }
 
     return (
-      <div className="h-[calc(100vh-134px)] flex bg-gray-50">
+      <div className="h-[calc(100vh-170px)] flex bg-gray-50">
         <div className="w-full bg-white">
           <ChatSidebar />
         </div>
@@ -95,7 +95,7 @@ const ChatContent = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] flex bg-gray-50">
+    <div className="h-[calc(100vh-100px)] flex bg-gray-50">
       <div className="hidden md:block w-80 border-r border-gray-200 bg-white shadow-sm">
         <ChatSidebar />
       </div>

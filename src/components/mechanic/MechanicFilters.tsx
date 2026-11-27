@@ -1,8 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -29,7 +27,7 @@ interface MechanicFiltersProps {
   verifiedOnly: boolean;
   setVerifiedOnly: (value: boolean) => void;
   onSearch: () => void;
-  onResetFilters: () => void;
+  onClearSearch: () => void;
 }
 
 const specializations = [
@@ -63,7 +61,7 @@ const MechanicFilters = ({
   verifiedOnly,
   setVerifiedOnly,
   onSearch,
-  onResetFilters,
+  onClearSearch,
 }: MechanicFiltersProps) => {
   const handleCityChange = (value: string) => {
     if (value === "all") {
@@ -97,147 +95,76 @@ const MechanicFilters = ({
     }
   };
 
+  const chip = (active: boolean) =>
+    `h-10 rounded-full border px-4 text-sm font-medium transition-colors ${active ? "border-primary bg-primary text-white" : "border-gray-200 bg-white text-gray-700"}`;
+
   return (
-    <div className="space-y-6">
-      {/* Search Input */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
+    <div className="space-y-3">
+      <form role="search" onSubmit={(e) => { e.preventDefault(); onSearch(); }} className="flex h-14 items-center gap-2 rounded-2xl border-2 border-primary/20 bg-white pl-4 pr-1.5 focus-within:border-primary">
+        <Search aria-hidden="true" className="h-5 w-5 shrink-0 text-gray-400" />
+        <input
           type="text"
-          placeholder="ძიება ხელოსნის სახელით, სპეციალიზაციით..."
+          enterKeyHint="search"
+          aria-label="ხელოსნის ძიება"
+          placeholder="სახელი ან სპეციალობა"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 h-12 border-2 border-gray-200 focus:border-primary transition-colors"
+          className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-gray-400"
         />
-      </div>
-
-      {/* Location Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            ქალაქი
-          </label>
-          <Select value={selectedCity || "all"} onValueChange={handleCityChange}>
-            <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
-              <SelectValue placeholder="აირჩიეთ ქალაქი" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">ყველა ქალაქი</SelectItem>
-              {cities.map(city => (
-                <SelectItem key={city} value={city}>
-                  {city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {selectedCity === "თბილისი" && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              უბანი
-            </label>
-            <Select value={selectedDistrict || "all"} onValueChange={handleDistrictChange}>
-              <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
-                <SelectValue placeholder="აირჩიეთ უბანი" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">ყველა უბანი</SelectItem>
-                {districts.map(district => (
-                  <SelectItem key={district} value={district}>
-                    {district}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        {searchTerm && (
+          <button type="button" aria-label="ძიების გასუფთავება" onClick={onClearSearch} className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-gray-400 hover:bg-gray-100">
+            <X className="h-4 w-4" />
+          </button>
         )}
+        <Button type="submit" className="h-11 shrink-0 rounded-xl px-5">ძებნა</Button>
+      </form>
+
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        <Select value={selectedCity || "all"} onValueChange={handleCityChange}>
+          <SelectTrigger aria-label="ქალაქი" className="h-11 rounded-xl border-gray-200 bg-white text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">ყველა ქალაქი</SelectItem>
+            {cities.map(city => <SelectItem key={city} value={city}>{city}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        {selectedCity === "თბილისი" && (
+        <Select value={selectedDistrict || "all"} onValueChange={handleDistrictChange}>
+          <SelectTrigger aria-label="უბანი" className="h-11 rounded-xl border-gray-200 bg-white text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">ყველა უბანი</SelectItem>
+            {districts.map(district => <SelectItem key={district} value={district}>{district}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        )}
+        <Select value={selectedSpecialization || "all"} onValueChange={handleSpecializationChange}>
+          <SelectTrigger aria-label="სპეციალობა" className="h-11 rounded-xl border-gray-200 bg-white text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">ყველა სფერო</SelectItem>
+            {specializations.map(item => <SelectItem key={item} value={item}>{item}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={minRating?.toString() || "all"} onValueChange={handleRatingChange}>
+          <SelectTrigger aria-label="რეიტინგი" className="h-11 rounded-xl border-gray-200 bg-white text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">ყველა რეიტინგი</SelectItem>
+            <SelectItem value="4">4+ ⭐</SelectItem>
+            <SelectItem value="3">3+ ⭐</SelectItem>
+            <SelectItem value="2">2+ ⭐</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Specialization and Rating */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            სპეციალიზაცია
-          </label>
-          <Select value={selectedSpecialization || "all"} onValueChange={handleSpecializationChange}>
-            <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
-              <SelectValue placeholder="აირჩიეთ სპეციალიზაცია" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">ყველა სპეციალიზაცია</SelectItem>
-              {specializations.map(specialization => (
-                <SelectItem key={specialization} value={specialization}>
-                  {specialization}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            მინიმალური რეიტინგი
-          </label>
-          <Select value={minRating?.toString() || "all"} onValueChange={handleRatingChange}>
-            <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-primary">
-              <SelectValue placeholder="აირჩიეთ რეიტინგი" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">ყველა რეიტინგი</SelectItem>
-              <SelectItem value="4">4+ ⭐</SelectItem>
-              <SelectItem value="3">3+ ⭐</SelectItem>
-              <SelectItem value="2">2+ ⭐</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Additional Filters */}
-      <div className="flex flex-wrap gap-6">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="mobileService"
-            checked={mobileServiceOnly}
-            onCheckedChange={(checked) => setMobileServiceOnly(checked === true)}
-          />
-          <label htmlFor="mobileService" className="text-sm font-medium">
-            ადგილზე მისვლის სერვისი
-          </label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="verified"
-            checked={verifiedOnly}
-            onCheckedChange={(checked) => setVerifiedOnly(checked === true)}
-          />
-          <label htmlFor="verified" className="text-sm font-medium">
-            მხოლოდ ვერიფიცირებული
-          </label>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Button 
-          onClick={onSearch}
-          className="flex-1 h-12 bg-primary hover:bg-primary-dark transition-colors font-semibold"
-          size="lg"
-        >
-          <Search className="h-5 w-5 mr-2" />
-          ძიება
-        </Button>
-        
-        <Button 
-          onClick={onResetFilters}
-          variant="outline"
-          className="h-12 px-8 border-2 border-gray-200 hover:bg-gray-50 transition-colors"
-          size="lg"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          გასუფთავება
-        </Button>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" aria-pressed={mobileServiceOnly} onClick={() => setMobileServiceOnly(!mobileServiceOnly)} className={chip(mobileServiceOnly)}>ადგილზე მისვლა</button>
+        <button type="button" aria-pressed={verifiedOnly} onClick={() => setVerifiedOnly(!verifiedOnly)} className={chip(verifiedOnly)}>ვერიფიცირებული</button>
       </div>
     </div>
   );

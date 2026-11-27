@@ -4,6 +4,7 @@ import { normalizeModels, type ServiceModel } from '@/utils/serviceModels';
 import { getPublicServiceCategories, getPublicServiceCities } from "@/lib/serviceMetadata";
 
 import { useState, useEffect, useRef } from "react";
+import { phoneDigits, phonePattern } from "@/lib/phoneSearch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -175,7 +176,8 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
       const from = page * PAGE_SIZE;
       const fetchAll = options?.all === true;
       const term = filters.searchTerm?.trim().replace(/\s+/g, " ") ?? "";
-      const listingNumber = term.match(/^(?:[#№]\s*)?(\d+)$/)?.[1];
+      const phone = phoneDigits(term);
+      const listingNumber = phone ? undefined : term.match(/^(?:[#№]\s*)?(\d+)$/)?.[1];
       const listingId = listingNumber ? Number(listingNumber) : undefined;
       const hasListingNumber = listingId !== undefined && listingId > 0 && listingId <= 2147483647;
       const listingLink = term.match(/^(?:https?:\/\/)?(?:www\.)?fixup\.ge\/service\/([\w-]+)\/?(?:[?#].*)?$/i)?.[1];
@@ -258,6 +260,11 @@ export const useServices = (initial?: { services: ServiceType[]; totalCount: num
           q = linkedId && numericId > 0 && numericId <= 2147483647
             ? q.or(`id.eq.${numericId},slug.eq.${listingLink}`)
             : q.eq("slug", listingLink);
+        } else if (phone) {
+          // The owner's number, or the number written into the listing itself.
+          const pattern = JSON.stringify(phonePattern(phone));
+          q = q.or(`phone.match.${pattern}`, { referencedTable: "search_mechanic" });
+          q = q.or(["search_mechanic.not.is.null", `name.match.${pattern}`, `description.match.${pattern}`].join(","));
         } else if (term) {
           const pattern = JSON.stringify(`%${term.replace(/[\\%_*]/g, "\\$&")}%`);
           const matchingCatIds = categories

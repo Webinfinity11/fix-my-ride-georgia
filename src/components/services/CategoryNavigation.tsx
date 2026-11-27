@@ -11,7 +11,7 @@ import { createCategorySlug } from "@/utils/slugUtils";
 import { getCategoryImage } from "@/utils/categoryImages";
 import { Button } from "@/components/ui/button";
 
-export default function CategoryNavigation({ selectedCategory = "all", selectedCity, selectedBrands = [] }: { selectedCategory?: number | "all"; selectedCity?: string | null; selectedBrands?: string[] }) {
+export default function CategoryNavigation({ selectedCategory = "all", selectedCity, selectedBrands = [], twoRows = false }: { selectedCategory?: number | "all"; selectedCity?: string | null; selectedBrands?: string[]; /** Phones show two rows of cards, so more categories are visible at once. */ twoRows?: boolean }) {
   const { citySlug: routeCitySlug } = useParams();
   const citySlug = routeCitySlug || getCityByName(selectedCity)?.slug;
   const { data } = useQuery({ queryKey: [...publicCategoriesKey, "navigation"], queryFn: getPublicServiceCategories, staleTime: 60_000 });
@@ -46,7 +46,7 @@ export default function CategoryNavigation({ selectedCategory = "all", selectedC
   }, [selectedCategory, categories.length]);
 
   const scroll = (direction: number) => track.current?.scrollBy({ left: direction * track.current.clientWidth * 0.75, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
-  const cardClass = (selected: boolean) => `group flex w-24 shrink-0 flex-col overflow-hidden rounded-xl border bg-card text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-28 ${selected ? "border-primary ring-1 ring-primary text-primary" : "border-border hover:border-primary/50"}`;
+  const cardClass = (selected: boolean) => `group flex w-24 shrink-0 flex-col overflow-hidden rounded-xl border bg-card text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-28 ${selected ? "border-primary ring-1 ring-primary text-primary" : "border-border hover:border-primary/50"}${twoRows ? " max-sm:w-auto" : ""}`;
 
   return (
     <section aria-label="სერვისის კატეგორიები" className="min-w-0">
@@ -58,7 +58,7 @@ export default function CategoryNavigation({ selectedCategory = "all", selectedC
         </div>
       </div>
       <nav aria-label="კატეგორიების არჩევა">
-        <div ref={track} className="relative flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-3 pt-1 sm:gap-3" style={{ scrollbarWidth: "thin" }}>
+        <div ref={track} className={`relative flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-3 pt-1 sm:gap-3${twoRows ? " max-sm:grid max-sm:grid-flow-col max-sm:grid-rows-2 max-sm:auto-cols-[31%]" : ""}`} style={{ scrollbarWidth: "thin" }}>
           <a href={cataloguePath({ citySlug, brands: selectedBrands })} rel={citySlug && selectedBrands.length ? "nofollow" : undefined} ref={selectedCategory === "all" ? active : undefined} aria-current={selectedCategory === "all" ? "page" : undefined} className={cardClass(selectedCategory === "all")}>
             <span className="flex aspect-[4/3] items-center justify-center bg-primary/5"><LayoutGrid aria-hidden="true" className="h-8 w-8 text-primary" /></span>
             <span className="flex min-h-12 items-center justify-center px-1.5 py-2 text-[11px] font-semibold leading-tight">ყველა სერვისი</span>

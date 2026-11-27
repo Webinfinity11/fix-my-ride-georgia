@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage } from '@/utils/imageCompression';
 
 interface BlogImageUploadProps {
   currentImage: string;
@@ -26,12 +27,13 @@ export const BlogImageUpload = ({ currentImage, onImageUploaded }: BlogImageUplo
     try {
       setUploading(true);
 
-      const fileExt = file.name.split('.').pop();
+      const small = file.type === 'image/gif' ? file : await compressImage(file, { maxWidth: 1600, maxHeight: 1600 });
+      const fileExt = small.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('blog-images')
-        .upload(fileName, file);
+        .upload(fileName, small);
 
       if (uploadError) throw uploadError;
 

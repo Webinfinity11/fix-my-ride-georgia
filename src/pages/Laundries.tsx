@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { useState, useEffect, useRef } from "react";
 import { useLaundries } from "@/hooks/useLaundries";
 import LaundryCard from "@/components/laundry/LaundryCard";
@@ -216,7 +217,7 @@ const Laundries = () => {
                 
                 <!-- Laundry Photo -->
                 ${laundry.photos && laundry.photos.length > 0 ? 
-                  `<img src="${laundry.photos[0]}" 
+                  `<img src="${getOptimizedImageUrl(laundry.photos[0], 400, 300, 70, { cropToFit: true })}" 
                         alt="${laundry.name}" 
                         style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : 
                   `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; color: #0891B2; font-size: 14px; text-align: center;">

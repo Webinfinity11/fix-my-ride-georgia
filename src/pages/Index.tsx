@@ -1,5 +1,4 @@
 import Header from "@/components/layout/Header";
-import TopRibbon from "@/components/layout/TopRibbon";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import SEOHead from "@/components/seo/SEOHead";
 import { OrganizationSchema, WebSiteSchema, BreadcrumbSchema } from "@/components/seo/StructuredData";
@@ -28,7 +27,6 @@ const Index = () => {
       <WebSiteSchema />
       <BreadcrumbSchema items={[{ name: "მთავარი", url: "https://fixup.ge/" }]} />
 
-      <TopRibbon />
       <Header />
 
       <main className="flex-grow flex flex-col lg:min-h-0">

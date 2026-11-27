@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { Check, CheckCircle2, Crown, Loader2, Zap } from "lucide-react";
+import { Check, CheckCircle2, Crown, Loader2, Phone, Zap } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import SEOHead from "@/components/seo/SEOHead";
 import { Button } from "@/components/ui/button";
@@ -136,6 +136,16 @@ const Vip = () => {
             <p className="text-center text-xs text-muted-foreground">გადახდა აქ არ ხდება. ნომერს მხოლოდ თქვენთან დასაკავშირებლად გამოვიყენებთ.</p>
           </form>
         )}
+
+        <section aria-labelledby="banner-ads" className="mt-8 rounded-xl border bg-card p-5 text-center">
+          <h2 id="banner-ads" className="text-lg font-semibold">საბანერე რეკლამა</h2>
+          <p className="mt-1 text-balance text-sm text-muted-foreground">
+            გსურთ თქვენი ბანერი ჩვენს საიტზე? თავისუფალი პოზიციებისა და პირობების გასაგებად დაგვირეკეთ.
+          </p>
+          <Button asChild variant="outline" size="lg" className="mt-4 w-full sm:w-auto">
+            <a href="tel:+995574047994"><Phone className="mr-2 h-4 w-4" />+995 574 04 79 94</a>
+          </Button>
+        </section>
       </div>
     </Layout>
   );

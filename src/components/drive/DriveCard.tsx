@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { MapPin, Phone, Image as ImageIcon } from "lucide-react";
 import { LazyImage } from "@/components/ui/lazy-image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +23,7 @@ export const DriveCard = ({ drive, onClick }: DriveCardProps) => {
       {firstPhoto && (
         <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
           <LazyImage
-            src={firstPhoto}
+            src={getOptimizedImageUrl(firstPhoto, 400, 300, 70, { cropToFit: true })}
             alt={drive.name}
             width={400}
             height={192}

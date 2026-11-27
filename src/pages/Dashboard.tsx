@@ -117,10 +117,7 @@ const Dashboard = () => {
       <div className="min-h-screen flex flex-col">
         {/* Private area — never index */}
         <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
-        {/* Desktop Header - only show on desktop */}
-        <div className="hidden md:block">
-          <Header />
-        </div>
+        <Header />
 
         {/* Mobile Header for Mechanic - only show on mobile */}
         {user.role === "mechanic" && <MechanicMobileHeader />}

@@ -58,6 +58,11 @@ function harness(initial) {
     exports,
     require(name) {
       if (name === '@/utils/serviceModels') return loadModelHelpers();
+      if (name === '@/lib/phoneSearch') {
+        const helpers = {};
+        vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/lib/phoneSearch.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, { exports: helpers });
+        return helpers;
+      }
       if (name === 'react') return react;
       if (name === '@/hooks/useCatalogueState') return { useCatalogueState: react.useState, useCatalogueResume: () => ({ current: false }) };
       if (name === '@/utils/serviceRotation') {

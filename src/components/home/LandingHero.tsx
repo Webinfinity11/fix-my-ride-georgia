@@ -1,11 +1,10 @@
 import { NearViewport } from "@/components/ui/near-viewport";
 import mapLayerCounts from "virtual:map-layer-counts";
-import { getPublicServiceCategories, getPublicServiceCities } from "@/lib/serviceMetadata";
+import CategoryNavigation from "@/components/services/CategoryNavigation";
+import HomeQuickFilters from "@/components/home/HomeQuickFilters";
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createPortal } from "react-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { trackSearch } from "@/utils/tracking";
 import { useFuelImporters } from "@/hooks/useFuelImporters";
 
 const MiniServiceMap = lazy(() => import("./MiniServiceMap"));
@@ -18,7 +17,6 @@ const Icon = ({ d, fill = false, className = "h-5 w-5", stroke = 2 }: IconProps 
   </svg>
 );
 const IWrench = (p: IconProps) => <Icon {...p} d="M14.7 6.3a4 4 0 0 1 5 5L8 23l-6-6L14.7 6.3z M14.7 6.3l3 3" />;
-const ISearch = (p: IconProps) => <Icon {...p} d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14z M20 20l-3.5-3.5" />;
 const IMap = (p: IconProps) => <Icon {...p} d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z M9 4v14 M15 6v14" />;
 const IFuel = (p: IconProps) => <Icon {...p} d="M4 21h10V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v16z M14 9h3a2 2 0 0 1 2 2v6a2 2 0 0 0 2 2 M17 5l2 2" />;
 const IBolt = (p: IconProps) => <Icon {...p} d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" />;
@@ -28,11 +26,7 @@ const IShield = (p: IconProps) => <Icon {...p} d="M12 2 4 5v7c0 5 3.5 9 8 10 4.5
 const ICard = (p: IconProps) => <Icon {...p} d="M3 7h18v12H3z M3 11h18 M6 16h4" />;
 const IDealer = (p: IconProps) => <Icon {...p} d="M4 12l2-6h12l2 6 M4 12v6h3v-2h10v2h3v-6 M4 12h16 M9 16h6" />;
 const IBriefcase = (p: IconProps) => <Icon {...p} d="M3 7h18v13H3z M9 7V4h6v3 M3 12h18" />;
-const IX = (p: IconProps) => <Icon {...p} d="M6 6l12 12 M18 6L6 18" />;
 const IArrow = (p: IconProps) => <Icon {...p} d="M5 12h14 M13 5l7 7-7 7" />;
-const IPin = (p: IconProps) => <Icon {...p} d="M12 22s-7-7-7-13a7 7 0 1 1 14 0c0 6-7 13-7 13z M12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />;
-const IGrid = (p: IconProps) => <Icon {...p} d="M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z" />;
-const IDown = (p: IconProps) => <Icon {...p} d="M6 9l6 6 6-6" />;
 const ISpark = (p: IconProps) => <Icon {...p} d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6z" />;
 const IRefresh = (p: IconProps) => <Icon {...p} d="M4 12a8 8 0 0 1 14-5.3L21 4 M21 4v6h-6 M20 12a8 8 0 0 1-14 5.3L3 20 M3 20v-6h6" />;
 
@@ -45,11 +39,6 @@ const PulseDot = ({ color = "accent" }: { color?: "success" | "accent" | "info" 
     </span>
   );
 };
-
-const POPULAR = [
-  "ძრავის შეკეთება", "ზეთის შეცვლა", "დიაგნოსტიკა", "ვულკანიზაცია",
-  "ელექტროობა", "სამღებრო სამუშაოები", "სავალი ნაწილის შეკეთება", "კონდინციონერი (ფრეონი)",
-];
 
 const VERTICALS = [
   { l: "ხელოსანი", v: "512 აქტიური", i: IWrench, c: "bg-brand-50 text-brand-700", to: "/services" },
@@ -88,19 +77,9 @@ const FUEL: Record<"premium" | "regular" | "diesel", FuelRow[]> = {
 };
 const FUEL_LABELS: Record<"premium" | "regular" | "diesel", string> = { premium: "ბენ. 95", regular: "ბენ. 92", diesel: "დიზელი" };
 
-interface Category { id: string; name: string }
-
 const LandingHero = () => {
   const navigate = useNavigate();
 
-  const [inputValue, setInputValue] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedCity, setSelectedCity] = useState<string>("all");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [catOpen, setCatOpen] = useState(false);
-  const [cityOpen, setCityOpen] = useState(false);
-  const [catFilter, setCatFilter] = useState("");
 
   const [bentoTab, setBentoTab] = useState<"map" | "fuel">("map");
   const [mapTab, setMapTab] = useState<"mechanic" | "fuel" | "ev">("mechanic");
@@ -114,49 +93,17 @@ const LandingHero = () => {
 
   useEffect(() => {
     let active = true;
-    // Each result renders as soon as it arrives; slow metadata does not hold up the rest.
-    void Promise.all([
-      (async () => {
-        const data = await getPublicServiceCategories();
-        if (active && data) setCategories(data.map(c => ({ id: String(c.id), name: c.name })));
-      })(),
-      (async () => {
-        const data = await getPublicServiceCities();
-        if (active) setCities(data);
-      })(),
-      (async () => {
-        const { count } = await supabase
-          .from("mechanic_services")
-          .select("id", { count: "exact", head: true })
-          .eq("is_active", true)
-          .not("latitude", "is", null)
-          .not("longitude", "is", null);
-        if (active && typeof count === "number") setServiceCount(count);
-      })(),
-    ]).catch(error => console.error("Homepage metadata failed:", error));
+    void (async () => {
+      const { count } = await supabase
+        .from("mechanic_services")
+        .select("id", { count: "exact", head: true })
+        .eq("is_active", true)
+        .not("latitude", "is", null)
+        .not("longitude", "is", null);
+      if (active && typeof count === "number") setServiceCount(count);
+    })().catch(error => console.error("Homepage metadata failed:", error));
     return () => { active = false; };
   }, []);
-
-  const categoryName = selectedCategory === "all" ? null : categories.find((c) => c.id === selectedCategory)?.name ?? null;
-  const cityLabel = selectedCity === "all" ? null : selectedCity;
-  const hasActive = !!(inputValue || categoryName || cityLabel);
-  const popularExisting = POPULAR.filter((p) => categories.some((c) => c.name === p));
-
-  const handleSearch = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const q = inputValue.trim();
-    if (q) trackSearch(q, "home");
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (selectedCategory !== "all") params.set("category", selectedCategory);
-    if (selectedCity !== "all") params.set("city", selectedCity);
-    navigate(`/services${params.toString() ? `?${params}` : ""}`);
-  };
-
-  const pickCategoryByName = (name: string) => {
-    const c = categories.find((x) => x.name === name);
-    if (c) setSelectedCategory(c.id);
-  };
 
   const detectLocation = () => {
     if (!navigator.geolocation) return;
@@ -212,11 +159,11 @@ const LandingHero = () => {
         <svg width="360" height="360" viewBox="0 0 24 24" fill="currentColor"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" /></svg>
       </div>
 
-      <div className="relative z-10 lg:flex-1 lg:min-h-0 flex flex-col lg:justify-center overflow-hidden">
+      <div className="relative z-10 lg:flex-1 lg:min-h-0 flex flex-col lg:[justify-content:safe_center] overflow-x-hidden lg:overflow-y-auto">
       <div className="max-w-[1280px] mx-auto w-full px-4 lg:px-8 py-5 lg:py-4">
 
         {/* Channel-style live bar */}
-        <div className="flex items-center justify-between mb-5 gap-4 flex-wrap">
+        <div className="hidden md:flex items-center justify-between mb-5 gap-4 flex-wrap">
           <div className="inline-flex items-center gap-3">
             <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-pill bg-ink-900 text-white text-[10px] font-bold uppercase tracking-[0.18em]">
               <PulseDot color="accent" />fixup.live
@@ -231,7 +178,7 @@ const LandingHero = () => {
         </div>
 
         {/* Verticals marquee */}
-        <div className="overflow-hidden mb-5" onMouseEnter={() => (marqueePaused.current = true)} onMouseLeave={() => (marqueePaused.current = false)}>
+        <div className="hidden md:block overflow-hidden mb-5" onMouseEnter={() => (marqueePaused.current = true)} onMouseLeave={() => (marqueePaused.current = false)}>
           <div className="flex gap-2 w-max" style={{ animation: "ldMarquee 32s linear infinite" }}
             onMouseEnter={(e) => (e.currentTarget.style.animationPlayState = "paused")}
             onMouseLeave={(e) => (e.currentTarget.style.animationPlayState = "running")}>
@@ -252,68 +199,17 @@ const LandingHero = () => {
         <div className="grid grid-cols-12 gap-3 md:gap-4">
 
           {/* A · Search (dark) */}
-          <div className="col-span-12 lg:col-span-7 rounded-card border border-brand-800 bg-brand-900 text-white p-5 md:p-6 relative overflow-hidden flex flex-col justify-center">
-            <div aria-hidden className="pointer-events-none absolute -top-8 -right-8 w-36 h-36 text-white opacity-[0.10]" style={{ animation: "ldGearFloat 9s ease-in-out infinite" }}>
+          <div className="col-span-12 lg:col-span-7 min-w-0 md:rounded-card md:border md:border-brand-800 md:bg-brand-900 md:text-white md:p-6 relative overflow-hidden flex flex-col justify-center">
+            <div aria-hidden className="hidden md:block pointer-events-none absolute -top-8 -right-8 w-36 h-36 text-white opacity-[0.10]" style={{ animation: "ldGearFloat 9s ease-in-out infinite" }}>
               <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="60" cy="60" r="46" /><circle cx="60" cy="60" r="20" /><line x1="60" y1="14" x2="60" y2="28" /><line x1="60" y1="92" x2="60" y2="106" /><line x1="14" y1="60" x2="28" y2="60" /><line x1="92" y1="60" x2="106" y2="60" /></svg>
             </div>
-            <h1 className="text-[26px] md:text-[34px] font-bold leading-tight tracking-tight text-white mb-1">იპოვე ავტოხელოსანი</h1>
-            <div className="text-[10.5px] uppercase tracking-[0.2em] font-semibold text-accent-300 mb-3">მოძებნე სერვისი საქართველოში</div>
+            <h1 className="text-[26px] md:text-[34px] font-bold leading-tight tracking-tight text-ink-900 md:text-white mb-3 md:mb-1">იპოვე ავტოხელოსანი</h1>
+            <div className="hidden md:block text-[10.5px] uppercase tracking-[0.2em] font-semibold text-accent-300 mb-3">მოძებნე სერვისი საქართველოში</div>
 
-            <form onSubmit={handleSearch}>
-              <div className="rounded-2xl bg-white border border-ink-200/60 shadow-[0_4px_22px_rgba(255,255,255,0.12)] p-3 space-y-2">
-                <div className="relative">
-                  <ISearch className="h-4 w-4 absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none" />
-                  <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="ძიება სერვისში, კატეგორიაში, ხელოსნის სახელსა და ნომერში..."
-                    className="w-full h-12 pl-11 pr-10 rounded-xl bg-white border border-ink-200 text-[13.5px] text-ink-900 placeholder:text-ink-400 focus:outline-none focus:border-ink-900 focus:ring-2 focus:ring-brand-500/20 transition" />
-                  {inputValue && (
-                    <button type="button" onClick={() => setInputValue("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full text-ink-400 hover:text-ink-900 hover:bg-ink-100 grid place-items-center"><IX className="h-3.5 w-3.5" /></button>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <button type="button" onClick={() => setCatOpen(true)}
-                    className={`h-12 px-4 rounded-xl text-left inline-flex items-center gap-2 transition border ${categoryName ? "bg-brand-50/60 border-brand-200" : "bg-white border-ink-200 hover:border-ink-900"}`}>
-                    <IGrid className={`h-4 w-4 shrink-0 ${categoryName ? "text-brand-600" : "text-ink-400"}`} />
-                    <span className={`text-[13.5px] font-medium truncate flex-1 ${categoryName ? "text-brand-800" : "text-ink-700"}`}>{categoryName ?? "ყველა კატეგორია"}</span>
-                    <IDown className="h-3.5 w-3.5 text-ink-400 shrink-0" />
-                  </button>
-                  <button type="button" onClick={() => setCityOpen(true)}
-                    className={`h-12 px-4 rounded-xl text-left inline-flex items-center gap-2 transition border ${cityLabel ? "bg-brand-50/60 border-brand-200" : "bg-white border-ink-200 hover:border-ink-900"}`}>
-                    <IPin className={`h-4 w-4 shrink-0 ${cityLabel ? "text-brand-600" : "text-ink-400"}`} />
-                    <span className={`text-[13.5px] font-medium truncate flex-1 ${cityLabel ? "text-brand-800" : "text-ink-700"}`}>{cityLabel ?? "ყველა ქალაქი"}</span>
-                    <IDown className="h-3.5 w-3.5 text-ink-400 shrink-0" />
-                  </button>
-                </div>
-
-                <button type="submit" className="w-full h-12 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-[14px] font-bold inline-flex items-center justify-center gap-2 transition">
-                  <ISearch className="h-4 w-4" />ძიება
-                </button>
-
-                {hasActive && (
-                  <div className="mt-1 px-1.5 pt-2 border-t border-ink-100 flex items-center gap-2 flex-wrap">
-                    <span className="text-[10.5px] uppercase tracking-[0.14em] font-bold text-ink-400 shrink-0">აქტიური:</span>
-                    {inputValue && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-pill bg-ink-100 text-ink-800 text-[11.5px] font-semibold">„{inputValue.slice(0, 22)}"<button type="button" onClick={() => setInputValue("")}><IX className="h-3 w-3" /></button></span>}
-                    {categoryName && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-pill bg-brand-50 text-brand-700 text-[11.5px] font-semibold"><IGrid className="h-3 w-3" />{categoryName}<button type="button" onClick={() => setSelectedCategory("all")}><IX className="h-3 w-3" /></button></span>}
-                    {cityLabel && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-pill bg-brand-50 text-brand-700 text-[11.5px] font-semibold"><IPin className="h-3 w-3" />{cityLabel}<button type="button" onClick={() => setSelectedCity("all")}><IX className="h-3 w-3" /></button></span>}
-                    <button type="button" onClick={() => { setInputValue(""); setSelectedCategory("all"); setSelectedCity("all"); }} className="ml-auto text-[11px] text-ink-300 hover:text-white underline underline-offset-2 font-semibold">გასუფთავება</button>
-                  </div>
-                )}
-              </div>
-
-              {popularExisting.length > 0 && (
-                <div className="mt-4 flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                  <span className="text-[10px] uppercase tracking-[0.14em] font-bold text-ink-300 shrink-0">პოპულარული:</span>
-                  {popularExisting.slice(0, 6).map((p) => {
-                    const active = categoryName === p;
-                    return (
-                      <button key={p} type="button" onClick={() => (active ? setSelectedCategory("all") : pickCategoryByName(p))}
-                        className={`shrink-0 whitespace-nowrap h-8 px-3 rounded-pill border text-[11.5px] font-semibold transition ${active ? "bg-white border-white text-brand-900" : "bg-brand-800 border-brand-700 text-ink-100 hover:bg-brand-700"}`}>{p}</button>
-                    );
-                  })}
-                </div>
-              )}
-            </form>
+            <div className="min-w-0 rounded-2xl border border-ink-200 bg-white p-2.5 text-ink-900 md:border-0 md:p-3 md:shadow-[0_4px_22px_rgba(255,255,255,0.12)]">
+              <CategoryNavigation twoRows />
+              <HomeQuickFilters />
+            </div>
           </div>
 
           {/* B · Map / Fuel tile */}
@@ -439,85 +335,6 @@ const LandingHero = () => {
         </div>
       </div>
 
-      {/* Category picker */}
-      {catOpen && createPortal(
-        <div className="fixed inset-0 z-[100000] flex items-end md:items-center justify-center p-0 md:p-4" onClick={() => { setCatOpen(false); setCatFilter(""); }}>
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          <div onClick={(e) => e.stopPropagation()} className="relative w-full md:w-[70vw] md:max-w-[1100px] max-h-[80vh] md:max-h-[680px] rounded-t-2xl md:rounded-2xl bg-white shadow-float border border-ink-200 flex flex-col">
-            <div className="md:hidden flex justify-center pt-2.5 pb-1 shrink-0"><span className="h-1.5 w-10 rounded-full bg-ink-200" /></div>
-            <div className="px-5 pt-3 pb-3 border-b border-ink-100 flex items-center justify-between">
-              <div><div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">აირჩიე</div><h3 className="text-[18px] font-bold text-ink-900">კატეგორია</h3></div>
-              <button type="button" onClick={() => { setCatOpen(false); setCatFilter(""); }} className="h-9 w-9 rounded-full grid place-items-center hover:bg-ink-100 text-ink-500"><IX className="h-4.5 w-4.5" /></button>
-            </div>
-            <div className="px-5 pt-3 shrink-0">
-              <div className="relative"><ISearch className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" /><input autoFocus value={catFilter} onChange={(e) => setCatFilter(e.target.value)} placeholder="ფილტრი..." className="w-full h-11 pl-10 pr-9 rounded-xl bg-ink-50 border border-ink-200 text-[13.5px] focus:outline-none focus:bg-white focus:ring-2 focus:ring-brand-500/20" /></div>
-              <button type="button" onClick={() => { setSelectedCategory("all"); setCatOpen(false); setCatFilter(""); }} className={`mt-2 w-full flex items-center gap-3 px-3 h-12 rounded-xl border text-left transition ${selectedCategory === "all" ? "bg-brand-50 border-brand-200" : "bg-white border-ink-200 hover:border-ink-300"}`}>
-                <span className={`h-5 w-5 rounded-md grid place-items-center ${selectedCategory === "all" ? "bg-brand-500 text-white" : "border border-ink-300"}`}>{selectedCategory === "all" && <IArrow className="h-3 w-3 rotate-90" />}</span>
-                <IGrid className="h-4 w-4 text-ink-500" /><span className="text-[13.5px] font-semibold text-ink-900 flex-1">ყველა კატეგორია</span><span className="text-[11px] text-ink-400 font-mono">{categories.length}</span>
-              </button>
-            </div>
-            <div className="px-5 py-3 overflow-y-auto">
-              {!catFilter.trim() && popularExisting.length > 0 && (
-                <div className="mb-4">
-                  <div className="flex items-center gap-1.5 mb-2 text-[11px] uppercase tracking-[0.14em] font-bold text-ink-400">
-                    <ISpark className="h-3.5 w-3.5 text-accent-500" />პოპულარული
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {popularExisting.map((p) => (
-                      <button key={p} type="button" onClick={() => { pickCategoryByName(p); setCatOpen(false); setCatFilter(""); }}
-                        className="h-8 px-3 rounded-pill border border-ink-200 bg-white text-[11.5px] font-semibold text-ink-700 hover:border-brand-400 hover:text-brand-700 transition">
-                        {p}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {!catFilter.trim() && (
-                <div className="text-[11px] uppercase tracking-[0.14em] font-bold text-ink-400 mb-2">
-                  ყველა კატეგორია <span className="text-ink-300 font-mono">{categories.length}</span>
-                </div>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1.5">
-                {categories.filter((c) => !catFilter.trim() || c.name.toLowerCase().includes(catFilter.trim().toLowerCase())).map((c) => {
-                  const active = selectedCategory === c.id;
-                  return (
-                    <button key={c.id} type="button" onClick={() => { setSelectedCategory(c.id); setCatOpen(false); setCatFilter(""); }} className={`w-full flex items-center gap-3 px-3.5 h-11 rounded-xl border text-left transition ${active ? "bg-brand-50 border-brand-200 text-brand-700" : "bg-white border-ink-200 hover:bg-ink-50"}`}>
-                      <span className="text-[13px] font-medium truncate">{c.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>, document.body)}
-
-      {/* City picker */}
-      {cityOpen && createPortal(
-        <div className="fixed inset-0 z-[100000] flex items-end md:items-center justify-center p-0 md:p-4" onClick={() => setCityOpen(false)}>
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          <div onClick={(e) => e.stopPropagation()} className="relative w-full md:w-[70vw] md:max-w-[720px] rounded-t-2xl md:rounded-2xl bg-white shadow-float border border-ink-200">
-            <div className="md:hidden flex justify-center pt-2.5 pb-1"><span className="h-1.5 w-10 rounded-full bg-ink-200" /></div>
-            <div className="px-5 pt-3 pb-3 border-b border-ink-100 flex items-center justify-between">
-              <div><div className="text-[10px] uppercase tracking-[0.16em] font-bold text-ink-400">აირჩიე</div><h3 className="text-[18px] font-bold text-ink-900">ქალაქი</h3></div>
-              <button type="button" onClick={() => setCityOpen(false)} className="h-9 w-9 rounded-full grid place-items-center hover:bg-ink-100 text-ink-500"><IX className="h-4.5 w-4.5" /></button>
-            </div>
-            <div className="p-5">
-              <button type="button" onClick={() => { setSelectedCity("all"); setCityOpen(false); }} className={`w-full flex items-center gap-3 px-3 h-12 rounded-xl border text-left mb-2 ${selectedCity === "all" ? "bg-brand-50 border-brand-200" : "bg-white border-ink-200 hover:border-ink-300"}`}>
-                <IPin className="h-4 w-4 text-ink-500" /><span className="text-[13.5px] font-semibold text-ink-900">ყველა ქალაქი</span>
-              </button>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
-                {cities.map((c) => {
-                  const active = selectedCity === c;
-                  return (
-                    <button key={c} type="button" onClick={() => { setSelectedCity(c); setCityOpen(false); }} className={`w-full flex items-center gap-2.5 px-3 h-11 rounded-xl border text-left transition ${active ? "bg-brand-50 border-brand-200 text-brand-700" : "bg-white border-ink-200 hover:bg-ink-50"}`}>
-                      <span className="text-[13px] font-medium truncate">{c}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>, document.body)}
     </section>
   );
 };
