@@ -209,9 +209,6 @@ const LandingHero = () => {
             <div className="min-w-0 rounded-2xl border border-ink-200 bg-white p-2.5 text-ink-900 md:border-0 md:p-3 md:shadow-[0_4px_22px_rgba(255,255,255,0.12)]">
               <CategoryNavigation twoRows />
               <HomeQuickFilters />
-              <Link to="/request" className="mt-2 flex h-11 items-center justify-center rounded-xl bg-accent-500 text-sm font-bold text-white hover:bg-accent-600">
-                დატოვე განაცხადი
-              </Link>
             </div>
           </div>
 
