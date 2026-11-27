@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { clock, priceFor, promoActive, useVipPricing, type VipPlan } from "@/lib/vipPricing";
 
 /**
@@ -7,9 +6,10 @@ import { clock, priceFor, promoActive, useVipPricing, type VipPlan } from "@/lib
  * "compact" fits inside buttons.
  */
 export const VipPrice = ({ plan, compact = false, className = "" }: { plan: VipPlan; compact?: boolean; className?: string }) => {
-  const { pricing, now } = useVipPricing();
+  const { pricing, now, loading } = useVipPricing();
   const { base, final, discounted, percent } = priceFor(pricing, plan, now);
   const period = pricing.duration_days === 30 ? "1 თვე" : `${pricing.duration_days} დღე`;
+  if (loading) return <span aria-hidden="true" className={`block animate-pulse rounded bg-muted ${compact ? "h-5 w-20" : "h-10 w-40"} ${className}`} />;
   return (
     <span className={`flex flex-wrap items-baseline gap-x-2 gap-y-1 ${className}`}>
       {discounted && (
@@ -34,12 +34,7 @@ const NEON = "0 0 4px #fff, 0 0 10px #22d3ee, 0 0 22px #22d3ee, 0 0 40px #0891b2
 
 /** Neon countdown, ticking every second while the promotion runs. */
 export const VipPromoNote = ({ className = "" }: { className?: string }) => {
-  const { pricing } = useVipPricing();
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const { pricing, now, preview } = useVipPricing();
   if (!promoActive(pricing, now)) return null;
   return (
     <div className={`rounded-xl border border-cyan-400/60 bg-slate-950 px-4 py-3 text-center shadow-[0_0_18px_rgba(34,211,238,0.45)] ${className}`}>
@@ -50,6 +45,7 @@ export const VipPromoNote = ({ className = "" }: { className?: string }) => {
       <p role="timer" className="mt-1 font-mono text-4xl font-bold tabular-nums tracking-widest text-cyan-100" style={{ textShadow: NEON }}>
         {clock(pricing.promo_ends_at!, now)}
       </p>
+      {preview && <p className="mt-2 text-xs text-amber-300">ლოკალური საცდელი ხედი: საიტზე აქცია ჯერ გამორთულია</p>}
     </div>
   );
 };

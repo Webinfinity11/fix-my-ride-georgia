@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { promoActive, timeLeft, useVipPricing } from "@/lib/vipPricing";
+import { clock, promoActive, useVipPricing } from "@/lib/vipPricing";
 
 const STATUSES = [
   { id: "new", label: "ახალი" },
@@ -20,7 +20,7 @@ const listingId = (value: string) => Number(value.trim().match(/(?:^|\/service\/
 
 export const VipLeadsPanel = () => {
   const client = useQueryClient();
-  const { pricing, now } = useVipPricing();
+  const { pricing, now } = useVipPricing({ real: true });
   const active = promoActive(pricing, now);
 
   const leads = useQuery({
@@ -91,7 +91,7 @@ export const VipLeadsPanel = () => {
         <div>
           <CardTitle className="text-lg">მოთხოვნები /vip გვერდიდან</CardTitle>
           <p className="mt-1 text-sm text-muted-foreground">
-            {active ? `აქცია მოქმედებს, დარჩა ${timeLeft(pricing.promo_ends_at!, now)}` : "აქცია ამჟამად გამორთულია"}
+            {active ? `აქცია მოქმედებს, დარჩა ${clock(pricing.promo_ends_at!, now)}` : "აქცია ამჟამად გამორთულია"}
           </p>
         </div>
         {active ? (

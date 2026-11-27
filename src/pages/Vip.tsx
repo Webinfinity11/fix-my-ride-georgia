@@ -77,9 +77,8 @@ const Vip = () => {
         url="https://fixup.ge/vip"
       />
       <div className="container mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-2xl font-bold md:text-3xl">ავტო სერვისის რეკლამა</h1>
-        <p className="mt-2 text-muted-foreground">აირჩიეთ პაკეტი, დაგვიტოვეთ ნომერი და ჩვენ დაგიკავშირდებით.</p>
-        <VipPromoNote className="mt-4" />
+        <h1 className="text-balance text-center text-3xl font-extrabold md:text-4xl">ავტო სერვისის რეკლამა</h1>
+        <VipPromoNote className="mt-5" />
 
         {state.price !== null ? (
           <div role="status" className="mt-6 rounded-xl border bg-card p-6 text-center">

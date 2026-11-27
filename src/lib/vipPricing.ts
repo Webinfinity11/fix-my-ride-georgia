@@ -12,16 +12,14 @@ export type VipPricing = {
   promo_ends_at: string | null;
 };
 
-// Shown until the price list loads (and if it cannot): full price, no promotion.
-export const BASE_PRICING: VipPricing = {
+// Used if the price list cannot be loaded: full price, no promotion.
+const BASE_PRICING: VipPricing = {
   vip_price: 30, super_vip_price: 50, vip_discount_percent: 50, super_vip_discount_percent: 60, duration_days: 30, promo_ends_at: null,
 };
 
-// Local development only, and only while the price table does not exist yet:
-// shows how the promotion looks. A production build never uses it.
-const DEV_PREVIEW: VipPricing | null = import.meta.env.DEV
-  ? { ...BASE_PRICING, promo_ends_at: new Date(Date.now() + 24 * 3600e3).toISOString() }
-  : null;
+// Local development only: how the promotion will look while none is running.
+// It is labelled on screen, and a production build never has it.
+const DEV_PREVIEW_ENDS = import.meta.env.DEV ? new Date(Date.now() + 24 * 3600e3).toISOString() : null;
 
 export const promoActive = (p: VipPricing, now: number) =>
   !!p.promo_ends_at && Date.parse(p.promo_ends_at) > now;
@@ -33,15 +31,6 @@ export function priceFor(p: VipPricing, plan: VipPlan, now: number) {
   return { base, final, discounted: final < base, percent };
 }
 
-export function timeLeft(endsAt: string, now: number) {
-  const minutes = Math.max(0, Math.ceil((Date.parse(endsAt) - now) / 60000));
-  const days = Math.floor(minutes / 1440);
-  const hours = Math.floor((minutes % 1440) / 60);
-  if (days > 0) return `${days} დღე ${hours} სთ`;
-  if (hours > 0) return `${hours} სთ ${minutes % 60} წთ`;
-  return `${minutes} წთ`;
-}
-
 /** "23:59:07" until the promotion ends; never negative. */
 export function clock(endsAt: string, now: number) {
   const seconds = Math.max(0, Math.ceil((Date.parse(endsAt) - now) / 1000));
@@ -50,22 +39,29 @@ export function clock(endsAt: string, now: number) {
     .join(":");
 }
 
-export function useVipPricing() {
+/**
+ * The price list from the database and a clock that ticks every second.
+ * "real" skips the local preview (the admin panel must show the true state).
+ */
+export function useVipPricing({ real = false } = {}) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 30_000);
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
   const query = useQuery({
     queryKey: ["vip-pricing"],
     staleTime: 60_000,
-    retry: import.meta.env.DEV ? false : 3,
     queryFn: async () => {
       const { data, error } = await supabase.from("vip_pricing").select("*").single();
       if (error) throw error;
       return data as VipPricing;
     },
   });
-  const fallback = query.isError && DEV_PREVIEW ? DEV_PREVIEW : BASE_PRICING;
-  return { pricing: query.data ?? fallback, now, isLoading: query.isLoading };
+  // While loading, callers show no price at all: a full price must not flash
+  // for a moment before the promotional one.
+  const stored = query.data ?? BASE_PRICING;
+  const loading = query.isLoading;
+  const preview = !real && !!DEV_PREVIEW_ENDS && !loading && !promoActive(stored, now);
+  return { pricing: preview ? { ...stored, promo_ends_at: DEV_PREVIEW_ENDS } : stored, now, loading, preview };
 }
