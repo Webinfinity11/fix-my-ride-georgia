@@ -34,7 +34,7 @@ const NEON = "0 0 4px #fff, 0 0 10px #22d3ee, 0 0 22px #22d3ee, 0 0 40px #0891b2
 
 /** Neon countdown, ticking every second while the promotion runs. */
 export const VipPromoNote = ({ className = "" }: { className?: string }) => {
-  const { pricing, now, preview } = useVipPricing();
+  const { pricing, now } = useVipPricing();
   if (!promoActive(pricing, now)) return null;
   return (
     <div className={`rounded-xl border border-cyan-400/60 bg-slate-950 px-4 py-3 text-center shadow-[0_0_18px_rgba(34,211,238,0.45)] ${className}`}>
@@ -45,7 +45,6 @@ export const VipPromoNote = ({ className = "" }: { className?: string }) => {
       <p role="timer" className="mt-1 font-mono text-4xl font-bold tabular-nums tracking-widest text-cyan-100" style={{ textShadow: NEON }}>
         {clock(pricing.promo_ends_at!, now)}
       </p>
-      {preview && <p className="mt-2 text-xs text-amber-300">ლოკალური საცდელი ხედი: საიტზე აქცია ჯერ გამორთულია</p>}
     </div>
   );
 };
