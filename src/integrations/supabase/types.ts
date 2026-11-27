@@ -2162,6 +2162,67 @@ export type Database = {
         }
         Relationships: []
       }
+      vip_leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: number
+          mechanic_id: string | null
+          phone: string
+          plan: string
+          price_gel: number
+          service_id: number | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: never
+          mechanic_id?: string | null
+          phone: string
+          plan: string
+          price_gel: number
+          service_id?: number | null
+          status?: string
+        }
+        Update: {
+          service_id?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vip_leads_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "mechanic_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vip_pricing: {
+        Row: {
+          super_vip_discount_percent: number
+          vip_discount_percent: number
+          duration_days: number
+          id: boolean
+          promo_ends_at: string | null
+          super_vip_price: number
+          vip_price: number
+        }
+        Insert: {
+          super_vip_discount_percent?: number
+          vip_discount_percent?: number
+          duration_days?: number
+          id?: boolean
+          promo_ends_at?: string | null
+          super_vip_price?: number
+          vip_price?: number
+        }
+        Update: {
+          promo_ends_at?: string | null
+        }
+        Relationships: []
+      }
       vip_requests: {
         Row: {
           admin_message: string | null
@@ -2496,6 +2557,15 @@ export type Database = {
           p_user_id?: string
         }
         Returns: undefined
+      }
+      submit_vip_lead: {
+        Args: {
+          p_email?: string
+          p_phone: string
+          p_plan: string
+          p_service_id?: number
+        }
+        Returns: number
       }
       update_service_vip_status: {
         Args: {

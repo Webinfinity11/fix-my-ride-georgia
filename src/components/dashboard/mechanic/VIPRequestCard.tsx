@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Zap, Loader2 } from 'lucide-react';
+import { VipPrice, VipPromoNote } from '@/components/vip/VipPrice';
 import { useServiceVIPRequest, useCreateVIPRequest, VIPPlanType } from '@/hooks/useVIPRequests';
 
 interface VIPRequestCardProps {
@@ -96,21 +97,23 @@ export function VIPRequestCard({ serviceId }: VIPRequestCardProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+          <VipPromoNote className="mb-3" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Button
               type="button"
               onClick={() => handleRequestVIP('vip')}
               disabled={createRequest.isPending}
               variant="outline"
-              className="h-12 w-full justify-start whitespace-normal px-4 text-left hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950"
+              className="h-auto min-h-12 w-full justify-start whitespace-normal py-2 px-4 text-left hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950"
             >
-              <div className="flex items-center gap-2 font-semibold">
+              <div className="flex flex-wrap items-center gap-2 font-semibold">
                 {createRequest.isPending && createRequest.variables?.plan === 'vip' ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Crown className="h-4 w-4 text-yellow-500" />
                 )}
                 VIP
+                <VipPrice plan="vip" compact className="ml-2" />
               </div>
             </Button>
             
@@ -119,15 +122,16 @@ export function VIPRequestCard({ serviceId }: VIPRequestCardProps) {
               onClick={() => handleRequestVIP('super_vip')}
               disabled={createRequest.isPending}
               variant="outline"
-              className="h-12 w-full justify-start whitespace-normal px-4 text-left hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950"
+              className="h-auto min-h-12 w-full justify-start whitespace-normal py-2 px-4 text-left hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950"
             >
-              <div className="flex items-center gap-2 font-semibold">
+              <div className="flex flex-wrap items-center gap-2 font-semibold">
                 {createRequest.isPending && createRequest.variables?.plan === 'super_vip' ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Zap className="h-4 w-4 text-purple-500" />
                 )}
                 Super VIP
+                <VipPrice plan="super_vip" compact className="ml-2" />
               </div>
             </Button>
           </div>
