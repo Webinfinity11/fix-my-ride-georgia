@@ -18,7 +18,7 @@ const BASE_PRICING: VipPricing = {
 };
 
 // Local development only: how the promotion will look while none is running.
-// It is labelled on screen, and a production build never has it.
+// A production build never has it.
 const DEV_PREVIEW_ENDS = import.meta.env.DEV ? new Date(Date.now() + 24 * 3600e3).toISOString() : null;
 
 export const promoActive = (p: VipPricing, now: number) =>
@@ -63,5 +63,5 @@ export function useVipPricing({ real = false } = {}) {
   const stored = query.data ?? BASE_PRICING;
   const loading = query.isLoading;
   const preview = !real && !!DEV_PREVIEW_ENDS && !loading && !promoActive(stored, now);
-  return { pricing: preview ? { ...stored, promo_ends_at: DEV_PREVIEW_ENDS } : stored, now, loading, preview };
+  return { pricing: preview ? { ...stored, promo_ends_at: DEV_PREVIEW_ENDS } : stored, now, loading };
 }
