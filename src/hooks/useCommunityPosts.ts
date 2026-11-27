@@ -1,6 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { compressImage } from '@/utils/imageCompression';
+
+// Videos and animations stay as they are; photos are shrunk before upload.
+const prepared = async (file: File) =>
+  file.type === 'image/gif' ? file : await compressImage(file, { maxWidth: 1600, maxHeight: 1600 });
 
 export interface CommunityPost {
   post_id: string;
@@ -49,7 +54,8 @@ export function useCreatePost() {
       
       // Upload media if provided
       if (postData.mediaFile) {
-        const fileExt = postData.mediaFile.name.split('.').pop();
+        const upload = await prepared(postData.mediaFile);
+        const fileExt = upload.name.split('.').pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const { data: { user } } = await supabase.auth.getUser();
         
@@ -57,7 +63,7 @@ export function useCreatePost() {
         
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('community-media')
-          .upload(`${user.id}/${fileName}`, postData.mediaFile);
+          .upload(`${user.id}/${fileName}`, upload);
           
         if (uploadError) throw uploadError;
         
@@ -175,7 +181,8 @@ export function useUpdatePost() {
       
       // Upload media if provided
       if (mediaFile) {
-        const fileExt = mediaFile.name.split('.').pop();
+        const upload = await prepared(mediaFile);
+        const fileExt = upload.name.split('.').pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const { data: { user } } = await supabase.auth.getUser();
         
@@ -183,7 +190,7 @@ export function useUpdatePost() {
         
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('community-media')
-          .upload(`${user.id}/${fileName}`, mediaFile);
+          .upload(`${user.id}/${fileName}`, upload);
           
         if (uploadError) throw uploadError;
         

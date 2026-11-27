@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -54,7 +55,7 @@ export const BlogHero = ({ post }: BlogHeroProps) => {
           {post.featured_image && (
             <div className="relative aspect-[4/3] rounded-xl overflow-hidden">
               <img
-                src={post.featured_image}
+                src={getOptimizedImageUrl(post.featured_image, 1400, 900, 75)}
                 alt={post.title}
                 className="h-full w-full object-cover"
                 loading="eager"

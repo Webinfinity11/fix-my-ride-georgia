@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Camera, UserRound } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage } from '@/utils/imageCompression';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,8 +34,10 @@ export default function PersonalProfile() {
       if (photo) {
         const extension = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[photo.type];
         if (!extension || photo.size > 5 * 1024 * 1024) throw new Error('აირჩიეთ JPG, PNG ან WebP ფოტო, მაქსიმუმ 5 მბ.');
-        const path = `${user.id}/${crypto.randomUUID()}.${extension}`;
-        const { error } = await supabase.storage.from('avatars').upload(path, photo);
+        // Avatars are shown tiny in long lists: a full camera photo there freezes phones.
+        const small = await compressImage(photo, { maxWidth: 512, maxHeight: 512 });
+        const path = `${user.id}/${crypto.randomUUID()}.${small === photo ? extension : 'webp'}`;
+        const { error } = await supabase.storage.from('avatars').upload(path, small);
         if (error) throw error;
         uploadedPath = path;
         avatarUrl = supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl;

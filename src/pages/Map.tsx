@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { useQuery } from "@tanstack/react-query";
 import { publicServiceCitiesOptions } from "@/lib/serviceMetadata";
 import mapLayerCounts from "virtual:map-layer-counts";
@@ -592,7 +593,7 @@ const Map = () => {
                 <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px; color: #1a1a1a; line-height: 1.2;">${esc(service.name)}</h3>
                 
                 <!-- Service Photo -->
-                ${service.photos && service.photos.length > 0 ? `<img src="${safeUrl(service.photos[0])}" 
+                ${service.photos && service.photos.length > 0 ? `<img src="${safeUrl(getOptimizedImageUrl(service.photos[0], 400, 300, 70, { cropToFit: true }))}" 
                         alt="${esc(service.name)}" 
                         width="250" 
                         height="120"
@@ -697,7 +698,7 @@ const Map = () => {
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
                 <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${esc(laundry.name)}</h3>
-                ${laundry.photos?.[0] ? `<img src="${safeUrl(laundry.photos[0])}" alt="${esc(laundry.name)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🚿</div>`}
+                ${laundry.photos?.[0] ? `<img src="${safeUrl(getOptimizedImageUrl(laundry.photos[0], 400, 300, 70, { cropToFit: true }))}" alt="${esc(laundry.name)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : `<div style="width: 100%; height: 120px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%); border-radius: 6px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">🚿</div>`}
                 ${laundry.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${esc(laundry.description.substring(0, 120))}</p>` : ''}
                 ${laundry.address ? `<div style="margin-bottom: 12px;">📍 ${esc(laundry.address)}</div>` : ''}
                 ${laundry.contact_number ? `<button onclick="window.open('tel:${esc(laundry.contact_number)}', '_self')" style="background: #0891B2; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">
@@ -740,7 +741,7 @@ const Map = () => {
             }).addTo(map).bindPopup(`
               <div style="max-width: 280px; min-width: 250px;">
                 <h3 style="margin: 0 0 12px 0; font-weight: 600; font-size: 16px;">${esc(drive.name)}</h3>
-                ${drive.photos?.[0] ? `<img src="${safeUrl(drive.photos[0])}" alt="${esc(drive.name)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : ''}
+                ${drive.photos?.[0] ? `<img src="${safeUrl(getOptimizedImageUrl(drive.photos[0], 400, 300, 70, { cropToFit: true }))}" alt="${esc(drive.name)}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 6px; margin-bottom: 12px;" />` : ''}
                 ${drive.description ? `<p style="margin: 0 0 12px 0; color: #666; font-size: 14px;">${esc(drive.description.substring(0, 120))}</p>` : ''}
                 ${drive.address ? `<div style="margin-bottom: 12px;">📍 ${esc(drive.address)}</div>` : ''}
                 ${drive.contact_number ? `<button onclick="window.open('tel:${esc(drive.contact_number)}', '_self')" style="background: #16A34A; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; width: 100%; cursor: pointer;">

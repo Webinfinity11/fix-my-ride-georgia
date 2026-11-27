@@ -6,7 +6,7 @@ const MechanicMobileHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="md:hidden bg-background border-b sticky top-0 z-40 mb-3">
+    <div className="md:hidden bg-background border-b sticky top-16 z-40 mb-3">
       <div className="flex items-center justify-between px-4 py-3">
         <h1 className="text-lg font-semibold">ხელოსნის პანელი</h1>
         <Button

@@ -6,6 +6,8 @@
 
 import serviceThumbnails from '@/data/service-thumbnails.json';
 import serviceDisplayImages from '@/data/service-display-images.json';
+import avatarThumbnails from '@/data/avatar-thumbnails.json';
+import heavyPhotos from '@/data/heavy-photos.json';
 
 interface CompressOptions {
   maxWidth?: number;
@@ -118,6 +120,14 @@ export const getOptimizedImageUrl = (
   if (!url || typeof url !== "string") return url;
   if (url.includes('/storage/v1/render/image/public/')) {
     url = url.replace('/storage/v1/render/image/public/', '/storage/v1/object/public/').split('?')[0];
+  }
+  // Multi-megabyte originals are never shown: a card crop or a 1400px copy is.
+  const heavy = (heavyPhotos as Record<string, { large: string; card: string }>)[url];
+  if (heavy) return width <= 400 && height <= 300 ? heavy.card : heavy.large;
+  // Small copies of the heavy avatars uploaded before uploads were compressed.
+  if (width <= 256 && height <= 256) {
+    const avatar = (avatarThumbnails as Record<string, string>)[url];
+    if (avatar) return avatar;
   }
   if (options.cropToFit && width <= 400 && height <= 300) {
     const local = (serviceThumbnails as Record<string, string>)[url];

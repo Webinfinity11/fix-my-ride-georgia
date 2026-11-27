@@ -3,6 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
+import Header from "@/components/layout/Header";
 import { Home, ArrowLeft, Search } from "lucide-react";
 
 const NotFound = () => {
@@ -24,7 +25,8 @@ const NotFound = () => {
         <meta name="googlebot" content="noindex, nofollow" />
         <meta httpEquiv="status" content="404" />
       </Helmet>
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <Header />
+    <div className="min-h-[70vh] flex items-center justify-center bg-gray-50">
       <div className="text-center max-w-md px-4">
         <h1 className="text-6xl font-bold text-primary mb-4">404</h1>
         <p className="text-2xl font-medium text-gray-800 mb-2">გვერდი ვერ მოიძებნა</p>

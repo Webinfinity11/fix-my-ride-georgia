@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { cityName, cityPattern, districtName, districtPattern, mergedNames } from "@/lib/cityNames";
 
 export type MechanicType = {
   id: string;
@@ -89,6 +90,7 @@ export const useMechanics = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
 
   // Guard against stale responses overwriting fresh ones when filters change fast.
   const reqIdRef = useRef(0);
@@ -104,7 +106,7 @@ export const useMechanics = () => {
         .eq("role", "mechanic")
         .not("city", "is", null);
       if (error) throw error;
-      setCities(Array.from(new Set(data?.map((p) => p.city).filter(Boolean) as string[])).sort());
+      setCities(mergedNames(data?.map((p) => p.city) ?? [], cityName));
     } catch (error) {
       console.error("Error fetching cities:", error);
     }
@@ -115,11 +117,11 @@ export const useMechanics = () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("district")
-        .eq("city", city)
+        .filter("city", "imatch", cityPattern(city))
         .eq("role", "mechanic")
         .not("district", "is", null);
       if (error) throw error;
-      setDistricts(Array.from(new Set(data?.map((p) => p.district).filter(Boolean) as string[])).sort());
+      setDistricts(mergedNames(data?.map((p) => p.district) ?? [], districtName).sort((a, b) => a.localeCompare(b, "ka")));
     } catch (error) {
       console.error("Error fetching districts:", error);
     }
@@ -127,8 +129,8 @@ export const useMechanics = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const applyFilters = (q: any, filters: MechanicFilters) => {
-    if (filters.selectedCity) q = q.eq("profiles.city", filters.selectedCity);
-    if (filters.selectedDistrict) q = q.eq("profiles.district", filters.selectedDistrict);
+    if (filters.selectedCity) q = q.filter("profiles.city", "imatch", cityPattern(filters.selectedCity));
+    if (filters.selectedDistrict) q = q.filter("profiles.district", "imatch", districtPattern(filters.selectedDistrict));
     if (filters.mobileServiceOnly) q = q.eq("is_mobile", true);
     if (filters.minRating) q = q.gte("rating", filters.minRating);
     if (filters.verifiedOnly) q = q.not("verified_at", "is", null);
@@ -175,6 +177,7 @@ export const useMechanics = () => {
         const shown = (page + 1) * PAGE_SIZE;
         setMechanics(searchAllRef.current.slice(0, shown));
         setHasMore(searchAllRef.current.length > shown);
+        setTotalCount(searchAllRef.current.length);
       } else {
         // Server-side pagination.
         const from = page * PAGE_SIZE;
@@ -195,6 +198,7 @@ export const useMechanics = () => {
           return [...prev, ...rows.filter((m) => !seen.has(m.id))];
         });
         setHasMore(from + rows.length < (count ?? 0));
+        setTotalCount(count ?? 0);
       }
     } catch (error) {
       console.error("Error fetching mechanics:", error);
@@ -217,6 +221,7 @@ export const useMechanics = () => {
     loading,
     loadingMore,
     hasMore,
+    totalCount,
     fetchInitialData,
     fetchDistricts,
     fetchMechanics,

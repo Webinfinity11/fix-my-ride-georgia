@@ -3,6 +3,7 @@ import { MapPin, Star, Phone, BadgeCheck } from "lucide-react";
 import { createMechanicSlug } from "@/utils/slugUtils";
 import { trackMechanicPhone } from "@/utils/tracking";
 import { getOptimizedImageUrl } from "@/utils/imageCompression";
+import { cityName, districtName } from "@/lib/cityNames";
 
 interface MechanicCardProps {
   mechanic: {
@@ -32,7 +33,7 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
   const p = mechanic.profiles;
   const fullName = `${p.first_name} ${p.last_name}`.trim();
   const initials = `${p.first_name?.charAt(0) || ""}${p.last_name?.charAt(0) || ""}`.toUpperCase();
-  const location = [p.city, p.district].filter(Boolean).join(", ") || "მდებარეობა მითითებული არ არის";
+  const location = [cityName(p.city), districtName(p.district)].filter(Boolean).join(", ") || "მდებარეობა მითითებული არ არის";
   const profileUrl = `/mechanic/${createMechanicSlug(mechanic.display_id || 0, p.first_name, p.last_name)}`;
 
   const handleCall = () => {
@@ -49,6 +50,7 @@ export const MechanicCard: React.FC<MechanicCardProps> = ({ mechanic }) => {
             src={getOptimizedImageUrl(p.avatar_url, 160, 160, 70)}
             alt={fullName}
             loading="lazy"
+            decoding="async"
             width={112}
             height={112}
             onError={(e) => {

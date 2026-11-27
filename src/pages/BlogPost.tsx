@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -216,7 +217,7 @@ export default function BlogPost() {
         {post.featured_image && (
           <div className="mb-8 rounded-xl overflow-hidden">
             <img
-              src={post.featured_image}
+              src={getOptimizedImageUrl(post.featured_image, 1400, 900, 75)}
               alt={post.title}
               width={1200}
               height={675}

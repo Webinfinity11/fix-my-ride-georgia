@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -163,7 +164,7 @@ export const CustomerSavedServices = () => {
             <div className="relative h-48 bg-muted">
               {item.service.photos?.[0] ? (
                 <img
-                  src={item.service.photos[0]}
+                  src={getOptimizedImageUrl(item.service.photos[0], 400, 300, 70, { cropToFit: true })}
                   alt={item.service.name}
                   className="w-full h-full object-cover"
                 />

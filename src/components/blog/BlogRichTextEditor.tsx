@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { compressImage } from '@/utils/imageCompression';
 import { toast } from 'sonner';
 import { useCallback } from 'react';
 
@@ -80,13 +81,14 @@ export const BlogRichTextEditor = ({
       }
 
       try {
-        const fileExt = file.name.split('.').pop();
+        const small = file.type === 'image/gif' ? file : await compressImage(file, { maxWidth: 1600, maxHeight: 1600 });
+        const fileExt = small.name.split('.').pop();
         const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
         const filePath = `${fileName}`;
 
         const { error: uploadError, data } = await supabase.storage
           .from('blog-images')
-          .upload(filePath, file);
+          .upload(filePath, small);
 
         if (uploadError) throw uploadError;
 

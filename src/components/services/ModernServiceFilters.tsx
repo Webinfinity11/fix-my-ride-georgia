@@ -7,6 +7,7 @@ import { availableServiceBrands } from "@/utils/availableServiceBrands";
 import { locationCatalogueOptions } from "@/lib/locationCatalogue";
 import { useParams } from "react-router-dom";
 import { BRAND_PAGES } from "@/utils/carBrands";
+import { commonCarBrands } from "@/utils/commonCarBrands";
 import { getCityByName } from "@/utils/locationCatalogue";
 import HorizontalFilterChoices from "@/components/services/HorizontalFilterChoices";
 import CityFilter from "@/components/services/CityFilter";
@@ -44,14 +45,6 @@ interface ModernServiceFiltersProps {
   onClearSearch: () => void;
   onResetFilters: () => void;
 }
-
-const commonCarBrands = [
-  "BMW", "Mercedes-Benz", "Audi", "Toyota", "Honda", "Nissan",
-  "Hyundai", "Kia", "Volkswagen", "Ford", "Chevrolet", "Mazda",
-  "Subaru", "Lexus", "Infiniti", "Acura", "Jeep", "Land Rover",
-  "Porsche", "Mitsubishi", "Opel", "Peugeot", "Renault", "Citroen",
-  "Fiat", "Volvo", "Saab", "Skoda", "Seat", "Alfa Romeo", "Tesla", "სხვა",
-].filter(name => BRAND_PAGES.some(brand => brand.name === name));
 
 const tbilisiDistricts = [
   "ვაკე", "საბურთალო", "ვერე", "გლდანი", "ისანი", "ნაძალადევი",
@@ -180,37 +173,36 @@ const ModernServiceFilters = ({
     <div className="space-y-3">
       <CategoryNavigation selectedCategory={selectedCategory} selectedCity={selectedCity} selectedBrands={selectedBrands} />
       <Dialog open={showSearch} onOpenChange={open => { setShowSearch(open); if (!open) setSearchTerm(appliedSearch); }}>
-        <DialogContent className="max-w-lg" onCloseAutoFocus={event => { event.preventDefault(); searchTrigger.current?.focus(); }}>
-          <DialogHeader><DialogTitle>სერვისის ძიება</DialogTitle><DialogDescription>მოძებნეთ სერვისის სახელით, აღწერით, მდებარეობით, ხელოსნის სახელით ან განცხადების ნომრით. ასევე შეგიძლიათ ჩასვათ განცხადების ბმული.</DialogDescription></DialogHeader>
-      <form onSubmit={handleSearchSubmit} className="flex gap-2">
-        <div className="relative flex-1">
-          <Search
-            className="absolute left-3 top-1/2 h-4 w-4 text-muted-foreground"
-            style={{ transform: "translateY(-50%)" }}
-          />
-          <Input
-            autoFocus
-            aria-label="სერვისის ძიება"
-            placeholder="მაგ. დიაგნოსტიკა, გიორგი ან #626"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={`pl-10 h-10 border-2 border-primary/20 focus-visible:ring-primary text-sm ${searchTerm ? "pr-9" : ""}`}
-          />
-          {searchTerm && (
-            <button
-              type="button"
-              onClick={() => { setAppliedSearch(""); onClearSearch(); }}
-              aria-label="ძიების გასუფთავება"
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-        <Button type="submit" aria-label="ძებნა" className="h-10 px-4 shrink-0">
-          <Search className="h-4 w-4" />
-        </Button>
-      </form>
+        <DialogContent className="top-4 w-[calc(100%-1.5rem)] max-w-lg translate-y-0 gap-3 rounded-2xl p-4 sm:top-[20%] sm:rounded-2xl sm:p-5" onCloseAutoFocus={event => { event.preventDefault(); searchTrigger.current?.focus(); }}>
+          <DialogHeader className="text-left">
+            <DialogTitle>სერვისის ძიება</DialogTitle>
+            <DialogDescription className="sr-only">მოძებნეთ სახელით, ტელეფონის ნომრით, განცხადების ნომრით ან ბმულით</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSearchSubmit} className="space-y-3">
+            <div className="relative">
+              <Search aria-hidden="true" className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                autoFocus
+                enterKeyHint="search"
+                aria-label="სერვისის ძიება"
+                placeholder="სახელი, ტელეფონი ან №"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="h-12 rounded-xl border-2 border-primary/20 pl-12 pr-11 text-base focus-visible:ring-primary md:text-base"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => { setAppliedSearch(""); onClearSearch(); }}
+                  aria-label="ძიების გასუფთავება"
+                  className="absolute inset-y-0 right-2 my-auto flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <Button type="submit" className="h-12 w-full rounded-xl text-base">ძებნა</Button>
+          </form>
         </DialogContent>
       </Dialog>
       <div className="grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 md:gap-6">

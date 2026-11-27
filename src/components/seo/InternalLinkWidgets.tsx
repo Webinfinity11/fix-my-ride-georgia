@@ -1,3 +1,4 @@
+import { getOptimizedImageUrl } from "@/utils/imageCompression";
 import FooterLinkSection from "@/components/layout/FooterLinkSection";
 import { catalogueContainerClassName } from "@/components/services/catalogueLayout";
 import { Link } from 'react-router-dom';
@@ -166,7 +167,7 @@ export function RelatedServices({ limit = 6, excludeId }: { limit?: number; excl
               <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
                 {photo ? (
                   <div className="aspect-[4/3] overflow-hidden bg-muted">
-                    <LazyImage src={photo} alt={s.name} className="h-full w-full object-cover" />
+                    <LazyImage src={getOptimizedImageUrl(photo, 400, 300, 70, { cropToFit: true })} alt={s.name} className="h-full w-full object-cover" />
                   </div>
                 ) : (
                   <div className="aspect-[4/3] flex items-center justify-center bg-muted">
@@ -326,7 +327,7 @@ export function MechanicOtherServices({
         <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
           {photo ? (
             <div className="aspect-[4/3] overflow-hidden bg-muted">
-              <LazyImage src={photo} alt={s.name} className="h-full w-full object-cover" />
+              <LazyImage src={getOptimizedImageUrl(photo, 400, 300, 70, { cropToFit: true })} alt={s.name} className="h-full w-full object-cover" />
             </div>
           ) : (
             <div className="aspect-[4/3] flex items-center justify-center bg-muted">

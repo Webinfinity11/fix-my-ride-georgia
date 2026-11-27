@@ -43,6 +43,7 @@ const Mechanics = () => {
     loading,
     loadingMore,
     hasMore,
+    totalCount,
     fetchInitialData,
     fetchDistricts,
     fetchMechanics,
@@ -116,17 +117,17 @@ const Mechanics = () => {
     verifiedOnly,
   });
 
-  const performSearch = async () => {
-    const filters = buildFilters();
+  const performSearch = async (term = searchTerm) => {
+    const filters = { ...buildFilters(), searchTerm: term.trim() };
     lastFiltersRef.current = filters; // remember for "load more"
     setPage(0);
     await fetchMechanics(filters, 0);
-    updateURL();
+    updateURL(filters.searchTerm);
   };
 
-  const updateURL = () => {
+  const updateURL = (term: string) => {
     const params = new URLSearchParams();
-    if (searchTerm.trim()) params.set("q", searchTerm.trim());
+    if (term) params.set("q", term);
     if (selectedCity) params.set("city", selectedCity);
     if (selectedDistrict) params.set("district", selectedDistrict);
     if (selectedSpecialization) params.set("specialization", selectedSpecialization);
@@ -211,8 +212,8 @@ const Mechanics = () => {
             
             {/* Filters Section */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <div className="flex flex-wrap items-center gap-2">
                   <Button
                     variant="outline"
                     onClick={() => setShowFilters(!showFilters)}
@@ -253,7 +254,7 @@ const Mechanics = () => {
 
               {/* Filters Panel */}
               {showFilters && (
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-200">
+                <div>
                   <MechanicFilters
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
@@ -272,7 +273,7 @@ const Mechanics = () => {
                     verifiedOnly={verifiedOnly}
                     setVerifiedOnly={setVerifiedOnly}
                     onSearch={handleSearch}
-                    onResetFilters={handleResetFilters}
+                    onClearSearch={() => { setSearchTerm(""); performSearch(""); }}
                   />
                 </div>
               )}
@@ -291,7 +292,7 @@ const Mechanics = () => {
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <p className="text-gray-600">
-                      ნაპოვნია <span className="font-semibold text-primary">{mechanics.length}</span> ხელოსანი
+                      ნაპოვნია <span className="font-semibold text-primary">{totalCount}</span> ხელოსანი
                     </p>
                     {hasActiveFilters && (
                       <Badge variant="outline" className="bg-primary/10 text-primary">

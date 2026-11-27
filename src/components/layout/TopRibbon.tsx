@@ -1,17 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Megaphone } from "lucide-react";
 import { useFuelImporters } from "@/hooks/useFuelImporters";
 
 /* Top utility bar — sits ABOVE the header (Planflow "landing" design). */
 
 type IconProps = { className?: string };
-const IPin = ({ className = "h-3.5 w-3.5" }: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M12 22s-7-7-7-13a7 7 0 1 1 14 0c0 6-7 13-7 13z M12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
-  </svg>
-);
-const IDown = ({ className = "h-3 w-3" }: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9l6 6 6-6" /></svg>
-);
 const IPhone = ({ className = "h-3 w-3" }: IconProps) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
@@ -49,9 +42,9 @@ const TopRibbon = () => {
   return (
     <div className="bg-ink-900 text-ink-100 text-[11.5px]">
       <div className="max-w-[1280px] mx-auto px-4 lg:px-8 h-9 flex items-center gap-4 overflow-x-auto scrollbar-hide">
-        <button type="button" onClick={() => navigate("/map")} className="inline-flex items-center gap-1.5 font-mono tabular-nums hover:text-white shrink-0">
-          <IPin className="h-3.5 w-3.5 text-accent-400" />თბილისი<IDown className="h-3 w-3 opacity-60" />
-        </button>
+        <Link to="/vip" className="inline-flex items-center gap-1.5 font-semibold hover:text-white shrink-0">
+          <Megaphone aria-hidden="true" className="h-3.5 w-3.5 text-accent-400" />რეკლამა
+        </Link>
         <span className="h-3 w-px bg-white/15 shrink-0" />
         {cheapest && (
           <button type="button" onClick={() => navigate("/fuel-importers")} className="hidden md:inline-flex items-center gap-2 font-mono tabular-nums shrink-0 hover:text-white">
@@ -65,7 +58,8 @@ const TopRibbon = () => {
         )}
         <div className="ml-auto flex items-center gap-4 shrink-0">
           <a href="tel:+995574047994" className="hidden md:inline-flex items-center gap-1.5 font-mono tabular-nums hover:text-white"><IPhone className="h-3 w-3" />+995 574 04 79 94</a>
-          <button type="button" onClick={() => navigate("/login")} className="hover:text-white font-semibold">შესვლა</button>
+          <Link to="/add-listing" className="lg:hidden hover:text-white font-semibold">+ სერვისის დამატება</Link>
+          <button type="button" onClick={() => navigate("/login")} className="hidden lg:block hover:text-white font-semibold">შესვლა</button>
         </div>
       </div>
     </div>
