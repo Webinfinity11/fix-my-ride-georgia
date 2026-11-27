@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { listingId } from "@/lib/vipSearch";
+import { useConfirm } from "./useConfirm";
 import { clock, promoActive, useVipPricing } from "@/lib/vipPricing";
 
 const STATUSES = [
@@ -15,11 +17,9 @@ const STATUSES = [
 ];
 const PROMO_HOURS = 24;
 
-/** Accepts a listing number or its link (https://fixup.ge/service/123-name). */
-const listingId = (value: string) => Number(value.trim().match(/(?:^|\/service\/)(\d+)(?:\D|$)/)?.[1]) || null;
-
 export const VipLeadsPanel = () => {
   const client = useQueryClient();
+  const { confirm, dialog } = useConfirm();
   const { pricing, now } = useVipPricing({ real: true });
   const active = promoActive(pricing, now);
 
@@ -64,7 +64,7 @@ export const VipLeadsPanel = () => {
       const { data: service, error: serviceError } = await supabase
         .from("mechanic_services").select("name").eq("id", lead.service_id).single();
       if (serviceError) throw new Error("ასეთი განცხადება ვერ მოიძებნა");
-      if (!window.confirm(`ჩაირთოს VIP განცხადებაზე „${service.name}“? ჯერ დარწმუნდით, რომ გადახდილია.`)) return false;
+      if (!await confirm(`ჩაირთოს VIP განცხადებაზე „${service.name}“? ჯერ დარწმუნდით, რომ გადახდილია.`)) return false;
       const until = new Date(Date.now() + pricing.duration_days * 864e5).toISOString();
       const { error } = await supabase.rpc("update_service_vip_status", {
         p_service_id: lead.service_id, p_vip_status: lead.plan as "vip" | "super_vip", p_vip_until: until, p_is_vip_active: true,
@@ -79,14 +79,15 @@ export const VipLeadsPanel = () => {
     onError,
   });
 
-  const startPromo = () => {
-    if (window.confirm(`ჩაირთოს აქცია ${PROMO_HOURS} საათით (VIP −${pricing.vip_discount_percent}%, Super VIP −${pricing.super_vip_discount_percent}%)? ფასდაკლება მაშინვე გამოჩნდება საიტზე.`)) {
+  const startPromo = async () => {
+    if (await confirm(`ჩაირთოს აქცია ${PROMO_HOURS} საათით (VIP −${pricing.vip_discount_percent}%, Super VIP −${pricing.super_vip_discount_percent}%)? ფასდაკლება მაშინვე გამოჩნდება საიტზე.`)) {
       setPromo.mutate(new Date(Date.now() + PROMO_HOURS * 3600e3).toISOString());
     }
   };
 
   return (
     <Card className="mb-6">
+      {dialog}
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
         <div>
           <CardTitle className="text-lg">მოთხოვნები /vip გვერდიდან</CardTitle>
@@ -96,7 +97,7 @@ export const VipLeadsPanel = () => {
         </div>
         {active ? (
           <Button variant="outline" disabled={setPromo.isPending}
-            onClick={() => window.confirm("დასრულდეს აქცია ახლავე?") && setPromo.mutate(null)}>აქციის დასრულება</Button>
+            onClick={async () => { if (await confirm("დასრულდეს აქცია ახლავე?")) setPromo.mutate(null); }}>აქციის დასრულება</Button>
         ) : (
           <Button disabled={setPromo.isPending} onClick={startPromo}>{PROMO_HOURS}-საათიანი აქციის დაწყება</Button>
         )}
