@@ -29,6 +29,8 @@ const BookingManagement = lazy(() => import("@/components/dashboard/admin/Bookin
 const SavedServicesManagement = lazy(() => import("@/components/dashboard/admin/SavedServicesManagement"));
 const AdminVIPManagement = lazy(() => import("@/components/dashboard/admin/AdminVIPManagement").then(module => ({ default: module.AdminVIPManagement })));
 const VipLeadsPanel = lazy(() => import("@/components/dashboard/admin/VipLeadsPanel").then(module => ({ default: module.VipLeadsPanel })));
+const VipCallList = lazy(() => import("@/components/dashboard/admin/VipCallList").then(module => ({ default: module.VipCallList })));
+const DriverRequests = lazy(() => import("@/components/dashboard/admin/DriverRequests"));
 const VipAssign = lazy(() => import("@/components/dashboard/admin/VipAssign").then(module => ({ default: module.VipAssign })));
 const AdminCommunity = lazy(() => import("@/components/dashboard/admin/AdminCommunity").then(module => ({ default: module.AdminCommunity })));
 const FuelImporterManagement = lazy(() => import("@/components/dashboard/admin/FuelImporterManagement"));
@@ -294,9 +296,20 @@ const Dashboard = () => {
                     user.role === "admin" ? (
                       <>
                         <VipLeadsPanel />
+                        <VipCallList />
                         <VipAssign />
                         <AdminVIPManagement />
                       </>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/driver-requests"
+                  element={
+                    user.role === "admin" ? (
+                      <DriverRequests />
                     ) : (
                       <Navigate to="/dashboard" replace />
                     )

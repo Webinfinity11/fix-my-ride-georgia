@@ -1,3 +1,4 @@
+import { rememberCall } from "@/lib/reviewPrompt";
 import { normalizeModels, modelPath } from '@/utils/serviceModels';
 import { BRAND_PAGES } from '@/utils/carBrands';
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
@@ -77,6 +78,13 @@ const ServiceDetail = () => {
   const [service, setService] = useState<ServiceType | null>(() => readServiceSnapshot());
   const [loading, setLoading] = useState(() => !readServiceSnapshot());
   const serviceRequest = useRef(0);
+  // "?review=1" (from the review prompt) opens the page at the reviews.
+  const reviewsAnchor = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!service?.id || !new URLSearchParams(window.location.search).has("review")) return;
+    const timer = setTimeout(() => reviewsAnchor.current?.scrollIntoView({ block: "start" }), 800);
+    return () => clearTimeout(timer);
+  }, [service?.id]);
   const [showFullPhone, setShowFullPhone] = useState(false);
   // New design (Planflow) interactive state
   const [activeImg, setActiveImg] = useState(0);
@@ -339,6 +347,7 @@ const ServiceDetail = () => {
   };
 
   const trackPhoneView = async (serviceId: number) => {
+    rememberCall(serviceId);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -1014,7 +1023,9 @@ const ServiceDetail = () => {
                 )}
 
                 {/* Reviews */}
+                <div ref={reviewsAnchor} className="scroll-mt-28">
                 <NearViewport fallback={<div className="h-48 bg-muted rounded-2xl" />}><Suspense fallback={<div className="h-48 bg-muted rounded-2xl" />}><ServiceReviews serviceId={service.id} onReviewAdded={handleReviewAdded} /></Suspense></NearViewport>
+                </div>
               </div>
 
               {/* Aside — provider */}

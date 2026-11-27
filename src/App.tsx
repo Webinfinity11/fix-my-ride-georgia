@@ -24,6 +24,8 @@ const Saved = lazy(() => import("./pages/Saved"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Vip = lazy(() => import("./pages/Vip"));
+const DriverRequest = lazy(() => import("./pages/DriverRequest"));
+const ReviewPrompt = lazy(() => import("./components/reviews/ReviewPrompt"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -104,6 +106,7 @@ function App({ initialServiceComponent, queryClientOverride, initialFuelComponen
                   <Route path="/order-parts" element={<OrderParts />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/vip" element={<Vip />} />
+                  <Route path="/request" element={<DriverRequest />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
@@ -128,6 +131,7 @@ function App({ initialServiceComponent, queryClientOverride, initialFuelComponen
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>
+                <Suspense fallback={null}><ReviewPrompt /></Suspense>
               </ErrorBoundary>
             </AuthProvider>
           </BrowserRouter>

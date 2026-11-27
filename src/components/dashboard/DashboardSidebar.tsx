@@ -75,6 +75,7 @@ const DashboardSidebar = () => {
       { to: "/dashboard/admin/leads", icon: Mail, label: "ლიდები", badge: oldLeadsCount },
       { to: "/dashboard/admin/vip-management", icon: Crown, label: "VIP მართვა", badge: newVipLeadsCount },
       { to: "/dashboard/admin/requests", icon: FileText, label: "მოთხოვნები", badge: newRequestsCount },
+      { to: "/dashboard/admin/driver-requests", icon: FileText, label: "მძღოლების განაცხადები" },
       { to: "/dashboard/admin/parts-orders", icon: Package, label: "ნაწილების შეკვეთები", badge: newPartsOrdersCount },
       { to: "/dashboard/admin/evacuator-requests", icon: Truck, label: "ევაკუატორი", badge: newEvacuatorRequestsCount },
       { to: "/dashboard/admin/booking-management", icon: CalendarCog, label: "ჯავშნების მართვა" },

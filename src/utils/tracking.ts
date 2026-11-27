@@ -1,10 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import { rememberCall } from "@/lib/reviewPrompt";
 
 const ua = () => (typeof navigator !== "undefined" ? navigator.userAgent : null);
 
 // Records a phone-call / number-reveal click for a SERVICE. Non-blocking.
 export const trackServicePhone = async (serviceId: number) => {
   if (!serviceId) return;
+  rememberCall(serviceId);
   try {
     const { data: { user } } = await supabase.auth.getUser();
     await supabase.from("service_phone_views").insert({
