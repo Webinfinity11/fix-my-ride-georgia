@@ -47,6 +47,9 @@ test('analytics loader schedules one script even when replayed by a snapshot', (
     const context = vm.createContext({
       window: { addEventListener: (_event, cb) => cb() },
       dataLayer: [],
+      // The loader only runs for non-automated browsers on Georgian time.
+      navigator: {},
+      Intl: { DateTimeFormat: () => ({ resolvedOptions: () => ({ timeZone: 'Asia/Tbilisi' }) }) },
       document: {
         querySelector: () => existing || appended.length > 0,
         createElement: () => ({}),
